@@ -43,7 +43,7 @@
 
         body {
             font-family: Quicksand, sans-serif;
-            background-color: #1F1F21;
+            background-color: #ffffff;
         }
 
         h2 {
@@ -53,7 +53,7 @@
 
         .full-width-bar {
             width: 100%;
-            background: #C9AB81;
+            background: #f5f5f5;
             padding: 17px 5%;
             display: flex;
             flex-wrap: wrap;
@@ -62,7 +62,7 @@
         }
         .full-width-bar-sub {
             width: 100%;
-            background: #1F1F21;
+            background: #ffffff;
             padding: 17px 5%;
             display: flex;
             flex-wrap: wrap;
@@ -146,7 +146,7 @@
             left: 10%;
             font-size: 14px;
             font-weight: 700;
-            color: #C9AB81;
+            color: #6b8caf;
             max-width: 90%;
         }
 
@@ -157,8 +157,8 @@
             position: fixed;
             top: 0;
             left: 0;
-            background: #C9AB81;
-            box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.25);
+            background: #ffffff;
+            box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
             display: flex;
             align-items: center;
             padding: 0 20px;
@@ -174,10 +174,10 @@
 
         /* Logo */
         .logo-container {
-            background: #C9AB81;
+            background: #f8f8f8;
             padding: 10px 20px;
             border-radius: 50px;
-            box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25) inset;
+            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.08) inset;
         }
 
         .logo-container img {
@@ -208,11 +208,11 @@
         }
 
         .date-box {
-            background: #C9AB81;
+            background: #f0f0f0;
             padding: 10px 30px;
             border-radius: 50px;
-            box-shadow: -4px 4px 4px rgba(0, 0, 0, 0.25) inset;
-            color: white;
+            box-shadow: -2px 2px 4px rgba(0, 0, 0, 0.08) inset;
+            color: #333333;
             font-size: 24px;
             font-weight: 700;
             text-align: center;
@@ -263,7 +263,7 @@
         width: 30px;
         height: 30px;
         /*background-color:; /* Blue color */
-        background-color: #C9AB81;
+        background-color: #6b8caf;
         color: white;
         border-radius: 50%;
         display: flex;
@@ -282,8 +282,8 @@
     }
 .colored-box {
     display: inline-block; /* Ensures it wraps tightly around the text */
-    background-color: #C9AB81; /* Change to any color */
-    color: white; /* Text color */
+    background-color: #f8f8f8; /* Change to any color */
+    color: #333333; /* Text color */
     padding: 1px 5px; /* Adds space inside the box */
     border-radius: 5px; /* Optional: Rounds the corners */
     font-weight: bold; /* Optional: Makes text bold */
@@ -293,7 +293,7 @@
         /* Footer */
         .footer {
             width: 100%;
-            background: #C9AB81;
+            background: #fafafa;
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
@@ -320,13 +320,13 @@
         }
 
         .social-icons a {
-            color: white;
+            color: #333333;
             font-size: 20px;
             transition: color 0.3s ease;
         }
 
         .social-icons a:hover {
-            color: #dcdcdc;
+            color: #666666;
         }
 
         /* Right Section */
@@ -342,7 +342,7 @@
             flex-direction: column;
             justify-content: center;
             gap: 10px;
-            color: #C9AB81;
+            color: #333333;
             font-family: Inter, sans-serif;
             font-size: 16px;
             font-weight: 500;
@@ -354,7 +354,7 @@
         }
 
         .footer a {
-            color: white;
+            color: #333333;
             text-decoration: none;
             transition: background 0.2s ease, color 0.2s ease;
             padding: 5px 10px;
@@ -362,8 +362,8 @@
         }
 
         .footer a:hover {
-            background: rgba(255, 255, 255, 0.1);
-            color: #dcdcdc;
+            background: rgba(0, 0, 0, 0.05);
+            color: #666666;
         }
 
         /* Icon Overlay */
@@ -389,6 +389,7 @@
             width: 40px; /* Adjust size as needed */
             height: 40px;
             opacity: 0.9;
+            filter: invert(1);
         }
 
         .content-box-test:hover .icon-overlay img {
@@ -402,7 +403,7 @@
     
         .content-box-test {
             position: relative;
-            background-color: #C9AB81;   /* tan background */
+            background-color: #f8f8f8;   /* light gray background */
             border-radius: 12px;
             padding: 20px;
             color: black;                 /* default text color */
@@ -424,7 +425,7 @@
 
         
         .full-width-bar-sub{
-            background-color: #1F1F21 !important;
+            background-color: #ffffff !important;
             }
 
 
@@ -546,7 +547,7 @@
     ?>
 
     <!-- Calendar -->
-    <div class="content-box-test" onclick="window.location.href='calendar.php'" style="background-color: #C9AB81; border-radius: 12px; padding: 20px; color: black;">
+    <div class="content-box-test" onclick="window.location.href='calendar.php'" style="background-color: #f8f8f8; border-radius: 12px; padding: 20px; color: black; border: 1px solid #e0e0e0;">
         <div class="icon-overlay">
             <img style="border-radius: 5px;" src="images/view-calendar.svg" alt="Calendar Icon">
         </div>
@@ -557,7 +558,7 @@
     </div>
 
     <!-- Manage Documents -->
-    <div class="content-box-test" onclick="window.location.href='view_encrypted_gallery.php'" style="background-color: #C9AB81; border-radius: 12px; padding: 20px; color: black; position: relative;">
+    <div class="content-box-test" onclick="window.location.href='view_encrypted_gallery.php'" style="background-color: #f8f8f8; border-radius: 12px; padding: 20px; color: black; position: relative; border: 1px solid #e0e0e0;">
         <div class="icon-overlay">
             <img style="border-radius: 5px;" src="images/file-regular.svg" alt="Document Icon">
         </div>
@@ -568,7 +569,7 @@
     </div>
 
     <!-- System Notifications -->
-    <div class="content-box-test" onclick="window.location.href='inbox.php'" style="background-color: #C9AB81; border-radius: 12px; padding: 20px; color: black;">
+    <div class="content-box-test" onclick="window.location.href='inbox.php'" style="background-color: #f8f8f8; border-radius: 12px; padding: 20px; color: black; border: 1px solid #e0e0e0;">
         <div class="icon-overlay">
             <img style="border-radius: 5px;" src="images/<?php echo $inboxIcon ?>" alt="Notification Icon">
         </div>
@@ -585,7 +586,7 @@
     </div>
 
     <!-- Generate Report -->
-    <div class="content-box-test" onclick="window.location.href='generateReport.php'" style="background-color: #C9AB81; border-radius: 12px; padding: 20px; color: black;">
+    <div class="content-box-test" onclick="window.location.href='generateReport.php'" style="background-color: #f8f8f8; border-radius: 12px; padding: 20px; color: black; border: 1px solid #e0e0e0;">
         <div class="icon-overlay">
             <img style="border-radius: 5px;" src="images/create-report.svg" alt="Report Icon">
         </div>
@@ -596,7 +597,7 @@
     </div>
 
     <!-- Create Email -->
-    <div class="content-box-test" onclick="window.location.href='createEmail.php'" style="background-color: #C9AB81; border-radius: 12px; padding: 20px; color: black;">
+    <div class="content-box-test" onclick="window.location.href='createEmail.php'" style="background-color: #f8f8f8; border-radius: 12px; padding: 20px; color: black; border: 1px solid #e0e0e0;">
         <div class="icon-overlay">
             <img style="border-radius: 5px;" src="images/inbox.svg" alt="Email Icon">
         </div>
@@ -607,7 +608,7 @@
     </div>
 
     <!-- View Drafts -->
-    <div class="content-box-test" onclick="window.location.href='viewDrafts.php'" style="background-color: #C9AB81; border-radius: 12px; padding: 20px; color: black;">
+    <div class="content-box-test" onclick="window.location.href='viewDrafts.php'" style="background-color: #f8f8f8; border-radius: 12px; padding: 20px; color: black; border: 1px solid #e0e0e0;">
         <div class="icon-overlay">
             <img style="border-radius: 5px;" src="images/search.svg" alt="Drafts Icon">
         </div>
@@ -618,7 +619,7 @@
     </div>
 
     <!-- Generate Email List -->
-    <div class="content-box-test" onclick="window.location.href='generateEmailList.php'" style="background-color: #C9AB81; border-radius: 12px; padding: 20px; color: black;">
+    <div class="content-box-test" onclick="window.location.href='generateEmailList.php'" style="background-color: #f8f8f8; border-radius: 12px; padding: 20px; color: black; border: 1px solid #e0e0e0;">
         <div class="icon-overlay">
             <img style="border-radius: 5px;" src="images/send.png" alt="Email List Icon">
         </div>
@@ -629,7 +630,7 @@
     </div>
 
     <!-- Discussions -->
-    <div class="content-box-test" onclick="window.location.href='viewSuggestions.php'" style="background-color: #C9AB81; border-radius: 12px; padding: 20px; color: black;">
+    <div class="content-box-test" onclick="window.location.href='viewSuggestions.php'" style="background-color: #f8f8f8; border-radius: 12px; padding: 20px; color: black; border: 1px solid #e0e0e0;">
         <div class="icon-overlay">
             <img style="border-radius: 5px;" src="images/clipboard-regular.svg" alt="Discussions Icon">
         </div>

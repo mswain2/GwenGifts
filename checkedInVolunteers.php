@@ -45,33 +45,33 @@ require_once('header.php');
         }
 
         body {
-            background-color: #1F1F21 !important;
+            background-color: #ffffff !important;
             }
 
         table {
             width: 100%;
-            background-color: #1F1F21 !important;
+            background-color: #f8f8f8 !important;
             border-collapse: collapse;
             }
 
         thead th {
-            background-color: #1F1F21 !important;
-            color: #C9AB81 !important;
-            border-bottom: 2px solid #C9AB81 !important;
+            background-color: #f5f5f5 !important;
+            color: #333333 !important;
+            border-bottom: 2px solid #e0e0e0 !important;
         }
 
         tbody td {
-            background-color: #1F1F21 !important;
-            color: #C9AB81 !important;
-            border-bottom: 1px solid #C9AB81 !important;
+            background-color: #ffffff !important;
+            color: #333333 !important;
+            border-bottom: 1px solid #e0e0e0 !important;
         }
 
         .blue-div {
-             background-color: #C9AB81 !important;
+             background-color: #f8f8f8 !important;
         }
 
         .info-text {
-             color: #C9AB81 !important;
+             color: #333333 !important;
             }
 
 </style>
