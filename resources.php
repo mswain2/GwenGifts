@@ -56,11 +56,11 @@ require_once('header.php');
 ?>
 <style>
         .date-box {
-            background: #274471;
+            background: #f0f0f0;
             padding: 7px 30px;
             border-radius: 50px;
-            box-shadow: -4px 4px 4px rgba(0, 0, 0, 0.25) inset;
-            color: white;
+            box-shadow: -2px 2px 4px rgba(0, 0, 0, 0.08) inset;
+            color: #333333;
             font-size: 24px;
             font-weight: 700;
             text-align: center;
@@ -70,32 +70,32 @@ require_once('header.php');
         }   
 
         body, main{
-            background-color: #1F1F21;
+            background-color: #ffffff;
         }
 
         table tr td[colspan="2"] {
-        background-color: #C9AB81 !important; /* tan */
+        background-color: #f8f8f8 !important; /* light gray */
             color: black !important;
         }
 
         form {
-        background-color: #C9AB81 !important; /* tan */
+        background-color: #f8f8f8 !important; /* light gray */
         color: black !important;
         border: none !important;
         }
 
         .blue-button {
-        background-color: #C9AB81 !important;
+        background-color: #f8f8f8 !important;
         color: black !important;
         border: none !important;
         }
 
         .info-section .info-text {
-        color: #C9AB81 !important;
+        color: #333333 !important;
         }
 
         .blue-div {
-        background-color: #C9AB81 !important;
+        background-color: #f8f8f8 !important;
         }
 
         form label {

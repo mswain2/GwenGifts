@@ -36,11 +36,11 @@ require_once('header.php');
 ?>
 <style>
         .date-box {
-            background: #C9AB81;
+            background: #f0f0f0;
             padding: 7px 30px;
             border-radius: 50px;
-            box-shadow: -4px 4px 4px rgba(0, 0, 0, 0.25) inset;
-            color: white;
+            box-shadow: -2px 2px 4px rgba(0, 0, 0, 0.08) inset;
+            color: #333333;
             font-size: 24px;
             font-weight: 700;
             text-align: center;
@@ -51,22 +51,22 @@ require_once('header.php');
 	    }
         
         body{
-        background-color: #1F1F21;
+        background-color: #ffffff;
         }
         .button-section button{
-        background-color: #C9AB81;
+        background-color: #f8f8f8;
         color: black !important;
         }
 
         .button-left-gray{
-        background-color: #C9AB81;
+        background-color: #f8f8f8;
         }
 
         .button-section .button-icon{
         filter: none
         }
     .top-bar {
-      background-color: #C9AB81;   /* gold color */
+      background-color: #f5f5f5;   /* light gray */
       height: calc(var(--spacing) * 40);
       width: 100%;              /* full width */
       position: relative;
