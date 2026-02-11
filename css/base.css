@@ -559,7 +559,7 @@ main.calendar-view th {
 
 h1.calendar-header {
     background-color: var(--accent-color);
-    color: white;
+    color: blue;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
