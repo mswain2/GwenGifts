@@ -34,11 +34,11 @@ require_once('header.php');
 ?>
 <style>
         .date-box {
-            background: #C9AB81;
+            background: #f0f0f0;
             padding: 7px 30px;
             border-radius: 50px;
-            box-shadow: -4px 4px 4px rgba(0, 0, 0, 0.25) inset;
-            color: white;
+            box-shadow: -2px 2px 4px rgba(0, 0, 0, 0.08) inset;
+            color: #333333;
             font-size: 24px;
             font-weight: 700;
             text-align: center;
@@ -49,15 +49,15 @@ require_once('header.php');
 
 
     body, main{
-        background-color: #1F1F21;
+        background-color: #ffffff;
     }
 
     .info-section .info-text {
-    color: #C9AB81;
+    color: #333333;
     }
 
     .blue-div {
-    background-color: #C9AB81;
+    background-color: #f8f8f8;
     }
 
     .main-content-box table,
@@ -66,17 +66,17 @@ require_once('header.php');
     .main-content-box table tbody tr,
     .main-content-box table th,
     .main-content-box table td {
-    background-color: #1F1F21; 
-    color: #C9AB81;           
-    border-color: #C9AB81;    
+    background-color: #f8f8f8; 
+    color: #333333;           
+    border-color: #e0e0e0;    
 }
 
     .main-content-box {
-        background-color: #1F1F21 !important; 
+        background-color: #ffffff !important; 
     }
 
     .blue-button{
-        background-color: #C9AB81;
+        background-color: #f8f8f8;
         color: black;
     }
 

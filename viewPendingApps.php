@@ -164,7 +164,7 @@ $access_level = $_SESSION['access_level']; ?>
                                 <?php if ($flagged): ?>
                                     <td style='background-color: #e50000ff'></td></tr>
                                 <?php else: ?>
-                                    <td style='background-color: #1F1F21'></td></tr> 
+                                    <td style='background-color: #f8f8f8'></td></tr> 
                                 <?php endif ?>
                             </tr>
                             <div id="resolution-confirmation-wrapper-<?= $event_id ?>-<?= $userID ?>" class="modal-content hidden" style = "margin:auto">

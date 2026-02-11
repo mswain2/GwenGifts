@@ -48,34 +48,35 @@ table, td, tr, th, form, fieldset, em, button, a {
 }
 
 :root {
-    /* CSS variables that will be used across the page */
-    --page-background-color: rgb(31, 31, 33);
-    --page-font-color: white;
-    --inactive-font-color: #d0d0d0;
-    --inactive-background-color: rgb(31,31,33);
-    --standout-background: #fafafa;
-
-    --happy-toast-background-color: #5D7E61;
-    --happy-toast-font-color: rgb(255, 255, 255);
-
-    --info-toast-background-color: #2f2f2f;
-    --info-toast-font-color: white;
-
-    --error-toast-background-color: #A66654;
-    --error-toast-font-color: rgb(255, 255, 255);
+    /* Light theme colors */
+    --page-background-color: #ffffff;
+    --page-font-color: #1a1a1a;
+    --inactive-font-color: #666666;
+    --inactive-background-color: #fafafa;
+    --standout-background: #f8f4ef;
 
 
-    --shadow-and-border-color: #e8e8e8;
+    --happy-toast-background-color: #e8f5e9;
+    --happy-toast-font-color: #2e7d32;
 
-    --main-color: #2A435A; 
+    --info-toast-background-color: #e3f2fd;
+    --info-toast-font-color: #1565c0;
 
-    --accent-color: rgb(201, 171, 129);
+    --error-toast-background-color: #ffebee;
+    --error-toast-font-color: #c62828;
+
+
+    --shadow-and-border-color: #e0e0e0;
+
+    --main-color: #f5f5f5; 
+
+    --accent-color: #6b8caf;
  
-    --secondary-accent-color: rgb(175, 141, 92);
+    --secondary-accent-color: #e0e0e0;
 
     /* Accessibility / WV theme variables */
-    --wv-accent-color: #C9AB81; /* gold */
-    --wv-accent-foreground: #111111;
+    --wv-accent-color: #f8f8f8; /* light gray */
+    --wv-accent-foreground: #333333;
     --wv-bg-light: #ffffff;
     --wv-text-dark: #111111;
     --wv-muted-text: #6b6b6b;
@@ -88,9 +89,9 @@ table, td, tr, th, form, fieldset, em, button, a {
     --button-padding: 0.5rem 1.5rem;
     --button-border-radius: 0.25rem;
 
-    --standard-border: 1px solid #333333;
+    --standard-border: 1px solid #d0d0d0;
     --light-border: 1px solid var(--shadow-and-border-color);
-    --text-field-border: 2px solid #e8e8e8;
+    --text-field-border: 2px solid #cccccc;
 
     --cancel-button-background-color: #A66654;
 
