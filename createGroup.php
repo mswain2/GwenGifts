@@ -45,24 +45,24 @@ require_once('header.php');
         }   
 
     main{
-        background-color: #1F1F21;
+        background-color: #ffffff;
     }
 
     label {
-        color: #1F1F21;
+        color: #333333;
     }
 
     .blue-button{
-        background-color: #C9AB81;
-        color: #1F1F21;
+        background-color: #f8f8f8;
+        color: #333333;
     }
 
     .info-section .info-text {
-    color: #C9AB81 !important;
+    color: #333333 !important;
     }
     
     .blue-div {
-    background-color: #C9AB81 !important;
+    background-color: #f8f8f8 !important;
     }
 </style>
 <!-- BANDAID END, REMOVE ONCE SOME GENIUS FIXES -->

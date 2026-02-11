@@ -56,35 +56,35 @@ $suggestions = get_all_suggestions();
         }
     
         body,main{
-            background-color: #1F1F21;
+            background-color: #ffffff;
         }
     
         .main-content-box {
-            background-color: #1F1F21;
+            background-color: #ffffff;
         }
     
         table {
-            background-color: #1F1F21;
+            background-color: #f8f8f8;
         }
     
         tbody td {
-            background-color: #1F1F21 !important;
-            color: #C9AB81 !important;
-            border-bottom: 1px solid #C9AB81 !important;
+            background-color: #ffffff !important;
+            color: #333333 !important;
+            border-bottom: 1px solid #e0e0e0 !important;
         }
     
         thead th {
-            background-color: #1F1F21 !important;
-            color: #C9AB81 !important;
-            border-bottom: 2px solid #C9AB81 !important;
+            background-color: #f5f5f5 !important;
+            color: #333333 !important;
+            border-bottom: 2px solid #e0e0e0 !important;
         }
 
         tr {
-            background-color: #1F1F21 !important;
+            background-color: #ffffff !important;
         }
 
         td, th {
-            border-bottom: 1px solid #C9AB81 !important;
+            border-bottom: 1px solid #e0e0e0 !important;
         }
     </style>
 </head>

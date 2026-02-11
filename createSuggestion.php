@@ -100,7 +100,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         .success { background-color: #d4edda; color: #155724; }
 
         body, main {
-            background-color: #1F1F21 !important;
+            background-color: #f8f8f8 !important;
         }
 
         .text-blue-700,

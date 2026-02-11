@@ -71,7 +71,7 @@ if (date("H:i:s") > "18:19:59") {
 
         .full-width-bar {
             width: 100%;
-            background: rgb(31,31,33);
+            background: #f5f5f5;
             padding: 17px 5%;
             display: flex;
             flex-wrap: wrap;
@@ -177,8 +177,8 @@ if (date("H:i:s") > "18:19:59") {
             position: fixed;
             top: 0;
             left: 0;
-            background: rgb(31,31,33);
-            box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.25);
+            background: #ffffff;
+            box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
             display: flex;
             align-items: center;
             padding: 0 20px;
@@ -194,10 +194,10 @@ if (date("H:i:s") > "18:19:59") {
 
         /* Logo */
         .logo-container {
-            background: rgb(31,31,33);
+            background: #f8f8f8;
             padding: 10px 20px;
             border-radius: 50px;
-            box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25) inset;
+            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.08) inset;
         }
 
         .logo-container img {
@@ -215,7 +215,7 @@ if (date("H:i:s") > "18:19:59") {
         .nav-links div {
             font-size: 24px;
             font-weight: 700;
-            color: white;
+            color: #333333;
             cursor: pointer;
         }
 
@@ -241,13 +241,13 @@ if (date("H:i:s") > "18:19:59") {
             position: absolute;
             top: 150%;
             left: -10%;
-            background-color: rgb(31,31,33);
-            border: 1px solid rgb(31,31,33);
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            background-color: #ffffff;
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
             border-radius: 5px;
             min-width: 150px;
             padding: 10px;
-            color: white;
+            color: #333333;
         }
         .dropdown div {
             padding: 8px;
@@ -255,21 +255,21 @@ if (date("H:i:s") > "18:19:59") {
             transition: background 0.3s;
         }
         .dropdown div:hover {
-            background: rgba(0, 0, 0, 0.1);
+            background: rgba(0, 0, 0, 0.05);
         }
 
         .nav-item:hover, .nav-item.active {
-            color: #f5ce7aff;
+            color: #d4a855;
             outline: 1px solid #f5d07aff;
             outline-offset: 7px;
         }
 
         .date-box {
-            background: #2B2B2E;
+            background: #f0f0f0;
             padding: 10px 30px;
             border-radius: 50px;
-            box-shadow: -4px 4px 4px rgba(0, 0, 0, 0.25) inset;
-            color: white;
+            box-shadow: -2px 2px 4px rgba(0, 0, 0, 0.08) inset;
+            color: #333333;
             font-size: 24px;
             font-weight: 700;
             text-align: center;
@@ -295,9 +295,9 @@ if (date("H:i:s") > "18:19:59") {
 
 /* Button Styling */
 .nav-button {
-    background: rgb(201, 171, 129);
-    border: none;
-    color: white;
+    background: #e8e8e8;
+    border: 1px solid #d0d0d0;
+    color: #333333;
     font-size: 20px;
     font-family: 'Quicksand', sans-serif;
     font-weight: 600;
@@ -365,7 +365,7 @@ if (date("H:i:s") > "18:19:59") {
         /* Footer */
         .footer {
             width: 100%;
-            background: #C9AB81;
+            background: #fafafa;
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
@@ -392,13 +392,13 @@ if (date("H:i:s") > "18:19:59") {
         }
 
         .social-icons a {
-            color: white;
+            color: #333333;
             font-size: 20px;
             transition: color 0.3s ease;
         }
 
         .social-icons a:hover {
-            color: rgb(31,31,33);
+            color: #666666;
         }
 
         /* Right Section */
@@ -412,7 +412,7 @@ if (date("H:i:s") > "18:19:59") {
             display: flex;
             flex-direction: column;
             gap: 10px;
-            color: white;
+            color: #333333;
             font-family: Inter, sans-serif;
             font-size: 16px;
             font-weight: 500;
@@ -424,7 +424,7 @@ if (date("H:i:s") > "18:19:59") {
         }
 
         .footer a {
-            color: white;
+            color: #333333;
             text-decoration: none;
             transition: background 0.2s ease, color 0.2s ease;
             padding: 5px 10px;
@@ -432,8 +432,8 @@ if (date("H:i:s") > "18:19:59") {
         }
 
         .footer a:hover {
-            background: rgba(255, 255, 255, 0.1);
-            color: #dcdcdc;
+            background: rgba(0, 0, 0, 0.05);
+            color: #666666;
         }
 
         /* Icon Overlay */
@@ -447,7 +447,7 @@ if (date("H:i:s") > "18:19:59") {
             top: 40px; /* Adjust as needed */
             left: 50%;
             transform: translateX(-50%);
-            background: rgb(31,31,33); /* Optional background for better visibility */
+            background: #f5f5f5; /* Optional background for better visibility */
             padding: 10px;
             border-radius: 50%;
             display: flex;
@@ -507,7 +507,7 @@ if (date("H:i:s") > "18:19:59") {
     .font-change {
 	font-size: 30px;
 	font-family: Quicksand;
-    color: white;
+    color: #333333;
     }
 
         /* Accessibility menu styles */
@@ -531,7 +531,7 @@ if (date("H:i:s") > "18:19:59") {
             width: 100%;
             height: 100%;
             object-fit: contain;
-            filter: invert(1);
+            filter: none;
         }
 
         /* Modal */
@@ -546,8 +546,8 @@ if (date("H:i:s") > "18:19:59") {
             padding: 20px;
         }
         .accessibility-modal {
-            background: #1f1f21;
-            color: white;
+            background: #ffffff;
+            color: #333333;
             max-width: 520px;
             width: 100%;
             border-radius: 12px;
@@ -556,18 +556,18 @@ if (date("H:i:s") > "18:19:59") {
         }
         .accessibility-modal h3 { margin-bottom: 8px; }
         .modal-header { display:flex; justify-content:space-between; align-items:center; }
-        .nav-link { color: white; text-decoration: none; }
+        .nav-link { color: #333333; text-decoration: none; }
         .dropdown-link { color: inherit; text-decoration: none; display:block; }
-        .icon-img { filter: invert(1); }
-        .modal-close { background:transparent;border:none;color:white;font-size:30px;cursor:pointer; }
-        .modal-desc { color: rgba(255,255,255,0.7); }
+        .icon-img { filter: none; }
+        .modal-close { background:transparent;border:none;color:#333333;font-size:30px;cursor:pointer; }
+        .modal-desc { color: #666666; }
         .accessibility-row { display:flex; gap:12px; align-items:center; margin:10px 0; }
         .accessibility-row label { min-width: 120px; font-weight:600; }
         .accessibility-modal select, .accessibility-modal input[type="radio"]{ font-size:16px; }
         .accessibility-actions { display:flex; justify-content:flex-end; gap:8px; margin-top:16px; }
         .accessibility-actions button { padding:8px 12px; border-radius:8px; cursor:pointer; border:none; }
         .accessibility-actions .save { background:var(--wv-accent-color); color:var(--wv-accent-foreground); }
-        .accessibility-actions .reset { background:transparent; color:#fff; border:1px solid rgba(255,255,255,0.12); }
+        .accessibility-actions .reset { background:transparent; color:#333333; border:1px solid #d0d0d0; }
 
         /* Bigger base font sizes applied by class toggles via JS */
 
