@@ -221,7 +221,7 @@ a {
 }
 
 a:visited {
-    color: rgba(255,255,255,0.5);
+    color: #551A8B;
 }
 
 a:hover {
@@ -1513,9 +1513,9 @@ div .dd {
 }
 
 .event-sect {
-    border: 2px solid var(--inactive-font-color);
+    border: 2px solid var(--main-color);
     border-radius: 15px;
     margin: 1rem;
     padding: 1rem;
-    background-color: rgba(0,0,0,0.15);
+    background-color: var(--page-background-color);
 }
