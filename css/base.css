@@ -51,7 +51,7 @@ table, td, tr, th, form, fieldset, em, button, a {
     /* Light theme colors */
     /*Change variables to match Gwyneth's Gift color palette*/
     --page-background-color: #ffffff;
-    --page-font-color: #1a1a1a;
+    --page-font-color: var(--main-color);
     --inactive-font-color: #666666;
     --inactive-background-color: #fafafa;
     --standout-background: #f8f4ef;
@@ -94,7 +94,7 @@ table, td, tr, th, form, fieldset, em, button, a {
     --light-border: 1px solid var(--shadow-and-border-color);
     --text-field-border: 2px solid #e8e8e8;
 
-    --cancel-button-background-color: #aaa;
+    --cancel-button-background-color: var(--secondary-accent-color);
 
     --error-color: red;
 
@@ -221,7 +221,7 @@ a {
 }
 
 a:visited {
-    color: var(--secondary-accent-color);
+    color: rgba(255,255,255,0.5);
 }
 
 a:hover {
@@ -297,7 +297,7 @@ input[type=tel], select, textarea, .pseudo-input, .pseudo-input-disabled {
     margin-bottom: 0.5rem;
     scroll-margin: 7.5rem;
     box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
-    color: white;
+    color: var(--main-color);
 
 }
 
