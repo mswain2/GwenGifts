@@ -43,38 +43,51 @@ table, td, tr, th, form, fieldset, em, button, a {
 
 :root {
     /* CSS variables that will be used across the page */
-    --page-background-color: #1F1F21;
-    --page-font-color: #C9AB81; 
-    --inactive-font-color: #d0d0d0;
-    --inactive-background-color: #f0f0f0;
-    --standout-background: #fafafa;
+    --page-background-color: #ffffff;
+    --page-font-color: #1a1a1a;
+    --inactive-font-color: #666666;
+    --inactive-background-color: #fafafa;
+    --standout-background: #f8f4ef;
 
-    --happy-toast-background-color: #1a7024;
+
+    --happy-toast-background-color: var(--main-color);
     --happy-toast-font-color: white;
 
-    --info-toast-background-color: #2f2f2f;
+    --info-toast-background-color: var(--main-color);
     --info-toast-font-color: white;
 
     --error-toast-background-color: #701a1a;
     --error-toast-font-color: white;
 
+
     --shadow-and-border-color: #e8e8e8;
 
-    --main-color: #00aeef;
-    --accent-color: #39B54A;
+    --main-color: #2f4159; 
+
+    --accent-color: #f5c16e;
+ 
     --secondary-accent-color: #f6a4b5;
 
-    --calendar-event-color: #808080;
-    --calendar-event-color-hover: var(--main-color);
+    /* Accessibility / WV theme variables */
+    --wv-accent-color: #f5c16e; /* light gray */
+    --wv-accent-foreground: #f6a4b5;
+    --wv-bg-light: #ffffff;
+    --wv-text-dark: #111111;
+    --wv-muted-text: #6b6b6b;
+
+    --calendar-event-color: #999;
+    --calendar-event-color-hover: #4c4c4c;
     --calendar-today-border: 2px solid var(--secondary-accent-color);
 
-    --button-font-color: #c9ab81;
+    --button-font-color: rgb(255, 255, 255);
     --button-padding: 0.5rem 1.5rem;
     --button-border-radius: 0.25rem;
 
     --standard-border: 1px solid #333333;
     --light-border: 1px solid var(--shadow-and-border-color);
-    --text-field-border: 2px solid #3a3a3a;
+    --text-field-border: 2px solid #e8e8e8;
+
+    --cancel-button-background-color: #aaa;
 
     --error-color: red;
 
@@ -832,12 +845,12 @@ table.general th, table.general td {
 }
 
 .section-box {
-    border: 1px solid #3a3a3a !important;   
+    border: 1px solid var(--main-color) !important;   
     border-radius: 5px;
     padding: 15px;
     margin-bottom: 20px;
-    background-color: #1F1F21;
-    color: #C9AB81;    
+    background-color: white;
+    color: var(--secondary-accent-color);    
 }
 
 .section-box legend {

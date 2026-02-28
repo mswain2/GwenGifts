@@ -57,10 +57,10 @@ table, td, tr, th, form, fieldset, em, button, a {
     --standout-background: #f8f4ef;
 
 
-    --happy-toast-background-color: #1a7024;
+    --happy-toast-background-color: var(--main-color);
     --happy-toast-font-color: white;
 
-    --info-toast-background-color: #2f2f2f;
+    --info-toast-background-color: var(--main-color);
     --info-toast-font-color: white;
 
     --error-toast-background-color: #701a1a;
@@ -217,11 +217,11 @@ nav {
 }
 
 a {
-    color: white;
+    color: var(--main-color);
 }
 
 a:visited {
-    color: rgb(226, 226, 226);
+    color: var(--secondary-accent-color);
 }
 
 a:hover {
@@ -343,7 +343,7 @@ input[type="submit"].disabled-btn {
 } */
 
 label {
-    color: var(--accent-color);
+    color: var(--main-color);
     font-weight: 600;
     width: 100%;
     text-align: left;
@@ -925,7 +925,7 @@ form.signup-form em {
 }
 
 form.signup-form a {
-    color: var(--error-color);
+    color: white;
 }
 
 form.signup-form a:hover {
@@ -951,6 +951,7 @@ form.signup-form a:hover {
     align-items: flex-start;
     border-radius: calc(var(--button-border-radius) + 5px);
     background: var(--info-toast-background-color);
+    color: var(--info-toast-font-color);
     position: sticky;
     width: 100%;
     padding: 5px;
@@ -958,7 +959,7 @@ form.signup-form a:hover {
 
 .sidebar-item {
     display: flex;
-    color: var(--inactive-font-color);
+    color: var(--info-toast-font-color);
     align-items: flex-start;
     justify-content: left;
     border-radius: var(--button-border-radius);
@@ -969,7 +970,7 @@ form.signup-form a:hover {
 }
 
 .sidebar-item a {
-    color: var(--main-color);
+    color: var(--info-toast-font-color);
 }
 
 .sidebar-item:hover {
