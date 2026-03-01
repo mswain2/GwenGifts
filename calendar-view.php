@@ -92,7 +92,7 @@ if (date('m', strtotime($calendarEnd . ' +1 day')) != $monthEpoch) {
                                     $dayEvents = $events[$e];
                                     foreach ($dayEvents as $info) {
 
-                                        $backgroundCol = '#996d49ff'; // default color
+                                        $backgroundCol = 'var(--calendar-event-color)'; // default color
 
                                         if(isset($_SESSION['access_level'])) {
                                             if (is_archived($info['id'])) { // archived event

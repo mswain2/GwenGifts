@@ -58,7 +58,7 @@
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script src="js/calendar.js"></script>
         <script src="js/view-switcher.js" defer></script>
-        <title>Whiskey Valor Foundation | Events Calendar</title>
+        <title>Gwyneth's Gift | Events Calendar</title>
         <style>.happy-toast { margin: 0 1rem 1rem 1rem; }</style>
     </head>
     <body>
@@ -217,8 +217,7 @@
                                     $dayEvents = $events[$e];
                                     foreach ($dayEvents as $info) {
 
-                                        $backgroundCol = '#996d49ff'; // default color
-                                        $backgroundCol = '#996d49ff'; // default color
+                                        $backgroundCol = 'var(--calendar-event-color)'; // default color
 
                                         if(isset($_SESSION['access_level'])) {
                                             if (is_archived($info['id'])) { // archived event
