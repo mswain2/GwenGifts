@@ -83,7 +83,7 @@ table, td, tr, th, form, fieldset, em, button, a {
     --wv-muted-text: #6b6b6b;
 
     --calendar-event-color: #999;
-    --calendar-event-color-hover: #4c4c4c;
+    --calendar-event-color-hover: #777777;
     --calendar-today-border: 2px solid var(--secondary-accent-color);
 
     --button-font-color: rgb(255, 255, 255);
@@ -540,6 +540,7 @@ main.calendar-view th {
 .calendar-event:hover {
     /* filter: brightness(1.2); */
     background-color: var(--calendar-event-color-hover);
+    color: white;
 }
 
 .calendar-event {
