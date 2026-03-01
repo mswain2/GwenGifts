@@ -74,7 +74,7 @@
 <html>
     <head>
         <?php require_once('universal.inc') ?>
-        <title>Whiskey Valor | Change Password</title>
+        <title>Gwyneth's Gift | Change Password</title>
     </head>
     <body>
         <?php require_once('header.php') ?>
