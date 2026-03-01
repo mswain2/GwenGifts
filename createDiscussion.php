@@ -54,7 +54,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Create a New Discussion</title>
+    <title>Gwyneth's Gift | Create Discussion</title>
     <link rel="stylesheet" href="css/normal_tw.css">
     <?php require('header.php'); ?>
     <h1>Create a New Discussion</h1>

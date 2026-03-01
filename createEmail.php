@@ -263,56 +263,59 @@ if ($isAdmin && $_SERVER["REQUEST_METHOD"] === "POST") {
 <html>
 <head>
     <?php require_once('universal.inc'); ?>
-    <title>Whiskey Valor | Send Email</title>
+    <title>Gwyneth's Gift | Send Email</title>
     <link rel="stylesheet" href="css/base.css">
 </head>
 <body>
 <?php require_once('header.php'); ?>
+<h1>Create Email</h1>
 
 <?php if (!$isAdmin): ?>
     <div class='error-toast'>You do not have permission to view this page.</div>
 <?php else: ?>
 
+<main class="date">
 <?= $submissionMessage ?>
 
-<form method="POST">
-    <label for="subject">* Email Subject</label>
-    <input type="text" id="subject" name="subject" required>
+    <form method="POST">
+        <label for="subject">* Email Subject</label>
+        <input type="text" id="subject" name="subject" required>
 
-    <label for="content">Email Body</label>
-    <textarea id="content" name="content" rows="10"></textarea>
+        <label for="content">Email Body</label>
+        <textarea id="content" name="content" rows="10"></textarea>
 
-    <label for="scheduled">Send Now?</label>
-    <select name="scheduled" id="scheduled">
-        <option value="true">Yes</option>
-        <option value="false">No (Schedule)</option>
-    </select>
-
-    <div id="selectorTime" style="display:none;">
-        <label for="sendTime">Send Date</label>
-        <input type="date" id="sendTime" name="sendTime">
-    </div>
-
-    <label for="recipients">Recipients</label>
-    <select name="recipients" id="recipients">
-        <option value="all">All Whiskey Valor Members</option>
-        <option value="specific">Specific Users</option>
-    </select>
-
-    <div id="selectorRecipients" style="display:none;">
-        <label for="recipientID">Select Member</label>
-        <select id="recipientID" name="recipientID">
-            <option value="">-- Select a Member --</option>
-            <?php foreach ($allMembers as $m): ?>
-                <option value="<?= htmlspecialchars($m['value']) ?>"><?= htmlspecialchars($m['label']) ?></option>
-            <?php endforeach; ?>
+        <label for="scheduled">Send Now?</label>
+        <select name="scheduled" id="scheduled">
+            <option value="true">Yes</option>
+            <option value="false">No (Schedule)</option>
         </select>
-    </div>
 
-    <button type="submit" name="action" value="send" class="submit-btn">Create Email</button>
-    <button type="submit" name="action" value="draft" class="draft-btn">Save Draft</button>
+        <div id="selectorTime" style="display:none;">
+            <label for="sendTime">Send Date</label>
+            <input type="date" id="sendTime" name="sendTime">
+        </div>
 
-</form>
+        <label for="recipients">Recipients</label>
+        <select name="recipients" id="recipients">
+            <option value="all">All Whiskey Valor Members</option>
+            <option value="specific">Specific Users</option>
+        </select>
+
+        <div id="selectorRecipients" style="display:none;">
+            <label for="recipientID">Select Member</label>
+            <select id="recipientID" name="recipientID">
+                <option value="">-- Select a Member --</option>
+                <?php foreach ($allMembers as $m): ?>
+                    <option value="<?= htmlspecialchars($m['value']) ?>"><?= htmlspecialchars($m['label']) ?></option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+
+        <button type="submit" name="action" value="send" class="submit-btn">Create Email</button>
+        <button type="submit" name="action" value="draft" class="draft-btn">Save Draft</button>
+
+    </form>
+</main>
 
 <script>
 const scheduledSelect = document.getElementById('scheduled');
