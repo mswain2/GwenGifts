@@ -57,6 +57,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <title>Create a New Discussion</title>
     <link rel="stylesheet" href="css/normal_tw.css">
     <?php require('header.php'); ?>
+    <h1>Create a New Discussion</h1>
     <style>
         .main-content-box {
             background: #ffffff;
@@ -96,19 +97,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         .btn-submit {
-            background-color: #4CAF50;
+            background-color: var(--main-color);
         }
 
         .btn-submit:hover {
-            background-color: #45a049;
+            background-color: var(--accent-color);
         }
 
         .btn-back {
-            background-color: #6c757d;
+            background-color: var(--secondary-accent-color);
         }
 
         .btn-back:hover {
-            background-color: #5a6268;
+            background-color: var(--accent-color);
         }
 
         .success {
@@ -124,11 +125,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </head>
 <body>
 
-<header class="hero-header">
-    <div class="center-header">
-        <h1>Create a New Discussion</h1>
-    </div>
-</header>
 
 <main>
     <div class="main-content-box">

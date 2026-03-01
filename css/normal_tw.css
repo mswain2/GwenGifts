@@ -919,9 +919,9 @@
   h1 {
     background-color: var(--main-color);
     width: 100%;
-    padding: 1rem;
+    padding: 1rem !important;
     text-align: center;
-    margin-bottom: 2rem;
+    margin-bottom: 2rem !important;
     font-size: 1.5rem;
     
     font-family: 'Nunito';
@@ -999,7 +999,7 @@
     line-height: var(--tw-leading, var(--text-lg--line-height));
     --tw-font-weight: var(--font-weight-semibold);
     font-weight: var(--font-weight-semibold);
-    color: var(--color-blue-900);
+    color: var(--main-color);
   }
   input:not([type="radio"]), select {
     margin-bottom: calc(var(--spacing) * 2);
