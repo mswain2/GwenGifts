@@ -56,7 +56,7 @@ $nextWeek = strtotime(date('Y-m-d', $dayEpoch) . ' +7 days');
     $eventsStr = '';
     if (!empty($dayEvents)) {
         foreach ($dayEvents as $info) {
-            $backgroundCol = '#999'; // default color
+            $backgroundCol = 'var(--calendar-event-color)'; // default color
 
             if (isset($_SESSION['access_level'])) {
                 // Logged-in user logic
@@ -69,7 +69,7 @@ $nextWeek = strtotime(date('Y-m-d', $dayEpoch) . ' +7 days');
                     $backgroundCol = '#4CAF50';
                 }
 
-                $eventsStr .= '<a class="calendar-event" href="event.php?id=' . $info['id'] . '&user_id=' . $_SESSION['_id'] . '">' . htmlspecialchars_decode($info['name']) . '</a>';
+                $eventsStr .= '<a class="calendar-event" style="background-color: ' . $backgroundCol . '" href="event.php?id=' . $info['id'] . '&user_id=' . $_SESSION['_id'] . '">' . htmlspecialchars_decode($info['name']) . '</a>';
             } else {
                 // Guest logic
                 if (is_archived($info['id'])) {
