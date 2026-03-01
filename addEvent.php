@@ -281,7 +281,7 @@
                     
                 </div>
                 
-                <input type="submit" value="Create Event" style="width:100%;">
+                <input type="submit" value="Create Event">
                 
             </form>
                 <script>

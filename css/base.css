@@ -221,7 +221,7 @@ a {
 }
 
 a:visited {
-    color: #551A8B;
+    color: #d698a5;
 }
 
 a:hover {
@@ -319,7 +319,7 @@ input[type=submit], button, .button, a.button-signup {
     border: 3px solid rgba(255, 255, 255, 0.295);
     border-radius: var(--button-border-radius);
     font-weight: 500;
-    width: 94%;
+    width: 100%;
     transition: background-color .3s;
     cursor: pointer;
     text-align: center;
@@ -736,7 +736,7 @@ img.filter-button {
 }
 
 button.cancel, a.cancel {
-    background-color: var(--main-color);
+    background-color: var(--cancel-button-background-color);
     color: white;
 }
 
