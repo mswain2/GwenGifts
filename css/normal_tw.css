@@ -405,6 +405,9 @@
   .w-\[80\%\] {
     width: 80%;
   }
+  .w-\[50\%\]{
+    width: 50%;
+  }
   .w-\[80px\] {
     width: 80px;
   }
@@ -1109,7 +1112,7 @@
     margin-top: calc(var(--spacing) * 1);
     --tw-font-weight: var(--font-weight-semibold);
     font-weight: var(--font-weight-semibold);
-    color: var(--color-blue-700);
+    color: var(--main-color);
   }
   .error-block {
     margin-bottom: calc(var(--spacing) * 2);
@@ -1429,7 +1432,7 @@
             padding: 2rem;
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
             margin: 2rem auto;
-            width: 50%;
+            
         }
         label {
             display: block;

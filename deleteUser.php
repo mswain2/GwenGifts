@@ -49,8 +49,8 @@ $loggedIn = false;
         <nav>
             <span id="nav-top">
                 <span class="logo">
-                    <img src="images/whiskeyLogo.png">
-                        <span id="vms-logo"> Whiskey Valor User </span>
+                    <img src="images/cropped-logo.png">
+                        <span id="vms-logo"> Gwyneth's Gift User </span>
                         </span>
                     <img id="menu-toggle" src="images/menu.png">
                 </span>
