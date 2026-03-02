@@ -315,6 +315,8 @@ if ($isAdmin && $_SERVER["REQUEST_METHOD"] === "POST") {
         <button type="submit" name="action" value="draft" class="draft-btn">Save Draft</button>
 
     </form>
+
+    <a class="button cancel" href="index.php">Return to Dashboard</a>
 </main>
 
 <script>
