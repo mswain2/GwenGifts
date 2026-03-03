@@ -130,6 +130,12 @@ img.profile-pic { width: 4rem; height: 4rem; object-fit: cover; border-radius: 4
 /* Keep page defaults consistent */
 html, body { background-color: var(--page-background-color); color: var(--page-font-color); }
 
+.edit-icon:hover, .delete-icon:hover {
+  color: var(--accent-color);
+}
 
+a:visited {
+  color: var(--main-color);
+}
 
 
