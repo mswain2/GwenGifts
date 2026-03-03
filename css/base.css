@@ -536,17 +536,14 @@ main.calendar-view th {
     padding: 0.25rem 0.5rem;
     text-decoration: none;
     transition: background-color .2s;
+    background-color: var(--calendar-event-color);
+    /* color: var(--button-font-color); */
+    color: white;
 }
 
 .calendar-event:hover {
     /* filter: brightness(1.2); */
     background-color: var(--calendar-event-color-hover);
-    color: white;
-}
-
-.calendar-event {
-    background-color: var(--calendar-event-color);
-    /* color: var(--button-font-color); */
     color: white;
 }
 
