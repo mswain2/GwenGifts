@@ -53,12 +53,13 @@
 <html>
     <head>
         <?php require_once('universal.inc') ?>
-        <title>Logging Attendance for <?php echo $event_name; ?> | Whiskey Valor Foundation</title>
+        <title>Gwyneth's Gift | Log Attendance</title>
     </head>
     <body>
         <?php require_once('header.php') ?>
+        <h1 style="color: white;">Logging Attendance for <?php echo $event_name; ?></h1>
+        
         <main>
-            <h1 style="color: white;">Logging Attendance for <?php echo $event_name; ?></h1>
             <div class="attendees-wrapper">
             <form method="POST" id="attendance-form" action="processAttendees.php">
                 <div class="attendees-table-wrapper">

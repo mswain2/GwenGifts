@@ -326,8 +326,9 @@ input[type=submit], button, .button, a.button-signup {
     margin: 10px 0px;
 }
 
-input[type=submit]:hover, button:hover, .button:hover, a.button-signup:hover {
+input[type=submit]:hover, button:hover, .button:hover, a.button-signup:hover{
     background-color: var(--accent-color);
+    color: white;
 }
 
 /* Disabled submit/button appearance for attendance logging */
@@ -1408,11 +1409,12 @@ a.event-link:hover {
 
 /* used for logAttendees.php */
 .attendees-wrapper {
-    background-color: rgba(0, 0, 0, .25);
+    background-color: white;
+    border: 2px solid var(--main-color);
     margin: auto;
     padding: 1.5rem;
     border-radius: 15px;
-    max-width: 75%;
+    max-width: 90%;
     align-content: center;
 }
 
@@ -1465,6 +1467,12 @@ SPAN.td#data {
 button#log {
     width: 100%;
     margin-top: 1rem;
+    color: white;
+    background-color: var(--main-color);
+}
+
+button#log:hover {
+    background-color: var(--accent-color);
 }
 
 SPAN.td input[type=checkbox] {
@@ -1518,3 +1526,4 @@ div .dd {
     padding: 1rem;
     background-color: var(--page-background-color);
 }
+
