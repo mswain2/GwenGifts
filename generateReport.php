@@ -23,7 +23,7 @@ $fiscalYearEnd = $fiscalYearStart + 1;
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Whiskey Valor | Attendance Reports</title>
+    <title>Gwyneth's Gift | Generate Reports</title>
     <!--<script src="js/data-filters.js" defer></script>-->
     <link href="css/base.css" rel="stylesheet">
     <?php require_once('header.php'); ?>
@@ -119,7 +119,7 @@ $fiscalYearEnd = $fiscalYearStart + 1;
         <!-- Return Button -->
         </div>
         <div style="text-align: center; margin-top: 2rem;">
-            <a href="index.php" class="button" style="display: inline-block; text-decoration: none; width: 41%;">Return to Dashboard</a>
+            <a href="index.php" class="button cancel" style="width: 60%;">Return to Dashboard</a>
         </div>
 
     </main>

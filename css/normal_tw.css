@@ -1079,6 +1079,20 @@
       }
     }
   }
+
+  .submit-button {
+    cursor: pointer;
+    border-radius: var(--radius-lg);
+    background-color:var(--main-color); 
+    padding-inline: calc(var(--spacing) * 6);
+    padding-block: calc(var(--spacing) * 2);
+    color: var(--color-white);
+    &:hover {
+      @media (hover: hover) {
+        background-color: var(--accent-color);
+      }
+    }
+  }
   .return-button {
     border-radius: var(--radius-lg);
     background-color: var(--secondary-accent-color);
