@@ -225,7 +225,7 @@ a:visited {
 }
 
 a:hover {
-    color: hsl(from var(--accent-color) h s calc(l+.2));
+    color: var(--accent-color);
 }
 
 #vms-logo {
