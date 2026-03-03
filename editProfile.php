@@ -183,7 +183,7 @@
 <html>
 <head>
     <?php require_once('universal.inc'); ?>
-    <title>Whiskey Valor | Edit Profile</title>
+    <title>Gwyneth's Gift | Edit Profile</title>
     <link src="css/base.css" rel="stylesheet">
 </head>
 <body>

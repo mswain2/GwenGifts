@@ -1,3 +1,4 @@
+<!--Looks like a combo of viewDrafts.php and EditDrafts.php - Kenzie-->
 <?php
 session_start();
 include_once('database/dbinfo.php');
