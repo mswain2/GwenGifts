@@ -2,11 +2,8 @@
 <script src="https://nosir.github.io/cleave.js/dist/cleave.min.js"></script>
 <script src="https://nosir.github.io/cleave.js/dist/cleave-phone.i18n.js"></script>
 <!-- Hero Section with Title -->
-<header class="hero-header"> 
-    <div class="center-header">
-        <h1>Account Registration</h1>
-    </div>
-</header>
+<?php require_once('header.php') ?>
+<h1>Account Registration</h1>
 
 <main>
   <div class="main-content-box">
