@@ -742,6 +742,7 @@ button.cancel, a.cancel {
 
 button.cancel:hover, a.cancel:hover {
     background-color: var(--accent-color);
+    color: white;
 }
 
 #calendar-heading-month {
@@ -814,14 +815,6 @@ main.dashboard > p {
     }
 }
 
-/* Sign up form */
-
-@media only screen and (min-width: 1024px) {
-    main.signup-form {
-        margin: 0rem 8rem 4rem 8rem;
-    }
-}
-
 form.signup-form {
     display: flex;
     gap: 1rem;
@@ -876,6 +869,7 @@ form.signup-form em {
     width: 100%;
     max-width: 48rem;
     padding: 2rem;
+    float: right;
     margin-bottom: 2rem;
     margin-left: auto;
     margin-right: auto;
@@ -929,7 +923,8 @@ form.signup-form a {
 }
 
 form.signup-form a:hover {
-    color: var(--error-toast-background-color);
+    color: var(--accent-color);
+    color: white;
 }
 /* end normal_tw conversion ~Blue*/
 
@@ -939,6 +934,7 @@ form.signup-form a:hover {
     top: 8rem;
     height:300px;
     width: 250px;
+    margin-left: 60px;
     border-radius: var(--button-border-radius);
 }
 

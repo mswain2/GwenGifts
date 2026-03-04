@@ -1,3 +1,6 @@
+@import url('css/base.css');
+
+
 body {
             font-family: Nunito, Quicksand, sans-serif;
             padding-top: 96px;
@@ -260,11 +263,12 @@ body {
     .icon-butt svg {
         transition: transform 0.2s ease, fill 0.2s ease;
         cursor: pointer;
+        fill: var(--main-color);
     }
 
     .icon-butt:hover svg {
         transform: scale(1.1) rotate(5deg); /* Slight enlarge & tilt effect */
-        fill: #7aacf5; /* Changes to a blue shade */
+        fill: var(--accent-color); /* Changes to a blue shade */
     }
 
     .font-change {
