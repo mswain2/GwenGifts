@@ -56,87 +56,6 @@ body {
             gap: 20px;
         }
 
-        .content-box {
-            flex: 1 1 280px; /* Adjusts width dynamically */
-            max-width: 375px;
-            padding: 10px 2px; /* Altered padding to make closer */
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            position: relative;
-        }
-
-        .content-box-sub {
-            flex: 1 1 300px; /* Adjusts width dynamically */
-            max-width: 470px;
-            padding: 10px 10px; /* Altered padding to make closer */
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            position: relative;
-        }
-
-        .content-box img {
-            width: 100%;
-            height: auto;
-            background: white;
-            border-radius: 5px;
-            border-bottom-right-radius: 50px;
-            border: 0.5px solid #828282;
-        }
-
-        .content-box-sub img {
-            width: 105%;
-            height: auto;
-            background: white;
-            border-radius: 5px;
-            border-bottom-right-radius: 50px;
-            border: 1px solid #828282;
-        }
-
-        .small-text {
-            position: absolute;
-            top: 20px;
-            left: 30px;
-            font-size: 14px;
-            font-weight: 700;
-            color: #297760ff;
-        }
-
-        .large-text {
-            position: absolute;
-            top: 40px;
-            left: 30px;
-            font-size: 22px;
-            font-weight: 700;
-            color: black;
-            max-width: 90%;
-        }
-
-        .large-text-sub {
-            position: absolute;
-            /*top: 120px;*/
-            top: 60%;
-            left: 10%;
-            font-size: 22px;
-            font-weight: 700;
-            color: black;
-            max-width: 90%;
-        }
-
-        .graph-text {
-            position: absolute;
-            top: 75%;
-            left: 10%;
-            font-size: 14px;
-            font-weight: 700;
-            color: #712977ff;
-            max-width: 90%;
-            margin-bottom: 80px;
-        }
-
         /* Navbar Container */
         .navbar {
 	    gap: 10px;
@@ -300,132 +219,10 @@ body {
     transform: translateX(0);
 }
 
-.nav-button .arrow {
-    display: inline-block;
-    transition: transform 0.3s ease;
-}
-
-.nav-button:hover .arrow {
-    transform: translateX(5px);
-}
-       /* Button Control */
-        .arrow-button {
-            position: absolute;
-            bottom: 24px;
-            right: 16px;
-            background: transparent;
-            border: none;
-            font-size: 23px;
-            font-weight: bold;
-            color: black;
-            cursor: pointer;
-            transition: transform 0.3s ease;
-            padding: 0;
-        }
-
-        .arrow-button:hover {
-            transform: translateX(5px); /* Moves the arrow slightly on hover */
-            background: transparent;
-        }
-
-        /* Footer */
-        .footer {
-            width: 100%;
-            background: #fafafa;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            padding: 30px 50px;
-            flex-wrap: wrap;
-        }
-
-        /* Left Section */
-        .footer-left {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .footer-logo {
-            width: 150px; /* Adjust logo size */
-            margin-bottom: 15px;
-        }
-
-        /* Social Media Icons */
-        .social-icons {
-            display: flex;
-            gap: 15px;
-        }
-
-        .social-icons a {
-            color: #333333;
-            font-size: 20px;
-            transition: color 0.3s ease;
-        }
-
-        .social-icons a:hover {
-            color: #666666;
-        }
-
-        /* Right Section */
-        .footer-right {
-            display: flex;
-            gap: 50px;
-            flex-wrap: wrap;
-        }
-
-        .footer-section {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            color: #333333;
-            font-family: Inter, sans-serif;
-            font-size: 16px;
-            font-weight: 500;
-        }
-
-        .footer-topic {
-            font-size: 18px;
-            font-weight: bold;
-        }
-
-        .footer a {
-            color: #333333;
-            text-decoration: none;
-            transition: background 0.2s ease, color 0.2s ease;
-            padding: 5px 10px;
-            border-radius: 5px;
-        }
-
-        .footer a:hover {
-            background: rgba(0, 0, 0, 0.05);
-            color: #666666;
-        }
-
         /* Icon Overlay */
         .background-image {
             width: 100%;
             border-radius: 17px;
-        }
-
-        .icon-overlay {
-            position: absolute;
-            top: 40px; /* Adjust as needed */
-            left: 50%;
-            transform: translateX(-50%);
-            background: #f5f5f5; /* Optional background for better visibility */
-            padding: 10px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .icon-overlay img {
-            width: 40px; /* Adjust size as needed */
-            height: 40px;
-            opacity: 0.9;
-            filter: invert(1);
         }
 
         .nav-item img {
@@ -546,20 +343,6 @@ body {
 	    }
 	}
 
-        @media (max-width: 900px) {
-           .footer {
-                flex-direction: column;
-                align-items: center;
-                text-align: center;
-            }
-            .footer-right {
-                flex-direction: column;
-                align-items: center;
-                gap: 30px;
-                margin-top: 20px;
-            }
-
-        }
 
         .nav-links a:visited {
             color: var(--main-color);
