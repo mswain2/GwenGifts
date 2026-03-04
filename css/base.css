@@ -1901,3 +1901,25 @@ div .dd {
     text-align: center;
     position: relative;
 }
+
+.modUser{
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+    padding: 0 0 4rem 0;
+}
+main.user-role {
+    gap: 1rem;
+    display: flex;
+    flex-direction: column;
+}
+@media only screen and (min-width: 1024px) {
+    .modUser {
+        width: 100%;
+    }
+    main.user-role {
+        /* align-items: center; */
+        margin: 0rem 16rem;
+        /* width: 50rem; */
+    }
+}
