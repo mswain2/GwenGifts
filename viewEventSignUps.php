@@ -54,7 +54,7 @@ $access_level = $_SESSION['access_level'];
 <head>
     <?php require_once('universal.inc'); ?>
     <link rel="stylesheet" href="css/event.css" type="text/css" />
-    <title>View Event Details | <?php echo htmlspecialchars($event_info['name']); ?></title>
+    <title>Gwyneth's Gift | View Event Sign-Ups></title>
     <link rel="stylesheet" href="css/messages.css" />
     <script>
         function showResolutionConfirmation() {

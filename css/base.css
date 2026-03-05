@@ -220,9 +220,11 @@ a {
     color: var(--main-color);
 }
 
-a:visited {
+/*Kenzie commented this out because there are so many instances where this 
+  makes things kind of weird. This can be reworked if we want this functionality.*/
+/*a:visited {
     color: var(--secondary-accent-color);
-}
+}*/
 
 a:hover {
     color: var(--accent-color);
@@ -378,8 +380,8 @@ main.login > p {
 }
 
 h1 {
-    font-size: 1.5rem;
-    font-weight: 500;
+    font-size: 1.5rem !important;
+    font-weight: 500 !important;
     margin-bottom: 2rem;
 
     background-color: var(--main-color);
@@ -1917,4 +1919,66 @@ main.user-role {
         margin: 0rem 16rem;
         /* width: 50rem; */
     }
+}
+
+.drafts-container {
+    margin: 2rem auto;
+    width: 90%;
+    max-width: 1000px;
+    font-family: Arial, sans-serif;
+}
+
+.drafts-table {
+    width: 100%;
+    border-collapse: collapse;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.drafts-table th, .drafts-table td {
+    padding: 12px 15px;
+    text-align: left;
+}
+
+.drafts-table th {
+    background-color: var(--main-color);
+    color: white;
+    font-weight: 600;
+}
+
+.actions a {
+    text-decoration: none;
+    padding: 5px 12px;
+    margin-right: 5px;
+    border-radius: 5px;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+}
+
+.actions .btn-edit {
+    background-color: var(--main-color);
+    color: white;
+}
+
+.actions .btn-edit:hover {
+    background-color: var(--accent-color);
+}
+
+.actions .btn-delete {
+    background-color: var(--secondary-accent-color);
+    color: white;
+}
+
+.actions .btn-delete:hover {
+    background-color: var(--accent-color);
+}
+
+.actions .btn-send {
+    background-color: var(--main-color);
+    color: white;
+}
+
+.actions .btn-send:hover {
+    background-color: var(--accent-color);
 }
