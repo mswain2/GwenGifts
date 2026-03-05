@@ -23,108 +23,21 @@ $discussions = get_all_discussions();
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <title>Gwyneth's Gift | View Discussions</title>
   	<link href="css/normal_tw.css" rel="stylesheet">
 
-<!-- BANDAID FIX FOR HEADER BEING WEIRD -->
 <?php
 $tailwind_mode = true;
 require_once('header.php');
 ?>
-<style>
-        .date-box {
-            background: #f0f0f0;
-            padding: 7px 30px;
-            border-radius: 50px;
-            box-shadow: -2px 2px 4px rgba(0, 0, 0, 0.08) inset;
-            color: #333333;
-            font-size: 24px;
-            font-weight: 700;
-            text-align: center;
-        }   
-        .dropdown {
-            padding-right: 50px;
-        }   
+<h1>View Discussions</h1>
 
-</style>
-<!-- BANDAID END, REMOVE ONCE SOME GENIUS FIXES -->
-    <style>
-
-        .btn-edit {
-            padding: 5px 10px;
-            margin: 0 5px;
-            text-decoration: none;
-            color: white;
-            border-radius: 3px;
-            background-color: #4CAF50;
-        }
-        .btn-delete {
-            background-color: #f44336;
-            padding: 5px 10px;
-            margin: 0 5px;
-            text-decoration: none;
-            color: white;
-            border-radius: 3px;
-        }
-        .btn-edit:hover {
-            background-color: #45a049;
-        }
-        .btn-delete:hover {
-            background-color: #e53935;
-        }
-        #bulk-actions {
-            margin: 10px 0;
-        }
-        #bulk-actions button {
-            margin-left: 10px;
-        }
-        .top-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        body,main {
-            background-color: #ffffff;
-        }
-
-        .main-content-box table,
-        .main-content-box table thead,
-        .main-content-box table tbody,
-        .main-content-box table tr,
-        .main-content-box table th,
-        .main-content-box table td {
-        background-color: #f8f8f8 !important; 
-        }
-
-
-        .main-content-box table th,
-        .main-content-box table td {
-        color: #333333 !important;
-        }
-
-
-        .info-section .info-text {
-        color: #333333;
-        }
-
-        .blue-div {
-        background-color: #f8f8f8;
-        }
-
-
-    </style>
 </head>
 <body>
-<header class="hero-header">
-    <div class="center-header">
-        <h1>View Discussions</h1>
-    </div>
-</header>
-
+        
     <main>
 
-      <div class="main-content-box w-[80%] p-8">
+      <div class="main-content-box w-[90%] p-8">
         <?php if (isset($error)) echo "<p style='color: red;'>$error</p>"; ?>
 
         <div class="top-bar">
@@ -179,7 +92,7 @@ require_once('header.php');
                                     <form action="deleteDiscussion.php" method="POST" style="display:inline;">
                                         <input type="hidden" name="author_id" value="<?php echo htmlspecialchars($person->get_id()); ?>">
                                         <input type="hidden" name="title" value="<?php echo htmlspecialchars($discussion['title']); ?>">
-                                        <button type="submit" class="delete-button" style="width: 40%;" onclick="return confirm('Are you sure you want to delete this discussion?');">Delete</button>
+                                        <button type="submit" class="delete-button" onclick="return confirm('Are you sure you want to delete this discussion?');">Delete</button>
                                     </form>
                                 <?php endif; ?>
                             </td>

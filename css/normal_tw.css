@@ -405,6 +405,9 @@
   .w-\[80\%\] {
     width: 80%;
   }
+  .w-\[90\%\] {
+    width: 90%;
+  }
   .w-\[50\%\]{
     width: 50%;
   }
@@ -1053,7 +1056,7 @@
   .delete-button {
     cursor: pointer;
     border-radius: var(--radius-lg);
-    background-color: var(--color-red-600);
+    background-color: var(--secondary-accent-color);
     padding-inline: calc(var(--spacing) * 4);
     padding-block: calc(var(--spacing) * 2);
     --tw-font-weight: var(--font-weight-semibold);
@@ -1061,20 +1064,20 @@
     color: #1F1F21;         
     &:hover {
       @media (hover: hover) {
-        background-color: var(--color-red-700);
+        background-color: var(--accent-color);
       }
     }
   }
   .blue-button {
     cursor: pointer;
     border-radius: var(--radius-lg);
-    background-color:#C9AB81; 
+    background-color:var(--main-color); 
     padding-inline: calc(var(--spacing) * 6);
     padding-block: calc(var(--spacing) * 2);
     color: var(--color-white);
     &:hover {
       @media (hover: hover) {
-        background-color: var(--color-blue-700);
+        background-color: var(--accent-color);
       }
     }
   }
@@ -1514,4 +1517,10 @@
 
         .checkin {
           margin: 10px;
+        }
+
+        .top-bar {
+          margin-bottom: 10px;
+          display: flex;
+          justify-content: space-between;
         }
