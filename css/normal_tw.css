@@ -915,21 +915,20 @@
 @layer base {
   body {
     display: flex;
-    min-height: 100vh;
+    min-height: 120vh;
     flex-direction: column;
     background-color: var(--color-white);
   }
   h1 {
     background-color: var(--main-color);
     width: 100%;
-    padding: 1rem !important;
+    padding: 1rem;
     text-align: center;
-    margin-bottom: 2rem !important;
+    margin-bottom: 2rem;
     font-size: 1.5rem;
-    
+    font-weight: 500;
     font-family: 'Nunito';
     color: var(--color-white);
-   
   }
   table {
     width: 100%;
@@ -1511,4 +1510,8 @@
         input::placeholder,
         textarea::placeholder {
         color: black !important;
+        }
+
+        .checkin {
+          margin: 10px;
         }

@@ -232,10 +232,6 @@ body {
             border-radius: 15px;
             transition: filter 0.3s, background-color 0.3s;
         }
-
-        .nav-item:hover img, .nav-item.active img {
-            filter: none;
-        }
        
         .icon .dropdown{
             top: 130%;
@@ -256,7 +252,7 @@ body {
             height: 40px;
             border-radius: 5px;
             border-bottom-right-radius: 20px;
-            filter: invert(1) !important;
+            filter: invert(32%) sepia(12%) saturate(600%) hue-rotate(185deg) brightness(92%) contrast(88%);
         }
 
 /* for calendar */
@@ -333,7 +329,7 @@ body {
         .accessibility-modal select, .accessibility-modal input[type="radio"]{ font-size:16px; }
         .accessibility-actions { display:flex; justify-content:flex-end; gap:8px; margin-top:16px; }
         .accessibility-actions button { padding:8px 12px; border-radius:8px; cursor:pointer; border:none; }
-        .accessibility-actions .save { background:var(--wv-accent-color); color:var(--wv-accent-foreground); }
+        .accessibility-actions .save { background:var(--main-color); color:var(white); }
         .accessibility-actions .reset { background:transparent; color:#333333; border:1px solid #d0d0d0; }
 
         /* Bigger base font sizes applied by class toggles via JS */
