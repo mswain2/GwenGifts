@@ -200,6 +200,16 @@
         <button class="arrow-button">→</button>
     </div>
 
+    <div class="content-box-test" onclick="window.location.href='resources.php'">
+        <div class="icon-overlay">
+            <img style="border-radius: 5px;" src="images/file-regular.svg" alt="Document Icon">
+        </div>
+       
+        <div class="large-text-sub">View Documents </div>
+        <div class="graph-text">View Board Documents</div>
+        <button class="arrow-button">→</button>
+    </div>
+
     <!-- Create Email -->
     <div class="content-box-test" onclick="window.location.href='createEmail.php'">
         <div class="icon-overlay">

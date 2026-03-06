@@ -920,12 +920,11 @@ form.signup-form em {
 }
 
 form.signup-form a {
-    color: white;
+    color: var(--secondary-accent-color);
 }
 
 form.signup-form a:hover {
     color: var(--accent-color);
-    color: white;
 }
 /* end normal_tw conversion ~Blue*/
 
