@@ -205,6 +205,7 @@ function get_username_by_reply_id($reply_id) {
         }
         .back-btn:hover {
             background-color: var(--accent-color);
+            color: white;
         }
     </style>
     <script>
@@ -228,6 +229,7 @@ function get_username_by_reply_id($reply_id) {
 </head>
 <body>
     <?php require('header.php'); ?>
+    <h1>View Discussion</h1>
     
     <div class="discussion-content">
         <div class="author-info">

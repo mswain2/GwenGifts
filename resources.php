@@ -46,7 +46,7 @@ $pdfFiles = listPDFFiles($target_dir);
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Gwyneth's Gift | Manage Volunteer Documents</title>
+    <title>Gwyneth's Gift | Manage Documents</title>
   <link href="css/normal_tw.css" rel="stylesheet">
 
 <!-- BANDAID FIX FOR HEADER BEING WEIRD -->
@@ -54,7 +54,7 @@ $pdfFiles = listPDFFiles($target_dir);
 $tailwind_mode = true;
 require_once('header.php');
 ?>
-<h1>Manage Volunteer Documents</h1>
+<h1>Manage Documents</h1>
 </head>
 
 <body>

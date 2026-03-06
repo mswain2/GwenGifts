@@ -1428,7 +1428,7 @@ DIV.thead {
     flex-direction: row;
     justify-content: space-evenly;
     font-weight: bold;
-    min-width: 100%;
+   
     align-items: center;
 }
 
@@ -1437,7 +1437,7 @@ DIV.tbody {
     flex-direction: row;
     justify-content: space-evenly;
     flex-wrap: wrap;
-    max-width: 100%;
+    
     align-items: center;
 }
 
@@ -1449,7 +1449,7 @@ DIV.tr {
 
 SPAN.td {
     display: table-cell;
-    min-width: 9rem;
+    min-width: 7rem;
 }
 
 .tbody SPAN.td {
@@ -1457,7 +1457,7 @@ SPAN.td {
 }
 
 SPAN.td#data {
-    min-width: 21rem;
+    min-width: 15rem;
 }
 
 button#log {

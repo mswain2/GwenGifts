@@ -187,10 +187,12 @@
     <link src="css/base.css" rel="stylesheet">
 </head>
 <body>
+    <h1>Edit Profile</h1>
     <?php
         require_once('header.php');
         $isAdmin = $_SESSION['access_level'] >= 2;
         require_once('profileEditForm.php');
     ?>
+    
 </body>
 </html>
