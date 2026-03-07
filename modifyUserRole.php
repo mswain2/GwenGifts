@@ -90,30 +90,11 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <link href="./css/base.css" rel="stylesheet">
         <?php require_once('universal.inc') ?>
-        <title>Whiskey Valor | Archive User</title>
+        <title>Gwyneth's Gift | Archive User</title>
         <style>
-            .modUser{
-                display: flex;
-                flex-direction: column;
-                gap: .5rem;
-                padding: 0 0 4rem 0;
-            }
-            main.user-role {
-                gap: 1rem;
-                display: flex;
-                flex-direction: column;
-            }
-            @media only screen and (min-width: 1024px) {
-                .modUser {
-                    width: 100%;
-                }
-                main.user-role {
-                    /* align-items: center; */
-                    margin: 0rem 16rem;
-                    /* width: 50rem; */
-                }
-            }
+            
         </style>
     </head>
     <body>

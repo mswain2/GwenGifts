@@ -6,29 +6,14 @@
 <html>
 <head>
     <?php require_once('database/dbMessages.php'); ?>
-    <title>Whiskey Valor Foundation | Register</title>
+    <title>Gwyneth's Gift | Register</title>
     <link href="css/base.css" rel="stylesheet">
-<!-- BANDAID FIX FOR HEADER BEING WEIRD -->
+
 <?php
 $tailwind_mode = true;
 require_once('header.php');
 ?>
-<style>
-    .date-box {
-        background: #C9AB81;
-        padding: 7px 30px;
-        border-radius: 50px;
-        box-shadow: -4px 4px 4px rgba(0, 0, 0, 0.25) inset;
-        color: white;
-        font-size: 24px;
-        font-weight: 700;
-        text-align: center;
-    }
-    .dropdown {
-        padding-right: 50px;
-    }
-</style>
-<!-- BANDAID END, REMOVE ONCE SOME GENIUS FIXES -->
+
 </head>
 <body class="relative">
 <?php

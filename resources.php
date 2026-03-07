@@ -46,7 +46,7 @@ $pdfFiles = listPDFFiles($target_dir);
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Manage Volunteer Documents</title>
+    <title>Gwyneth's Gift | Manage Documents</title>
   <link href="css/normal_tw.css" rel="stylesheet">
 
 <!-- BANDAID FIX FOR HEADER BEING WEIRD -->
@@ -54,65 +54,10 @@ $pdfFiles = listPDFFiles($target_dir);
 $tailwind_mode = true;
 require_once('header.php');
 ?>
-<style>
-        .date-box {
-            background: #274471;
-            padding: 7px 30px;
-            border-radius: 50px;
-            box-shadow: -4px 4px 4px rgba(0, 0, 0, 0.25) inset;
-            color: white;
-            font-size: 24px;
-            font-weight: 700;
-            text-align: center;
-        }   
-        .dropdown {
-            padding-right: 50px;
-        }   
-
-        body, main{
-            background-color: #1F1F21;
-        }
-
-        table tr td[colspan="2"] {
-        background-color: #C9AB81 !important; /* tan */
-            color: black !important;
-        }
-
-        form {
-        background-color: #C9AB81 !important; /* tan */
-        color: black !important;
-        border: none !important;
-        }
-
-        .blue-button {
-        background-color: #C9AB81 !important;
-        color: black !important;
-        border: none !important;
-        }
-
-        .info-section .info-text {
-        color: #C9AB81 !important;
-        }
-
-        .blue-div {
-        background-color: #C9AB81 !important;
-        }
-
-        form label {
-            color: black;
-        }
-        
-</style>
-<!-- BANDAID END, REMOVE ONCE SOME GENIUS FIXES -->
+<h1>Manage Documents</h1>
 </head>
-<body>
 
-    <!-- Hero Section with Title -->
-    <header class="hero-header">
-        <div class="center-header">
-            <h1>Manage Volunteer Documents</h1>
-        </div>
-    </header>
+<body>
 
     <main>
         <div class="main-content-box w-[80%] overflow-hidden">
@@ -153,7 +98,7 @@ require_once('header.php');
             <input type="file" name="fileToUpload" id="fileToUpload" accept="application/pdf" class="block mx-auto mb-4 border border-gray-300 p-2 rounded-md w-full">
 
             <div class="flex justify-center space-x-4 mt-4">
-                <input type="submit" value="Upload PDF" name="submit" class="blue-button">
+                <input type="submit" value="Upload PDF" name="submit" class="submit-button">
             </div>
         </form>
 

@@ -44,90 +44,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Submit a Suggestion</title>
+    <title>Gwyneth's Gift | Submit a Suggestion</title>
     <link rel="stylesheet" href="css/normal_tw.css">
     <?php require('header.php'); ?>
-    <style>
-        .main-content-box {
-            background: #ffffff;
-            border-radius: 10px;
-            padding: 2rem;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            margin: 2rem auto;
-            width: 50%;
-        }
-        label {
-            display: block;
-            margin-top: 1rem;
-            font-weight: bold;
-        }
-        input[type="text"], textarea {
-            width: 100%;
-            padding: 10px;
-            margin-top: 0.25rem;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-        }
-        textarea {
-            height: 150px;
-        }
-        .btn {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 10px 20px;
-            border-radius: 5px;
-            font-weight: bold;
-            text-decoration: none;
-            color: white;
-            cursor: pointer;
-            border: none;
-        }
-        .btn-submit {
-            background-color: #4CAF50;
-        }
-        .btn-submit:hover {
-            background-color: #45a049;
-        }
-        .btn-back {
-            background-color: #6c757d;
-        }
-        .message {
-            margin-bottom: 15px;
-            padding: 10px;
-            border-radius: 5px;
-        }
-        .error { background-color: #f8d7da; color: #721c24; }
-        .success { background-color: #d4edda; color: #155724; }
+    <h1>Submit a Suggestion</h1>
 
-        body, main {
-            background-color: #1F1F21 !important;
-        }
-
-        .text-blue-700,
-        .text-blue-700:visited,
-        .text-blue-700:hover {
-            color: black !important;
-        }
-    
-        label,
-        input[type="text"],
-        textarea {
-             color: black !important;
-        }
-
-        input::placeholder,
-        textarea::placeholder {
-        color: black !important;
-        }
-    </style>
 </head>
 <body>
 
-<header class="hero-header">
-    <div class="center-header">
-        <h1>Submit a Suggestion</h1>
-    </div>
-</header>
+       
+
 
 <main>
     <div class="main-content-box">
@@ -144,7 +70,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <button type="submit" class="btn btn-submit">Submit Suggestion</button>
         </form>
 
-        <div style="text-align: center; margin-top: 20px;">
+        <div>
             <a href="index.php" class="btn btn-back">Return to Dashboard</a>
         </div>
     </div>

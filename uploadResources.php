@@ -66,7 +66,7 @@
     <?php require_once('universal.inc') ?>
     <link rel="stylesheet" href="css/messages.css"></link>
     <script src="js/messages.js"></script>
-    <title>Manage Documents</title>
+    <title>Gwyneth's Gift | Manage Documents</title>
 </head>
 <body>
     <main class="dashboard">

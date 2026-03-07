@@ -78,7 +78,8 @@
     <head>
 	<script src="https://cdn.tailwindcss.com"></script>
     	<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;700&display=swap" rel="stylesheet">
-	<style>
+  <style>
+    
 /* Found this on codepen :D */
 .wave {
   animation-name: wave-animation;  /* Refers to the name of your @keyframes element below */
@@ -86,6 +87,25 @@
   animation-iteration-count: infinite;  /* Never stop waving :) */
   transform-origin: 70% 70%;       /* Pivot around the bottom-left palm */
   display: inline-block;
+}
+
+.login {
+    color: white;
+    background-color: #2f4159;
+    padding: var(--button-padding);
+    border: 3px solid rgba(255, 255, 255, 0.295);
+    border-radius: 10px;
+    font-weight: 500;
+    width: 100%;
+    height: 20%;
+    transition: background-color .3s;
+    cursor: pointer;
+    text-align: center;
+    margin: 10px 0px;
+}
+
+.login:hover {
+  background-color: #f5c16e;
 }
 
 @keyframes wave-animation {
@@ -100,16 +120,16 @@
 }
 * { font-family: Quicksand, sans-serif; }
 	</style>
-        <title>Whiskey Valor Foundation | Log In</title>
+        <title>Gwyneth's Gift | Log In</title>
     </head>
     <body>
 <div class="h-screen flex">
 
   <!-- Left: Image Section (Hidden on small screens) -->
   <div class="hidden md:block md:w-1/2 bg-center rounded-r-[50px] bg-[#1F1F21]">
-      <img src="images/wood-piece.png"
-            alt="Barrels"
-            style="height: 100%;">
+      <img src="images/volunteers.jpg"
+            alt="A group of GG volunteers"
+            style="height: 100%; object-fit: fill; border-radius: 0px 50px 50px 0px;">
   </div>
 
   <!-- Right: Form Section -->
@@ -152,9 +172,9 @@
         </div>
         <div class="flex justify-between items-center mb-4">
           <a href="#" class="text-[#22654D] text-sm hover:underline">Forgot password?</a>
-          <a href="https://whiskeyvalor.org" class="text-[#22654D] text-sm hover:underline">Whiskey Valor Website</a>
+          <a href="https://gwynethsgift.org/" class="text-[#22654D] text-sm hover:underline">Gwyneth's Gift Website</a>
         </div>
-        <button class="cursor-pointer w-full bg-[#C9AB81] hover:bg-blue-600 text-white font-semibold py-3 rounded-lg transition duration-300">Login</button>
+        <button class="login">Login</button>
       </form>
 
       <!-- Divider -->

@@ -24,67 +24,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Whiskey Valor | Delete User</title>
+    <title>Gwyneth's Gift | Delete User</title>
     <link href="css/normal_tw.css" rel="stylesheet">
-<!-- BANDAID FIX FOR HEADER BEING WEIRD -->
+
 <?php
 $tailwind_mode = true;
 require_once('header.php');
 ?>
-<style>
-        .date-box {
-            background: #C9AB81;
-            padding: 7px 30px;
-            border-radius: 50px;
-            box-shadow: -4px 4px 4px rgba(0, 0, 0, 0.25) inset;
-            color: white;
-            font-size: 24px;
-            font-weight: 700;
-            text-align: center;
-        }   
-        .dropdown {
-            padding-right: 50px;
-        }   
+<h1>Delete User Search</h1>
 
-    body {
-        background-color: #1F1F21 !important;
-    }
-
-    .info-text {
-        color: #C9AB81 !important;
-    }
-
-    .blue-div {
-        background-color: #C9AB81 !important;
-    }
-
-    .text-blue-700,
-    .text-blue-700:visited,
-    .text-blue-700:hover {
-        color: black !important;
-        }
-
-    .main-content-box label {
-            color: #000000 !important;
-    }
-    
-    .sub-text {
-        color: black !important;
-    }
-
-</style>
-<!-- BANDAID END, REMOVE ONCE SOME GENIUS FIXES -->
 </head>
 <body>
 
-<header class="hero-header">
-    <div class="center-header">
-        <h1>Delete User Account From Organization</h1>
-    </div>
-</header>
-
 <main>
-    <div class="main-content-box w-[80%] p-8">
+    <div class="main-content-box w-[50%] p-8">
 
         <div class="text-center mb-8">
             <h2>Find the user account to delete</h2>
@@ -231,7 +184,7 @@ require_once('header.php');
             </div>
 
             <div class="text-center pt-4">
-                <input type="submit" value="Search" class="blue-button">
+                <input type="submit" value="Search" class="btn btn-submit">
             </div>
 
         </form>

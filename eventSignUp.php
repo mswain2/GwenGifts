@@ -114,7 +114,7 @@
 <html>
     <head>
         <?php require_once('universal.inc') ?>
-        <title>Whiskey Valor | Sign-Up for Event</title>
+        <title>Gwyneth's Gift | Sign-Up for Event</title>
     </head>
     <body>
         <?php require_once('header.php') ?>
