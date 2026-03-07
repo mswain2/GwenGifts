@@ -32,12 +32,12 @@
     $today = strtotime(date("Y-m-d"));
 
     // ── CALCULATE KEY CALENDAR DATES ──
-    // Build the first day of the selected month (e.g. "2026-02-01")
-    $first = $month . '-01';
     // Convert the month string to a Unix timestamp for date arithmetic
     $month = strtotime($month);
-    // Convert the first-of-month string to a Unix timestamp
-    $first = strtotime($first);
+    // Build the first day of the selected month (e.g. "2026-02-01") from the timestamp
+    $first = strtotime(date('Y-m-01', $month));
+    // Extract the current day number for the month-jumper input
+    $day = date('j', $month);
     // Calculate timestamps for the previous and next months (for navigation arrows)
     $previousMonth = strtotime(date('Y-m-d', $month) . ' -1 month');
     $nextMonth = strtotime(date('Y-m-d', $month) . ' +1 month');
@@ -119,10 +119,10 @@
                     <?php
                     // Calculate the last day of the selected month (e.g. 28, 30, or 31)
                     // Used as the "max" attribute on the day input to prevent invalid dates
-                    $finalDayofMonth = date("t", strtotime($year. "-". $month . 01));
+                    $finalDayofMonth = date("t", $month);
                     ?>
                     <!-- Day input — constrained between 1 and the last valid day of the month -->
-                    <input id="jumper-day" type="number" value="<?php echo $day?>" required min="1" required max="<?php echo $finalDayofMonth?>" >
+                    <input id="jumper-day" type="number" value="<?php echo $day?>" required min="1" max="<?php echo $finalDayofMonth?>" >
                 </div>
                 <!-- Hidden input that JS populates with the final date value before submitting -->
                 <input type="hidden" id="jumper-value" name="month" value="<?php echo 'test' ?>">
