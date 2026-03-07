@@ -92,14 +92,14 @@ if (date('m', strtotime($calendarEnd . ' +1 day')) != $monthEpoch) {
                                     $dayEvents = $events[$e];
                                     foreach ($dayEvents as $info) {
 
-                                        $backgroundCol = '#996d49ff'; // default color
+                                        $backgroundCol = '#d4596e'; // default color (coral)
 
                                         if(isset($_SESSION['access_level'])) {
                                             if (is_archived($info['id'])) { // archived event
                                                 if ($_SESSION['access_level'] < 2) {
                                                     continue; // users cannot see archived events
                                                 }
-                                                $backgroundCol = '#aaaaaa'; //TODO
+                                                $backgroundCol = '#b0b0b0'; //archived grey
 
                                             } elseif (check_if_signed_up($info['id'], $_SESSION['_id'])) {// user is signed-up for event
                                                 $backgroundCol = '#4CAF50';
