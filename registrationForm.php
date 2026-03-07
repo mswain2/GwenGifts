@@ -14,10 +14,19 @@
 	<div class="text-center spacing-bottom">
           <h2 class="mb-8">Registration Form</h2>
             <div class="info-box">
-              <p class="sub-text">Please fill out each section of the following form to create your account.</p>
-              <p>An asterisk ( <em>*</em> ) indicates a required field.</p>
+                <p class="sub-text">Welcome to our registration form. We thank you sincerely for your interest in volunteering as a part of our foundation.</p>
             </div>
 	</div>
+
+        <fieldset class="section-box mb-4">
+            <h3 class="mt-2">Directions</h3>
+            <p class="mb-2">To create your account, please follow the instructions below:</p>
+            <div class="blue-div"></div>
+            <p class="mb-2">First, if you have not yet done so, we ask that you familiarize yourself with our foundation <a href="https://gwynethsgift.org">here</a>.</p>
+            <p class="mb-2">Then, please fill out each of the following sections of the form carefully and accurately.</p>
+            <p class="mb-2">Lastly, once you have consented to the conditions, click the "Submit" button at the bottom of the form to create your account.</p>
+            <p>An asterisk ( <em>*</em> ) indicates a required field.</p>
+        </fieldset>
         
         <fieldset class="section-box mb-4">
 
@@ -31,7 +40,7 @@
             <label for="last_name"><em>* </em>Last Name</label>
             <input type="text" id="last_name" name="last_name" required placeholder="Enter your last name">
 
-            <label><em>* </em>Are you 21 or older?</label>
+            <label for="over21"><em>* </em>Are you 21 or older?</label>
             <div class="radio-group">
                 <div class="radio-element">
                     <input type="radio" id="yes" name="age" value="true" required>
@@ -47,8 +56,8 @@
             <!--<label for="birthdate"><em>* </em>Date of Birth</label>
             <input type="date" id="birthdate" name="birthdate" required placeholder="Choose your birthday" max="<?php echo date('Y-m-d'); ?>">-->
             
-            <!-- <label for="street_address"><em>* </em>Street Address</label>
-            <input type="text" id="street_address" name="street_address" required placeholder="Enter your street address"> -->
+            <label for="street_address"><em>* </em>Street Address</label>
+            <input type="text" id="street_address" name="street_address" required placeholder="Enter your street address">
 
             <label for="city"><em>* </em>City</label>
             <input type="text" id="city" name="city" required placeholder="Enter your city">
@@ -109,9 +118,10 @@
                 <option value="WY">Wyoming</option>
             </select>
 
-            <!--<label for="zip"><em>* </em>Zip Code</label>
-            <input type="text" id="zip" name="zip" pattern="[0-9]{5}" title="5-digit zip code" required placeholder="Enter your 5-digit zip code">
--->
+            <label for="zip_code"><em>* </em>Zip Code</label>
+            <input type="text" id="zip_code" name="zip" pattern="[0-9]{5}" title="5-digit zip code" required placeholder="Enter your 5-digit zip code">
+
+            <!--
             <div class="median-div"></div>
             <label for="affiliation"><em>* </em>Military Affiliation</label>
             <select id="affiliation" name="affiliation" required>
@@ -122,6 +132,7 @@
                 <option value="Veteran">Veteran</option>
                 <option value="Civilian">Civilian</option>
             </select>
+            
 
             <label for="branch"><em>* </em>Branch of Service</label>
             <select id="branch" name="branch" required>
@@ -133,71 +144,82 @@
                 <option value="Navy">Navy</option>
                 <option value="Space Force">Space Force</option>
             </select>
+            -->
 
         </fieldset>
 
         <fieldset class="section-box mb-4">
-            <h3>Contact Information</h3>
+            <h3>Personal Contact Information</h3>
             <p class="mb-2">The following information will help us determine the best way to contact you regarding event coordination.</p>
-	    <div class="blue-div"></div>
+	        <div class="blue-div"></div>
 
             <label for="email"><em>* </em>E-mail</label>
             <input type="email" id="email" name="email" required placeholder="Enter your e-mail address">
 
             <label for="email_consent">E-mail Notifications</label>
-            <p>By checking the box below, you consent to recieve emails from the Whiskey Valor Foundation. You may change this at any time.</p>
+            <p>By checking the box below, you acknowledge that you hereby consent to being contactd by Gwyneth's Gift via email for the purpose of:</p>
+            <ol>
+                <li>- Event Registration Confirmations</li>
+                <li>- Event Reminders</li>
+                <li>- Event and General Communications</li>
+            </ol>
+            <p>You may change your email preferences at any time through your account settings.</p>
+
             <label><input type="checkbox" id="email_prefs" name="email_prefs" value="true"> I consent.</label>
+
+
+
 
             <div class="median-div"></div>
 
-            <label for="phone1">Phone Number</label>
-            <input type="tel" id="phone1" name="phone1" pattern="(\D{0,1})\d{3}(\D{0,2})\d{3}(.{0,1})\d{4}" placeholder="Ex. (555) 555-5555">
+            <label for="phone1"><em>* </em>Phone Number</label>
+            <input type="tel" id="phone1" name="phone1" pattern="(\D{0,1})\d{3}(\D{0,2})\d{3}(.{0,1})\d{4}" placeholder="Ex. (555) 555-5555" required>
 
-            <!--<label><em>* </em>Phone Type</label>
+            <label for="phone1type"><em>* </em>Phone Type</label>
             <div class="radio-group">
 	      <div class="radio-element">
-                <input type="radio" id="phone-type-cellphone" name="phone_type" value="cellphone" required><label for="phone-type-cellphone">Cell</label>
+                <input type="radio" id="phone-type-cellphone" name="phone_type" value="cellphone" required><label for="phone-type-cellphone"> Cell</label>
 	      </div>
 	      <div class="radio-element">
-                <input type="radio" id="phone-type-home" name="phone_type" value="home" required><label for="phone-type-home">Home</label>
+                <input type="radio" id="phone-type-home" name="phone_type" value="home" required><label for="phone-type-home"> Home</label>
 	      </div>
 	      <div class="radio-element">
                 <input type="radio" id="phone-type-work" name="phone_type" value="work" required><label for="phone-type-work">Work</label>
 	      </div>
-            </div>-->
+            </div>
 
         </fieldset>
 
-        <!--<fieldset class="section-box mb-4">
-            <h3>Emergency Contact</h3>
-            <p class="mb-2">Please provide us with someone to contact on your behalf in case of an emergency.</p>
+        <fieldset class="section-box mb-4">
+            <h3>Emergency Contact Information</h3>
+            <p class="mb-2">Please provide us with someone's contact information on your behalf in case of an emergency.</p>
 	    <div class="blue-div"></div>
 
-            <label for="emergency_contact_first_name" required><em>* </em>Contact First Name</label>
+            <label for="emergency_contact_first_name" required><em>* </em>First Name</label>
             <input type="text" id="emergency_contact_first_name" name="emergency_contact_first_name" required placeholder="Enter emergency contact first name">
 
-            <label for="emergency_contact_last_name" required><em>* </em>Contact Last Name</label>
+            <label for="emergency_contact_last_name" required><em>* </em>Last Name</label>
             <input type="text" id="emergency_contact_last_name" name="emergency_contact_last_name" required placeholder="Enter emergency contact last name">
 
-            <label for="emergency_contact_relation"><em>* </em>Contact Relation to You</label>
+            <label for="emergency_contact_relation"><em>* </em>Relationship to You</label>
             <input type="text" id="emergency_contact_relation" name="emergency_contact_relation" required placeholder="Ex. Spouse, Mother, Father, Sister, Brother, Friend">
 
-            <label for="emergency_contact_phone"><em>* </em>Contact Phone Number</label>
+            <label for="emergency_contact_phone"><em>* </em>Phone Number</label>
             <input type="tel" id="emergency_contact_phone" name="emergency_contact_phone" pattern="\([0-9]{3}\) [0-9]{3}-[0-9]{4}" required placeholder="Enter emergency contact phone number. Ex. (555) 555-5555">
 
-            <label><em>* </em>Contact Phone Type</label>
+            <label for="emergency_contact_phone_type"><em>* </em>Phone Type</label>
             <div class="radio-group">
-	      <div class="radio-element">
-                <input type="radio" id="phone-type-cellphone" name="emergency_contact_phone_type" value="cellphone" required><label for="phone-type-cellphone">Cell</label>
-	      </div>
-	      <div class="radio-element">
-                <input type="radio" id="phone-type-home" name="emergency_contact_phone_type" value="home" required><label for="phone-type-home">Home</label>
-	      </div>
-	      <div class="radio-element">
-                <input type="radio" id="phone-type-work" name="emergency_contact_phone_type" value="work" required><label for="phone-type-work">Work</label>
-	      </div>
+	        <div class="radio-element">
+                <input type="radio" id="phone-type-cellphone" name="emergency_contact_phone_type" value="cellphone" required><label for="phone-type-cellphone"> Cell</label>
+	        </div>
+	        <div class="radio-element">
+                <input type="radio" id="phone-type-home" name="emergency_contact_phone_type" value="home" required><label for="phone-type-home"> Home</label>
+	        </div>
+	        <div class="radio-element">
+                <input type="radio" id="phone-type-work" name="emergency_contact_phone_type" value="work" required><label for="phone-type-work"> Work</label>
+	        </div>
             </div>
-        </fieldset>-->
+        </fieldset>
 
         <!-- <fieldset class="section-box mb-4">
             <h3 class="mb-2">Other Required Information</h3>
@@ -262,7 +284,8 @@
 
         <fieldset class="section-box mb-4">
             <h3>Login Credentials</h3>
-            <p class="mb-2">You will use the following information to log in to the system.</p>
+            <p class="mb-2">Provide the following information to log in to the system.</p>
+            <p class="mb-2">We recommend that you save your login information somewhere secure.</p>
 	    <div class="blue-div"></div>
 
             <label for="username"><em>* </em>Username</label>
@@ -286,6 +309,18 @@
             <h3>Consent Notice</h3>
             <p class="mb-2">Please review the following before creating your account.</p>
         <div class="blue-div"></div>
+            <label><em>* </em>Affirmation</label>
+            <p>I have read the <a href="https://gwynethsgift.org/about-us/">About Us</a> page, and I confirm that I will abide by the mission and values of the organization as a volunteer.</p>
+            <div class="radio-group">
+                <div class="radio-element">
+                    <input type="radio" id="agree-about" name="about_consent" value="yes" required>
+                    <label for="agree-about">I agree.</label>
+                </div>
+                <div class="radio-element">
+                    <input type="radio" id="disagree-about" name="about_consent" value="no">
+                    <label for="disagree-about">I do not agree.</label>
+            </div>
+
             <label><em>* </em> Privacy Policy</label>
             <p>I confirm that I have read the <a href="https://whiskeyvalor.org/policies/privacy-policy">Privacy Policy</a> and consent to the Whiskey Valor Foundation collecting and storing my information for the purposes outlined therein.</p>
             <div class="radio-group">
