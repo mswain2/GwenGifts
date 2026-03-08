@@ -181,7 +181,7 @@ require_once('header.php');
             $first_name, $last_name, null,
             $city, $state, null, $phone1, $age, 
             null, null, null, null, 
-            $email, $email_consent, 
+            $email, $email_consent, null,
             null, null, null, null, null, null, null, 
             $password, $affiliation, $branch, null, null
         );

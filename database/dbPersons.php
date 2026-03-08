@@ -629,6 +629,7 @@ function make_a_person($result_row) {
     @$result_row['birthday'],
     @$result_row['email'],
     @$result_row['email_prefs'],
+    @$result_row['tshirt_size'],
     @$result_row['emergency_contact_first_name'],
     @$result_row['contact_num'],
     @$result_row['emergency_contact_relation'],
