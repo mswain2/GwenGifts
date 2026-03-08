@@ -43,7 +43,9 @@ function add_person($person) {
             emergency_contact_phone, emergency_contact_phone_type, birthday, 
             email, email_prefs, emergency_contact_first_name, contact_num,
             emergency_contact_relation, contact_method, type, status, notes, 
-            password, affiliation, branch, emergency_contact_last_name
+            password, affiliation, branch, emergency_contact_last_name,
+            gender, t_shirt_size, computer_access, camera_access, transportation_access, 
+            skills, experience, about_consent
         ) VALUES ("' .
             $person->get_id() . '","' .
             $person->get_start_date() . '","' .
@@ -53,8 +55,7 @@ function add_person($person) {
             $person->get_city() . '","' .
             $person->get_state() . '","' .
             //$person->get_zip_code() . '","' .
-            $person->get_phone1() . '","' .
-            $person->get_over_21() . '","' .
+            $person->get_phone1() . '",NULL,"' .
             $person->get_phone1type() . '","' .
             $person->get_emergency_contact_phone() . '","' .
             $person->get_emergency_contact_phone_type() . '","' .
@@ -72,8 +73,16 @@ function add_person($person) {
             $person->get_affiliation() . '","' .
             $person->get_branch() . '","' .
             //$person->get_archived() . '","' .                
-            $person->get_emergency_contact_last_name() . '");';  
-    
+            $person->get_emergency_contact_last_name() . '","' .
+            $person->get_gender() . '","' .
+            $person->get_t_shirt_size() . '","' .
+            $person->get_computer_access() . '","' .
+            $person->get_camera_access() . '","' .
+            $person->get_transportation_access() . '","' .
+            $person->get_skills() . '","' .
+            $person->get_experience() . '","' .
+            $person->get_about_consent() . '")';
+
         // Check if the query is properly built
         if (empty($insert_query)) {
             die("Error: insert query is empty");
@@ -640,7 +649,15 @@ function make_a_person($result_row) {
     @$result_row['affiliation'],
     @$result_row['branch'],
     @$result_row['archived'], 
-    @$result_row['emergency_contact_last_name']
+    @$result_row['emergency_contact_last_name'],
+    @$result_row['gender'],
+    @$result_row['t_shirt_size'],
+    @$result_row['computer_access'],
+    @$result_row['camera_access'],
+    @$result_row['transportation_access'],
+    @$result_row['skills'],
+    @$result_row['experience'],
+    @$result_row['about_consent']
     #@$result_row['access_level']
 );
 
