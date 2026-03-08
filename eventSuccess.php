@@ -8,7 +8,7 @@
     <html>
         <head>
             <?php require_once('universal.inc') ?>
-            <title>Whiskey Valor | Create Event</title>
+            <title>Gwyneth's Gift | Create Event</title>
         </head>
         <body>
             <?php require_once('header.php') ?>

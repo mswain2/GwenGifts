@@ -48,40 +48,17 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Whiskey Valor | Volunteer Email List</title>
+        <title>Gwyneth's Gift | Volunteer Email List</title>
   	<link href="css/normal_tw.css" rel="stylesheet">
 
-<!-- BANDAID FIX FOR HEADER BEING WEIRD -->
 <?php
 $tailwind_mode = true;
 require_once('header.php');
 ?>
-<style>
-        .date-box {
-            background: #f0f0f0;
-            padding: 7px 30px;
-            border-radius: 50px;
-            box-shadow: -2px 2px 4px rgba(0, 0, 0, 0.08) inset;
-            color: #333333;
-            font-size: 24px;
-            font-weight: 700;
-            text-align: center;
-        }   
-        .dropdown {
-            padding-right: 50px;
-        }   
+<h1>Generate Email List</h1>
 
-</style>
-<!-- BANDAID END, REMOVE ONCE SOME GENIUS FIXES -->
-
-    </head>
+</head>
 <body>
-
-<header class="hero-header">
-    <div class="center-header">
-        <h1>Volunteer/Participant Search</h1>
-    </div>
-</header>
 
 <main>
     <div class="main-content-box w-[80%] p-8">
@@ -236,7 +213,7 @@ require_once('header.php');
             </div>
 
             <div class="text-center pt-4">
-                <input type="submit" value="Search" class="blue-button">
+                <input type="submit" value="Search" class="submit-button">
             </div>
         </form>
     </div>

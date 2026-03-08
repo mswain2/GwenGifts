@@ -20,12 +20,13 @@
 <html>
     <head>
         <?php require_once('universal.inc') ?>
-        <title>View Data | Whiskey Valor Foundation</title>
+        <title>Gwyneth's Gift | View Data</title>
     </head>
     <body>
         <?php require_once('header.php') ?>
+        <h1>Data Browser</h1>
         <main>
-            <h1 style="color:white;">Data Browser</h1>
+            
             <p>Use the controls below to pick a data source, filters and the fields you want in a report.</p>
 
             <form id="report-filters" method="POST">

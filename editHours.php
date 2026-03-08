@@ -54,12 +54,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" || $accessLevel == 1) {
 <head>
     <?php require_once('universal.inc') ?>
     <link rel="stylesheet" href="css/editprofile.css" type="text/css" />
-    <title>Whiskey Valor | Edit Volunteer Hours</title>
+    <title>Gwyneth's Gift | Edit Volunteer Hours</title>
 </head>
 <body>
     <?php require_once('header.php') ?>
-    <div class="container">
-        <h1>Change Hours Within an Event</h1>
+    <h1>Edit Hours</h1>
+    <div class="container"> 
         <main class="general">
             <h2>Change Hours for Event</h2>
 

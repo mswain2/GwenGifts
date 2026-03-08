@@ -24,91 +24,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Whiskey Valor | Volunteer/Participant Search</title>
+    <title>Gwyneth's Gift | Volunteer/Participant Search</title>
     <link href="css/normal_tw.css" rel="stylesheet">
-<!-- BANDAID FIX FOR HEADER BEING WEIRD -->
 <?php
 $tailwind_mode = true;
 require_once('header.php');
 ?>
-<style>
-        .date-box {
-            background: #f0f0f0;
-            padding: 7px 30px;
-            border-radius: 50px;
-            box-shadow: -2px 2px 4px rgba(0, 0, 0, 0.08) inset;
-            color: #333333;
-            font-size: 24px;
-            font-weight: 700;
-            text-align: center;
-        }   
-        .dropdown {
-            padding-right: 50px;
-        }   
 
-        body, main {
-        background-color: #ffffff;
-        }
-
-        .text-blue-700,
-        .text-blue-700:visited {
-        color: black !important;
-        }   
-
-        .info-section .info-text {
-         color: #333333 !important;
-        }
-
-        .blue-div {
-        background-color: #f8f8f8 !important;
-        }
-
-        .main-content-box label {
-        color: #000000 !important;
-        }
-        
-        .text-blue-700 {
-        color: #000000 !important;
-        }
-        .sub-text {
-        color: black !important;
-        }
-
-        .main-content-box table,
-        .main-content-box table thead,
-        .main-content-box table tbody,
-        .main-content-box table tr,
-        .main-content-box table th,
-        .main-content-box table td {
-            background-color: #f8f8f8 !important;
-            color: #333333 !important;
-            border: 1px solid #e0e0e0 !important;
-        }
-
-        .main-content-box table a.text-blue-700,
-        .main-content-box table a.text-blue-700:visited {
-            color: #6b8caf !important;
-            }
-
-        .main-content-box table thead.bg-blue-400 th {
-            background-color: #f5f5f5 !important;
-        }
-
-        .main-content-box table a.text-blue-700,
-        .main-content-box table a.text-blue-700:visited {
-            color: #6b8caf !important;
-        }
-    
-</style>
-<!-- BANDAID END, REMOVE ONCE SOME GENIUS FIXES -->
 </head>
 <body>
 
-<header class="hero-header">
-    <div class="center-header">
+
         <h1>Volunteer/Participant Search</h1>
-    </div>
-</header>
+
 
 <main>
     <div class="main-content-box w-[80%] p-8">
@@ -233,7 +161,7 @@ require_once('header.php');
             
 
             <div class="text-center pt-4">
-                <input type="submit" value="Search" class="blue-button">
+                <input type="submit" value="Search" class="submit-button">
             </div>
 
         </form>

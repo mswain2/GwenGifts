@@ -26,72 +26,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>User Account Management Page</title>
+  <title>Gwyneth's Gift | User Management</title>
   <link href="css/management_tw.css" rel="stylesheet">
 
-<!-- BANDAID FIX FOR HEADER BEING WEIRD -->
 <?php
 $tailwind_mode = true;
 require_once('header.php');
 ?>
-<style>
-        .date-box {
-            background: #f0f0f0;
-            padding: 7px 30px;
-            border-radius: 50px;
-            box-shadow: -2px 2px 4px rgba(0, 0, 0, 0.08) inset;
-            color: #333333;
-            font-size: 24px;
-            font-weight: 700;
-            text-align: center;
-        }
-	.dropdown {
-	    padding-right: 50px;
-	}
-
-  .top-bar {
-      background-color: #f5f5f5;   /* light gray */
-      height: 200px;             /* height of the bar */
-      width: 100%;              /* full width */
-      position: fixed;
-  }
-
-  body {
-    background-color: #ffffff; 
-  }
-
-  .button-left-gray {
-    background-color: #f8f8f8 !important;
-  }
-
-
- .button-section button {
-    background-color: #f8f8f8 !important;
-    color: black !important;
-  }
-
-.div-blue {
-    background-color: #f8f8f8;
-  }
-
-.button-icon {
-    filter: none !important;
-  } 
-
-.text-section h1 {
-    color: #C9AB81 !important;
-  }
-
-.text-section p {
-    color: #C9AB81 !important;
-  }
-
-.button-section button > div {
-    background-color: transparent !important;
-  }
-
-</style>
-<!-- BANDAID END, REMOVE ONCE SOME GENIUS FIXES -->
 
 </head>
 
@@ -102,7 +43,7 @@ require_once('header.php');
   <header class="top-bar"></header>
 
   <!-- Main Content -->
-  <main style="margin-top: 100px;">
+  <main>
     <div class="sections">
 
       <!-- Buttons Section -->
@@ -152,7 +93,7 @@ require_once('header.php');
 
       <!-- Text Section -->
       <div class="text-section">
-        <h1>User Account Management</h1>
+        <h1>User Management</h1>
         <div class="div-blue"></div>
         <p>
           Welcome to the user management hub. From this menu, you will have access to operations such as creating, deleting, and searching accounts. More features soon to be implemented.
