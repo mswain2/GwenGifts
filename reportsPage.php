@@ -49,7 +49,7 @@
 <html>
     <head>
         <?php require_once('universal.inc') ?>
-        <title>Whiskey Valor | Report Result</title>
+        <title>Gwyneth's Gift | Report Result</title>
         <style>
             table {
                 margin-top: 1rem;

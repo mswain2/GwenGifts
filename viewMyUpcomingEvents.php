@@ -161,7 +161,7 @@ $pending_events = fetch_my_pending($user_id);
 <html lang="en">
 <head>
     <?php require_once('universal.inc'); ?>
-    <title>My Upcoming Events</title>
+    <title>Gwyneth's Gift | My Upcoming Events</title>
     <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>

@@ -21,71 +21,16 @@ include_once "database/dbShifts.php";
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Whiskey Valor | Checked In Volunteers</title>
-  	<link href="css/normal_tw.css" rel="stylesheet">
+    <title>Gwyneth's Gift | Checked In Volunteers</title>
+    <link href="css/normal_tw.css" rel="stylesheet">
 
-<!-- BANDAID FIX FOR HEADER BEING WEIRD -->
 <?php
 $tailwind_mode = true;
-require_once('header.php');
-?>
-<style>
-        .date-box {
-            background: #C9AB81;
-            padding: 7px 30px;
-            border-radius: 50px;
-            box-shadow: -4px 4px 4px rgba(0, 0, 0, 0.25) inset;
-            color: white;
-            font-size: 24px;
-            font-weight: 700;
-            text-align: center;
-        }
-        .dropdown {
-            padding-right: 50px;
-        }
-
-        body {
-            background-color: #ffffff !important;
-            }
-
-        table {
-            width: 100%;
-            background-color: #f8f8f8 !important;
-            border-collapse: collapse;
-            }
-
-        thead th {
-            background-color: #f5f5f5 !important;
-            color: #333333 !important;
-            border-bottom: 2px solid #e0e0e0 !important;
-        }
-
-        tbody td {
-            background-color: #ffffff !important;
-            color: #333333 !important;
-            border-bottom: 1px solid #e0e0e0 !important;
-        }
-
-        .blue-div {
-             background-color: #f8f8f8 !important;
-        }
-
-        .info-text {
-             color: #333333 !important;
-            }
-
-</style>
-<!-- BANDAID END, REMOVE ONCE SOME GENIUS FIXES -->
+require_once('header.php');?>
+<h1> View Event Attendees </h1>
 
 </head>
 <body>
-
-    <div class="hero-header">
-        <div class="center-header">
-            <h1>View Checked In Volunteers</h1>
-        </div>
-    </div>
-
     <main>
         <div class="main-content-box w-full max-w-3xl p-6">
 

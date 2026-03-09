@@ -26,58 +26,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Volunteer Management Page</title>
+  <title>Gwyneth's Gift | Event Management</title>
   <link href="css/management_tw.css" rel="stylesheet">
 
-<!-- BANDAID FIX FOR HEADER BEING WEIRD -->
 <?php
 $tailwind_mode = true;
 require_once('header.php');
 ?>
-<style>
-        .date-box {
-            background: #f0f0f0;
-            padding: 7px 30px;
-            border-radius: 50px;
-            box-shadow: -2px 2px 4px rgba(0, 0, 0, 0.08) inset;
-            color: #333333;
-            font-size: 24px;
-            font-weight: 700;
-            text-align: center;
-        }
-	    
-        .dropdown {
-	    padding-right: 50px;
-	    }
-        
-        body{
-        background-color: #ffffff;
-        }
-        .button-section button{
-        background-color: #f8f8f8;
-        color: black !important;
-        }
-
-        .button-left-gray{
-        background-color: #f8f8f8;
-        }
-
-        .button-section .button-icon{
-        filter: none
-        }
-    .top-bar {
-      background-color: #f5f5f5;   /* light gray */
-      height: calc(var(--spacing) * 40);
-      width: 100%;              /* full width */
-      position: relative;
-      z-index: 0;
-      height: calc(var(--spacing) * 40);
-      width: 100%;
-      background-size: auto;
-      background-position: center;
-  }
-</style>
-<!-- BANDAID END, REMOVE ONCE SOME GENIUS FIXES -->
 
 </head>
 

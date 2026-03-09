@@ -30,16 +30,15 @@ include 'infoBox.php';
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Volunteer Check-In</title>
+    <title>Gwyneth's Gift | Volunteer Check-In</title>
     <link href="css/normal_tw.css" rel="stylesheet">
+    <?php
+        $tailwind_mode = true;
+        require_once('header.php');
+    ?>
+    <h1>Volunteer Check-In</h1>
 </head>
 <body>
-
-<header class="hero-header">
-    <div class="center-header">
-        <h1>Volunteer Check-In</h1>
-    </div>
-</header>
 
 <main>
     <div class="main-content-box w-[80%] p-8">

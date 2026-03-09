@@ -49,7 +49,7 @@ if (isset($_SESSION['_id'])) {
             align-items: center;
         }
     </style>
-    <title>Inbox</title>
+    <title>Gwyneth's Gift | Inbox</title>
 </head>
 <body>
 <?php require_once('header.php') ?>
@@ -73,7 +73,7 @@ if (isset($_SESSION['_id'])) {
     <?php if (count($allMessages) > 0): ?>
         <form id="bulkDeleteForm" action="deleteNotification.php" method="POST">
             <div class="top-bar">
-            <button type="submit" name="delete_all" class="button delete" style="width:10%; margin-bottom: 10px;" onclick="return confirm('Are you sure you want to delete ALL notifications?');">Delete All</button>
+            <button type="submit" name="delete_all" class="button delete" style="width:20%; margin-bottom: 10px;" onclick="return confirm('Are you sure you want to delete ALL notifications?');">Delete All</button>
                 <div id="bulk-actions" style="display:none;">
                     <span><strong>With Selected:</strong></span>
                     <button type="submit" name="bulk_delete" class="button delete" style="margin-bottom: 10px;" onclick="return confirm('Delete selected notifications?');">Delete</button>

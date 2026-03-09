@@ -158,7 +158,7 @@
 <html>
     <head>
         <?php require_once('universal.inc') ?>
-        <title>Whiskey Valor | Edit Event</title>
+        <title>Gwyneth's Gift | Edit Event</title>
     </head>
     <body>
         <?php require_once('header.php') ?>
@@ -191,19 +191,10 @@
                 <label for="name">Capacity </label>
                 <input type="number" id="capacity" name="capacity" value="<?php echo $event['capacity'] ?>" placeholder="Enter capacity (e.g. 1-99)">
 
-                <fieldset style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
-                    <legend>Make this a recurring event</legend>
+                    <label>Make this a recurring event</label><br>
 
-                    <label style="margin-top:12px; padding:12px; border:1px solid #e0e0e0; border-radius:8px;">
-                        <input
-                            type="checkbox"
-                            id="recurring"
-                            name="recurring"
-                            value="1"
-                            <?php if (!empty($event['series_id'])) echo 'checked'; ?>
-                        >
-                        Recurring
-                    </label>
+                    <input type="checkbox" id="recurring" name="recurring" value="1">
+                    Recurring
 
                     <div id="recurring-options" style="display:none; margin-top:6px;">
                         <label for="recurrence_type">Recurrence:</label>
@@ -221,7 +212,6 @@
                             <span>days</span>
                         </div>
                     </div>
-                </fieldset>
 
                 <input type="submit" value="Update Event">
                 <a class="button cancel" href="event.php?id=<?php echo htmlspecialchars($_GET['id']) ?>" style="margin-top: .5rem">Cancel</a>

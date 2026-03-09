@@ -30,7 +30,7 @@ if (isset($_GET['msg'])) {
 <html>
 <head>
     <?php require_once('universal.inc'); ?>
-    <title>Review Uploads</title>
+    <title>Gwyneth's Gift | Review Uploads</title>
     <style>
         .gallery { display: flex; flex-wrap: wrap; gap: 20px; padding: 20px; }
         .gallery-item { 
