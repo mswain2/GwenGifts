@@ -46,6 +46,14 @@ class Person {
 	private $branch;
 	private $archived;
 	private $emergency_contact_last_name;
+	private $gender;
+	private $t_shirt_size;
+	private $computer_access;
+	private $camera_access;
+	private $transportation_access;
+	private $skills;
+	private $experience;
+	private $about_consent;
 	private $access_level;
 
 	function __construct(
@@ -54,7 +62,9 @@ class Person {
 		$emergency_contact_phone_type, $birthday, $email, $email_prefs, $tshirt_size,
 		$emergency_contact_first_name, $contact_num, $emergency_contact_relation,
 		$contact_method, $type, $status, $notes, $password, $affiliation, $branch, $archived,
-		$emergency_contact_last_name) {
+		$emergency_contact_last_name, $gender, $t_shirt_size, $computer_access, $camera_access, 
+		$transportation_access, $skills, $experience, $about_consent
+	) {
         $this->id = $id;
 		$this->start_date = $start_date;
 		$this->first_name = $first_name;
@@ -84,6 +94,14 @@ class Person {
 		$this->branch = $branch;
 		$this->archived = $archived;
 		$this->emergency_contact_last_name = $emergency_contact_last_name;
+		$this->gender = $gender;
+		$this->t_shirt_size = $t_shirt_size;
+		$this->computer_access = $computer_access;
+		$this->camera_access = $camera_access;
+		$this->transportation_access = $transportation_access;
+		$this->skills = $skills;
+		$this->experience = $experience;
+		$this->about_consent = $about_consent;
 
         #$this->access_level = ($id == 'vmsroot') ? 3 : 1;
 
@@ -222,6 +240,38 @@ class Person {
 
 	function get_archived() {
 		return $this->archived;
+	}
+
+	function get_gender() {
+		return $this->gender; 
+	}
+	
+	function get_t_shirt_size() {
+		return $this->t_shirt_size; 
+	}
+
+	function get_computer_access() { 
+		return $this->computer_access; 
+	}
+
+	function get_camera_access() { 
+		return $this->camera_access; 
+	}
+
+	function get_transportation_access() { 
+		return $this->transportation_access; 
+	}
+
+	function get_skills() { 
+		return $this->skills; 
+	}
+
+	function get_experience() { 
+		return $this->experience; 
+	}
+
+	function get_about_consent() { 
+		return $this->about_consent; 
 	}
 
 	function get_access_level() {
