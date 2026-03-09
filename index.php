@@ -200,16 +200,6 @@
         <button class="arrow-button">→</button>
     </div>
 
-    <div class="content-box-test" onclick="window.location.href='resources.php'">
-        <div class="icon-overlay">
-            <img style="border-radius: 5px;" src="images/file-regular.svg" alt="Document Icon">
-        </div>
-       
-        <div class="large-text-sub">View Documents </div>
-        <div class="graph-text">View Board Documents</div>
-        <button class="arrow-button">→</button>
-    </div>
-
     <!-- Create Email -->
     <div class="content-box-test" onclick="window.location.href='createEmail.php'">
         <div class="icon-overlay">
@@ -253,7 +243,17 @@
         <div class="graph-text">View user submitted suggestions.</div>
         <button class="arrow-button">→</button>
     </div>
-
+    
+    <!-- Board Documents -->
+    <div class="content-box-test" onclick="window.location.href='boardDocuments.php'" style="background-color: #f8f8f8; border-radius: 12px; padding: 20px; color: black; border: 1px solid #e0e0e0;">
+        <div class="icon-overlay">
+            <img style="border-radius: 5px;" src="images/file-regular.svg" alt="Documents Icon">
+        </div>
+        
+        <div class="large-text-sub" style="color:black;">Board Documents</div>
+        <div class="graph-text" style="color:#3A3A3A;">Access and manage board resources.</div>
+        <button class="arrow-button">→</button>
+    </div>
 </div>
 
 
