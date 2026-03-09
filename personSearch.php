@@ -49,13 +49,14 @@ require_once('header.php');
         <form id="person-search" class="space-y-6" method="get">
 
         <?php
-            $status = 'active'; // search for active users by default
+            $type = 'volunteer'; // search for volunteer roles by default
+            $status = 'Active'; // search for active users by default
 
-            if (isset($_GET['name']) || isset($_GET['id']) || isset($_GET['phone']) || isset($_GET['zip']) || isset($_GET['role']) || isset($_GET['status']) || isset($_GET['email'])) {
+            if (isset($_GET['name']) || isset($_GET['id']) || isset($_GET['phone']) || isset($_GET['zip']) || isset($_GET['type']) || isset($_GET['status']) || isset($_GET['email'])) {
                 require_once('include/input-validation.php');
                 require_once('database/dbPersons.php');
                 $args = sanitize($_GET);
-                $required = ['name', 'id', 'phone', 'zip', 'role', 'status', 'email'];
+                $required = ['name', 'id', 'phone', 'zip', 'type', 'status', 'email'];
 
                 if (!wereRequiredFieldsSubmitted($args, $required, true)) {
                     echo '<div class="error-block">Missing expected form elements.</div>';
@@ -65,14 +66,14 @@ require_once('header.php');
                 $id = $args['id'];
                 $phone = preg_replace("/[^0-9]/", "", $args['phone']);
                 $zip = $args['zip'];
-                $role = $args['role'];
+                $type = $args['type'];
                 $status = $args['status'];
                 // $photo_release = $args['photo_release'];
                 $email = $args['email'];
 
-                if (!($name || $id || $phone || $zip || $role || $status || $email)) {
+                if (!($name || $id || $phone || $zip || $type || $status || $email)) {
                     echo '<div class="error-block">At least one search criterion is required.</div>';
-                } else if (!valueConstrainedTo($role, ['admin', 'participant', 'superadmin', 'volunteer', 'event manager', 'board member', ''])) {
+                } else if (!valueConstrainedTo($type, ['admin', 'participant', 'superadmin', 'volunteer', 'event_manager', 'board_member', ''])) {
                     echo '<div class="error-block">The system did not understand your request.</div>';
                 } else if (!valueConstrainedTo($status, ['Active', 'Inactive', 'All', ''])) {
                     echo '<div class="error-block">The system did not understand your request.</div>';
@@ -80,7 +81,7 @@ require_once('header.php');
                 //     echo '<div class="error-block">The system did not understand your request.</div>';
                 } else {
                     echo "<h3>Search Results</h3>";
-                    $persons = find_users($name, $id, $phone, $zip, $role, $status, $email);
+                    $persons = find_users($name, $id, $phone, $zip, $type, $status, $email);
                     require_once('include/output.php');
 
                     if (count($persons) > 0) {
@@ -94,7 +95,7 @@ require_once('header.php');
                                         <th>Username</th>
                                         <th>Phone</th>
                                         <th>Zip Code</th>
-                                        <th>Role</th>
+                                        <th>type</th>
                                         <th>Archive Status</th>
                                         <th>Profile</th>
                                         <th>Actions</th>
@@ -152,21 +153,28 @@ require_once('header.php');
             </div>
 
             <div>
-                <label for="role">Role</label>
-                <input type="text" id="role" name="role" class="w-full" value="<?php if (isset($role)) echo htmlspecialchars($_GET['role']); ?>" placeholder="Enter the user's role">
+                <label for="type">Role</label>
+                <select id="type" name="type">
+                    <option value="all" <?= isset($type) && $type === 'all' ? 'selected' : '' ?>>All</option>
+                    <option value="none" <?= isset($type) && $type === 'none' ? 'selected' : '' ?>>None</option>
+                    <option value="volunteer" <?= isset($type) && $type === 'volunteer' ? 'selected' : '' ?>>Volunteer</option>
+                    <option value="event_manager" <?= isset($type) && $type === 'event_manager' ? 'selected' : '' ?>>Event Manager</option>
+                    <option value="board_member" <?= isset($type) && $type === 'board_member' ? 'selected' : '' ?>>Board Member</option>
+                    <option value="admin" <?= isset($type) && $type === 'admin' ? 'selected' : '' ?>>Administrator</option>
+                </select>
             </div>
 
             <div>
                 <label for="email">Email</label>
-                <input type="text" id="email" name="email" class="w-full" value="<?php if (isset($role)) echo htmlspecialchars($_GET['email']); ?>" placeholder="Enter the user's email">
+                <input type="text" id="email" name="email" class="w-full" value="<?php if (isset($email)) echo htmlspecialchars($_GET['email']); ?>" placeholder="Enter the user's email">
             </div>
 
             <div>
                 <label for="status">Status</label>
                 <select id="status" name="status">
-                    <option value="All" <?= isset($status) & $status === 'All' ? 'selected' : '' ?>>All</option>
-                    <option value="Active" <?= isset($status) & $status === 'Active' ? 'selected' : '' ?>>Active</option>
-                    <option value="Inactive" <?= isset($status) & $status === 'Inactive' ? 'selected' : '' ?>>Inactive</option>
+                    <option value="All" <?= isset($status) && $status === 'All' ? 'selected' : '' ?>>All</option>
+                    <option value="Active" <?= isset($status) && $status === 'Active' ? 'selected' : '' ?>>Active</option>
+                    <option value="Inactive" <?= isset($status) && $status === 'Inactive' ? 'selected' : '' ?>>Inactive</option>
                 </select>
             </div>
 
@@ -196,7 +204,7 @@ require_once('header.php');
     <div class="info-section">
         <div class="blue-div"></div>
         <p class="info-text">
-            Use this tool to filter and search for volunteers or participants by their role, zip code, phone, archive status, and more. Mailing list support is built in.
+            Use this tool to filter and search for volunteers or participants by their type, zip code, phone, archive status, and more. Mailing list support is built in.
         </p>
     </div>
 </main>

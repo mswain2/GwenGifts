@@ -935,9 +935,9 @@ function get_logged_hours($from, $to, $name_from, $name_to, $venue) {
         return $thePersons;
     }
 
-    function find_users($name, $id, $phone, $zip, $role, $status, $email) {
+    function find_users($name, $id, $phone, $zip, $type, $status, $email) {
     $where = 'where ';
-    if (!($name || $id || $phone || $zip || $role || $status || $email)) {  // ✅ Fixed parentheses
+    if (!($name || $id || $phone || $zip || $type || $status || $email)) {  // ✅ Fixed parentheses
         return [];
     }
         $first = true;
@@ -973,18 +973,14 @@ function get_logged_hours($from, $to, $name_from, $name_to, $venue) {
             $where .= "zip_code like '%$zip%'";
             $first = false;
 		}
-        // if ($type) {
-        //     if (!$first) {
-        //         $where .= ' and ';
-        //     }
-        //     $where .= "type='$type'";
-        //     $first = false;
-        // }
-        if ($role) {
-            // TBD, need to discuss access levels
-            // the type field seems to be the same as role
+        if ($type) {
+            if (!$first) {
+                $where .= ' and ';
+            }
+            $where .= "type='$type'";
+            $first = false;
         }
-        if ($status) {
+        if ($status && $status !== 'All') {
             if (!$first) {
                 $where .= ' and ';
             }
