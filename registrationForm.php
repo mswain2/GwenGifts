@@ -106,9 +106,9 @@
                 <option value="WY">Wyoming</option>
             </select>
 
-            <!--<label for="zip"><em>* </em>Zip Code</label>
-            <input type="text" id="zip" name="zip" pattern="[0-9]{5}" title="5-digit zip code" required placeholder="Enter your 5-digit zip code">
--->
+            <label for="zip">Zip Code</label>
+            <input type="text" id="zip" name="zip" pattern="[0-9]{5}" title="5-digit zip code" placeholder="Enter your 5-digit zip code">
+
             <div class="median-div"></div>
             <label for="affiliation"><em>* </em>Military Affiliation</label>
             <select id="affiliation" name="affiliation" required>

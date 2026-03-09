@@ -919,9 +919,9 @@ function get_logged_hours($from, $to, $name_from, $name_to, $venue) {
         return $thePersons;
     }
 
-    function find_users($name, $id, $phone, $zip, $type, $status) {
+    function find_users($name, $id, $phone, $zip, $role, $status, $email) {
     $where = 'where ';
-    if (!($name || $id || $phone || $zip || $type || $status)) {  // ✅ Fixed parentheses
+    if (!($name || $id || $phone || $zip || $role || $status || $email)) {  // ✅ Fixed parentheses
         return [];
     }
         $first = true;
@@ -957,12 +957,16 @@ function get_logged_hours($from, $to, $name_from, $name_to, $venue) {
             $where .= "zip_code like '%$zip%'";
             $first = false;
 		}
-        if ($type) {
-            if (!$first) {
-                $where .= ' and ';
-            }
-            $where .= "type='$type'";
-            $first = false;
+        // if ($type) {
+        //     if (!$first) {
+        //         $where .= ' and ';
+        //     }
+        //     $where .= "type='$type'";
+        //     $first = false;
+        // }
+        if ($role) {
+            // TBD, need to discuss access levels
+            // the type field seems to be the same as role
         }
         if ($status) {
             if (!$first) {
@@ -971,13 +975,20 @@ function get_logged_hours($from, $to, $name_from, $name_to, $venue) {
             $where .= "status='$status'";
             $first = false;
         }
+        if ($email) {
+            if (!$first) {
+                $where .= ' and ';
+            }
+            $where .= "email like '%$email%'";
+            $first = false;
+        }
         //if ($photo_release) {
           //  if (!$first) {
             //    $where .= ' and ';
             //}
             //$where .= "photo_release='$photo_release'";
             //$first = false;
-       // }
+        // }
         $query = "select * from dbpersons $where order by last_name, first_name";
         // echo $query;
         $connection = connect();

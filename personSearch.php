@@ -24,7 +24,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Gwyneth's Gift | Volunteer/Participant Search</title>
+    <title>Gwyneth's Gift | Search Users</title>
     <link href="css/normal_tw.css" rel="stylesheet">
 <?php
 $tailwind_mode = true;
@@ -35,25 +35,27 @@ require_once('header.php');
 <body>
 
 
-        <h1>Volunteer/Participant Search</h1>
+<h1>Search Users</h1>
 
 
 <main>
     <div class="main-content-box w-[80%] p-8">
 
         <div class="text-center mb-8">
-            <h2>Find a Volunteer or Participant</h2>
-            <p class="sub-text">Use filters below to search and create mailing lists.</p>
+            <h2>Find a User</h2>
+            <p class="sub-text">Use the filters below to search and create mailing lists.</p>
         </div>
 
         <form id="person-search" class="space-y-6" method="get">
 
         <?php
-            if (isset($_GET['name']) || isset($_GET['id']) || isset($_GET['phone']) || isset($_GET['zip']) || isset($_GET['role']) || isset($_GET['status']) || isset($_GET['photo_release'])) {
+            $status = 'active'; // search for active users by default
+
+            if (isset($_GET['name']) || isset($_GET['id']) || isset($_GET['phone']) || isset($_GET['zip']) || isset($_GET['role']) || isset($_GET['status']) || isset($_GET['email'])) {
                 require_once('include/input-validation.php');
                 require_once('database/dbPersons.php');
                 $args = sanitize($_GET);
-                $required = ['name', 'id', 'phone', 'zip', 'role', 'status', 'photo_release'];
+                $required = ['name', 'id', 'phone', 'zip', 'role', 'status', 'email'];
 
                 if (!wereRequiredFieldsSubmitted($args, $required, true)) {
                     echo '<div class="error-block">Missing expected form elements.</div>';
@@ -65,19 +67,20 @@ require_once('header.php');
                 $zip = $args['zip'];
                 $role = $args['role'];
                 $status = $args['status'];
-                $photo_release = $args['photo_release'];
+                // $photo_release = $args['photo_release'];
+                $email = $args['email'];
 
-                if (!($name || $id || $phone || $zip || $role || $status || $photo_release)) {
+                if (!($name || $id || $phone || $zip || $role || $status || $email)) {
                     echo '<div class="error-block">At least one search criterion is required.</div>';
-                } else if (!valueConstrainedTo($role, ['admin', 'participant', 'superadmin', 'volunteer', ''])) {
+                } else if (!valueConstrainedTo($role, ['admin', 'participant', 'superadmin', 'volunteer', 'event manager', 'board member', ''])) {
                     echo '<div class="error-block">The system did not understand your request.</div>';
-                } else if (!valueConstrainedTo($status, ['Active', 'Inactive', ''])) {
+                } else if (!valueConstrainedTo($status, ['Active', 'Inactive', 'All', ''])) {
                     echo '<div class="error-block">The system did not understand your request.</div>';
-                } else if (!valueConstrainedTo($photo_release, ['Restricted', 'Not Restricted', ''])) {
-                    echo '<div class="error-block">The system did not understand your request.</div>';
+                // } else if (!valueConstrainedTo($photo_release, ['Restricted', 'Not Restricted', ''])) {
+                //     echo '<div class="error-block">The system did not understand your request.</div>';
                 } else {
                     echo "<h3>Search Results</h3>";
-                    $persons = find_users($name, $id, $phone, $zip, $role, $status, $photo_release);
+                    $persons = find_users($name, $id, $phone, $zip, $role, $status, $email);
                     require_once('include/output.php');
 
                     if (count($persons) > 0) {
@@ -146,6 +149,25 @@ require_once('header.php');
             <div>
                 <label for="id">Username</label>
                 <input type="text" id="id" name="id" class="w-full" value="<?php if (isset($id)) echo htmlspecialchars($_GET['id']); ?>" placeholder="Enter the user's username (login ID)">
+            </div>
+
+            <div>
+                <label for="role">Role</label>
+                <input type="text" id="role" name="role" class="w-full" value="<?php if (isset($role)) echo htmlspecialchars($_GET['role']); ?>" placeholder="Enter the user's role">
+            </div>
+
+            <div>
+                <label for="email">Email</label>
+                <input type="text" id="email" name="email" class="w-full" value="<?php if (isset($role)) echo htmlspecialchars($_GET['email']); ?>" placeholder="Enter the user's email">
+            </div>
+
+            <div>
+                <label for="status">Status</label>
+                <select id="status" name="status">
+                    <option value="All" <?= isset($status) & $status === 'All' ? 'selected' : '' ?>>All</option>
+                    <option value="Active" <?= isset($status) & $status === 'Active' ? 'selected' : '' ?>>Active</option>
+                    <option value="Inactive" <?= isset($status) & $status === 'Inactive' ? 'selected' : '' ?>>Inactive</option>
+                </select>
             </div>
 
             <div>
