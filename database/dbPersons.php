@@ -43,9 +43,7 @@ function add_person($person) {
             emergency_contact_phone, emergency_contact_phone_type, birthday, 
             email, email_prefs, emergency_contact_first_name, contact_num,
             emergency_contact_relation, contact_method, type, status, notes, 
-            password, affiliation, branch, emergency_contact_last_name,
-            gender, t_shirt_size, computer_access, camera_access, transportation_access, 
-            skills, experience, about_consent
+            password, affiliation, branch, emergency_contact_last_name, t_shirt_size
         ) VALUES ("' .
             $person->get_id() . '","' .
             $person->get_start_date() . '","' .
@@ -55,7 +53,8 @@ function add_person($person) {
             $person->get_city() . '","' .
             $person->get_state() . '","' .
             //$person->get_zip_code() . '","' .
-            $person->get_phone1() . '",NULL,"' .
+            $person->get_phone1() . '","' .
+            $person->get_over_21() . '","' .
             $person->get_phone1type() . '","' .
             $person->get_emergency_contact_phone() . '","' .
             $person->get_emergency_contact_phone_type() . '","' .
@@ -74,15 +73,8 @@ function add_person($person) {
             $person->get_branch() . '","' .
             //$person->get_archived() . '","' .                
             $person->get_emergency_contact_last_name() . '","' .
-            $person->get_gender() . '","' .
-            $person->get_t_shirt_size() . '","' .
-            $person->get_computer_access() . '","' .
-            $person->get_camera_access() . '","' .
-            $person->get_transportation_access() . '","' .
-            $person->get_skills() . '","' .
-            $person->get_experience() . '","' .
-            $person->get_about_consent() . '")';
-
+            $person->get_t_shirt_size() . '");';  
+    
         // Check if the query is properly built
         if (empty($insert_query)) {
             die("Error: insert query is empty");
@@ -146,7 +138,7 @@ function retrieve_person($id) { // (username! not id)
     $result_row = mysqli_fetch_assoc($result);
     // var_dump($result_row);
     $thePerson = make_a_person($result_row);
-//    mysqli_close($con);
+    mysqli_close($con);
     return $thePerson;
 }
 
@@ -232,11 +224,20 @@ function check_out($personID, $eventID, $end_time) {
 
 /* Return true if a given user is currently able to check-in to a given event */
 function can_check_in($personID, $event_info) {
-
     if (!(time() > strtotime($event_info['startDate']) && time() < strtotime($event_info['endDate']) + 86400)) {
-        // event is not ongoing
-        return False;
+        return false;
     }
+
+    if (!(check_if_signed_up($event_info['id'], $personID))) {
+        return false;
+    }
+
+    if (can_check_out($personID, $event_info)) {
+        return false;
+    }
+
+    return true;
+}
 
 
 function archive_volunteer($volunteer_id) {
@@ -291,21 +292,6 @@ function archive_volunteer($volunteer_id) {
     $stmt->close();
     $stmt_delete->close();
     mysqli_close($con);
-}
-
-    if (!(check_if_signed_up($event_info['id'], $personID))) {
-        // user is not signed up for this event
-        return False;
-    }
-
-    if (can_check_out($personID, $event_info)) {
-        // user is already checked-in
-        return False;
-    }
-
-    // validation passed
-    return True;
-
 }
 
     function get_community_service_volunteers_count($dateFrom, $dateTo) {
@@ -616,11 +602,11 @@ function getall_volunteer_names() {
 }
 
 function make_a_person($result_row) {
-	/*
-	 ($f, $l, $v, $a, $c, $s, $z, $p1, $p1t, $p2, $p2t, $e, $ts, $comp, $cam, $tran, $cn, $cpn, $rel,
-			$ct, $t, $st, $cntm, $pos, $credithours, $comm, $mot, $spe,
-			$convictions, $av, $sch, $hrs, $bd, $sd, $hdyh, $notes, $pass)
-	 */
+    /*
+     ($f, $l, $v, $a, $c, $s, $z, $p1, $p1t, $p2, $p2t, $e, $ts, $comp, $cam, $tran, $cn, $cpn, $rel,
+            $ct, $t, $st, $cntm, $pos, $credithours, $comm, $mot, $spe,
+            $convictions, $av, $sch, $hrs, $bd, $sd, $hdyh, $notes, $pass)
+     */
         $thePerson = new Person(
     @$result_row['id'],
     @$result_row['start_date'],
@@ -638,7 +624,7 @@ function make_a_person($result_row) {
     @$result_row['birthday'],
     @$result_row['email'],
     @$result_row['email_prefs'],
-    @$result_row['tshirt_size'],
+    @$result_row['t_shirt_size'],
     @$result_row['emergency_contact_first_name'],
     @$result_row['contact_num'],
     @$result_row['emergency_contact_relation'],
@@ -649,18 +635,16 @@ function make_a_person($result_row) {
     @$result_row['password'],
     @$result_row['affiliation'],
     @$result_row['branch'],
-    @$result_row['archived'], 
+    @$result_row['archived'],
     @$result_row['emergency_contact_last_name'],
     @$result_row['gender'],
-    @$result_row['t_shirt_size'],
     @$result_row['computer_access'],
     @$result_row['camera_access'],
     @$result_row['transportation_access'],
     @$result_row['skills'],
     @$result_row['experience'],
     @$result_row['about_consent']
-    #@$result_row['access_level']
-);
+    );
 
 
     return $thePerson;
@@ -855,7 +839,7 @@ function get_logged_hours($from, $to, $name_from, $name_to, $venue) {
             $person->get_password() . '","' .
             'n/a' . '","' . /* ("profile_pic", we don't use this) 
             'gender' . '","' .
-            $person->get_tshirt_size() . '","' .
+            $person->get_t_shirt_size() . '","' .
             'how_you_heard_of_stepva' . '","' .
             'sensory_sensitivities' . '","' .
             'disability_accomodation_needs' . '","' .
@@ -1117,7 +1101,7 @@ function find_user_names($name) {
                 and dbeventpersons.eventID=dbevents.id
                 and dbevents.completed='Y' 
                 and dbeventpersons.attended=0
-            GROUP BY dbpendingsignups.username;
+            GROUP BY dbeventpersons.userID ORDER BY NoShowCount DESC;
             ";
         
         $result = mysqli_query($connection, $query);
@@ -1131,7 +1115,7 @@ function find_user_names($name) {
 
         else {;
             echo "we have no result";
-            die("Error: " . mysqli_error($con)); // Debugging MySQL error
+            die("Error: " . mysqli_error($connection)); // Debugging MySQL error
 
         }
         mysqli_close($connection);
@@ -1159,7 +1143,7 @@ function find_user_names($name) {
 
         else {;
             echo "we have no result";
-            die("Error: " . mysqli_error($con)); // Debugging MySQL error
+            die("Error: " . mysqli_error($connection)); // Debugging MySQL error
 
         }
         mysqli_close($connection);
@@ -1239,26 +1223,28 @@ function find_user_names($name) {
         }
     }
 
-    function get_check_in_outs($personID, $event) {
-        $con=connect();
-        $query = "SELECT start_time, end_time FROM dbpersonhours WHERE personID = '" .$personID. "' and eventID = '" .$event. "' AND end_time IS NOT NULL";            
-        $result = mysqli_query($con, $query);
+   function get_check_in_outs($personID, $event) {
+    $con = connect();
+    $rows = [];
 
+    $query = "SELECT start_time, end_time 
+              FROM dbpersonhours 
+              WHERE personID = '" . $personID . "' 
+              AND eventID = '" . $event . "' 
+              AND end_time IS NOT NULL";
 
-        if ($result) {
-            $row = [];
-            while ($row = mysqli_fetch_assoc($result)) {
-                $rows[] = $row; // Collect only the event IDs
-            }
-            mysqli_free_result($result);
-            mysqli_close($con);
-            return $rows;  // Return an array of event IDs
-        } else {
-            mysqli_close($con);
-            return []; // Return an empty array if no results are found
+    $result = mysqli_query($con, $query);
+
+    if ($result) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            $rows[] = $row;
         }
+        mysqli_free_result($result);
     }
-    /*@@@ end Thomas */
+
+    mysqli_close($con);
+    return $rows;
+}
 
     
     function get_events_attended_by_2($personID) {
@@ -1410,12 +1396,19 @@ function get_total_vol_hours($dateFrom, $dateTo) {
         $con = connect();
         $query = "SELECT * FROM `dbtrainingpersons` WHERE `persons_id='$id'";
         $result = mysqli_query($con, $query);
+
         if(!$result) {
+            mysqli_close($con);
             return false;
         }
 
         $row = mysqli_fetch_assoc($result);
         mysqli_close($con);
+
+        if (!$row) {
+            return false;
+        }
+
         foreach($row as $completed_training) {
             if($completed_training == $training) {
                 return true;

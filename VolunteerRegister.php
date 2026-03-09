@@ -292,7 +292,7 @@ require_once('header.php');
             $first_name, $last_name, $street_address,
             $city, $state, $zip_code, $phone1, '',
             $phone1type, $emergency_contact_phone, $emergency_contact_phone_type, $birthday,
-            $email, $email_consent,
+            $email, $email_consent, $t_shirt_size,
             $emergency_contact_first_name, null, $emergency_contact_relation,
             null, null, null, null,
             $password, null, null, null,

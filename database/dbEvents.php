@@ -25,6 +25,18 @@ include_once(dirname(__FILE__).'/../domain/Event.php');
 //Added to send emails to users when they are removed or signed up to an event.
 include_once(dirname(__FILE__).'/../email.php');
 
+// Fallback stub for emailHandler if email.php does not define it.
+if (!function_exists('emailHandler')) {
+    /**
+     * Minimal fallback to avoid undefined function errors; returns false when no real handler exists.
+     * Parameters mirror expected signature: ($event_id, $user_id, $type, $message)
+     */
+    function emailHandler($event_id, $user_id, $type, $message = '') {
+        // No-op fallback: optionally log or integrate with mail() here.
+        return false;
+    }
+}
+
 /*
  * add an event to dbEvents table: if already there, return false
  */
