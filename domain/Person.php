@@ -59,7 +59,7 @@ class Person {
 	function __construct(
         $id, $start_date, $first_name, $last_name, $street_address, $city, $state,
 		$zip_code, $phone1, $age, $phone1type, $emergency_contact_phone,
-		$emergency_contact_phone_type, $birthday, $email, $email_prefs, $tshirt_size,
+		$emergency_contact_phone_type, $birthday, $email, $email_prefs,
 		$emergency_contact_first_name, $contact_num, $emergency_contact_relation,
 		$contact_method, $type, $status, $notes, $password, $affiliation, $branch, $archived,
 		$emergency_contact_last_name, $gender, $t_shirt_size, $computer_access, $camera_access, 
@@ -81,7 +81,6 @@ class Person {
 		$this->birthday = $birthday;
 		$this->email = $email;
 		$this->email_prefs = $email_prefs;
-		$this->tshirt_size = $tshirt_size;
 		$this->emergency_contact_first_name = $emergency_contact_first_name;
 		$this->contact_num = $contact_num;
 		$this->emergency_contact_relation = $emergency_contact_relation;
