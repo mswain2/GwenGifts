@@ -101,7 +101,7 @@
 <html>
     <head>
         <?php require_once('universal.inc') ?>
-        <title>Whiskey Valor | Create Training</title>
+        <title>Gwyneth's Gift | Create Training</title>
     </head>
     <body>
         <?php require_once('header.php') ?>
@@ -121,13 +121,13 @@
                 <input type="text" id="start-time" name="start-time" pattern="([1-9]|10|11|12):[0-5][0-9] ?([aApP][mM])" required placeholder="Enter start time. Ex. 12:00 PM">
                 <label for="name">* End Time </label>
                 <input type="text" id="end-time" name="end-time" pattern="([1-9]|10|11|12):[0-5][0-9] ?([aApP][mM])" required placeholder="Enter end time. Ex. 1:00 PM">
-                <fieldset>
+                
                 <label for="role"> * Restrictions </label>
-            <div class="radio-group">
-                <input type="radio" id="u" name="role" value="u" required><label for="role">Unrestricted</label>
-                <input type="radio" id="r" name="role" value="r" required><label for="role">Restricted</label>
-            </div>
-                </fieldset>
+                <div class="radio-group">
+                    <input type="radio" id="u" name="role" value="u" required><label for="role">Unrestricted</label>
+                    <input type="radio" id="r" name="role" value="r" required><label for="role">Restricted</label>
+                </div>
+                
                 <label for="name">* Description </label>
                 <input type="text" id="description" name="description" required placeholder="Enter description">
                 <label for="name">* Training Type </label>

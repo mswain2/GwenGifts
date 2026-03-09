@@ -41,48 +41,7 @@ table, td, tr, th, form, fieldset, em, button, a {
     border-spacing: 0;
 }
 
-:root {
-    /* CSS variables that will be used across the page */
-    --page-background-color: #1F1F21;
-    --page-font-color: #C9AB81; 
-    --inactive-font-color: #d0d0d0;
-    --inactive-background-color: #f0f0f0;
-    --standout-background: #fafafa;
-
-    --happy-toast-background-color: #1a7024;
-    --happy-toast-font-color: white;
-
-    --info-toast-background-color: #2f2f2f;
-    --info-toast-font-color: white;
-
-    --error-toast-background-color: #701a1a;
-    --error-toast-font-color: white;
-
-    --shadow-and-border-color: #e8e8e8;
-
-    --main-color: #00aeef;
-    --accent-color: #39B54A;
-    --secondary-accent-color: #f6a4b5;
-
-    --calendar-event-color: #808080;
-    --calendar-event-color-hover: var(--main-color);
-    --calendar-today-border: 2px solid var(--secondary-accent-color);
-
-    --button-font-color: #c9ab81;
-    --button-padding: 0.5rem 1.5rem;
-    --button-border-radius: 0.25rem;
-
-    --standard-border: 1px solid #333333;
-    --light-border: 1px solid var(--shadow-and-border-color);
-    --text-field-border: 2px solid #3a3a3a;
-
-    --error-color: red;
-
-    /* Global rules */
-    font-size: 18px;
-    font-family: Montserrat;
-    font-weight: 300;
-}
+@import url('css/base.css');
 
 /* Page Sections */
 
@@ -782,7 +741,7 @@ tr.media img {
 
 /* General Use (used by User Search, ...) */
 main.general, form.general {
-    margin: 1rem;
+    margin: 2rem;
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
@@ -832,12 +791,12 @@ table.general th, table.general td {
 }
 
 .section-box {
-    border: 1px solid #3a3a3a !important;   
+    border: 1px solid var(--main-color) !important;   
     border-radius: 5px;
     padding: 15px;
     margin-bottom: 20px;
-    background-color: #1F1F21;
-    color: #C9AB81;    
+    background-color: white;
+    color: var(--secondary-accent-color);    
 }
 
 .section-box legend {
@@ -875,10 +834,11 @@ table.general th, table.general td {
 .container {
     width: 100%;
     max-width: 960px;
-    margin: 0 auto;
+    margin: 2rem auto;
     padding: 20px;
-    background-color: #1F1F21;
+    background-color: var(--page-background-color);
     border-radius: 8px;
+    border: 2px solid var(--main-color);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
@@ -914,19 +874,19 @@ table.general th, table.general td {
 }
 
 .styled-form .button.primary-button {
-    background-color: #4CAF50;
+    background-color: var(--main-color);
     color: #fff;
     border: none;
 }
 
 .styled-form .button.cancel {
-    background-color: #f44336;
+    background-color: var(--cancel-button-background-color);
     color: #fff;
     border: none;
 }
 
 .styled-form .button:hover {
-    opacity: 0.9;
+    background-color: var(--accent-color);
 }
 
 .styled-form .button:active {
@@ -1006,12 +966,12 @@ table.general th, table.general td {
 }
 
 .button.cancel {
-    background-color: #6c757d !important;
+    background-color: var(--cancel-button-background-color) !important;
     color: #fff !important;
 }
 
 .button.cancel:hover {
-    background-color: #5a6268!important;
+    background-color: var(--accent-color) !important;
 }
 
 /* end Thomas */

@@ -20,7 +20,7 @@
 <html>
     <head>
         <?php require_once('universal.inc') ?>
-        <title>Whiskey Valor | Template Page</title>
+        <title>Gwyneth's Gift | Template Page</title>
     </head>
     <body>
         <?php require_once('header.php') ?>

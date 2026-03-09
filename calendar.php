@@ -79,9 +79,8 @@
         <script src="js/calendar.js"></script>
         <!-- JS for switching between Month / Week / Day views (deferred until DOM is ready) -->
         <script src="js/view-switcher.js" defer></script>
-        <title>Gwyneth’s Gifts | Events Calendar</title>
-        <!-- Inline style for success/info toast notifications -->
-        <style>.happy-toast { margin: 0 1.5rem 1.5rem 1.5rem; }</style>
+        <title>Gwyneth's Gift | Events Calendar</title>
+        <style>.happy-toast { margin: 0 1rem 1rem 1rem; }</style>
     </head>
     <body>
         <!-- ── MONTH JUMPER DIALOG ──
@@ -277,9 +276,7 @@
                                     $dayEvents = $events[$e];
                                     foreach ($dayEvents as $info) {
 
-                                        // Default event color (brownish/accent)
-                                        $backgroundCol = 'rgba(228, 147, 70, 1)'; // default color
-                                        $backgroundCol = 'rgba(205, 149, 103, 1)'; // default color
+                                        $backgroundCol = 'var(--calendar-event-color)'; // default color
 
                                         // ── COLOR-CODE EVENTS BASED ON STATUS ──
                                         if(isset($_SESSION['access_level'])) {
@@ -298,10 +295,7 @@
 
                                             // Green if the logged-in user has signed up for this event
                                             } elseif (check_if_signed_up($info['id'], $_SESSION['_id'])) {// user is signed-up for event
-                                                $backgroundCol = '#dc7e81'; // green for signed-up
-                                            } elseif (check_if_signed_up($info['id'], $_SESSION['_id'])) {// user is signed-up for event
-                                                $backgroundCol = '#dc7e81'; // green for signed-up
-
+                                                $backgroundCol = '#4CAF50';
                                             }
                                             // Render event link for logged-in users (includes their user ID)
                                             $eventsStr .= '<a class="calendar-event" style="background-color: ' . $backgroundCol . '" href="event.php?id=' . $info['id'] . '&user_id=' . $_SESSION['_id'] . '">' . htmlspecialchars_decode($info['name']) . '</a>';

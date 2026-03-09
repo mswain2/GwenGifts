@@ -75,7 +75,7 @@ if (isset($_POST["submit"])) {
 <html>
 <head>
     <?php require_once('universal.inc'); ?>
-    <title>Secure Upload</title>
+    <title>Gwyneth's Gift | Secure Upload</title>
 </head>
 <body>
     <?php require_once('header.php'); ?>

@@ -1,3 +1,6 @@
+<!---Maybe use? Looks like it displays events for sign up which is 
+already done by view events. - Kenzie-->
+
 <?php
     // Template for new VMS pages. Base your new page on this one
 
@@ -22,7 +25,7 @@
         <?php require_once('universal.inc') ?>
         <link rel="stylesheet" href="css/messages.css"></link>
         <script src="js/messages.js"></script>
-        <title>Whiskey Valor | Events</title>
+        <title>Gwyneth's Gift | Events</title>
     </head>
     <body>
         <?php require_once('header.php') ?>

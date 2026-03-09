@@ -80,85 +80,16 @@ mysqli_close($conn);
 <html>
 <head>
     <?php require_once('universal.inc'); ?>
-    <title>Edit Draft | Whiskey Valor</title>
+    <title>Gwyneth's Gift | Edit Draft</title>
     <link href="css/base.css" rel="stylesheet">
-    <style>
-        form {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        label {
-            font-weight: bold;
-        }
-
-        input, textarea {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            font-size: 1rem;
-        }
-
-        textarea {
-            height: 200px;
-            resize: vertical;
-        }
-
-        .btn-save {
-            width: fit-content; /* button width matches text */
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 1rem;
-            transition: background-color 0.2s ease;
-            margin-top: 1rem;
-        }
-
-        .btn-save:hover {
-            background-color: #0056b3;
-        }
-
-        .btn-cancel {
-            display: inline-block;
-            margin-top: 10px;
-            color: #007bff;
-            text-decoration: none;
-        }
-
-        .btn-cancel:hover {
-            text-decoration: underline;
-        }
-
-        .success-toast, .error-toast {
-            margin-bottom: 1rem;
-            padding: 10px;
-            border-radius: 6px;
-        }
-
-        .success-toast {
-            background-color: #d4edda;
-            color: #155724;
-        }
-
-        .error-toast {
-            background-color: #f8d7da;
-            color: #721c24;
-        }
-    </style>
+    
 </head>
 <body>
     <?php require_once('header.php'); ?>
 
     <h1>Edit Draft</h1>
     <?php echo $message; ?>
-
+    <main class="date">
     <form method="POST" action="">
         <label for="subject">Subject:</label>
         <input type="text" id="subject" name="subject" value="<?php echo htmlspecialchars($draft['subject']); ?>" required>
@@ -172,8 +103,10 @@ mysqli_close($conn);
         <label for="scheduledSend">Scheduled Send:</label>
         <input type="date" id="scheduledSend" name="scheduledSend" value="<?php echo htmlspecialchars($draft['scheduledSend']); ?>">
 
-        <button type="submit" class="btn-save">Save Changes</button>
-        <a href="viewDrafts.php" class="btn-cancel">Back to Drafts</a>
+        <button type="submit" class="submit-btn">Save Changes</button>
+        <a class="button cancel" href="viewDrafts.php">Return to Drafts</a>
+          
     </form>
+</main>
 </body>
 </html>
