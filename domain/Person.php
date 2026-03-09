@@ -33,7 +33,6 @@ class Person {
 	private $birthday;
 	private $email;
 	private $email_prefs;
-	private $tshirt_size;
 	private $emergency_contact_first_name;
 	private $contact_num;
 	private $emergency_contact_relation;
@@ -170,10 +169,6 @@ class Person {
 
 	function get_email_prefs() {
 		return $this->email_prefs;
-	}
-
-	function get_tshirt_size() {
-		return $this->tshirt_size;
 	}
 
 	function get_affiliation() {

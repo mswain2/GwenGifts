@@ -638,7 +638,6 @@ function make_a_person($result_row) {
     @$result_row['birthday'],
     @$result_row['email'],
     @$result_row['email_prefs'],
-    @$result_row['tshirt_size'],
     @$result_row['emergency_contact_first_name'],
     @$result_row['contact_num'],
     @$result_row['emergency_contact_relation'],
@@ -855,7 +854,7 @@ function get_logged_hours($from, $to, $name_from, $name_to, $venue) {
             $person->get_password() . '","' .
             'n/a' . '","' . /* ("profile_pic", we don't use this) 
             'gender' . '","' .
-            $person->get_tshirt_size() . '","' .
+            $person->get_t_shirt_size() . '","' .
             'how_you_heard_of_stepva' . '","' .
             'sensory_sensitivities' . '","' .
             'disability_accomodation_needs' . '","' .
