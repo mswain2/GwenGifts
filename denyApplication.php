@@ -31,7 +31,7 @@
 <html>
     <head>
         <?php require_once('universal.inc'); ?>
-        <title>Whiskey Valor | Deny Application</title>
+        <title>Gwyneth's Gift | Deny Application</title>
         <link rel="stylesheet" href="css/base.css">
         <link rel="stylesheet" href="css/application.css">
     </head>

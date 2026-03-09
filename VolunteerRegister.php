@@ -6,29 +6,14 @@
 <html>
 <head>
     <?php require_once('database/dbMessages.php'); ?>
-    <title>Whiskey Valor Foundation | Register</title>
+    <title>Gwyneth's Gift | Register</title>
     <link href="css/base.css" rel="stylesheet">
-<!-- BANDAID FIX FOR HEADER BEING WEIRD -->
+
 <?php
 $tailwind_mode = true;
 require_once('header.php');
 ?>
-<style>
-    .date-box {
-        background: #f0f0f0;
-        padding: 7px 30px;
-        border-radius: 50px;
-        box-shadow: -2px 2px 4px rgba(0, 0, 0, 0.08) inset;
-        color: #333333;
-        font-size: 24px;
-        font-weight: 700;
-        text-align: center;
-    }
-    .dropdown {
-        padding-right: 50px;
-    }
-</style>
-<!-- BANDAID END, REMOVE ONCE SOME GENIUS FIXES -->
+
 </head>
 <body class="relative">
 <?php
@@ -196,7 +181,7 @@ require_once('header.php');
             $first_name, $last_name, null,
             $city, $state, null, $phone1, $age, 
             null, null, null, null, 
-            $email, $email_consent, 
+            $email, $email_consent, null,
             null, null, null, null, null, null, null, 
             $password, $affiliation, $branch, null, null
         );

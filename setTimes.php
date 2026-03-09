@@ -84,7 +84,7 @@
 <html>
     <head>
         <?php require_once('universal.inc') ?>
-        <title>Whiskey Valor | Add New Check-In</title>
+        <title>Gwyneth's Gift | Add New Check-In</title>
     </head>
     <body>
 	<?php require_once('header.php') ?>

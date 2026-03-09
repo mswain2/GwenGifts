@@ -30,6 +30,7 @@
 
         $name = htmlspecialchars_decode($args['event-name']);
         $account_name = htmlspecialchars_decode($args['account-name']);
+        $event_id = isset($args['event_id']) ? intval($args['event_id']) : 0;
         $role = isset($args['role']) ? $args['role'] : '';
         $skills = isset($args['skills']) ? $args['skills'] : '';
         $restrictions = isset($args['restrictions']) ? $args['restrictions'] : '';
@@ -68,7 +69,7 @@
             die();
         } 
         else {
-            $id = sign_up_for_event($name, $account_name, $role, $notes);
+            $id = sign_up_for_event($event_id, $account_name, $role, $notes);
             if (!$id) {
                 header('Location: eventFailure.php');
                 exit();
@@ -114,7 +115,7 @@
 <html>
     <head>
         <?php require_once('universal.inc') ?>
-        <title>Whiskey Valor | Sign-Up for Event</title>
+        <title>Gwyneth's Gift | Sign-Up for Event</title>
     </head>
     <body>
         <?php require_once('header.php') ?>

@@ -12,4 +12,4 @@
         <script src="css/header.js"></script>
         
 
-        <link rel="icon" type="image/png" href="images/logo.png">
+        <link rel="icon" type="image/png" href="images/cropped-logo.png">

@@ -1,3 +1,5 @@
+<!--Looks like a combo of editHours.php and editEvent.php - Kenzie-->
+
 <?php
     // Template for new VMS pages. Base your new page on this one
 

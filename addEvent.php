@@ -153,11 +153,11 @@
 <html>
     <head>
         <?php require_once('universal.inc') ?>
-        <title>Whiskey Valor | Create Event</title>
+        <title>Gwyneth's Gift | Create Event</title>
     </head>
     <body>
         <?php require_once('header.php') ?>
-        <h1 style="color: white;">Create Event</h1>
+        <h1>Create Event</h1>
         <main class="date">
             <h2>New Event Form</h2>
             <form id="new-event-form" method="POST">
@@ -256,14 +256,12 @@
                 <input type="number" id="capacity" name="capacity" required placeholder="Enter capacity (e.g. 1-99)">
                 </div>
 
-                <fieldset style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
-                    <legend>Make this a recurring event</legend>
+                <div class="event-sect">
+                    <label>Make this a recurring event</label><br>
 
-                    <label style="margin-top:12px; padding:12px; border:1px solid #e0e0e0; border-radius:8px;">
-                        <input type="checkbox" id="recurring" name="recurring" value="1">
-                        Recurring
-                    </label>
-
+                    <input type="checkbox" id="recurring" name="recurring" value="1">
+                    Recurring
+                        
                     <div id="recurring-options" style="display:none; margin-top:6px;">
                         <label for="recurrence_type">Recurrence:</label>
                         <select name="recurrence_type" id="recurrence_type">
@@ -280,9 +278,10 @@
                             <span>days</span>
                         </div>
                     </div>
-                </fieldset>
+                    
+                </div>
                 
-                <input type="submit" value="Create Event" style="width:100%;">
+                <input type="submit" value="Create Event">
                 
             </form>
                 <script>
