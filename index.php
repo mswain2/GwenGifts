@@ -254,6 +254,17 @@
         <button class="arrow-button">→</button>
     </div>
 
+        <!-- Add Board Meeting -->
+    <div class="content-box-test" onclick="window.location.href='addBoardMeeting.php'">
+        <div class="icon-overlay">
+            <img style="border-radius: 5px;" src="images/search.svg" alt="Drafts Icon">
+        </div>
+        
+        <div class="large-text-sub">Add Board Meeting</div>
+        <div class="graph-text">Schedule a Board Meeting.</div>
+        <button class="arrow-button">→</button>
+    </div>
+
 </div>
 
 

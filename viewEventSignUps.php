@@ -10,7 +10,6 @@ if (!isset($_SESSION['access_level']) || $_SESSION['access_level'] < 1) {
 require_once('include/input-validation.php');
 require_once('database/dbEvents.php');
 require_once('database/dbPersons.php');
-require_once('database/dbApplications.php');
 
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
@@ -46,7 +45,7 @@ if (!$event_info) {
 }
 
 $signups = fetch_event_signups($id);
-$pending_signups = fetch_pending_apps($id);
+$pending_signups = fetch_pending($id);
 $access_level = $_SESSION['access_level'];
 ?>
 <!DOCTYPE html>
@@ -57,8 +56,15 @@ $access_level = $_SESSION['access_level'];
     <title>Gwyneth's Gift | View Event Sign-Ups></title>
     <link rel="stylesheet" href="css/messages.css" />
     <script>
-        function showResolutionConfirmation() {
+        function showResolutionConfirmation(userId, notes) {
             document.getElementById('resolution-confirmation-wrapper').classList.remove('hidden');
+
+            document.getElementById('modal-user-id').value = userId;
+            document.getElementById('modal-notes').value = notes;
+
+            document.getElementById('modal-user-id-reject').value = userId;
+            document.getElementById('modal-notes-reject').value = notes;
+
             return false;
         }
         function showApprove() {
@@ -175,7 +181,11 @@ $access_level = $_SESSION['access_level'];
                             <?php endif; ?>
                             <th>First Name</th>
                             <th>Last Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
                             <th>User ID</th>
+                            <th>Shirt Size</th>
+                            <th>Trainings</th>
                             <th>Notes</th>
                             <th>Pending</th>
                             <?php if ($access_level >= 2): ?>
@@ -195,8 +205,12 @@ $access_level = $_SESSION['access_level'];
                                 <?php endif; ?>
                                 <td><?php echo htmlspecialchars($user_info->get_first_name()); ?></td>
                                 <td><?php echo htmlspecialchars($user_info->get_last_name()); ?></td>
-                                <td><a href="viewProfile.php?id=<?php echo urlencode($signup['userID']); ?>"><?php echo htmlspecialchars($signup['userID']); ?></a></td>
-                                
+                                <td><?php echo htmlspecialchars($user_info->get_email()); ?></td>
+                                <td><?php echo htmlspecialchars($user_info->get_phone1()); ?></td>
+                                <td><a href="viewProfile.php?id=<?php echo urlencode($signup['userID']); ?>">
+                                    <?php echo htmlspecialchars($signup['userID']); ?></a></td>
+                                <td><?php echo htmlspecialchars($user_info->get_tshirt_size() ?: 'N/A'); ?></td>
+                                <td>N/A</td>
                                 <td>
                                 <?php
                                     $formatted_notes = isset($signup['notes']) && ($signup['notes'] !== '' && $signup['notes'] !== NULL) ? $signup['notes'] : 'No notes.';
@@ -229,43 +243,50 @@ $access_level = $_SESSION['access_level'];
                         <?php endforeach; ?>
 
                         <?php foreach ($pending_signups as $signup): 
-                            $user_info = retrieve_person($signup->getUserID());
+                            $user_info = retrieve_person($signup['username']);
                             if ($user_info) {
                                 //$position_label = $signup['role'] === 'p' ? 'Participant' : ($signup['role'] === 'v' ? 'Volunteer' : 'Unknown');
-                                $pending = check_if_signed_up($args['id'], $signup->getUserID());
-                                if ($signup->getNote() != '' && $signup->getNote() != NULL) {
-                                    $notes = $signup->getNote();
-                                }
-                                else {
+                                $pending = check_if_signed_up($args['id'], $signup['username']);
+                                if ($signup['notes'] != '' && $signup['notes'] != NULL) {
+                                    $notes = $signup['notes'];
+                                } else {
                                     $notes = 'No Notes';
                                 }
+                            } else {
+                                $notes = 'No Notes';
+                            }
                         ?>
                                 <tr>
                                     <?php if ($access_level >= 2): ?>
                                         <td class="select-col">
                                             <?php if ($pending == "0"): ?>
-                                                <input type="checkbox" class="bulk-select" value="<?php echo htmlspecialchars($signup->getUserID()); ?>"  data-notes="<?php echo htmlspecialchars($signup->getNote()); ?>">
+                                                <input type="checkbox" class="bulk-select" value="<?php echo htmlspecialchars($signup['username']); ?>"  data-notes="<?php echo htmlspecialchars($signup['notes']); ?>">
                                             <?php endif; ?>
                                         </td>
                                     <?php endif; ?>
                                     <td><?php echo htmlspecialchars($user_info->get_first_name()); ?></td>
                                     <td><?php echo htmlspecialchars($user_info->get_last_name()); ?></td>
-                                    <td><a href="viewProfile.php?id=<?php echo urlencode($signup->getUserID()); ?>"><?php echo htmlspecialchars($signup->getUserID()); ?></a></td>
-                                    
+                                    <td><?php echo htmlspecialchars($user_info->get_email()); ?></td>
+                                    <td><?php echo htmlspecialchars($user_info->get_phone1()); ?></td>
+                                    <td><a href="viewProfile.php?id=<?php echo urlencode($signup['username']); ?>"><?php echo htmlspecialchars($signup['username']); ?></a></td>
+                                    <td><?php echo htmlspecialchars($user_info->get_tshirt_size() ?: 'N/A'); ?></td>
+                                    <td>N/A</td>
+                                        
+                                    </td>
+
                                     <td><?php echo htmlspecialchars($notes); ?></td>
                                     <td><?php if($pending == '0') echo "Yes"; elseif($pending == '1') echo "No"; ?></td>
                                     <?php if ($access_level >= 2 && $pending == "0"): ?>
                                         <td>
                                             <form method="POST" style="display:inline;">
                                                 <input type="hidden" name="event_id" value="<?php echo htmlspecialchars($id); ?>">
-                                                <input type="hidden" name="user_id" value="<?php echo htmlspecialchars($signup->getUserID()); ?>">
+                                                <input type="hidden" name="user_id" value="<?php echo htmlspecialchars($signup['username']); ?>">
                                             </form>
-                                            <button onclick="showResolutionConfirmation()" class="button">Resolve</button>
+                                            <button onclick="showResolutionConfirmation('<?php echo htmlspecialchars($signup['username']); ?>','<?php echo htmlspecialchars($signup['notes']); ?>')" class="button">Resolve</button>
                                         </td>
                                     <?php endif; ?>
                                 </tr>
-                        <?php 
-                            }
+                        <?php
                         endforeach;
                         ?>
                     </tbody>
@@ -292,8 +313,8 @@ $access_level = $_SESSION['access_level'];
         <form method="post" action="approveSignup.php">
                         <input type="submit" value="Approve" class="button success">
                         <input type="hidden" name="id" value="<?= $_REQUEST['id'] ?>">
-                        <input type="hidden" name="user_id" value="<?=$signup->getUserID()?>">
-                        <input type="hidden" name="notes" value="<?=$signup->getNote()?>">
+                        <input type="hidden" id="modal-user-id" name="user_id" value="">
+                        <input type="hidden" id="modal-notes" name="notes" value="">
         </form>
         <button onclick="document.getElementById('approve-confirmation-wrapper').classList.add('hidden')" id="cancel-cancel" class="button cancel">Cancel</button>
         </div>
@@ -305,8 +326,8 @@ $access_level = $_SESSION['access_level'];
         <form method="post" action="rejectSignup.php">
                         <input type="submit" value="Reject" class="button danger">
                         <input type="hidden" name="id" value="<?=$_REQUEST['id']?>">
-                        <input type="hidden" name="user_id" value="<?=$signup->getUserID()?>">
-                        <input type="hidden" name="notes" value="<?=$signup->getNote()?>">
+                        <input type="hidden" id="modal-user-id-reject" name="user_id" value="">
+                        <input type="hidden" id="modal-notes-reject" name="notes" value="">
         </form>
         <button onclick="document.getElementById('reject-confirmation-wrapper').classList.add('hidden')" id="cancel-cancel" class="button cancel">Cancel</button>
         </div>
