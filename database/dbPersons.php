@@ -1128,7 +1128,7 @@ function find_user_names($name) {
                 and dbeventpersons.eventID=dbevents.id
                 and dbevents.completed='Y' 
                 and dbeventpersons.attended=0
-            GROUP BY dbpendingsignups.username;
+            GROUP BY dbeventpersons.userID;
             ";
         
         $result = mysqli_query($connection, $query);
@@ -1142,7 +1142,7 @@ function find_user_names($name) {
 
         else {;
             echo "we have no result";
-            die("Error: " . mysqli_error($con)); // Debugging MySQL error
+            die("Error: " . mysqli_error($connection));
 
         }
         mysqli_close($connection);
@@ -1170,7 +1170,7 @@ function find_user_names($name) {
 
         else {;
             echo "we have no result";
-            die("Error: " . mysqli_error($con)); // Debugging MySQL error
+            die("Error: " . mysqli_error($connection));
 
         }
         mysqli_close($connection);
