@@ -49,7 +49,7 @@ require_once('header.php');
         /*
         $required = array(
             'first_name', 'last_name', 'age',
-            'city', 'state', 
+            'city', 'state',
             'affiliation', 'branch',
             'email', 'username', 'password',
             'privacy_consent'
@@ -150,6 +150,8 @@ require_once('header.php');
         } else {
             $phone1 = null;
         }
+
+        $status = $args['status'];
 
         if(isset($args['email_prefs'])) {
             $email_consent = $args['email_prefs'];
@@ -279,10 +281,10 @@ require_once('header.php');
         /*$newperson = new Person(
             $id, date("Y-m-d"),
             $first_name, $last_name, null,
-            $city, $state, null, $phone1, $age, 
+            $city, $state, $zip_code, $phone1, $age, 
             null, null, null, null, 
             $email, $email_consent, null,
-            null, null, null, null, null, null, null, 
+            null, null, null, null, null, $status, null, 
             $password, $affiliation, $branch, null, null
         );*/
 

@@ -920,9 +920,9 @@ function get_logged_hours($from, $to, $name_from, $name_to, $venue) {
         return $thePersons;
     }
 
-    function find_users($name, $id, $phone, $zip, $type, $status) {
+    function find_users($name, $id, $phone, $zip, $type, $status, $email) {
     $where = 'where ';
-    if (!($name || $id || $phone || $zip || $type || $status)) {  // ✅ Fixed parentheses
+    if (!($name || $id || $phone || $zip || $type || $status || $email)) {  // ✅ Fixed parentheses
         return [];
     }
         $first = true;
@@ -965,11 +965,18 @@ function get_logged_hours($from, $to, $name_from, $name_to, $venue) {
             $where .= "type='$type'";
             $first = false;
         }
-        if ($status) {
+        if ($status && $status !== 'All') {
             if (!$first) {
                 $where .= ' and ';
             }
             $where .= "status='$status'";
+            $first = false;
+        }
+        if ($email) {
+            if (!$first) {
+                $where .= ' and ';
+            }
+            $where .= "email like '%$email%'";
             $first = false;
         }
         //if ($photo_release) {
@@ -978,7 +985,7 @@ function get_logged_hours($from, $to, $name_from, $name_to, $venue) {
             //}
             //$where .= "photo_release='$photo_release'";
             //$first = false;
-       // }
+        // }
         $query = "select * from dbpersons $where order by last_name, first_name";
         // echo $query;
         $connection = connect();

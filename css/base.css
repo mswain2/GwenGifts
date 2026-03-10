@@ -316,9 +316,9 @@ input[type=text]:focus, input[type=password]:active, input[type=email]:focus, in
 
 input[type=submit], button, .button, a.button-signup {
     color: var(--button-font-color);
-    background-color: var(--main-color);
+    background-color: var(--accent-color);
     padding: var(--button-padding);
-    border: 3px solid rgba(255, 255, 255, 0.295);
+    border: none;
     border-radius: var(--button-border-radius);
     font-weight: 500;
     width: 100%;
@@ -468,12 +468,15 @@ h3:not(:first-of-type) {
 
 /* Calendar */
 table#calendar {
-    border-spacing: 0;
-    border-width: 0px 1px 1px 1px; /* top | right | bottom | left */
+    border-spacing: 6px;
+    border-width: 0;
     border-style: none;
-    width: calc(90% - 1rem);
+    border-bottom: none;
+    width: calc(94% - 1rem);
     border-collapse: separate;
-    margin: 0rem auto 0.5rem auto;
+    margin: 0.5rem auto 1rem auto;
+    background-color: transparent;
+    padding: 0;
 }
 
 #calendar-footer {
@@ -482,11 +485,17 @@ table#calendar {
 
 main.calendar-view {
     margin-bottom: 0.5rem;
+    background-color: #faf8f6;
 }
 
 main.calendar-view th {
     text-align: center;
-    font-weight: 400;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #6b6b6b;
+    padding: 0.75rem 0.25rem;
 }
 
 .calendar-week {
@@ -494,11 +503,15 @@ main.calendar-view th {
 }
 
 .calendar-day {
-    height: 20vh;
+    height: 18vh;
     width: 14.25%;
-    border-radius:10px;
-    border: none var(--light-border);
+    border-radius: 12px;
+    border: 1px solid #ece7e2;
     cursor: pointer;
+    background-color: #ffffff;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    vertical-align: top;
 }
 
 @media only screen and (max-width: 900px) {
@@ -513,13 +526,16 @@ main.calendar-view th {
 }
 
 .calendar-day:hover:not(.other-month) {
-    outline: 2px solid var(--accent-color);
-    background-color: rgba(255,255,255,0.25);
+    outline: none;
+    box-shadow: 0 4px 12px rgba(212, 89, 110, 0.18);
+    transform: translateY(-2px);
+    border-color: var(--accent-color);
 }
 
 .calendar-day:hover:is(.other-month) {
-    background-color: rgba(255,255,255,0.10);
-    outline: 2px solid var(--accent-color);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    outline: none;
+    border-color: #ddd;
 }
 
 .calendar-day-wrapper {
@@ -527,16 +543,20 @@ main.calendar-view th {
     width: 100%;
     display: flex;
     flex-direction: column;
-    padding-top: 0.5rem;
-    gap: 1px;
+    padding: 0.5rem;
+    gap: 3px;
 }
 
 .calendar-day-number {
-    padding-left: 0.5rem;
+    padding-left: 0.15rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #444;
+    margin-bottom: 2px;
 }
 
 .calendar-event {
-    padding: 0.25rem 0.5rem;
+    padding: 0.2rem 0.5rem;
     text-decoration: none;
     transition: background-color .2s;
     background-color: var(--calendar-event-color);
@@ -551,13 +571,19 @@ main.calendar-view th {
 }
 
 .other-month {
-    color: var(--inactive-font-color);
-    background-color: var(--inactive-background-color);
+    color: #c0b8b0;
+    background-color: #f5f3f1;
+    opacity: 0.6;
+}
+
+.other-month .calendar-day-number {
+    color: #c0b8b0;
 }
 
 .today {
     border: var(--calendar-today-border);
-    border-width: 2px;
+    border-width: 2.5px;
+    background-color: #fff5f3;
 }
 
 h1.calendar-header {
@@ -567,8 +593,10 @@ h1.calendar-header {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1rem;
+    margin-bottom: 0;
     z-index: 20;
+    padding: 0 1.5rem;
+    box-shadow: 0 2px 12px rgba(212, 89, 110, 0.25);
 }
 
 h1.calendar-header a {
@@ -610,13 +638,18 @@ h1.calendar-header a {
     height: 3rem;
     background-color: var(--secondary-accent-color);
     border-radius: 100%;
-    box-shadow: 0px 5px 20px rgba(74, 2, 2, 0.269);
+    box-shadow: 0px 3px 12px rgba(212, 89, 110, 0.3);
     cursor: pointer;
     color: var(--page-font-color);
     margin-left: 6%;
     display: flex;
     z-index:9;
     opacity: 1 !important;
+    transition: transform 0.2s ease;
+}
+
+.filter-menu:hover {
+    transform: scale(1.08);
 }
 
 .filter-menu-icon {
@@ -704,8 +737,14 @@ img.filter-button {
 
 #previous-month-button, #next-month-button {
     height: 2rem;
-    filter: invert();
+    filter: invert() brightness(2);
     cursor: pointer;
+    transition: transform 0.2s ease;
+    padding: 0.25rem;
+}
+
+#previous-month-button:hover, #next-month-button:hover {
+    transform: scale(1.2);
 }
 
 #month-jumper-wrapper {
