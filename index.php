@@ -243,17 +243,18 @@
         <div class="graph-text">View user submitted suggestions.</div>
         <button class="arrow-button">→</button>
     </div>
-    
-    <!-- Board Documents -->
-    <div class="content-box-test" onclick="window.location.href='boardDocuments.php'" style="background-color: #f8f8f8; border-radius: 12px; padding: 20px; color: black; border: 1px solid #e0e0e0;">
+
+        <!-- Add Board Meeting -->
+    <div class="content-box-test" onclick="window.location.href='addBoardMeeting.php'">
         <div class="icon-overlay">
-            <img style="border-radius: 5px;" src="images/file-regular.svg" alt="Documents Icon">
+            <img style="border-radius: 5px;" src="images/search.svg" alt="Drafts Icon">
         </div>
         
-        <div class="large-text-sub" style="color:black;">Board Documents</div>
-        <div class="graph-text" style="color:#3A3A3A;">Access and manage board resources.</div>
+        <div class="large-text-sub">Add Board Meeting</div>
+        <div class="graph-text">Schedule a Board Meeting.</div>
         <button class="arrow-button">→</button>
     </div>
+
 </div>
 
 
