@@ -33,6 +33,7 @@ class Person {
 	private $birthday;
 	private $email;
 	private $email_prefs;
+	private $t_shirt_size;
 	private $emergency_contact_first_name;
 	private $contact_num;
 	private $emergency_contact_relation;
@@ -46,7 +47,6 @@ class Person {
 	private $archived;
 	private $emergency_contact_last_name;
 	private $gender;
-	private $t_shirt_size;
 	private $computer_access;
 	private $camera_access;
 	private $transportation_access;
@@ -56,12 +56,12 @@ class Person {
 	private $access_level;
 
 	function __construct(
-        $id, $start_date, $first_name, $last_name, $street_address, $city, $state,
+		$id, $start_date, $first_name, $last_name, $street_address, $city, $state,
 		$zip_code, $phone1, $age, $phone1type, $emergency_contact_phone,
-		$emergency_contact_phone_type, $birthday, $email, $email_prefs,
+		$emergency_contact_phone_type, $birthday, $email, $email_prefs, $t_shirt_size,
 		$emergency_contact_first_name, $contact_num, $emergency_contact_relation,
 		$contact_method, $type, $status, $notes, $password, $affiliation, $branch, $archived,
-		$emergency_contact_last_name, $gender, $t_shirt_size, $computer_access, $camera_access, 
+		$emergency_contact_last_name, $gender, $computer_access, $camera_access, 
 		$transportation_access, $skills, $experience, $about_consent
 	) {
         $this->id = $id;
@@ -80,6 +80,7 @@ class Person {
 		$this->birthday = $birthday;
 		$this->email = $email;
 		$this->email_prefs = $email_prefs;
+		$this->t_shirt_size = $t_shirt_size;
 		$this->emergency_contact_first_name = $emergency_contact_first_name;
 		$this->contact_num = $contact_num;
 		$this->emergency_contact_relation = $emergency_contact_relation;
@@ -93,7 +94,6 @@ class Person {
 		$this->archived = $archived;
 		$this->emergency_contact_last_name = $emergency_contact_last_name;
 		$this->gender = $gender;
-		$this->t_shirt_size = $t_shirt_size;
 		$this->computer_access = $computer_access;
 		$this->camera_access = $camera_access;
 		$this->transportation_access = $transportation_access;
@@ -171,6 +171,10 @@ class Person {
 		return $this->email_prefs;
 	}
 
+	function get_t_shirt_size() {
+		return $this->t_shirt_size;
+	}
+
 	function get_affiliation() {
 		return $this->affiliation;
 	}
@@ -240,10 +244,6 @@ class Person {
 		return $this->gender; 
 	}
 	
-	function get_t_shirt_size() {
-		return $this->t_shirt_size; 
-	}
-
 	function get_computer_access() { 
 		return $this->computer_access; 
 	}
