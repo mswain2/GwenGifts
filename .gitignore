@@ -1,0 +1,4 @@
+# ignore Olivia's Claude Code
+.claude/
+CLAUDE.md
+sql/.DS_Store

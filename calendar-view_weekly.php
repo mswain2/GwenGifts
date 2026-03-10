@@ -63,7 +63,7 @@ $nextWeek = strtotime(date('Y-m-d', $dayEpoch) . ' +7 days');
         echo "<script> console.log('PHP variable end:', '\" . $end. \"');</script>";
 
         require_once('database/dbEvents.php');
-        $events = fetch_events_in_date_range($start, $end, $loggedIn);
+        $events = fetch_events_in_date_range($start, $end/*, $loggedIn*/);
         echo "<script> console.log('Events:', " . json_encode($events) . ");</script>";
         
         echo '<tr class="calendar-week">';
@@ -95,7 +95,7 @@ $nextWeek = strtotime(date('Y-m-d', $dayEpoch) . ' +7 days');
                                     if ($_SESSION['access_level'] < 2) {
                                         continue; // users cannot see archived events
                                     }
-                                    $backgroundCol = '#aaaaaa';
+                                    $backgroundCol = '#b0b0b0';
 
                                 } elseif (check_if_signed_up($info['id'], $_SESSION['_id'])) {// user is signed-up for event
                                     $backgroundCol = '#4CAF50';
