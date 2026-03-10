@@ -209,7 +209,7 @@ $access_level = $_SESSION['access_level'];
                                 <td><?php echo htmlspecialchars($user_info->get_phone1()); ?></td>
                                 <td><a href="viewProfile.php?id=<?php echo urlencode($signup['userID']); ?>">
                                     <?php echo htmlspecialchars($signup['userID']); ?></a></td>
-                                <td><?php echo htmlspecialchars($user_info->get_tshirt_size() ?: 'N/A'); ?></td>
+                                <td><?php echo htmlspecialchars($user_info->get_t_shirt_size() ?: 'N/A'); ?></td>
                                 <td>N/A</td>
                                 <td>
                                 <?php
@@ -269,7 +269,7 @@ $access_level = $_SESSION['access_level'];
                                     <td><?php echo htmlspecialchars($user_info->get_email()); ?></td>
                                     <td><?php echo htmlspecialchars($user_info->get_phone1()); ?></td>
                                     <td><a href="viewProfile.php?id=<?php echo urlencode($signup['username']); ?>"><?php echo htmlspecialchars($signup['username']); ?></a></td>
-                                    <td><?php echo htmlspecialchars($user_info->get_tshirt_size() ?: 'N/A'); ?></td>
+                                    <td><?php echo htmlspecialchars($user_info->get_t_shirt_size() ?: 'N/A'); ?></td>
                                     <td>N/A</td>
                                         
                                     </td>

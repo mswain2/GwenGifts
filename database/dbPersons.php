@@ -638,7 +638,6 @@ function make_a_person($result_row) {
     @$result_row['birthday'],
     @$result_row['email'],
     @$result_row['email_prefs'],
-    @$result_row['tshirt_size'],
     @$result_row['emergency_contact_first_name'],
     @$result_row['contact_num'],
     @$result_row['emergency_contact_relation'],
@@ -855,7 +854,7 @@ function get_logged_hours($from, $to, $name_from, $name_to, $venue) {
             $person->get_password() . '","' .
             'n/a' . '","' . /* ("profile_pic", we don't use this) 
             'gender' . '","' .
-            $person->get_tshirt_size() . '","' .
+            $person->get_t_shirt_size() . '","' .
             'how_you_heard_of_stepva' . '","' .
             'sensory_sensitivities' . '","' .
             'disability_accomodation_needs' . '","' .
@@ -936,9 +935,9 @@ function get_logged_hours($from, $to, $name_from, $name_to, $venue) {
         return $thePersons;
     }
 
-    function find_users($name, $id, $phone, $zip, $type, $status) {
+    function find_users($name, $id, $phone, $zip, $type, $status, $email) {
     $where = 'where ';
-    if (!($name || $id || $phone || $zip || $type || $status)) {  // ✅ Fixed parentheses
+    if (!($name || $id || $phone || $zip || $type || $status || $email)) {  // ✅ Fixed parentheses
         return [];
     }
         $first = true;
@@ -981,11 +980,18 @@ function get_logged_hours($from, $to, $name_from, $name_to, $venue) {
             $where .= "type='$type'";
             $first = false;
         }
-        if ($status) {
+        if ($status && $status !== 'All') {
             if (!$first) {
                 $where .= ' and ';
             }
             $where .= "status='$status'";
+            $first = false;
+        }
+        if ($email) {
+            if (!$first) {
+                $where .= ' and ';
+            }
+            $where .= "email like '%$email%'";
             $first = false;
         }
         //if ($photo_release) {
@@ -994,7 +1000,7 @@ function get_logged_hours($from, $to, $name_from, $name_to, $venue) {
             //}
             //$where .= "photo_release='$photo_release'";
             //$first = false;
-       // }
+        // }
         $query = "select * from dbpersons $where order by last_name, first_name";
         // echo $query;
         $connection = connect();
@@ -1117,7 +1123,7 @@ function find_user_names($name) {
                 and dbeventpersons.eventID=dbevents.id
                 and dbevents.completed='Y' 
                 and dbeventpersons.attended=0
-            GROUP BY dbpendingsignups.username;
+            GROUP BY dbeventpersons.userID;
             ";
         
         $result = mysqli_query($connection, $query);
@@ -1131,7 +1137,7 @@ function find_user_names($name) {
 
         else {;
             echo "we have no result";
-            die("Error: " . mysqli_error($con)); // Debugging MySQL error
+            die("Error: " . mysqli_error($connection));
 
         }
         mysqli_close($connection);
@@ -1159,7 +1165,7 @@ function find_user_names($name) {
 
         else {;
             echo "we have no result";
-            die("Error: " . mysqli_error($con)); // Debugging MySQL error
+            die("Error: " . mysqli_error($connection));
 
         }
         mysqli_close($connection);

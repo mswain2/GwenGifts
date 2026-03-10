@@ -5,6 +5,7 @@
     include_once('database/dbPersons.php');
 
     $person = Array();
+    $person['id'] = 'vmsroot';
     $person['first_name'] = 'vmsroot';
     $person['last_name'] = '';
     $person['venue'] = 'portland';
@@ -17,6 +18,7 @@
     $person['phone2'] = 'N/A';
     $person['phone2type'] = 'N/A';
     $person['email'] = 'vmsroot';
+    $person['email_prefs'] = 'false';
     $person['contact_name'] = 'N/A';
     $person['contact_num'] = 'N/A';
     $person['relation'] = 'N/A';
@@ -36,6 +38,10 @@
     $person['password'] = password_hash('vmsroot', PASSWORD_BCRYPT);
     $person['profile_pic'] = '';
     $person['gender'] = '';
+    $person['computer_access'] = 'no';
+    $person['camera_access'] = 'no';
+    $person['transportation_access'] = 'no';
+    $person['about_consent'] = 'no';
     $person['force_password_change'] = 1;
     $days = array('sun', 'mon', 'tues', 'wednes', 'thurs', 'fri', 'satur');
     foreach ($days as $day) {
