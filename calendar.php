@@ -248,7 +248,7 @@
                         $end = date('Y-m-d', $calendarEndEpoch);
                         // Include database helper and fetch all events within the visible date range
                         require_once('database/dbEvents.php');
-                        $events = fetch_events_in_date_range($start, $end, $loggedIn);
+                        $events = fetch_events_in_date_range($start, $end/*, $loggedIn*/);
                         // Loop through each week row
                         for ($week = 0; $week < $weeks; $week++) {
                             echo '

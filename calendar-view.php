@@ -70,7 +70,7 @@ if (date('m', strtotime($calendarEnd . ' +1 day')) != $monthEpoch) {
                         $end = date('Y-m-d', $calendarEndEpoch);
                         require_once('database/dbEvents.php');
                         $loggedIn = 0; //Logged in set to 0 change later
-                        $events = fetch_events_in_date_range($start, $end, $loggedIn);
+                        $events = fetch_events_in_date_range($start, $end/*, $loggedIn*/);
                         for ($week = 0; $week < $weeks; $week++) {
                             echo '
                                 <tr class="calendar-week">
