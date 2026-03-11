@@ -53,8 +53,7 @@ function add_person($person) {
             $person->get_city() . '","' .
             $person->get_state() . '","' .
             //$person->get_zip_code() . '","' .
-            $person->get_phone1() . '","' .
-            $person->get_over_21() . '","' .
+            $person->get_phone1() . '",null,"' .
             $person->get_phone1type() . '","' .
             $person->get_emergency_contact_phone() . '","' .
             $person->get_emergency_contact_phone_type() . '","' .

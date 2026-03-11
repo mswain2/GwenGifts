@@ -255,6 +255,17 @@
         <button class="arrow-button">→</button>
     </div>
 
+        <!-- Add Board Documents -->
+    <div class="content-box-test" onclick="window.location.href='boardDocuments.php'">
+        <div class="icon-overlay">
+            <img style="border-radius: 5px;" src="images/file-regular.svg" alt="Drafts Icon">
+        </div>
+        
+        <div class="large-text-sub">Manage Board Documents</div>
+        <div class="graph-text">Manage files.</div>
+        <button class="arrow-button">→</button>
+    </div>
+
 </div>
 
 

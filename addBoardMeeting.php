@@ -52,7 +52,7 @@
         $args['startTime'] = $startTime;
         $args['endTime']   = $endTime;
         $args['end-time']  = $endTime;
-        $args['type']      = 'Board Meeting';
+        $args['type']      = 'Normal';
         // IMPORTANT: currently, the access level is public but needs to changed to 'Board' once that access level is implemented
         // so for now, it will be visible to all
         $args['access']    = 'Public';
@@ -61,7 +61,7 @@
         $args['is_recurring']             = 0;
         $args['recurrence_type']          = null;
         $args['recurrence_interval_days'] = null;
-        $args['series_id']                = bin2hex(random_bytes(16));
+        $args['series_id']                = null; /*bin2hex(random_bytes(16))*/
 
         if (!isset($args['description'])) {
             $args['description'] = '';
