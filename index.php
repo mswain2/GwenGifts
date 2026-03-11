@@ -103,7 +103,7 @@
     </div>
 
     <div class="content-box">
-        <img src="images/momprom.jpg" style="filter:brightness(1) contrast(40%) blur(4px) opacity(70%);">
+        <img src="images/momprom.jpg" style="filter:brightness(1) contrast(40%) blur(4px) opacity(60%);">
         <div class="small-text">Let’s have some fun!</div>
         <div class="large-text">Event Management</div>
 <button class="circle-arrow-button" onclick="window.location.href='eventManagement.php'">
@@ -333,7 +333,7 @@
 
     <div class="full-width-bar">
     <div class="content-box">
-        <img src="images/gwenVol.jpg" style="filter:brightness(1) contrast(40%) blur(4px) opacity(70%);"/>   
+        <img src="images/gwenVol.jpg" style="filter:brightness(1) contrast(40%) blur(4px) opacity(60%);"/>   
         
             <div class="small-text">Make a difference.</div>
             <div class="large-text">My Profile</div>
@@ -352,7 +352,7 @@
     </div>
 
     <div class="content-box">
-        <img src="images/gg.jpg" style="filter:brightness(1) contrast(40%) blur(4px) opacity(70%);" />
+        <img src="images/gg.jpg" style="filter:brightness(1) contrast(40%) blur(4px) opacity(60%);" />
         
             <div class="small-text">Let’s have some fun!</div>
             <div class="large-text">My Events</div>
