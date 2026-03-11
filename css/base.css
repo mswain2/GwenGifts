@@ -316,7 +316,7 @@ input[type=text]:focus, input[type=password]:active, input[type=email]:focus, in
 
 input[type=submit], button, .button, a.button-signup {
     color: var(--button-font-color);
-    background-color: var(--accent-color);
+    background-color: var(--main-color);
     padding: var(--button-padding);
     border: none;
     border-radius: var(--button-border-radius);
@@ -1935,6 +1935,7 @@ div .dd {
     align-items: center;
     text-align: center;
     position: relative;
+    max-height: 300px;
 }
 
 .modUser{
