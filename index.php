@@ -79,9 +79,11 @@
 
     <div class="full-width-bar">
     <div class="content-box">
-        <img src="images/cpr.jpg" style="filter:brightness(3) contrast(20%) blur(3px);">
-        <div class="small-text" style="color: #3A3A3A;">Make a difference.</div>
-        <div class="large-text">User Management</div>
+        <img src="images/cpr.jpg" style="filter:brightness(2) contrast(40%) blur(4px) opacity(60%);">
+        
+            <div class="small-text">Make a difference.</div>
+            <div class="large-text">User Management</div>
+            
 <button class="circle-arrow-button" onclick="window.location.href='volunteerManagement.php'">
     <span class="button-text">Go</span>
     <div class="circle">&gt;</div>
@@ -101,8 +103,8 @@
     </div>
 
     <div class="content-box">
-        <img src="images/momprom.jpg" style="filter:brightness(1) contrast(25%) blur(4px);">
-        <div class="small-text" style="color: #3A3A3A;">Let’s have some fun!</div>
+        <img src="images/momprom.jpg" style="filter:brightness(1) contrast(40%) blur(4px) opacity(60%);">
+        <div class="small-text">Let’s have some fun!</div>
         <div class="large-text">Event Management</div>
 <button class="circle-arrow-button" onclick="window.location.href='eventManagement.php'">
     <span class="button-text"><?php 
@@ -114,16 +116,6 @@
                             echo '<span class="colored-box">' . sizeof($pendingsignups) . '</span>';
                         }   
                     ?> Sign-Ups </span>
-    <div class="circle">&gt;</div>
-</button>
-    </div>
-
-    <div class="content-box">
-        <img src="images/whiskeyBarrels.png" style="filter:brightness(3) contrast(25%) blur(4px);">
-        <div class="small-text" style="color: #3A3A3A;">Get away from it all.</div>
-        <div class="large-text">Retreat Applications</div>
-<button class="circle-arrow-button" onclick="window.location.href='viewAllApplications.php'">
-    <span class="button-text">Go</span>
     <div class="circle">&gt;</div>
 </button>
     </div>
@@ -341,9 +333,11 @@
 
     <div class="full-width-bar">
     <div class="content-box">
-    <img src="images/VolM.png" />   
-        <div class="small-text">Make a difference.</div>
-        <div class="large-text">My Profile</div>
+        <img src="images/gwenVol.jpg" style="filter:brightness(1) contrast(40%) blur(4px) opacity(60%);"/>   
+        
+            <div class="small-text">Make a difference.</div>
+            <div class="large-text">My Profile</div>
+        
         <div class="nav-buttons">
             <button class="nav-button" onclick="window.location.href='viewProfile.php'">
                 <span class="arrow"><img src="images/view-profile.svg" style="width: 40px; border-radius:5px; border-bottom-right-radius: 20px;"></span>
@@ -358,9 +352,11 @@
     </div>
 
     <div class="content-box">
-        <img src="images/EvM.png" />
-        <div class="small-text">Let’s have some fun!</div>
-        <div class="large-text">My Events</div>
+        <img src="images/gg.jpg" style="filter:brightness(1) contrast(40%) blur(4px) opacity(60%);" />
+        
+            <div class="small-text">Let’s have some fun!</div>
+            <div class="large-text">My Events</div>
+        
         <div class="nav-buttons">
             <button class="nav-button" onclick="window.location.href='viewAllEvents.php'">
                 <span class="arrow"><img src="images/new-event.svg" style="width: 40px; border-radius:5px; border-bottom-right-radius: 10px;"></span>

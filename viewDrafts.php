@@ -96,7 +96,7 @@ mysqli_close($connection);
                 </tbody>
             </table>
         <?php endif; ?>
-        <button class="button cancel" href="index.php">Return to Dashboard</a>
+        <a class="button cancel" href="index.php">Return to Dashboard</a>
     </div>
 </body>
 </html>

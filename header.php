@@ -355,6 +355,7 @@ if (date("H:i:s") > "18:19:59") {
                 <a href="index.php"><img src="images/cropped-logo.png" alt="Logo"></a>
             </div>
             <div class="nav-links">
+            <div class="nav-item"><a href="index.php">Home<a></div>
                 <div class="nav-item">Events <span>&#9660</span>
                     <div class="dropdown">
 <a href="viewMyUpcomingEvents.php" style="text-decoration: none;">
