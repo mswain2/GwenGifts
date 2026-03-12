@@ -161,18 +161,18 @@
           <h2 class="text-xl font-semibold mb-4">My Profile</h2>
 
 	<?php else: ?>
-	  <h2 class="text-xl font-semibold mb-4">Viewing <?php echo $user->get_first_name() . ' ' . $user->get_last_name() ?></h2>
+	  <h2 class="text-xl font-semibold mb-4">Name: <?php echo $user->get_first_name() . ' ' . $user->get_last_name() ?></h2>
 	<?php endif ?>
 	</div>
         <div class="space-y-2 divide-y divide-gray-300">
           <div class="flex justify-between py-2">
-            <span class="font-medium">Joined</span><span>Jan 2022</span>
+            <span class="font-medium">Role</span><span><?php echo ucfirst($user->get_type())?></span>
           </div>
           <div class="flex justify-between py-2">
-            <span class="font-medium">Branch</span><span><?php echo ucfirst($user->get_branch()) ?></span>
+            <span class="font-medium">Age</span><span><?php echo get_age($user->get_birthday()) ?></span>
           </div>
           <div class="flex justify-between py-2">
-            <span class="font-medium">Affiliation</span><span><?php echo ucfirst($user->get_affiliation()) ?></span>
+            <span class="font-medium">Birthday</span><span><?php echo date('F d, Y', strtotime($user->get_birthday())) ?></span>
           </div>
         </div>
       </div>
@@ -206,7 +206,7 @@
         </div>
         <div>
           <span class="block text-sm font-medium text-[#1F1F21]">Date of Birth</span>
-          <p class="text-gray-900 font-medium text-xl"><?php echo date('m/d/Y', strtotime($user->get_birthday())) ?></p>
+          <p class="text-gray-900 font-medium text-xl"><?php echo $user->get_birthday() ?></p>
         </div>
         <div>
           <span class="block text-sm font-medium text-[#1F1F21]">Address</span>
@@ -227,7 +227,7 @@
         <div>
           <span class="block text-sm font-medium text-[#1F1F21]">Emergency Contact Name</span>
           <?php if ($user->get_emergency_contact_first_name()):?>
-            <p class="text-gray-900 font-medium text-xl"><?php $user->get_emergency_contact_first_name . $user->get_emergency_contact_last_name?></p>
+            <p class="text-gray-900 font-medium text-xl"><?php echo $user->get_emergency_contact_first_name() . " " . $user->get_emergency_contact_last_name()?></p>
           <?php else: ?>
             <p class="text-gray-900 font-medium text-xl">N/A</p>
           <?php endif ?>
