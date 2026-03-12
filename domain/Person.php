@@ -26,7 +26,7 @@ class Person {
 	private $state;
 	private $zip_code;
 	private $phone1;
-	private $age; // if they're over or under 21
+	private $age; // if they're over or under 21, not used as of spring 2026
 	private $phone1type;
 	private $emergency_contact_phone;
 	private $emergency_contact_phone_type;
@@ -35,16 +35,16 @@ class Person {
 	private $email_prefs;
 	private $t_shirt_size;
 	private $emergency_contact_first_name;
-	private $contact_num;
+	private $contact_num; // not used as of spring 2026
 	private $emergency_contact_relation;
-	private $contact_method;
+	private $contact_method; // not used as of spring 2026
 	private $type;
 	private $status;
 	private $notes;
 	private $password;
-	private $affiliation;
-	private $branch;
-	private $archived;
+	private $affiliation; // not used as of spring 2026
+	private $branch; // not used as of spring 2026
+	private $archived; // not used as of spring 2026
 	private $emergency_contact_last_name;
 	private $gender;
 	private $computer_access;
