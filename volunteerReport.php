@@ -51,7 +51,7 @@
 <html>
     <head>
         <?php require_once('universal.inc') ?>
-        <title>Whiskey Valor | Volunteer History</title>
+        <title>Gwyneth's Gift | Volunteer History</title>
         <link rel="stylesheet" href="css/hours-report.css">
         <style>
             .volunteer-stat {

@@ -133,6 +133,7 @@ function get_username_by_reply_id($reply_id) {
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <title>Gwyneth's Gift | View Discussion</title>
     <?php require('universal.inc'); ?>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
@@ -162,7 +163,7 @@ function get_username_by_reply_id($reply_id) {
         .reply-btn, .small-reply-btn {
             margin-top: 10px;
             padding: 8px 12px;
-            background-color: #008CBA;
+            background-color: var(--main-color);
             color: white;
             border: none;
             cursor: pointer;
@@ -170,7 +171,7 @@ function get_username_by_reply_id($reply_id) {
             font-size: 14px;
         }
         .reply-btn:hover, .small-reply-btn:hover {
-            background-color: #005f73;
+            background-color: var(--accent-color);
         }
         .reply-box textarea {
             width: 100%;
@@ -197,13 +198,14 @@ function get_username_by_reply_id($reply_id) {
             margin-top: 20px;
             display: inline-block;
             padding: 10px 15px;
-            background-color: #4CAF50;
+            background-color: var(--secondary-accent-color);
             color: white;
             text-decoration: none;
             border-radius: 5px;
         }
         .back-btn:hover {
-            background-color: #45a049;
+            background-color: var(--accent-color);
+            color: white;
         }
     </style>
     <script>
@@ -227,6 +229,7 @@ function get_username_by_reply_id($reply_id) {
 </head>
 <body>
     <?php require('header.php'); ?>
+    <h1>View Discussion</h1>
     
     <div class="discussion-content">
         <div class="author-info">

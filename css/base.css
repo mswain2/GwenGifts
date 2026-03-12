@@ -49,53 +49,54 @@ table, td, tr, th, form, fieldset, em, button, a {
 
 :root {
     /* Light theme colors */
+    /*Change variables to match Gwyneth's Gift color palette*/
     --page-background-color: #ffffff;
-    --page-font-color: #1a1a1a;
+    --page-font-color: var(--main-color);
     --inactive-font-color: #666666;
     --inactive-background-color: #fafafa;
     --standout-background: #f8f4ef;
 
 
-    --happy-toast-background-color: #e8f5e9;
-    --happy-toast-font-color: #2e7d32;
+    --happy-toast-background-color: var(--main-color);
+    --happy-toast-font-color: white;
 
-    --info-toast-background-color: #e3f2fd;
-    --info-toast-font-color: #1565c0;
+    --info-toast-background-color: var(--main-color);
+    --info-toast-font-color: white;
 
-    --error-toast-background-color: #ffebee;
-    --error-toast-font-color: #c62828;
+    --error-toast-background-color: #701a1a;
+    --error-toast-font-color: white;
 
 
-    --shadow-and-border-color: #e0e0e0;
+    --shadow-and-border-color: #e8e8e8;
 
-    --main-color: #f5f5f5; 
+    --main-color: #2f4159; 
 
-    --accent-color: #6b8caf;
+    --accent-color: #f5c16e;
  
-    --secondary-accent-color: #e0e0e0;
+    --secondary-accent-color: #f6a4b5;
 
     /* Accessibility / WV theme variables */
-    --wv-accent-color: #f8f8f8; /* light gray */
-    --wv-accent-foreground: #333333;
+    --wv-accent-color: #f5c16e; /* light gray */
+    --wv-accent-foreground: #f6a4b5;
     --wv-bg-light: #ffffff;
     --wv-text-dark: #111111;
     --wv-muted-text: #6b6b6b;
 
-    --calendar-event-color: #808080;
-    --calendar-event-color-hover: var(--accent-color);
+    --calendar-event-color: #999;
+    --calendar-event-color-hover: #777777;
     --calendar-today-border: 2px solid var(--secondary-accent-color);
 
     --button-font-color: rgb(255, 255, 255);
     --button-padding: 0.5rem 1.5rem;
     --button-border-radius: 0.25rem;
 
-    --standard-border: 1px solid #d0d0d0;
+    --standard-border: 1px solid #333333;
     --light-border: 1px solid var(--shadow-and-border-color);
-    --text-field-border: 2px solid #cccccc;
+    --text-field-border: 2px solid #e8e8e8;
 
-    --cancel-button-background-color: #A66654;
+    --cancel-button-background-color: var(--secondary-accent-color);
 
-    --error-color: #A66654;
+    --error-color: red;
 
     /* Global rules */
     font-size: 18px;
@@ -128,7 +129,7 @@ table, td, tr, th, form, fieldset, em, button, a {
 .legend-label { font-size: 18px; margin-right: 18px; }
 
 /* Muted button style used in calendar/back links */
-.btn-muted { background-color: #6b7280; color: white; padding: 0.5rem 1.5rem; border-radius: 0.5rem; text-decoration: none; display: inline-block; }
+.btn-muted { background-color: var(--main-color); color: white; padding: 0.5rem 1.5rem; border-radius: 0.5rem; text-decoration: none; display: inline-block; }
 
 
 /* Page Sections */
@@ -142,7 +143,7 @@ header {
 
 body {
     background-color: var(--page-background-color);
-    color: var(--page-font-color);
+    color: var(--main-color);
     font-family: Montserrat;
 }
 
@@ -216,15 +217,17 @@ nav {
 }
 
 a {
-    color: white;
+    color: var(--main-color);
 }
 
-a:visited {
-    color: rgb(226, 226, 226);
-}
+/*Kenzie commented this out because there are so many instances where this 
+  makes things kind of weird. This can be reworked if we want this functionality.*/
+/*a:visited {
+    color: var(--secondary-accent-color);
+}*/
 
 a:hover {
-    color: hsl(from var(--accent-color) h s calc(l+.2));
+    color: var(--accent-color);
 }
 
 #vms-logo {
@@ -296,7 +299,7 @@ input[type=tel], select, textarea, .pseudo-input, .pseudo-input-disabled {
     margin-bottom: 0.5rem;
     scroll-margin: 7.5rem;
     box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
-    color: white;
+    color: var(--main-color);
 
 }
 
@@ -315,17 +318,19 @@ input[type=submit], button, .button, a.button-signup {
     color: var(--button-font-color);
     background-color: var(--main-color);
     padding: var(--button-padding);
-    border: 3px solid rgba(255, 255, 255, 0.295);
+    border: none;
     border-radius: var(--button-border-radius);
     font-weight: 500;
-    width: 94%;
+    width: 100%;
     transition: background-color .3s;
     cursor: pointer;
     text-align: center;
+    margin: 10px 0px;
 }
 
-input[type=submit]:hover, button:hover, .button:hover, a.button-signup:hover {
+input[type=submit]:hover, button:hover, .button:hover, a.button-signup:hover{
     background-color: var(--accent-color);
+    color: white;
 }
 
 /* Disabled submit/button appearance for attendance logging */
@@ -342,7 +347,7 @@ input[type="submit"].disabled-btn {
 } */
 
 label {
-    color: var(--accent-color);
+    color: var(--main-color);
     font-weight: 600;
     width: 100%;
     text-align: left;
@@ -375,11 +380,11 @@ main.login > p {
 }
 
 h1 {
-    font-size: 1.5rem;
-    font-weight: 500;
+    font-size: 1.5rem !important;
+    font-weight: 500 !important;
     margin-bottom: 2rem;
 
-    background-color: var(#C9AB81);
+    background-color: var(--main-color);
     color: var(--page-background-color);
     width: 100%;
     text-align: center;
@@ -414,7 +419,6 @@ h3:not(:first-of-type) {
 .error {
     color: var(--error-color);
     font-size: .75rem;
-    color: white;
 }
 
 .hidden {
@@ -464,12 +468,15 @@ h3:not(:first-of-type) {
 
 /* Calendar */
 table#calendar {
-    border-spacing: 0;
-    border-width: 0px 1px 1px 1px; /* top | right | bottom | left */
+    border-spacing: 6px;
+    border-width: 0;
     border-style: none;
-    width: calc(90% - 1rem);
+    border-bottom: none;
+    width: calc(94% - 1rem);
     border-collapse: separate;
-    margin: 0rem auto 0.5rem auto;
+    margin: 0.5rem auto 1rem auto;
+    background-color: transparent;
+    padding: 0;
 }
 
 #calendar-footer {
@@ -478,11 +485,17 @@ table#calendar {
 
 main.calendar-view {
     margin-bottom: 0.5rem;
+    background-color: #faf8f6;
 }
 
 main.calendar-view th {
     text-align: center;
-    font-weight: 400;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #6b6b6b;
+    padding: 0.75rem 0.25rem;
 }
 
 .calendar-week {
@@ -490,11 +503,15 @@ main.calendar-view th {
 }
 
 .calendar-day {
-    height: 20vh;
+    height: 18vh;
     width: 14.25%;
-    border-radius:10px;
-    border: none var(--light-border);
+    border-radius: 12px;
+    border: 1px solid #ece7e2;
     cursor: pointer;
+    background-color: #ffffff;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    vertical-align: top;
 }
 
 @media only screen and (max-width: 900px) {
@@ -509,13 +526,16 @@ main.calendar-view th {
 }
 
 .calendar-day:hover:not(.other-month) {
-    outline: 2px solid var(--accent-color);
-    background-color: rgba(255,255,255,0.25);
+    outline: none;
+    box-shadow: 0 4px 12px rgba(212, 89, 110, 0.18);
+    transform: translateY(-2px);
+    border-color: var(--accent-color);
 }
 
 .calendar-day:hover:is(.other-month) {
-    background-color: rgba(255,255,255,0.10);
-    outline: 2px solid var(--accent-color);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    outline: none;
+    border-color: #ddd;
 }
 
 .calendar-day-wrapper {
@@ -523,50 +543,60 @@ main.calendar-view th {
     width: 100%;
     display: flex;
     flex-direction: column;
-    padding-top: 0.5rem;
-    gap: 1px;
+    padding: 0.5rem;
+    gap: 3px;
 }
 
 .calendar-day-number {
-    padding-left: 0.5rem;
+    padding-left: 0.15rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #444;
+    margin-bottom: 2px;
 }
 
 .calendar-event {
-    padding: 0.25rem 0.5rem;
+    padding: 0.2rem 0.5rem;
     text-decoration: none;
     transition: background-color .2s;
-}
-
-.calendar-event:hover {
-    /* filter: brightness(1.2); */
-    background-color: var(--calendar-event-color-hover);
-}
-
-.calendar-event {
     background-color: var(--calendar-event-color);
     /* color: var(--button-font-color); */
     color: white;
 }
 
+.calendar-event:hover {
+    /* filter: brightness(1.2); */
+    background-color: var(--calendar-event-color-hover);
+    color: white;
+}
+
 .other-month {
-    color: var(--inactive-font-color);
-    background-color: var(--inactive-background-color);
+    color: #c0b8b0;
+    background-color: #f5f3f1;
+    opacity: 0.6;
+}
+
+.other-month .calendar-day-number {
+    color: #c0b8b0;
 }
 
 .today {
     border: var(--calendar-today-border);
-    border-width: 2px;
+    border-width: 2.5px;
+    background-color: #fff5f3;
 }
 
 h1.calendar-header {
-    background-color: var(--accent-color);
-    color: blue;
+    background-color: var(--main-color);
+    color: var(--page-background-color);
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1rem;
+    margin-bottom: 0;
     z-index: 20;
+    padding: 0 1.5rem;
+    box-shadow: 0 2px 12px rgba(212, 89, 110, 0.25);
 }
 
 h1.calendar-header a {
@@ -606,15 +636,20 @@ h1.calendar-header a {
     position:absolute;
     width: 3rem;
     height: 3rem;
-    background-color: var(--accent-color);
+    background-color: var(--secondary-accent-color);
     border-radius: 100%;
-    box-shadow: 0px 5px 20px rgba(74, 2, 2, 0.269);
+    box-shadow: 0px 3px 12px rgba(212, 89, 110, 0.3);
     cursor: pointer;
     color: var(--page-font-color);
     margin-left: 6%;
     display: flex;
     z-index:9;
     opacity: 1 !important;
+    transition: transform 0.2s ease;
+}
+
+.filter-menu:hover {
+    transform: scale(1.08);
 }
 
 .filter-menu-icon {
@@ -631,7 +666,7 @@ h1.calendar-header a {
     gap: 0.5rem;
     padding: 6px;
     border-radius: 60px;
-    background-color: var(--accent-color);
+    background-color: var(--secondary-accent-color);
     box-shadow: 0px 5px 20px black;
     z-index:5;
     transform: scaleX(0);
@@ -702,8 +737,14 @@ img.filter-button {
 
 #previous-month-button, #next-month-button {
     height: 2rem;
-    filter: invert();
+    filter: invert() brightness(2);
     cursor: pointer;
+    transition: transform 0.2s ease;
+    padding: 0.25rem;
+}
+
+#previous-month-button:hover, #next-month-button:hover {
+    transform: scale(1.2);
 }
 
 #month-jumper-wrapper {
@@ -742,6 +783,7 @@ button.cancel, a.cancel {
 
 button.cancel:hover, a.cancel:hover {
     background-color: var(--accent-color);
+    color: white;
 }
 
 #calendar-heading-month {
@@ -814,14 +856,6 @@ main.dashboard > p {
     }
 }
 
-/* Sign up form */
-
-@media only screen and (min-width: 1024px) {
-    main.signup-form {
-        margin: 0rem 8rem 4rem 8rem;
-    }
-}
-
 form.signup-form {
     display: flex;
     gap: 1rem;
@@ -830,7 +864,7 @@ form.signup-form {
 
 /* thomas added this */
 form.signup-form .section-box {
-    border: 1px solid var(--accent-color);
+    border: 1px solid var(--main-color);
     border-radius: 5px;
     padding: 15px;
     margin-bottom: 20px;
@@ -914,7 +948,7 @@ form.signup-form em {
 
 .blue-div {
     height: 2px;
-    background-color: var(--accent-color);
+    background-color: var(--main-color);
     margin: 1rem 0;
 }
 
@@ -925,11 +959,11 @@ form.signup-form em {
 }
 
 form.signup-form a {
-    color: var(--error-color);
+    color: var(--secondary-accent-color);
 }
 
 form.signup-form a:hover {
-    color: var(--error-toast-background-color);
+    color: var(--accent-color);
 }
 /* end normal_tw conversion ~Blue*/
 
@@ -939,6 +973,7 @@ form.signup-form a:hover {
     top: 8rem;
     height:300px;
     width: 250px;
+    margin-right: 10px;
     border-radius: var(--button-border-radius);
 }
 
@@ -951,6 +986,7 @@ form.signup-form a:hover {
     align-items: flex-start;
     border-radius: calc(var(--button-border-radius) + 5px);
     background: var(--info-toast-background-color);
+    color: var(--info-toast-font-color);
     position: sticky;
     width: 100%;
     padding: 5px;
@@ -958,7 +994,7 @@ form.signup-form a:hover {
 
 .sidebar-item {
     display: flex;
-    color: var(--inactive-font-color);
+    color: var(--info-toast-font-color);
     align-items: flex-start;
     justify-content: left;
     border-radius: var(--button-border-radius);
@@ -969,7 +1005,7 @@ form.signup-form a:hover {
 }
 
 .sidebar-item a {
-    color: var(--accent-color);
+    color: var(--info-toast-font-color);
 }
 
 .sidebar-item:hover {
@@ -1271,12 +1307,12 @@ img.profile-pic {
 }
 
 a.event-link {
-    color: var(--accent-color);
+    color: var(--main-color);
     font-weight: bold;
 }
 
 a.event-link:hover {
-    color: hsl(from var(--accent-color) h s calc(l+3))
+    color: var(--accent-color);
 }
 
 .full-capacity {
@@ -1408,11 +1444,12 @@ a.event-link:hover {
 
 /* used for logAttendees.php */
 .attendees-wrapper {
-    background-color: rgba(0, 0, 0, .25);
+    background-color: white;
+    border: 2px solid var(--main-color);
     margin: auto;
     padding: 1.5rem;
     border-radius: 15px;
-    max-width: 75%;
+    max-width: 90%;
     align-content: center;
 }
 
@@ -1430,7 +1467,7 @@ DIV.thead {
     flex-direction: row;
     justify-content: space-evenly;
     font-weight: bold;
-    min-width: 100%;
+   
     align-items: center;
 }
 
@@ -1439,7 +1476,7 @@ DIV.tbody {
     flex-direction: row;
     justify-content: space-evenly;
     flex-wrap: wrap;
-    max-width: 100%;
+    
     align-items: center;
 }
 
@@ -1451,7 +1488,7 @@ DIV.tr {
 
 SPAN.td {
     display: table-cell;
-    min-width: 9rem;
+    min-width: 7rem;
 }
 
 .tbody SPAN.td {
@@ -1459,12 +1496,18 @@ SPAN.td {
 }
 
 SPAN.td#data {
-    min-width: 21rem;
+    min-width: 15rem;
 }
 
 button#log {
     width: 100%;
     margin-top: 1rem;
+    color: white;
+    background-color: var(--main-color);
+}
+
+button#log:hover {
+    background-color: var(--accent-color);
 }
 
 SPAN.td input[type=checkbox] {
@@ -1512,9 +1555,469 @@ div .dd {
 }
 
 .event-sect {
-    border: 2px solid var(--inactive-font-color);
+    border: 2px solid var(--main-color);
     border-radius: 15px;
     margin: 1rem;
     padding: 1rem;
-    background-color: rgba(0,0,0,0.15);
+    background-color: var(--page-background-color);
+}
+
+ .full-width-bar {
+    width: 100%;
+    background: #f5f5f5;
+    padding: 17px 5%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+}
+
+.full-width-bar-sub {
+    width: 100%;
+    background: #ffffff;
+    padding: 17px 5%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+}
+
+.content-box-sub {
+    flex: 1 1 300px; /* Adjusts width dynamically */
+    max-width: 470px;
+    padding: 10px 10px; /* Altered padding to make closer */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    position: relative;
+}
+
+ .content-box img {
+    width: 100%;
+    height: auto;
+    min-height: 100%;
+    background: white;
+    border-radius: 5px;
+    border-bottom-right-radius: 50px;
+    border: 0.5px solid #828282;
+}
+
+.content-box-sub img {
+    width: 105%;
+    height: auto;
+    background: white;
+    border-radius: 5px;
+    border-bottom-right-radius: 50px;
+    border: 1px solid #828282;
+}
+
+.small-text {
+    position: absolute;
+    top: 20px;
+    left: 30px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #3A3A3A;
+}
+
+.large-text {
+    position: absolute;
+    top: 40px;
+    left: 30px;
+    font-size: 22px;
+    font-weight: 700;
+    color: black;
+    max-width: 90%;
+}
+
+.large-text-sub {
+    position: absolute;
+    /*top: 120px;*/
+    top: 60%;
+    left: 10%;
+    font-size: 22px;
+    font-weight: 700;
+    color: black;
+    max-width: 90%;
+}
+
+.graph-text {
+    position: absolute;
+    top: 75%;
+    left: 10%;
+    font-size: 14px;
+    font-weight: 700;
+    color: #6b8caf;
+    max-width: 90%;
+}
+
+ /* Navbar Container */
+.navbar {
+    width: 100%;
+    height: 95px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: #ffffff;
+    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    z-index: 1000;
+}
+
+/* Left Section: Logo & Nav Links */
+.left-section {
+    display: flex;
+    align-items: center;
+    gap: 30px; /* Space between logo and links */
+}
+
+/* Logo */
+.logo-container {
+    background: #f8f8f8;
+    padding: 10px 20px;
+    border-radius: 50px;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.08) inset;
+}
+
+.logo-container img {
+    width: 128px;
+    height: 52px;
+    display: block;
+}
+
+/* Navigation Links */
+.nav-links {
+    display: flex;
+    gap: 20px;
+}
+
+.nav-links div {
+    font-size: 24px;
+    font-weight: 700;
+    color: black;
+    cursor: pointer;
+}
+
+/* Right Section: Date & Icon */
+.right-section {
+    margin-left: auto; /* Pushes right section to the end */
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.date-box {
+    background: #f0f0f0;
+    padding: 10px 30px;
+    border-radius: 50px;
+    box-shadow: -2px 2px 4px rgba(0, 0, 0, 0.08) inset;
+    color: #333333;
+    font-size: 24px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.icon {
+    width: 47px;
+    height: 47px;
+    /*background: #292D32;*/
+    border-radius: 50%;
+}
+
+/* Button Control */
+.arrow-button {
+    position: absolute;
+    bottom: 20px;
+    left: 150px;
+    background: transparent;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+
+}
+
+.arrow-button:hover {
+    transform: translateX(5px); /* Moves the arrow slightly on hover */
+    background-color: transparent;
+}
+.circle-arrow-button {
+    position: absolute;
+    bottom: 30px;
+    right: 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: transparent;
+    border: none;
+    font-size: 20px;
+    font-family: Quicksand, sans-serif;
+    font-weight: bold;
+    color: black;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.circle {
+    width: 30px;
+    height: 30px;
+    /*background-color:; /* Blue color */
+    background-color: var(--main-color);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    transition: transform 0.3s ease;
+}
+
+.circle-arrow-button:hover {
+    background-color:transparent !important;
+}
+
+.circle-arrow-button:hover .circle {
+    transform: translateX(5px); /* Moves the circle slightly on hover */
+}
+.colored-box {
+    display: inline-block; /* Ensures it wraps tightly around the text */
+    background-color: #f8f8f8; /* Change to any color */
+    color: #333333; /* Text color */
+    padding: 1px 5px; /* Adds space inside the box */
+    border-radius: 5px; /* Optional: Rounds the corners */
+    font-weight: bold; /* Optional: Makes text bold */
+}
+
+/* Footer */
+.footer {
+    width: 100%;
+    background: #fafafa;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 30px 50px;
+    flex-wrap: wrap;
+}
+
+/* Left Section */
+.footer-left {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.footer-logo {
+    width: 300px; /* Adjust logo size */
+    margin-bottom: 15px;
+    height: 50%;
+}
+
+/* Social Media Icons */
+.social-icons {
+    display: flex;
+    gap: 15px;
+}
+
+.social-icons a {
+    color: #333333;
+    font-size: 20px;
+    transition: color 0.3s ease;
+}
+
+.social-icons a:hover {
+    color: #666666;
+}
+
+/* Right Section */
+.footer-right {
+    display: flex;
+    gap: 50px;
+    flex-wrap: wrap;
+    align-items: flex-start;
+}
+
+.footer-section {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 10px;
+    color: #333333;
+    font-family: Inter, sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.footer-topic {
+    font-size: 18px;
+    font-weight: bold;
+    color: var(--main-color);
+}
+
+.footer a {
+    color: var(--main-color);
+    text-decoration: none;
+    transition: background 0.2s ease, color 0.2s ease;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+.footer a:hover {
+    background: rgba(0, 0, 0, 0.05);
+    color: var(--accent-color);
+}
+
+/* Icon Overlay */
+.background-image {
+    width: 100%;
+    border-radius: 10px;
+}
+
+.icon-overlay {
+    position: absolute;
+    top: 40px; /* Adjust as needed */
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--main-color);/* Optional background for better visibility */
+    padding: 10px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.icon-overlay img {
+    width: 40px; /* Adjust size as needed */
+    height: 40px;
+    opacity: 0.9;
+    filter: invert(1);
+}
+
+.content-box-test:hover .icon-overlay img {
+    transform: scale(1.1) rotate(5deg);
+    transition: transform 0.5s ease, fill 0.5s ease;
+}
+
+.content-box-test {
+    position: relative;
+    background-color: var(--main-color);   /* light gray background */
+    border-radius: 12px;
+    padding: 20px;
+    color: white;                 /* default text color */
+    flex: 1 1 280px;
+    max-width: 375px;
+    min-height: 250px;            /* keeps all boxes same height even without bg image */
+}
+
+.content-box-test .large-text-sub,
+.content-box-test .graph-text {
+    color: white;
+}
+
+
+.background-image {
+    display: none;
+}
+
+
+.full-width-bar-sub{
+    background-color: #ffffff !important;
+}
+
+.content-box {
+    flex: 1 1 280px; /* Adjusts width dynamically */
+    max-width: 375px;
+    padding: 10px 2px; /* Altered padding to make closer */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    max-height: 300px;
+}
+
+.modUser{
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+    padding: 0 0 4rem 0;
+}
+main.user-role {
+    gap: 1rem;
+    display: flex;
+    flex-direction: column;
+}
+@media only screen and (min-width: 1024px) {
+    .modUser {
+        width: 100%;
+    }
+    main.user-role {
+        /* align-items: center; */
+        margin: 0rem 16rem;
+        /* width: 50rem; */
+    }
+}
+
+.drafts-container {
+    margin: 2rem auto;
+    width: 90%;
+    max-width: 1000px;
+    font-family: Arial, sans-serif;
+}
+
+.drafts-table {
+    width: 100%;
+    border-collapse: collapse;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.drafts-table th, .drafts-table td {
+    padding: 12px 15px;
+    text-align: left;
+}
+
+.drafts-table th {
+    background-color: var(--main-color);
+    color: white;
+    font-weight: 600;
+}
+
+.actions a {
+    text-decoration: none;
+    padding: 5px 12px;
+    margin-right: 5px;
+    border-radius: 5px;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+}
+
+.actions .btn-edit {
+    background-color: var(--main-color);
+    color: white;
+}
+
+.actions .btn-edit:hover {
+    background-color: var(--accent-color);
+}
+
+.actions .btn-delete {
+    background-color: var(--secondary-accent-color);
+    color: white;
+}
+
+.actions .btn-delete:hover {
+    background-color: var(--accent-color);
+}
+
+.actions .btn-send {
+    background-color: var(--main-color);
+    color: white;
+}
+
+.actions .btn-send:hover {
+    background-color: var(--accent-color);
 }

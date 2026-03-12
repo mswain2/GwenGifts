@@ -31,56 +31,18 @@ $no_shows = fetch_no_shows() ?? null;
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <title>Gwyneth's Gift | No Shows</title>
   	<link href="css/normal_tw.css" rel="stylesheet">
-<!-- BANDAID FIX FOR HEADER BEING WEIRD -->
+
 <?php
 $tailwind_mode = true;
 require_once('header.php');
 ?>
-<style>
-        .date-box {
-            background: #f0f0f0;
-            padding: 7px 30px;
-            border-radius: 50px;
-            box-shadow: -2px 2px 4px rgba(0, 0, 0, 0.08) inset;
-            color: #333333;
-            font-size: 24px;
-            font-weight: 700;
-            text-align: center;
-        }   
-        .dropdown {
-            padding-right: 50px;
-        }   
-
-
-        body, main{
-            background-color: #ffffff;
-        }
-
-        .main-content-box table,
-        .main-content-box table thead,
-        .main-content-box table tbody,
-        .main-content-box table tr,
-        .main-content-box table th,
-        .main-content-box table td {
-        background-color: #f8f8f8 !important;
-        color: #333333 !important;
-        border: 1px solid #e0e0e0 !important;
-}
-
-
-
-</style>
-<!-- BANDAID END, REMOVE ONCE SOME GENIUS FIXES -->
+<h1>No Shows</h1>
 
 </head>
 <body>
-    <header class="hero-header">
-        <div class="center-header">
-            <h1>No Shows</h1>
-        </div>
-    </header>
-
+    
     <main>
         <div class="main-content-box w-[80%] p-6">
             <?php if (isset($error)) echo "<p style='color: red;'>$error</p>"; ?>

@@ -26,74 +26,18 @@ $suggestions = get_all_suggestions();
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <title>Gwyneth's Gift | View Suggestions</title>
     <link href="css/normal_tw.css" rel="stylesheet">
     <?php 
     $tailwind_mode = true;
     require_once('header.php'); 
     ?>
-    <style>
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            padding: 12px;
-            border-bottom: 1px solid #ddd;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-            font-weight: bold;
-        }
-        .user-link {
-            color: #297760; /* Theme green color */
-            font-weight: bold;
-            text-decoration: none;
-        }
-        .user-link:hover {
-            text-decoration: underline;
-        }
-    
-        body,main{
-            background-color: #ffffff;
-        }
-    
-        .main-content-box {
-            background-color: #ffffff;
-        }
-    
-        table {
-            background-color: #f8f8f8;
-        }
-    
-        tbody td {
-            background-color: #ffffff !important;
-            color: #333333 !important;
-            border-bottom: 1px solid #e0e0e0 !important;
-        }
-    
-        thead th {
-            background-color: #f5f5f5 !important;
-            color: #333333 !important;
-            border-bottom: 2px solid #e0e0e0 !important;
-        }
 
-        tr {
-            background-color: #ffffff !important;
-        }
-
-        td, th {
-            border-bottom: 1px solid #e0e0e0 !important;
-        }
-    </style>
 </head>
 <body>
-<header class="hero-header">
-    <div class="center-header">
-        <h1>Review Suggestions</h1>
-    </div>
-</header>
+
+<h1>Review Suggestions</h1>
+
 
 <main>
     <div class="main-content-box w-[80%] p-8" style="margin: 2rem auto; background: white; border-radius: 10px; padding: 2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
@@ -129,8 +73,8 @@ $suggestions = get_all_suggestions();
 
     </div>
     
-    <div class="text-center mt-6">
-        <a href="index.php" class="return-button" style="padding: 10px 20px; background-color: #6c757d; color: white; text-decoration: none; border-radius: 5px;">Return to Dashboard</a>
+    <div class="text-center mb-8">
+        <a href="index.php" class="return-button">Return to Dashboard</a>
     </div>
 
 </main>

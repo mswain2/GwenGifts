@@ -196,7 +196,7 @@
     <?php 
         require_once('universal.inc');
     ?>
-    <title>Whiskey Valor Foundation | <?php echo $event_info['name'] ?></title>
+    <title>Gwyneth's Gift | <?php echo $event_info['name'] ?></title>
     <link rel="stylesheet" href="event.css" type="text/css" />
     <?php if (isset($_SESSION['access_level']) && $access_level >= 2) : ?>
         <script src="js/event.js"></script>

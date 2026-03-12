@@ -1,4 +1,9 @@
 <?php
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+?>
+
+<?php
     require_once('include/input-validation.php');
 ?>
 
@@ -6,29 +11,14 @@
 <html>
 <head>
     <?php require_once('database/dbMessages.php'); ?>
-    <title>Whiskey Valor Foundation | Register</title>
+    <title>Gwyneth's Gift | Register</title>
     <link href="css/base.css" rel="stylesheet">
-<!-- BANDAID FIX FOR HEADER BEING WEIRD -->
+
 <?php
 $tailwind_mode = true;
 require_once('header.php');
 ?>
-<style>
-    .date-box {
-        background: #f0f0f0;
-        padding: 7px 30px;
-        border-radius: 50px;
-        box-shadow: -2px 2px 4px rgba(0, 0, 0, 0.08) inset;
-        color: #333333;
-        font-size: 24px;
-        font-weight: 700;
-        text-align: center;
-    }
-    .dropdown {
-        padding-right: 50px;
-    }
-</style>
-<!-- BANDAID END, REMOVE ONCE SOME GENIUS FIXES -->
+
 </head>
 <body class="relative">
 <?php
@@ -55,9 +45,11 @@ require_once('header.php');
             'total_hours_volunteered'
         );*/
 
+        // Deprecated arrays from previous iteration, kept for reference.
+        /*
         $required = array(
             'first_name', 'last_name', 'age',
-            'city', 'state', 
+            'city', 'state',
             'affiliation', 'branch',
             'email', 'username', 'password',
             'privacy_consent'
@@ -66,23 +58,54 @@ require_once('header.php');
         $optional = array(
             'phone', 'email_prefs'
         );
+        */
 
+
+        // Current updated version
+        $required = array(
+            'first_name', 'last_name', 'gender', 'birthday',
+            'street_address', 'city', 'state', 'zip',
+            'email', 'phone1', 'phone_type',
+            'emergency_contact_first_name', 'emergency_contact_last_name',
+            'emergency_contact_relation', 'emergency_contact_phone',
+            'emergency_contact_phone_type',
+            'computer_access', 'camera_access', 'transportation_access',
+            't_shirt_size',
+            'username', 'password',
+            'about_consent'
+        );
+
+        $optional = array(
+            'email_prefs', 'skills', 'experience', 'other_language',
+            'day_availability'
+        );
+
+
+        // Validation
         $errors = false;
-
         if (!wereRequiredFieldsSubmitted($args, $required)) {
             $errors = true;
         }
 
+        // Name validation
         $first_name = $args['first_name'];
         $last_name = $args['last_name'];
-        $age = $args['age']; // Passes either "true" or "false" 
-        /*$birthday = validateDate($args['birthdate']);
-        if (!$birthday) {
-            echo "<p>Invalid birthdate.</p>";
-            $errors = true;
-        } */
 
-        //$street_address = $args['street_address'];
+        // Gender validation
+        $gender = $args['gender'];
+
+        // Unused
+        /*$age = $args['age'];  Passes either "true" or "false" */
+
+        // Birthday validation
+        $birthday = validateDate($args['birthday']);
+        if (!$birthday) {
+            echo "<p>Invalid birthday.</p>";
+            $errors = true;
+        } 
+
+        // Address validation
+        $street_address = $args['street_address'];
         $city = $args['city'];
         $state = $args['state'];
         if (!valueConstrainedTo($state, array(
@@ -93,19 +116,32 @@ require_once('header.php');
             $errors = true;
         }
 
-        /*$zip_code = $args['zip'];
+        $zip_code = $args['zip'];
         if (!validateZipcode($zip_code)) {
             echo "<p>Invalid ZIP code.</p>";
             $errors = true;
-        }*/
+        }
 
+        // Email validation
         $email = strtolower($args['email']);
         if (!validateEmail($email)) {
             echo "<p>Invalid email.</p>";
             $errors = true;
         }
 
-        if(isset($args['phone1'])) { // Make phone number optional 
+        // Email consent validation
+        $email_consent = isset($args['email_prefs']) ? 'true' : 'false';
+
+        // Phone validation
+        $phone1 = validateAndFilterPhoneNumber($args['phone1']);
+        if (!$phone1) {
+            echo "<p>Invalid phone number.</p>";
+            $errors = true;
+        }
+
+
+        
+        /*if(isset($args['phone1'])) { // Make phone number optional 
             $phone1 = validateAndFilterPhoneNumber($args['phone1']);
             if (!$phone1) {
                 echo "<p>Invalid phone number.</p>";
@@ -114,6 +150,8 @@ require_once('header.php');
         } else {
             $phone1 = null;
         }
+
+        $status = $args['status'];
 
         if(isset($args['email_prefs'])) {
             $email_consent = $args['email_prefs'];
@@ -124,18 +162,20 @@ require_once('header.php');
         if(!isset($args['privacy_consent']) || $args['privacy_consent'] == 'no') {
             echo "<p>You must agree to the privacy policy to create an account.</p>";
             $errors = true;
-        }
+        }*/
 
-        $affiliation = $args['affiliation'];
-        $branch = $args['branch'];
+        /*$affiliation = $args['affiliation'];
+        $branch = $args['branch'];*/
 
-        /*$phone1type = $args['phone_type'];
+        // Phone type validation
+        $phone1type = $args['phone_type'];
         if (!valueConstrainedTo($phone1type, array('cellphone', 'home', 'work'))) {
             echo "<p>Invalid phone type.</p>";
             $errors = true;
-        }*/
+        }
 
-        /*$emergency_contact_first_name = $args['emergency_contact_first_name'];
+        // Emergency contact validation
+        $emergency_contact_first_name = $args['emergency_contact_first_name'];
         $emergency_contact_last_name = $args['emergency_contact_last_name'];
         $emergency_contact_relation = $args['emergency_contact_relation'];
 
@@ -143,26 +183,68 @@ require_once('header.php');
         if (!$emergency_contact_phone) {
             echo "<p>Invalid emergency contact phone.</p>";
             $errors = true;
-        } */
+        } 
 
-        /*$emergency_contact_phone_type = $args['emergency_contact_phone_type'];
+        $emergency_contact_phone_type = $args['emergency_contact_phone_type'];
         if (!valueConstrainedTo($emergency_contact_phone_type, array('cellphone', 'home', 'work'))) {
             echo "<p>Invalid emergency phone type.</p>";
             $errors = true;
+        }
+
+        // So this availability section is NOT deprecated I added this, but I cannot quite place how to go about the actual implementation into the database. Work in progress.
+        $day_availability = isset($args['day_availability']) ? $args['day_availability'] : [];
+        /*$availability = [];
+        foreach (['sunday','monday','tuesday','wednesday','thursday','friday','saturday'] as $d) {
+            if (in_array(ucfirst($d), $day_availability)) {
+                $availability[$d] = [
+                    'start' => isset($args[$d . '_start']) ? $args[$d . '_start'] : null,
+                    'end'   => isset($args[$d . '_end'])   ? $args[$d . '_end']   : null,
+                ];
+            }
         }*/
 
-        /*$skills = isset($args['skills']) ? $args['skills'] : '';
-        $interests = isset($args['interests']) ? $args['interests'] : '';
+        // Languages
+        $languages = ['english','spanish','amharic','arabic','french','german','gujarati',
+            'haitian_creole','hindi','japanese','korean','mandarin_chinese','punjabi',
+            'portuguese','russian','somali','tagalog','tigrinya','urdu','vietnamese'];
 
-        $is_community_service_volunteer = $args['is_community_service_volunteer'] === 'yes' ? 1 : 0;
+        // Loop through languages and collect competency data for each language if provided, stored into arrays.
+        $language_data = [];
+        foreach ($languages as $lang) {
+            if (isset($args['speaking_competency_' . $lang])) {
+                $language_data[$lang] = [
+                    'speaking'   => $args['speaking_competency_' . $lang],
+                    'listening'  => $args['listening_competency_' . $lang] ?? null,
+                    'reading'    => $args['reading_competency_' . $lang] ?? null,
+                    'writing'    => $args['writing_competency_' . $lang] ?? null,
+                ];
+            }
+        }
+
+        $other_language = isset($args['other_language']) ? $args['other_language'] : null;
+
+        // Skills and experience validation
+        $skills = isset($args['skills']) ? $args['skills'] : null;
+        $experience = isset($args['experience']) ? $args['experience'] : null;
+
+        // Additional validations
+        $computer_access = $args['computer_access'];
+        $camera_access = $args['camera_access'];
+        $transportation_access = $args['transportation_access'];
+        $t_shirt_size = $args['t_shirt_size'];
+
+        // Unused fields from previous iteration, left for reference. These may be added back in the future as needed.
+
+        //$interests = isset($args['interests']) ? $args['interests'] : '';
+        /*$is_community_service_volunteer = $args['is_community_service_volunteer'] === 'yes' ? 1 : 0;
         $is_new_volunteer = isset($args['is_new_volunteer']) ? (int)$args['is_new_volunteer'] : 1;
         $total_hours_volunteered = isset($args['total_hours_volunteered']) ? (float)$args['total_hours_volunteered'] : 0.00;
-
         $type = ($is_community_service_volunteer === 1) ? 'volunteer' : 'participant';
         $archived = 0;
         $status = "Inactive";
         $training_level = "None";*/
 
+        // user and password validation
         $id = $args['username'];
 
         $password = isSecurePassword($args['password']);
@@ -178,6 +260,10 @@ require_once('header.php');
             die();
         }
 
+        // About consent validation
+        $about_consent = isset($args['about_consent']) ? $args['about_consent'] : null;
+
+        // Deprecated constructor, left for reference. Updated version below.
         /*$newperson = new Person(
             $id, $password, date("Y-m-d"),
             $first_name, $last_name, $birthday,
@@ -191,16 +277,34 @@ require_once('header.php');
             $total_hours_volunteered
         ); */
 
-        $newperson = new Person(
+        // Deprecated constructor, left for reference. Updated version below.
+        /*$newperson = new Person(
             $id, date("Y-m-d"),
             $first_name, $last_name, null,
-            $city, $state, null, $phone1, $age, 
+            $city, $state, $zip_code, $phone1, $age, 
             null, null, null, null, 
-            $email, $email_consent, 
-            null, null, null, null, null, null, null, 
+            $email, $email_consent, null,
+            null, null, null, null, null, $status, null, 
             $password, $affiliation, $branch, null, null
+        );*/
+
+        // Updated constructor with new fields. Note that some fields are being passed as null because they are not currently being collected in the form. These will be updated in the future as needed.
+        $newperson = new Person(
+            $id, date("Y-m-d"),
+            $first_name, $last_name, $street_address,
+            $city, $state, $zip_code, $phone1, '',
+            $phone1type, $emergency_contact_phone, $emergency_contact_phone_type, $birthday,
+            $email, $email_consent, $t_shirt_size,
+            $emergency_contact_first_name, null, $emergency_contact_relation,
+            null, null, null, null,
+            $password, null, null, null,
+            $emergency_contact_last_name,
+            // new fields
+            $gender, $t_shirt_size, $computer_access, $camera_access,
+            $transportation_access, $skills, $experience, $about_consent
         );
 
+        // Push of new person into dbpersons
         $result = add_person($newperson);
         if (!$result) {
             $showPopup = true;

@@ -27,7 +27,7 @@
         <?php require_once('universal.inc') ?>
         <link rel="stylesheet" href="css/event.css">
         <script src="js/messages.js"></script>
-        <title>Viewing All Applications | Whiskey Valor Foundation</title>
+        <title>Gwyneth's Gift | View All Applications</title>
     </head>
     <body>
         <?php require_once('header.php') ?>

@@ -25,6 +25,18 @@ include_once(dirname(__FILE__).'/../domain/Event.php');
 //Added to send emails to users when they are removed or signed up to an event.
 include_once(dirname(__FILE__).'/../email.php');
 
+// Fallback stub for emailHandler if email.php does not define it.
+if (!function_exists('emailHandler')) {
+    /**
+     * Minimal fallback to avoid undefined function errors; returns false when no real handler exists.
+     * Parameters mirror expected signature: ($event_id, $user_id, $type, $message)
+     */
+    function emailHandler($event_id, $user_id, $type, $message = '') {
+        // No-op fallback: optionally log or integrate with mail() here.
+        return false;
+    }
+}
+
 /*
  * add an event to dbEvents table: if already there, return false
  */
@@ -101,14 +113,13 @@ function sign_up_for_event($eventID, $account_name, $role, $notes) {
     
     // 1. ESCAPE INPUTS (Crucial for names like "Gwyneth's Gift")
     // This prevents the SQL query from breaking on apostrophes
-    $safe_name = mysqli_real_escape_string($connection, $eventID);
+    $safe_event = mysqli_real_escape_string($connection, $eventID);
     $safe_account = mysqli_real_escape_string($connection, $account_name);
-    $safe_role = mysqli_real_escape_string($connection, $role);
     $safe_notes = mysqli_real_escape_string($connection, $notes);
 
     // 2. FETCH EVENT ID
     // We use the 'safe_name' here.
-    $query1 = "SELECT id FROM dbevents WHERE name = '$safe_name'";
+    $query1 = "SELECT id FROM dbevents WHERE id = '$safe_event'";
     $result1 = mysqli_query($connection, $query1);
     
     // 3. CHECK IF EVENT EXISTS
@@ -117,12 +128,9 @@ function sign_up_for_event($eventID, $account_name, $role, $notes) {
         mysqli_close($connection);
         return null; // Return failure safely
     }
-
-    $row = mysqli_fetch_assoc($result1);
-    $value = $row['id']; // Now it is safe to get the ID
    
     // 4. CHECK FOR DUPLICATE SIGNUP
-    $query2 = "SELECT userID FROM dbeventpersons WHERE eventID = '$value' AND userID = '$safe_account'";
+    $query2 = "SELECT userID FROM dbeventpersons WHERE eventID = '$safe_event' AND userID = '$safe_account'";
     $result2 = mysqli_query($connection, $query2);
     $row2 = mysqli_fetch_assoc($result2);
 
@@ -130,14 +138,20 @@ function sign_up_for_event($eventID, $account_name, $role, $notes) {
         // User already signed up
         mysqli_close($connection);
         return null;
-    } else {       
-        // 5. INSERT SIGNUP
-        $query = "INSERT INTO dbeventpersons (eventID, userID, notes) VALUES ('$value', '$safe_account', '$safe_notes')";
-        $result = mysqli_query($connection, $query);
-        mysqli_commit($connection);
-        mysqli_close($connection);
-        return $value;
+    }     
+    // 5. INSERT SIGNUP
+    $query3 = "INSERT INTO dbeventpersons (eventID, userID, notes) VALUES ('$safe_event', '$safe_account', '$safe_notes')";
+    $result3 = mysqli_query($connection, $query3);
+
+    mysqli_commit($connection);
+    mysqli_close($connection);
+
+
+    if ($result3) {
+        return $safe_event;
     }
+
+    return null;
 }
 
 /* @@@ Thomas's work! */
@@ -846,24 +860,23 @@ function approve_signup($event_id, $account_name, $position, $notes) {
     $connection = connect();
     $safe_event = mysqli_real_escape_string($connection, $event_id);
     $safe_user = mysqli_real_escape_string($connection, $account_name);
-    $safe_pos = mysqli_real_escape_string($connection, $position);
     $safe_notes = mysqli_real_escape_string($connection, $notes);
 
     // 1. Delete from Pending (Using userID)
-    $query = "DELETE FROM dbpendingsignups WHERE userID = '$safe_user' AND eventname = '$safe_event'";
+    $query = "DELETE FROM dbpendingsignups WHERE username = '$safe_user' AND eventname = '$safe_event'";
     mysqli_query($connection, $query);
 
     // 2. Add to Active
-    $query2 = "INSERT INTO dbeventpersons (eventID, userID, position, notes) VALUES ('$safe_event', '$safe_user', '$safe_pos', '$safe_notes')";
+    $query2 = "INSERT INTO dbeventpersons (eventID, userID, notes) VALUES ('$safe_event', '$safe_user', '$safe_notes')";
     $result2 = mysqli_query($connection, $query2);
-    
+
     mysqli_commit($connection);
     
     if ($result2) {
          emailHandler($event_id, $account_name, 2, "Sign-up Approved.");
     }
     
-    // mysqli_close($connection); // Optional, depending on if you reuse connection
+    mysqli_close($connection); // Optional, depending on if you reuse connection
     return $result2;
 }
 

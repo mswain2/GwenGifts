@@ -70,7 +70,7 @@ if (date('m', strtotime($calendarEnd . ' +1 day')) != $monthEpoch) {
                         $end = date('Y-m-d', $calendarEndEpoch);
                         require_once('database/dbEvents.php');
                         $loggedIn = 0; //Logged in set to 0 change later
-                        $events = fetch_events_in_date_range($start, $end, $loggedIn);
+                        $events = fetch_events_in_date_range($start, $end/*, $loggedIn*/);
                         for ($week = 0; $week < $weeks; $week++) {
                             echo '
                                 <tr class="calendar-week">
@@ -92,14 +92,14 @@ if (date('m', strtotime($calendarEnd . ' +1 day')) != $monthEpoch) {
                                     $dayEvents = $events[$e];
                                     foreach ($dayEvents as $info) {
 
-                                        $backgroundCol = '#996d49ff'; // default color
+                                        $backgroundCol = 'var(--calendar-event-color)'; // default color
 
                                         if(isset($_SESSION['access_level'])) {
                                             if (is_archived($info['id'])) { // archived event
                                                 if ($_SESSION['access_level'] < 2) {
                                                     continue; // users cannot see archived events
                                                 }
-                                                $backgroundCol = '#aaaaaa'; //TODO
+                                                $backgroundCol = '#b0b0b0'; //archived grey
 
                                             } elseif (check_if_signed_up($info['id'], $_SESSION['_id'])) {// user is signed-up for event
                                                 $backgroundCol = '#4CAF50';

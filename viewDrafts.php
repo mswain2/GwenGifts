@@ -57,75 +57,15 @@ mysqli_close($connection);
 <html>
 <head>
     <?php require_once('universal.inc'); ?>
-    <title>Whiskey Valor | Email Drafts</title>
+    <title>Gwyneth's Gift | Email Drafts</title>
     <link href="css/base.css" rel="stylesheet">
-    <style>
-        .drafts-container {
-            margin: 2rem auto;
-            width: 90%;
-            max-width: 1000px;
-            font-family: Arial, sans-serif;
-        }
-
-        h1 {
-            margin-bottom: 1rem;
-            color: #333;
-            text-align: center;
-        }
-
-        .drafts-table {
-            width: 100%;
-            border-collapse: collapse;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            border-radius: 8px;
-            overflow: hidden;
-        }
-
-        .drafts-table th, .drafts-table td {
-            padding: 12px 15px;
-            text-align: left;
-        }
-
-        .drafts-table th {
-            background-color: #2c3e50;
-            color: white;
-            font-weight: 600;
-        }
-
-        .actions a {
-            text-decoration: none;
-            padding: 5px 12px;
-            margin-right: 5px;
-            border-radius: 5px;
-            font-size: 0.9rem;
-            transition: all 0.2s ease;
-        }
-
-        .actions .btn-edit {
-            background-color: #3498db;
-            color: white;
-        }
-
-        .actions .btn-edit:hover {
-            background-color: #217dbb;
-        }
-
-        .actions .btn-delete {
-            background-color: #e74c3c;
-            color: white;
-        }
-
-        .actions .btn-delete:hover {
-            background-color: #c0392b;
-        }
-    </style>
 </head>
 <body>
     <?php require_once('header.php'); ?>
+    <h1>Your Drafts</h1>
 
     <div class="drafts-container">
-        <h1>Your Drafts</h1>
-
+        
         <?php echo $message; ?>
 
         <?php if (empty($drafts)): ?>
@@ -156,6 +96,7 @@ mysqli_close($connection);
                 </tbody>
             </table>
         <?php endif; ?>
+        <a class="button cancel" href="index.php">Return to Dashboard</a>
     </div>
 </body>
 </html>

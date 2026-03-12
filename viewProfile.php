@@ -88,8 +88,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Whiskey Valor | Profile Page</title>
+  <title>Gwyneth's Gift | Profile Page</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="css/base.css" />
   <script>
     function showSection(sectionId) {
       const sections = document.querySelectorAll('.profile-section');
@@ -98,13 +99,13 @@
 
       const tabs = document.querySelectorAll('.tab-button');
       tabs.forEach(tab => {
-        tab.classList.remove('border-b-4', 'border-[#C9AB81]');
-        tab.classList.add('hover:border-b-2', 'hover:border-[#C9AB81]');
+        tab.classList.remove('border-b-4', 'border-[#f6a4b5]');
+        tab.classList.add('hover:border-b-2', 'hover:border-[#f6a4b5]');
       });
 
       const activeTab = document.querySelector(`[data-tab="${sectionId}"]`);
-      activeTab.classList.add('border-b-4', 'border-[#C9AB81]');
-      activeTab.classList.remove('hover:border-b-2', 'hover:border-[#C9AB81]');
+      activeTab.classList.add('border-b-4', 'border-[#f6a4b5]');
+      activeTab.classList.remove('hover:border-b-2', 'hover:border-[#f6a4b5]');
     }
 
     window.onload = () => showSection('personal');
@@ -113,6 +114,7 @@
     require_once('header.php'); 
     require_once('include/output.php');
   ?>
+  <h1>View Profile</h1>
 
     <script>
 
@@ -175,11 +177,11 @@
         </div>
       </div>
       <div class="mt-6 space-y-2">
-        <button type="button" class="text-lg font-medium w-full px-4 py-2 bg-[#C9AB81] text-[#1F1F21] rounded-md hover:bg-[#1F1F21] hover:text-[#C9AB81] cursor-pointer" onclick="openModal('verifiedIdsModal')">
+        <button type="button" class="text-lg font-medium w-full px-4 py-2 bg-[#2f4159] text-[#FFFFFF] rounded-md hover:bg-[#f5c16e] hover:text-[#FFFFFF] cursor-pointer" onclick="openModal('verifiedIdsModal')">
           View Verified IDs
         </button>
-        <button onclick="window.location.href='editProfile.php<?php if ($id != $userID) echo '?id=' . $id ?>';" class="text-lg font-medium w-full px-4 py-2 bg-[#C9AB81] text-[#1F1F21] rounded-md hover:bg-[#1F1F21] hover:text-[#C9AB81] cursor-pointer">Edit Profile</button>
-        <button onclick="window.location.href='index.php';" class="text-lg font-medium w-full px-4 py-2 border-2 border-gray-300 text-black rounded-md hover:border-[#1F1F21] cursor-pointer">Return to Dashboard</button>
+        <button onclick="window.location.href='editProfile.php<?php if ($id != $userID) echo '?id=' . $id ?>';" class="text-lg font-medium w-full px-4 py-2 bg-[#2f4159] text-[#FFFFFF] rounded-md hover:bg-[#f5c16e] hover:text-[#FFFFFF] cursor-pointer">Edit Profile</button>
+        <button onclick="window.location.href='index.php';" class="text-lg font-medium w-full px-4 py-2 bg-[#f6a4b5] text-[#FFFFFF] border-2 rounded-md cursor-pointer">Return to Dashboard</button>
       </div>
     </div>
 
@@ -187,7 +189,7 @@
     <div class="w-full md:w-2/3 bg-white rounded-2xl shadow-lg border border-gray-300 p-6">
       <!-- Tabs -->
       <div class="flex border-b border-gray-300 mb-4">
-        <button class="tab-button px-4 py-2 text-lg font-medium text-[#2B2B2E] border-b-4 border-[#1F1F21]" data-tab="personal" onclick="showSection('personal')">Personal Information</button>
+        <button class="tab-button px-4 py-2 text-lg font-medium text-[#2B2B2E]" data-tab="personal" onclick="showSection('personal')">Personal Information</button>
         <button class="tab-button px-4 py-2 text-lg font-medium text-[#2B2B2E]" data-tab="contact" onclick="showSection('contact')">Contact Information</button>
         <button class="tab-button px-4 py-2 text-lg font-medium text-[#2B2B2E]" data-tab="volunteer" onclick="showSection('volunteer')">Email Preferences</button>
       </div>
@@ -275,7 +277,7 @@
         
         <div class="flex justify-between items-center pb-3 border-b">
             <h3 class="text-xl font-medium text-gray-900">Verified IDs for <?php echo htmlspecialchars($user->get_first_name()); ?></h3>
-            <button class="text-black close-modal cursor-pointer font-bold text-2xl" onclick="closeModal('verifiedIdsModal')">&times;</button>
+            <button class="text-black close-modal cursor-pointer font-bold text-2xl w-20" onclick="closeModal('verifiedIdsModal')">&times;</button>
         </div>
 
         <div class="mt-4">
@@ -308,7 +310,7 @@
         </div>
 
         <div class="mt-6 flex justify-end">
-            <button class="px-4 py-2 bg-gray-500 text-white text-base font-medium rounded-md w-auto shadow-sm hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-300" onclick="closeModal('verifiedIdsModal')">
+            <button class="px-4 py-2 bg-[#2f4159] text-white text-base font-medium rounded-md w-auto shadow-sm hover:bg-[#f5c16e] focus:outline-none focus:ring-2 focus:ring-gray-300" onclick="closeModal('verifiedIdsModal')">
                 Close
             </button>
         </div>
