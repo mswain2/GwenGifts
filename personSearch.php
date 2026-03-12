@@ -88,7 +88,7 @@ require_once('header.php');
                         echo '
                         <div class="overflow-x-auto">
                             <table>
-                                <thead class="bg-blue-400">
+                                <thead>
                                     <tr>
                                         <th>First</th>
                                         <th>Last</th>
