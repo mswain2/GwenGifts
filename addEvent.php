@@ -5,7 +5,6 @@
 
     ini_set("display_errors",1);
     error_reporting(E_ALL);
-
     $loggedIn = false;
     $accessLevel = 0;
     $userID = null;
@@ -162,15 +161,18 @@
             <h2>New Event Form</h2>
             <form id="new-event-form" method="POST">
                 <div class="event-sect">
-                <label for="name">* Event Name </label>
-                <input type="text" id="name" name="name" required placeholder="Enter name"> 
+                    <label for="name">* Event Name </label>
+                    <input type="text" id="name" name="name" required placeholder="Enter name">
+                    
+                    <label for="name">* Abbreviated Name (20 character max)</label>
+                    <input type="text" id="abbr" name="abbr" maxlength="20" required placeholder="Enter name that will appear on calendar">
                 </div>
 
                 <div class="event-sect">
                 <div class="event-datetime">
                     <div class="event-time">
                         <div class="event-date">
-                        <label for="name">* Start Date </label>
+                        <label for="name">* Date </label>
                         <input type="date" id="date" name="date" <?php if ($date) echo 'value="' . $date . '"'; ?> min="<?php echo date('Y-m-d'); ?>" required>
                         </div>
                         <div class="event-date">
@@ -180,12 +182,8 @@
                     </div>
                     <div class="event-time">
                         <div class="event-date">
-                        <label for="name">* End Date</label>
-                        <input type="date" id="end-date" name="end-date" <?php if ($date) echo 'value="' . $date . '"'; ?> min="<?php echo date('Y-m-d'); ?>" required>
-                        </div>
-                        <div class="event-date">
                         <label for="name">* End Time </label>
-                        <input type="time" id="end-time" name="end-time" required>
+                        <input type="time" id="end-time" name="end-time" min="<?php ?>" required>
                         </div>
                     </div>
                 </div>
@@ -359,6 +357,75 @@
                         }
                     })();
                 </script>
+
+                <script>
+                    const startEl = document.getElementById('start-time');
+                    const endEl = document.getElementById('end-time');
+
+                    startEl.addEventListener('input', () => {
+                        if (startEl.value) {
+                            // Convert HH:MM → minutes
+                            const [h, m] = startEl.value.split(':').map(Number);
+                            const startMinutes = h * 60 + m;
+
+                            // Add one minute
+                            const minEndMinutes = startMinutes + 1;
+
+                            // Convert back to HH:MM
+                            const endH = String(Math.floor(minEndMinutes / 60)).padStart(2, '0');
+                            const endM = String(minEndMinutes % 60).padStart(2, '0');
+
+                            endEl.min = `${endH}:${endM}`;
+
+                        } else {
+                            endEl.removeAttribute('min'); // reset if start is cleared
+                        }
+
+                        // Clear custom error if user fixes the issue
+                        endEl.setCustomValidity('');
+                    });
+                </script>
+
+                <script>
+                    const startE = document.getElementById('start-time');
+                    const dateEl = document.getElementById('date');
+                    
+                    dateEl.addEventListener('input', () => {
+                        const dateEl = document.getElementById('date');
+                        const today = new Date();
+                        const yyyy = today.getFullYear();
+                        const mm = String(today.getMonth() + 1).padStart(2, '0');
+                        const dd = String(today.getDate()).padStart(2, '0');
+
+                        const hr = today.getHours();
+                        const min = today.getMinutes();
+                        const day = yyyy + "-" + mm + "-" + dd;
+                        const time = hr + ":" + min;
+                        console.log("date" + dateEl.value);
+                        console.log(day);
+                        if (dateEl.value == day) {
+                            console.log("TODAY");
+                            // Convert current time to minutes
+                            const nowMinutes = hr * 60 + min;
+
+                            // Add one minute
+                            const plusOne = nowMinutes + 1;
+
+                            // Convert back to HH:MM
+                            const newHr = String(Math.floor(plusOne / 60)).padStart(2, '0');
+                            const newMin = String(plusOne % 60).padStart(2, '0');
+
+                            startEl.min = `${newHr}:${newMin}`;
+                        } else {
+                            console.log("not today");
+                            startEl.removeAttribute('min');
+                        }
+                        
+                        startEl.setCustomValidity('');
+
+                    });
+                </script>
+
         </main>
     </body>
 </html>
