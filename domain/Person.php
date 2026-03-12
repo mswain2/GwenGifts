@@ -18,7 +18,7 @@
 class Person {
 
 	private $id; // (username)
-	private $start_date; // (dete of account creation)
+	private $start_date; // (date of account creation)
 	private $first_name;
 	private $last_name;
 	private $street_address;
