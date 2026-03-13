@@ -241,7 +241,7 @@
         </div>
         <div>
           <span class="block text-sm font-medium text-[#1F1F21]">Phone Number</span>
-          <p class="text-gray-900 font-medium text-xl"><a href="tel:<?php echo $user->get_phone1() ?>"><?php echo formatPhoneNumber($user->get_phone1()) ?></a> (<?php echo ucfirst($user->get_phone1type()) ?>)</p>
+          <p class="text-gray-900 font-medium text-xl"><?php echo formatPhoneNumber($user->get_phone1()) . ' (' . ucfirst($user->get_phone1type()) . ')' ?></p>
         </div>
         <div>
           <span class="block text-sm font-medium text-[#1F1F21]">Emergency Contact Name</span>
@@ -262,7 +262,7 @@
         <div>
           <span class="block text-sm font-medium text-[#1F1F21]">Emergency Contact Phone Number</span>
           <?php if ($user->get_emergency_contact_phone()): ?>
-            <p class="text-gray-900 font-medium text-xl"><a href="tel:<?php echo $user->get_emergency_contact_phone() ?>"><?php echo formatPhoneNumber($user->get_emergency_contact_phone()) ?></a> (<?php echo ucfirst($user->get_emergency_contact_phone_type()) ?>)</p>
+            <p class="text-gray-900 font-medium text-xl"><?php echo formatPhoneNumber($user->get_emergency_contact_phone()) . ' (' . ucfirst($user->get_emergency_contact_phone_type()) . ')' ?></p>
           <?php else: ?>
             <p class="text-gray-900 font-medium text-xl">N/A</p>
           <?php endif ?>
