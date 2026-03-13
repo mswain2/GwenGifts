@@ -25,7 +25,7 @@
         require_once('database/dbEvents.php');
 
         $args = sanitize($_POST, null);
-        $required = array("name", "date", "start-time", "duration");
+        $required = array("name", "abbr", "date", "start-time", "duration");
 
         if (!wereRequiredFieldsSubmitted($args, $required)) {
             echo 'bad form data';
@@ -96,6 +96,9 @@
                 <div class="event-sect">
                     <label for="name">* Meeting Title</label>
                     <input type="text" id="name" name="name" required placeholder="e.g. Q2 Board Review">
+                
+                    <label for="name">* Abbreviated Name (20 character max)</label>
+                    <input type="text" id="abbr" name="abbr" maxlength="20" required placeholder="Enter name that will appear on calendar">
                 </div>
 
                 <div class="event-sect">
