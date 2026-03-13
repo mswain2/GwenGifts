@@ -310,24 +310,30 @@
             <span class="block text-sm font-medium text-[#1F1F21]">Has Computer?</span>
             <?php if ($user->get_computer_access() == "yes"):?>
               <p class="text-gray-900 font-medium text-xl"> Yes </p>
-            <?php else: ?>
+            <?php elseif ($user->get_computer_access() == "no"): ?>
               <p class="text-gray-900 font-medium text-xl"> No </p>
+            <?php else: ?>
+              <p class="text-gray-900 font-medium text-xl"> Unknown </p>
             <?php endif ?>
           </div>
           <div>
             <span class="block text-sm font-medium text-[#1F1F21]">Has Camera?</span>
             <?php if ($user->get_camera_access() == "yes"):?>
               <p class="text-gray-900 font-medium text-xl"> Yes </p>
-            <?php else: ?>
+            <?php elseif ($user->get_camera_access() == "no"): ?>
               <p class="text-gray-900 font-medium text-xl"> No </p>
+            <?php else: ?>
+              <p class="text-gray-900 font-medium text-xl"> Unknown </p>
             <?php endif ?>
           </div>
           <div>
             <span class="block text-sm font-medium text-[#1F1F21]">Has Transportation Access?</span>
             <?php if ($user->get_transportation_access() == "yes"):?>
               <p class="text-gray-900 font-medium text-xl"> Yes </p>
-            <?php else: ?>
+            <?php elseif ($user->get_transportation_access() == "no"): ?>
               <p class="text-gray-900 font-medium text-xl"> No </p>
+            <?php else: ?>
+              <p class="text-gray-900 font-medium text-xl"> Unknown </p>
             <?php endif ?>
           </div>
 
