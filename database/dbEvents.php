@@ -368,6 +368,7 @@ function make_an_event($result_row) {
     $theEvent = new Event(
                     $result_row['id'],
                     $result_row['name'],       
+                    $result_row['abbr_name'],
                     type: $result_row['type'],            
                     startDate: $result_row['startDate'],
                     startTime: $result_row['startTime'],
