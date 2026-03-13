@@ -142,7 +142,14 @@
 <?php endif ?>
 
 <?php if (isset($_GET['editSuccess'])): ?>
-  <div class="absolute left-[40%] top-[15%] z-50 bg-green-800 p-4 text-white rounded-xl text-xl">Profile updated successfully!</div>
+  <div id="success-toast" class="absolute left-[40%] top-[15%] z-50 bg-green-800 p-4 text-white rounded-xl text-xl transition-opacity duration-500">Profile updated successfully!</div>
+  <script>
+    setTimeout(function() {
+      var toast = document.getElementById('success-toast');
+      toast.style.opacity = '0';
+      setTimeout(function() { toast.remove(); }, 500);
+    }, 500);
+  </script>
 <?php endif ?>
 
 <?php if (isset($_GET['rscSuccess'])): ?>
@@ -173,9 +180,6 @@
         </div>
         <div class="space-y-2 divide-y divide-gray-300">
           <div class="flex justify-between py-2">
-          <span class="font-medium">Username</span><span><?php echo $user->get_id() ?></span>
-          </div>
-          <div class="flex justify-between py-2">
             <span class="font-medium">Role</span><span><?php echo ucfirst($user->get_type())?></span>
           </div>
           <div class="flex justify-between py-2">
@@ -184,17 +188,11 @@
           <div class="flex justify-between py-2">
             <span class="font-medium">Age</span><span><?php echo get_age($user->get_birthday()) ?></span>
           </div>
-          <div class="flex justify-between py-2">
-            <span class="font-medium">T-shirt Size</span><span><?php echo $user->get_t_shirt_size() ?></span>
-          </div>
-          <div class="flex justify-between py-2">
-            <span class="font-medium">Availability</span><span><?php echo 'IDK' ?></span>
-          </div>
         </div>
       </div>
       <div class="mt-6 space-y-2">
         <button onclick="window.location.href='editProfile.php<?php if ($id != $userID) echo '?id=' . $id ?>';" class="text-lg font-medium w-full px-4 py-2 bg-[#2f4159] text-[#FFFFFF] rounded-md hover:bg-[#f5c16e] hover:text-[#FFFFFF] cursor-pointer">Edit Profile</button>
-        <button onclick="window.location.href='index.php';" class="text-lg font-medium w-full px-4 py-2 bg-[#f6a4b5] text-[#FFFFFF] border-2 rounded-md cursor-pointer">Return to Dashboard</button>
+        <button onclick="history.back();" class="text-lg font-medium w-full px-4 py-2 bg-[#f6a4b5] text-[#FFFFFF] border-2 rounded-md cursor-pointer">Go Back</button>
       </div>
     </div>
 
@@ -205,7 +203,8 @@
         <button class="tab-button px-4 py-2 text-lg font-medium text-[#2B2B2E]" data-tab="personal" onclick="showSection('personal')">Personal Information</button>
         <button class="tab-button px-4 py-2 text-lg font-medium text-[#2B2B2E]" data-tab="contact" onclick="showSection('contact')">Contact Information</button>
         <button class="tab-button px-4 py-2 text-lg font-medium text-[#2B2B2E]" data-tab="notifications" onclick="showSection('notifications')">Email Notifications</button>
-        <button class="tab-button px-4 py-2 text-lg font-medium text-[#2B2B2E]" data-tab="qualifications" onclick="showSection('qualifications')">Qualifications</button> 
+        <button class="tab-button px-4 py-2 text-lg font-medium text-[#2B2B2E]" data-tab="additional" onclick="showSection('additional')">Additional Information</button> 
+        <button class="tab-button px-4 py-2 text-lg font-medium text-[#2B2B2E]" data-tab="account" onclick="showSection('account')">Account Security</button>       
       </div>
 
       <!-- Personal Section -->
@@ -218,7 +217,10 @@
           <span class="block text-sm font-medium text-[#1F1F21]">Gender</span>
           <p class="text-gray-900 font-medium text-xl"><?php echo $user->get_gender() ?></p>          
         </div>
-
+        <div>
+          <span class="block text-sm font-medium text-[#1F1F21]">T-shirt Size</span>
+          <p class="text-gray-900 font-medium text-xl"><?php echo $user->get_t_shirt_size() ?></p>
+        </div>
         <div>
           <span class="block text-sm font-medium text-[#1F1F21]">Date of Birth</span>
           <p class="text-gray-900 font-medium text-xl"><?php echo date('F d, Y', strtotime($user->get_birthday())) ?></p>
@@ -285,25 +287,47 @@
         </div>
       </div>
 
-      <!-- Qualifications Section -->
-      <div id="qualifications" class="profile-section space-y-4 hidden">
+      <!-- Additional Information -->
+      <div id="additional" class="profile-section space-y-4 hidden">
+          <h2 class="text-xl font-semibold mb-4 border-b border-gray-300 pb-2">Availability</h2>
+          <table class="text-left text-xl font-medium text-gray-900 whitespace-nowrap">
+            <tr><td class="pr-4">Sunday</td><td class="text-right">6:00 pm - 7:00 pm</td></tr>
+            <tr><td class="pr-4">Monday</td><td class="text-right">11:00 am - 12:00 pm</td></tr>
+            <tr><td class="pr-4">Tuesday</td><td class="text-right">N/A</td></tr>
+            <tr><td class="pr-4">Wednesday</td><td class="text-right">N/A</td></tr>
+            <tr><td class="pr-4">Thursday</td><td class="text-right">N/A</td></tr>
+            <tr><td class="pr-4">Friday</td><td class="text-right">N/A</td></tr>
+            <tr><td class="pr-4">Saturday</td><td class="text-right">N/A</td></tr>
+          </table>
+
           <h2 class="text-xl font-semibold mb-4 border-b border-gray-300 pb-2">Languages</h2>
           <div>
-            <span class="block text-sm font-medium text-[#1F1F21]">Placeholder</span>
-            <p class="text-gray-900 font-medium text-xl"><?php echo 'placeholder' ?></p>
+            <span class="block text-sm font-medium text-[#1F1F21]">English</span>
+            <p class="text-gray-900 font-medium text-xl">Speaking: Fluent</p>
+            <p class="text-gray-900 font-medium text-xl">Writing: Fluent</p>
+            <p class="text-gray-900 font-medium text-xl">Reading: Advanced</p>
+            <p class="text-gray-900 font-medium text-xl">Listening: Fluent</p>
+          </div>
+          <div>
+            <span class="block text-sm font-medium text-[#1F1F21]">Spanish</span>
+            <p class="text-gray-900 font-medium text-xl">Speaking: Intermediate</p>
+            <p class="text-gray-900 font-medium text-xl">Writing: Beginner</p>
+            <p class="text-gray-900 font-medium text-xl">Reading: Intermediate</p>
+            <p class="text-gray-900 font-medium text-xl">Listening: Intermediate</p>
           </div>
 
           <h2 class="text-xl font-semibold mb-4 border-b border-gray-300 pb-2">Skills</h2>
-          <div>
-            <span class="block text-sm font-medium text-[#1F1F21]">Placeholder</span>
-             <p class="text-gray-900 font-medium text-xl"><?php echo 'placeholder' ?></p>
-          </div>
+          <ul class="list-inside text-gray-900 font-medium text-xl">
+            <li style="list-style-type: disc;">First Aid</li>
+            <li style="list-style-type: disc;">Public Speaking</li>
+            <li style="list-style-type: disc;">Event Planning</li>
+          </ul>
 
           <h2 class="text-xl font-semibold mb-4 border-b border-gray-300 pb-2">Experience</h2>
-          <div>
-            <span class="block text-sm font-medium text-[#1F1F21]">placeholder</span>
-             <p class="text-gray-900 font-medium text-xl"><?php echo 'placeholder' ?></p>
-          </div>
+          <ul class="list-inside text-gray-900 font-medium text-xl">
+            <li style="list-style-type: disc;">3 years volunteering at local food bank</li>
+            <li style="list-style-type: disc;">Youth mentorship program coordinator</li>
+          </ul>
 
           <h2 class="text-xl font-semibold mb-4 border-b border-gray-300 pb-2">Access</h2>
           <div>
@@ -335,8 +359,19 @@
             <?php else: ?>
               <p class="text-gray-900 font-medium text-xl"> Unknown </p>
             <?php endif ?>
-          </div>
+            </div>
+      </div>
 
+      <!-- Account Security Section -->
+      <div id="account" class="profile-section space-y-4 hidden">
+        <div>
+          <span class="block text-sm font-medium text-[#1F1F21]">Username</span>
+          <p class="text-gray-900 font-medium text-xl"><?php echo $user->get_id() ?></p>
+        </div>
+        <div>
+          <span class="block text-sm font-medium text-[#1F1F21]">Password</span>
+          <button onclick="window.location.href='changePassword.php<?php if ($id != $userID) echo '?id=' . $id ?>';" class="w-fit text-sm font-medium px-4 py-2 bg-[#2f4159] text-[#FFFFFF] rounded-md hover:bg-[#f5c16e] hover:text-[#FFFFFF] cursor-pointer">Change Password</button>
+        </div>
       </div>
 
     </div>

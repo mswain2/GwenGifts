@@ -102,7 +102,7 @@
                 <p id="password-match-error" class="error hidden">Passwords must match!</p>
                 <input type="submit" id="submit" name="submit" value="Change Password">
                 <?php if (!$forced): ?>
-                    <a class="button cancel" href="index.php">Cancel</a>
+                    <a class="button cancel" onclick="history.back();">Go Back</a>
                 <?php endif ?>
             </form>
         </main>
