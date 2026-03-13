@@ -95,7 +95,7 @@ require_once('header.php');
                                         <th>Username</th>
                                         <th>Phone</th>
                                         <th>Zip Code</th>
-                                        <th>type</th>
+                                        <th>Role</th>
                                         <th>Archive Status</th>
                                         <th>Profile</th>
                                         <th>Actions</th>

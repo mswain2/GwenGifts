@@ -99,87 +99,100 @@
 
       const tabs = document.querySelectorAll('.tab-button');
       tabs.forEach(tab => {
-        tab.classList.remove('border-b-4', 'border-[#f6a4b5]');
-        tab.classList.add('hover:border-b-2', 'hover:border-[#f6a4b5]');
+        tab.style.borderBottom = '';
+        tab.style.marginBottom = '';
       });
 
       const activeTab = document.querySelector(`[data-tab="${sectionId}"]`);
-      activeTab.classList.add('border-b-4', 'border-[#f6a4b5]');
-      activeTab.classList.remove('hover:border-b-2', 'hover:border-[#f6a4b5]');
+      activeTab.style.borderBottom = '4px solid #2f4159';
+      activeTab.style.marginBottom = '-4px';
     }
 
     window.onload = () => showSection('personal');
   </script>
+
   <?php 
     require_once('header.php'); 
     require_once('include/output.php');
   ?>
-  <h1>View Profile</h1>
 
-    <script>
+  <script>
 
-      function openModal(modalID) {
-          document.getElementById(modalID).classList.remove('hidden');
-      }
+    function openModal(modalID) {
+        document.getElementById(modalID).classList.remove('hidden');
+    }
 
-      function closeModal(modalID) {
-          document.getElementById(modalID).classList.add('hidden');
-      }
+    function closeModal(modalID) {
+        document.getElementById(modalID).classList.add('hidden');
+    }
 
-      window.onload = () => showSection('personal');
-  </script>
+    window.onload = () => showSection('personal');
+</script>
 
 </head>
-            <?php if ($id == 'vmsroot'): ?>
+
+<?php if ($id == 'vmsroot'): ?>
 		<div class="absolute left-[40%] top-[20%] bg-red-800 p-4 text-white rounded-xl text-xl">The root user does not have a profile.</div>
-                </main></body></html>
-                <?php die() ?>
-            <?php elseif (!$user): ?>
-		<div class="absolute left-[40%] top-[20%] bg-red-800 p-4 text-white rounded-xl text-xl">User does not exist.</div>
-                </main></body></html>
-                <?php die() ?>
-            <?php endif ?>
-            <?php if (isset($_GET['editSuccess'])): ?>
-		<div class="absolute left-[40%] top-[15%] z-50 bg-green-800 p-4 text-white rounded-xl text-xl">Profile updated successfully!</div>
-            <?php endif ?>
-            <?php if (isset($_GET['rscSuccess'])): ?>
-		<div class="absolute left-[40%] top-[15%] z-50 bg-green-800 p-4 text-white rounded-xl text-xl">User role/status updated successfully!</div>
-            <?php endif ?>
+    </main></body></html>
+    <?php die() ?>
+<?php elseif (!$user): ?>
+  <div class="absolute left-[40%] top-[20%] bg-red-800 p-4 text-white rounded-xl text-xl">User does not exist.</div>
+  </main></body></html>
+  <?php die() ?>
+<?php endif ?>
+
+<?php if (isset($_GET['editSuccess'])): ?>
+  <div class="absolute left-[40%] top-[15%] z-50 bg-green-800 p-4 text-white rounded-xl text-xl">Profile updated successfully!</div>
+<?php endif ?>
+
+<?php if (isset($_GET['rscSuccess'])): ?>
+  <div class="absolute left-[40%] top-[15%] z-50 bg-green-800 p-4 text-white rounded-xl text-xl">User role/status updated successfully!</div>
+<?php endif ?>
+
+<h1>View Profile</h1>
 
 <body class="bg-gray-100">
   <!-- Hero Section -->
+  <!--
   <div class="h-48 relative" style="background-color: var(--page-background-color);">
   </div>
+  -->
 
   <!-- Profile Content -->
-  <div class="max-w-6xl mx-auto px-4 -mt-20 relative z-10 flex flex-col md:flex-row gap-6">
+  <div class="max-w-6xl mx-auto px-4 mt-6 flex flex-col md:flex-row md:items-start gap-6">
     <!-- Left Box -->
     <div class="w-full md:w-1/3 bg-white border border-gray-300 rounded-2xl shadow-lg p-6 flex flex-col justify-between">
       <div>
-	<div class="flex justify-between items-center">
-	<?php if ($viewingOwnProfile): ?>
-          <h2 class="text-xl font-semibold mb-4">My Profile</h2>
+        <div class="flex justify-between items-center">
+        <?php if ($viewingOwnProfile): ?>
+                <h2 class="text-xl font-semibold mb-4">My Profile</h2>
 
-	<?php else: ?>
-	  <h2 class="text-xl font-semibold mb-4">Name: <?php echo $user->get_first_name() . ' ' . $user->get_last_name() ?></h2>
-	<?php endif ?>
-	</div>
+        <?php else: ?>
+          <h2 class="text-xl font-semibold mb-4">Name: <?php echo $user->get_first_name() . ' ' . $user->get_last_name() ?></h2>
+        <?php endif ?>
+        </div>
         <div class="space-y-2 divide-y divide-gray-300">
           <div class="flex justify-between py-2">
+          <span class="font-medium">Username</span><span><?php echo $user->get_id() ?></span>
+          </div>
+          <div class="flex justify-between py-2">
             <span class="font-medium">Role</span><span><?php echo ucfirst($user->get_type())?></span>
+          </div>
+          <div class="flex justify-between py-2">
+            <span class="font-medium">Status</span><span><?php echo ucfirst($user->get_status())?></span>
           </div>
           <div class="flex justify-between py-2">
             <span class="font-medium">Age</span><span><?php echo get_age($user->get_birthday()) ?></span>
           </div>
           <div class="flex justify-between py-2">
-            <span class="font-medium">Birthday</span><span><?php echo date('F d, Y', strtotime($user->get_birthday())) ?></span>
+            <span class="font-medium">T-shirt Size</span><span><?php echo $user->get_t_shirt_size() ?></span>
+          </div>
+          <div class="flex justify-between py-2">
+            <span class="font-medium">Availability</span><span><?php echo 'IDK' ?></span>
           </div>
         </div>
       </div>
       <div class="mt-6 space-y-2">
-        <button type="button" class="text-lg font-medium w-full px-4 py-2 bg-[#2f4159] text-[#FFFFFF] rounded-md hover:bg-[#f5c16e] hover:text-[#FFFFFF] cursor-pointer" onclick="openModal('verifiedIdsModal')">
-          View Verified IDs
-        </button>
         <button onclick="window.location.href='editProfile.php<?php if ($id != $userID) echo '?id=' . $id ?>';" class="text-lg font-medium w-full px-4 py-2 bg-[#2f4159] text-[#FFFFFF] rounded-md hover:bg-[#f5c16e] hover:text-[#FFFFFF] cursor-pointer">Edit Profile</button>
         <button onclick="window.location.href='index.php';" class="text-lg font-medium w-full px-4 py-2 bg-[#f6a4b5] text-[#FFFFFF] border-2 rounded-md cursor-pointer">Return to Dashboard</button>
       </div>
@@ -188,29 +201,35 @@
     <!-- Right Box -->
     <div class="w-full md:w-2/3 bg-white rounded-2xl shadow-lg border border-gray-300 p-6">
       <!-- Tabs -->
-      <div class="flex border-b border-gray-300 mb-4">
+      <div class="flex border-b-4 border-gray-300 mb-4">
         <button class="tab-button px-4 py-2 text-lg font-medium text-[#2B2B2E]" data-tab="personal" onclick="showSection('personal')">Personal Information</button>
         <button class="tab-button px-4 py-2 text-lg font-medium text-[#2B2B2E]" data-tab="contact" onclick="showSection('contact')">Contact Information</button>
-        <button class="tab-button px-4 py-2 text-lg font-medium text-[#2B2B2E]" data-tab="volunteer" onclick="showSection('volunteer')">Email Preferences</button>
+        <button class="tab-button px-4 py-2 text-lg font-medium text-[#2B2B2E]" data-tab="notifications" onclick="showSection('notifications')">Email Notifications</button>
+        <button class="tab-button px-4 py-2 text-lg font-medium text-[#2B2B2E]" data-tab="qualifications" onclick="showSection('qualifications')">Qualifications</button> 
       </div>
 
       <!-- Personal Section -->
       <div id="personal" class="profile-section space-y-4">
         <div>
-          <span class="block text-sm font-medium text-[#1F1F21]">Username</span>
-          <p class="text-gray-900 font-medium text-xl"><?php echo $user->get_id() ?></p>
-        </div>
-        <div>
           <span class="block text-sm font-medium text-[#1F1F21]">Name</span>
           <p class="text-gray-900 font-medium text-xl"><?php echo $user->get_first_name() ?> <?php echo $user->get_last_name() ?></p>
         </div>
         <div>
+          <span class="block text-sm font-medium text-[#1F1F21]">Gender</span>
+          <p class="text-gray-900 font-medium text-xl"><?php echo $user->get_gender() ?></p>          
+        </div>
+
+        <div>
           <span class="block text-sm font-medium text-[#1F1F21]">Date of Birth</span>
-          <p class="text-gray-900 font-medium text-xl"><?php echo $user->get_birthday() ?></p>
+          <p class="text-gray-900 font-medium text-xl"><?php echo date('F d, Y', strtotime($user->get_birthday())) ?></p>
         </div>
         <div>
           <span class="block text-sm font-medium text-[#1F1F21]">Address</span>
-          <p class="text-gray-900 font-medium text-xl"><?php echo $user->get_street_address() . ', ' . $user->get_city() . ', ' . $user->get_state() . ' ' . $user->get_zip_code() ?></p>
+          <p class="text-gray-900 font-medium text-xl"><?php echo nl2br($user->get_street_address() . "\n" . $user->get_city() . ', ' . $user->get_state() . ' ' . $user->get_zip_code()) ?></p>
+        </div>
+        <div>
+          <span class="block text-sm font-medium text-[#1F1F21]">Personal Notes</span>
+          <p class="text-gray-900 font-medium text-xl"><?php echo $user->get_notes() ?></p>
         </div>
       </div>
 
@@ -248,11 +267,10 @@
             <p class="text-gray-900 font-medium text-xl">N/A</p>
           <?php endif ?>
         </div>
- 
       </div>
 
-      <!-- Email Prefs Section -->
-      <div id="volunteer" class="profile-section space-y-4 hidden">
+      <!-- Email Notifications Section -->
+      <div id="notifications" class="profile-section space-y-4 hidden">
         <div>
           <span class="block text-sm font-medium text-[#1F1F21]">Email</span>
           <p class="text-gray-900 font-medium text-xl"><?php echo $user->get_email() ?></p>
@@ -265,10 +283,56 @@
             <p class="text-gray-900 font-medium text-xl"> No </p>
           <?php endif ?>
         </div>
-
-
-	      
       </div>
+
+      <!-- Qualifications Section -->
+      <div id="qualifications" class="profile-section space-y-4 hidden">
+          <h2 class="text-xl font-semibold mb-4 border-b border-gray-300 pb-2">Languages</h2>
+          <div>
+            <span class="block text-sm font-medium text-[#1F1F21]">Placeholder</span>
+            <p class="text-gray-900 font-medium text-xl"><?php echo 'placeholder' ?></p>
+          </div>
+
+          <h2 class="text-xl font-semibold mb-4 border-b border-gray-300 pb-2">Skills</h2>
+          <div>
+            <span class="block text-sm font-medium text-[#1F1F21]">Placeholder</span>
+             <p class="text-gray-900 font-medium text-xl"><?php echo 'placeholder' ?></p>
+          </div>
+
+          <h2 class="text-xl font-semibold mb-4 border-b border-gray-300 pb-2">Experience</h2>
+          <div>
+            <span class="block text-sm font-medium text-[#1F1F21]">placeholder</span>
+             <p class="text-gray-900 font-medium text-xl"><?php echo 'placeholder' ?></p>
+          </div>
+
+          <h2 class="text-xl font-semibold mb-4 border-b border-gray-300 pb-2">Access</h2>
+          <div>
+            <span class="block text-sm font-medium text-[#1F1F21]">Has Computer?</span>
+            <?php if ($user->get_computer_access() == "yes"):?>
+              <p class="text-gray-900 font-medium text-xl"> Yes </p>
+            <?php else: ?>
+              <p class="text-gray-900 font-medium text-xl"> No </p>
+            <?php endif ?>
+          </div>
+          <div>
+            <span class="block text-sm font-medium text-[#1F1F21]">Has Camera?</span>
+            <?php if ($user->get_camera_access() == "yes"):?>
+              <p class="text-gray-900 font-medium text-xl"> Yes </p>
+            <?php else: ?>
+              <p class="text-gray-900 font-medium text-xl"> No </p>
+            <?php endif ?>
+          </div>
+          <div>
+            <span class="block text-sm font-medium text-[#1F1F21]">Has Transportation Access?</span>
+            <?php if ($user->get_transportation_access() == "yes"):?>
+              <p class="text-gray-900 font-medium text-xl"> Yes </p>
+            <?php else: ?>
+              <p class="text-gray-900 font-medium text-xl"> No </p>
+            <?php endif ?>
+          </div>
+
+      </div>
+
     </div>
   </div>
 
