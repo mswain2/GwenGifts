@@ -237,7 +237,7 @@
       <div id="contact" class="profile-section space-y-4 hidden">
         <div>
           <span class="block text-sm font-medium text-[#1F1F21]">Email</span>
-          <p class="text-gray-900 font-medium text-xl"><a href="mailto:<?php echo $user->get_email() ?>"><?php echo $user->get_email() ?></a></p>
+          <p class="text-gray-900 font-medium text-xl"><?php echo $user->get_email() ?></p>
         </div>
         <div>
           <span class="block text-sm font-medium text-[#1F1F21]">Phone Number</span>
