@@ -61,8 +61,6 @@ function add_event($event) {
                 $event->getDescription() . '","' .
                 $event->getCapacity() . "," .
                 $event->getLocation() . "," .
-                $event->getAffiliation() . "," .
-                $event->getBranch() . '","' . 
                 $event->Access() . '","' . 
                 $event->getCompleted() . "," .
                 #$event->getID() .            
@@ -378,8 +376,6 @@ function make_an_event($result_row) {
                     description: $result_row['description'],
                     capacity: $result_row['capacity'],
                     location: $result_row['location'],
-                    affiliation: $result_row['affiliation'],
-                    branch: $result_row['branch'],
                     access: $result_row['access'],
                     completed: $result_row['completed']
                     
