@@ -137,7 +137,7 @@
 
     <form class="signup-form" method="post">
 	<div class="text-center">
-          <h2 class="mb-8">Edit Profile</h2>
+          <h2 class="mb-8">Directions</h2>
             <div class="info-box" style="padding-left: 0rem;">
               <p>An asterisk ( <em>*</em> ) indicates a required field.</p>
             </div>
