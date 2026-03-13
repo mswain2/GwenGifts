@@ -25,7 +25,7 @@
         require_once('database/dbEvents.php');
         $args = sanitize($_POST, null);
         $required = array(
-            "name", "date", "start-time", "end-time", "description", "type"
+            "name", "abbr", "date", "start-time", "end-time", "description", "type"
         );
         if (!wereRequiredFieldsSubmitted($args, $required)) {
             echo 'bad form data';
@@ -212,36 +212,6 @@
                     <label>
                         <input type="radio" name="visibility" value="private">Private
                     </label>
-                    </div>
-                </div>
-                </div>
-
-                <div class="event-sect">
-                <label for="name">* Sign-up Restrictions</label>
-                <p class="sub-text">Restrictions control who can sign up for your event.</p>
-                <div class="dropdown-group">
-                    <div class="dd">
-                    <label for="branch">Branch</label>
-                    <select  name="branch" id="branch">
-                        <option value="all">(any)</option>
-                        <option value="air force">Air Force</option>
-                        <option value="army">Army</option>
-                        <option value="coast guard">Coast Guard</option>
-                        <option value="marine">Marine Corp</option>
-                        <option value="navy">Navy</option>
-                        <option value="space force">Space Force</option>
-                    </select>
-                    </div>
-                    <div class="dd">
-                    <label for="affiliation">Affiliation</label>
-                    <select  name="affiliation" id="affiliation">
-                        <option value="all">(any)</option>
-                        <option value="active duty">Active duty</option>
-                        <option value="family">Family member (spouse, child, or parent)</option>
-                        <option value="reserve">Reservist</option>
-                        <option value="veteran">Veteran</option>
-                        <option value="civilian">Civilian</option>
-                    </select>
                     </div>
                 </div>
                 </div>

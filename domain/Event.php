@@ -5,6 +5,7 @@
 class Event {
     private $id;
     private $name;
+    private $abbr;
     private $type;
     private $startDate;
     private $startTime;
@@ -19,9 +20,10 @@ class Event {
     private $access;
 
 
-    function __construct($id, $name, $type, $startDate, $startTime, $endTime, $endDate, $description, $capacity, $location, $affiliation, $branch, $access, $completed) {
+    function __construct($id, $name, $abbr, $type, $startDate, $startTime, $endTime, $endDate, $description, $capacity, $location, $affiliation, $branch, $access, $completed) {
         $this->id = $id;
         $this->name = $name;
+        $this->abbr = $abbr;
         $this->type = $type;
         $this->startDate = $startDate;
         $this->startTime = $startTime;
@@ -43,6 +45,10 @@ class Event {
 
     function getName() {
         return $this->name;
+    }
+
+    function getAbbr() {
+        return $this->abbr;
     }
 
     function getStartDate() {

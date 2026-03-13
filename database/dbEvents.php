@@ -52,6 +52,7 @@ function add_event($event) {
         mysqli_query($con,'INSERT INTO dbevents VALUES("' .
                 $event->getID() . '","' .
                 $event->getName() . '","' . 
+                $event->getAbbr() . '","' .
                 $event->getType() . '","' . 
                 $event->getStartDate() . '","' .
                 $event->getStartTime() . "," .
@@ -554,6 +555,7 @@ function fetch_num_attendees($id) {
 function create_event($event) {
     $connection = connect();
     $name = $event["name"];
+    $abbr = $event["abbr"];
     //$abbrevName = $event["abbrev-name"];
     // $date = $event["date"];
     $date    = $event["startDate"] ?? $event["date"];
@@ -595,8 +597,8 @@ function create_event($event) {
         : null;
 
     $query = "
-        insert into dbevents (name, startDate, startTime, endTime, endDate, access, description, capacity, completed, location, type, series_id)
-        values ('$name', '$date', '$startTime', '$endTime', '$endDate', '$access', '$description', $capacity, '$completed', '$location', '$type', " .($series_id ? "'$series_id'" : "NULL") . ")
+        insert into dbevents (name, abbr_name, startDate, startTime, endTime, endDate, access, description, capacity, completed, location, type, series_id)
+        values ('$name', '$abbr', '$date', '$startTime', '$endTime', '$endDate', '$access', '$description', $capacity, '$completed', '$location', '$type', " .($series_id ? "'$series_id'" : "NULL") . ")
     ";
     $result = mysqli_query($connection, $query);
     if (!$result) {
