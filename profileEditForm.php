@@ -218,10 +218,11 @@
             <label for="zip_code"><em>* </em>Zip Code</label>
             <input type="text" id="zip_code" name="zip_code" value="<?php echo hsc($person->get_zip_code()); ?>" pattern="[0-9]{5}" title="5-digit zip code" required placeholder="Enter your 5-digit zip code">
 
-            <div class="median-div"></div>
-
-            <label for="notes">Personal Notes</label>
-            <textarea id="notes" name="notes" placeholder="Any additional notes"><?php echo hsc($person->get_notes()); ?></textarea>
+            <?php if ($isAdmin): ?>
+                <div class="median-div"></div>
+                <label for="notes">Personal Notes</label>
+                <textarea id="notes" name="notes" placeholder="Any additional notes"><?php echo hsc($person->get_notes()); ?></textarea>
+            <?php endif ?>
         </fieldset>
 
         <fieldset class="section-box" id="contact-info">

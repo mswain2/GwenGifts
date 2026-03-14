@@ -196,7 +196,7 @@
         <?php if ($canEditUsers || $viewingOwnProfile): ?>
           <button onclick="window.location.href='editProfile.php<?php if ($id != $userID) echo '?id=' . $id ?>';" class="text-lg font-medium w-full px-4 py-2 bg-[#2f4159] text-[#FFFFFF] rounded-md hover:bg-[#f5c16e] hover:text-[#FFFFFF] cursor-pointer">Edit Profile</button>
         <?php endif ?>
-          <?php if ($canSearchUser && !$viewingOwnProfile): ?>
+          <?php if ($canSearchUsers && !$viewingOwnProfile): ?>
           <button onclick="window.location.href='personSearch.php';" class="text-lg font-medium w-full px-4 py-2 bg-[#2f4159] text-[#FFFFFF] border-2 rounded-md cursor-pointer">Search Users</button>
         <?php endif ?>
         <button onclick="window.location.href='index.php<?php if ($id != $userID) echo '?id=' . $id ?>';" class="text-lg font-medium w-full px-4 py-2 bg-[#f6a4b5] text-[#FFFFFF] rounded-md hover:bg-[#f5c16e] hover:text-[#FFFFFF] cursor-pointer">Return to Dashboard</button>
@@ -236,10 +236,12 @@
           <span class="block text-sm font-medium text-[#1F1F21]">Address</span>
           <p class="text-gray-900 font-medium text-xl"><?php echo nl2br($user->get_street_address() . "\n" . $user->get_city() . ', ' . $user->get_state() . ' ' . $user->get_zip_code()) ?></p>
         </div>
-        <div>
-          <span class="block text-sm font-medium text-[#1F1F21]">Personal Notes</span>
-          <p class="text-gray-900 font-medium text-xl"><?php echo $user->get_notes() ?></p>
-        </div>
+        <?php if (in_array($loggedInUser->get_type(), ['admin', 'superadmin'])): ?>
+          <div>
+            <span class="block text-sm font-medium text-[#1F1F21]">Personal Notes</span>
+            <p class="text-gray-900 font-medium text-xl"><?php echo $user->get_notes() ?></p>
+          </div>
+        <?php endif ?>
       </div>
 
       <!-- Contact Section -->
