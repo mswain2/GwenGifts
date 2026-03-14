@@ -264,7 +264,7 @@
             </ol>
             <p>You may change your email preferences at any time through your account settings.</p>
 
-            <label><input type="checkbox" id="email_prefs" name="email_prefs" value="true"> I consent.</label>
+            <label><input type="checkbox" id="email_prefs" name="email_prefs" value="true" <?php if ($person->get_email_prefs()) echo 'checked'; ?>> I consent.</label>
         </fieldset>
 
         <fieldset class="section-box" id="emergency-contact">
@@ -585,10 +585,10 @@
         <p class="mb-2">Do you have reliable transportation to get to volunteer sites?</p>
         <div class="radio-group">
             <div class="radio-element">
-                <input type="radio" id="transportation_access_yes" name="transportation_access" value="yes" required><label for="transportation_access_yes"> Yes</label>
+                <input type="radio" id="transportation_access_yes" name="transportation_access" value="yes" <?php if ($person->get_transportation_access() == 'yes') echo 'checked'; ?> required><label for="transportation_access_yes"> Yes</label>
             </div>
             <div class="radio-element">
-                <input type="radio" id="transportation_access_no" name="transportation_access" value="no" required><label for="transportation_access_no"> No</label>
+                <input type="radio" id="transportation_access_no" name="transportation_access" value="no" <?php if ($person->get_transportation_access() == 'no') echo 'checked'; ?> required><label for="transportation_access_no"> No</label>
             </div>
         </div>
 
@@ -600,7 +600,7 @@
     <?php if ($editingSelf): ?>
         <button type="button" class="button cancel" onclick="history.back();" style="margin-top: -.5rem">Cancel</button>
     <?php else: ?>
-        <button type="button" class="button cancel" onclick="history.back();" style="margin-top: -.5rem">Cancel</button>
+        <button type="button" class="button cancel" onclick="window.location.href='viewProfile.php?id=<?php echo htmlspecialchars($id); ?>';" style="margin-top: -.5rem">Cancel</button>
     <?php endif ?>
 
     </form>

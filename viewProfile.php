@@ -74,6 +74,7 @@
     $viewingOwnProfile = $id == $userID;
     $loggedInUser = $viewingOwnProfile ? $user : retrieve_person($userID);
     $canSearchUsers = in_array($loggedInUser->get_type(), ['admin', 'superadmin', 'event_manager', 'board_member']);
+    $canEditUsers = in_array($loggedInUser->get_type(), ['admin', 'superadmin']);
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       if (isset($_POST['url'])) {
@@ -192,8 +193,10 @@
         </div>
       </div>
       <div class="mt-6 space-y-2">
-        <button onclick="window.location.href='editProfile.php<?php if ($id != $userID) echo '?id=' . $id ?>';" class="text-lg font-medium w-full px-4 py-2 bg-[#2f4159] text-[#FFFFFF] rounded-md hover:bg-[#f5c16e] hover:text-[#FFFFFF] cursor-pointer">Edit Profile</button>
-        <?php if ($canSearchUsers & !$viewingOwnProfile): ?>
+        <?php if ($canEditUsers || $viewingOwnProfile): ?>
+          <button onclick="window.location.href='editProfile.php<?php if ($id != $userID) echo '?id=' . $id ?>';" class="text-lg font-medium w-full px-4 py-2 bg-[#2f4159] text-[#FFFFFF] rounded-md hover:bg-[#f5c16e] hover:text-[#FFFFFF] cursor-pointer">Edit Profile</button>
+        <?php endif ?>
+          <?php if (!$viewingOwnProfile): ?>
           <button onclick="window.location.href='personSearch.php';" class="text-lg font-medium w-full px-4 py-2 bg-[#2f4159] text-[#FFFFFF] border-2 rounded-md cursor-pointer">Search Users</button>
         <?php endif ?>
         <button onclick="window.location.href='index.php<?php if ($id != $userID) echo '?id=' . $id ?>';" class="text-lg font-medium w-full px-4 py-2 bg-[#f6a4b5] text-[#FFFFFF] rounded-md hover:bg-[#f5c16e] hover:text-[#FFFFFF] cursor-pointer">Return to Dashboard</button>
