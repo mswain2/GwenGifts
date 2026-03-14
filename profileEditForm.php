@@ -598,9 +598,9 @@
     <input type="hidden" name="id" value="<?php echo $id; ?>">
     <input type="submit" name="profile-edit-form" value="Update Profile">
     <?php if ($editingSelf): ?>
-        <button type="button" class="button cancel" onclick="window.location.href='viewProfile.php';" style="margin-top: -.5rem">Cancel</button>
+        <button type="button" class="button cancel" onclick="history.back();" style="margin-top: -.5rem">Cancel</button>
     <?php else: ?>
-        <button type="button" class="button cancel" onclick="window.location.href='viewProfile.php?id=<?php echo htmlspecialchars($id); ?>';" style="margin-top: -.5rem">Cancel</button>
+        <button type="button" class="button cancel" onclick="history.back();" style="margin-top: -.5rem">Cancel</button>
     <?php endif ?>
 
     </form>

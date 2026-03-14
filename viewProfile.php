@@ -72,6 +72,8 @@
 }
 
     $viewingOwnProfile = $id == $userID;
+    $loggedInUser = $viewingOwnProfile ? $user : retrieve_person($userID);
+    $canSearchUsers = in_array($loggedInUser->get_type(), ['admin', 'superadmin', 'event_manager', 'board_member']);
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       if (isset($_POST['url'])) {
@@ -172,8 +174,7 @@
       <div>
         <div class="flex justify-between items-center">
         <?php if ($viewingOwnProfile): ?>
-                <h2 class="text-xl font-semibold mb-4">My Profile</h2>
-
+          <h2 class="text-xl font-semibold mb-4">My Profile</h2>
         <?php else: ?>
           <h2 class="text-xl font-semibold mb-4">Name: <?php echo $user->get_first_name() . ' ' . $user->get_last_name() ?></h2>
         <?php endif ?>
@@ -192,7 +193,10 @@
       </div>
       <div class="mt-6 space-y-2">
         <button onclick="window.location.href='editProfile.php<?php if ($id != $userID) echo '?id=' . $id ?>';" class="text-lg font-medium w-full px-4 py-2 bg-[#2f4159] text-[#FFFFFF] rounded-md hover:bg-[#f5c16e] hover:text-[#FFFFFF] cursor-pointer">Edit Profile</button>
-        <button onclick="history.back();" class="text-lg font-medium w-full px-4 py-2 bg-[#f6a4b5] text-[#FFFFFF] border-2 rounded-md cursor-pointer">Go Back</button>
+        <?php if ($canSearchUsers & !$viewingOwnProfile): ?>
+          <button onclick="window.location.href='personSearch.php';" class="text-lg font-medium w-full px-4 py-2 bg-[#2f4159] text-[#FFFFFF] border-2 rounded-md cursor-pointer">Search Users</button>
+        <?php endif ?>
+        <button onclick="window.location.href='index.php<?php if ($id != $userID) echo '?id=' . $id ?>';" class="text-lg font-medium w-full px-4 py-2 bg-[#f6a4b5] text-[#FFFFFF] rounded-md hover:bg-[#f5c16e] hover:text-[#FFFFFF] cursor-pointer">Return to Dashboard</button>
       </div>
     </div>
 
