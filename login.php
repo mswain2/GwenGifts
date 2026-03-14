@@ -127,9 +127,9 @@
 
   <!-- Left: Image Section (Hidden on small screens) -->
   <div class="hidden md:block md:w-1/2 bg-center rounded-r-[50px] bg-[#1F1F21]">
-      <img src="images/volunteers.jpg"
+      <img src="images/table.jpg"
             alt="A group of GG volunteers"
-            style="height: 100%; object-fit: fill; border-radius: 0px 50px 50px 0px;">
+            style="max-height: 100%; min-width: 100%; object-fit: cover; border-radius: 0px 50px 50px 0px;">
   </div>
 
   <!-- Right: Form Section -->
