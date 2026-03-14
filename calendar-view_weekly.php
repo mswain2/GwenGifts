@@ -101,12 +101,12 @@ $nextWeek = strtotime(date('Y-m-d', $dayEpoch) . ' +7 days');
                                     $backgroundCol = '#4CAF50';
                                 }
                                 
-                                $eventsStr .= '<a class="calendar-event" style="background-color: ' . $backgroundCol . '" href="event.php?id=' . $info['id'] . '&user_id=' . $_SESSION['_id'] . '">' . htmlspecialchars_decode($info['name']) . '</a>';
+                                $eventsStr .= '<a class="calendar-event" style="background-color: ' . $backgroundCol . '" href="event.php?id=' . $info['id'] . '&user_id=' . $_SESSION['_id'] . '">' . htmlspecialchars_decode($info['abbr_name']) . '</a>';
 
                             } else {
                                 
                                 // This logic is for GUEST users (not logged in)
-                                $eventsStr .= '<a class="calendar-event" style="background-color: ' . $backgroundCol . '" href="event.php?id=' . $info['id'] . '&user_id=guest' . '">' . htmlspecialchars_decode($info['name']) . '</a>';
+                                $eventsStr .= '<a class="calendar-event" style="background-color: ' . $backgroundCol . '" href="event.php?id=' . $info['id'] . '&user_id=guest' . '">' . htmlspecialchars_decode($info['abbr_name']) . '</a>';
                             }
 
                         }
