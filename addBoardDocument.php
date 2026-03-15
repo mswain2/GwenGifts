@@ -18,6 +18,41 @@
     }
 
     include_once('database/dbinfo.php');
+    include_once('database/dbPersons.php');
+    include_once('domain/Person.php');
+
+    $user_type = 'participant';
+    if (isset($_SESSION['_id'])) {
+        if ($_SESSION['_id'] === 'vmsroot') {
+            $user_type = 'superadmin';
+        } else {
+            $person = retrieve_person($_SESSION['_id']);
+            if ($person) $user_type = $person->get_type();
+        }
+    }
+
+    $can_upload = in_array($user_type, ['event_manager', 'board_member', 'admin', 'superadmin']);
+    if (!$can_upload) {
+        header('Location: boardDocuments.php');
+        die();
+    }
+
+    $clearance_options_map = [
+        'event_manager' => ['public', 'volunteer', 'manager'],
+        'board_member'  => ['public', 'volunteer', 'board_member'],
+        'admin'         => ['public', 'volunteer', 'manager', 'board_member', 'admin'],
+        'superadmin'    => ['public', 'volunteer', 'manager', 'board_member', 'admin', 'superadmin'],
+    ];
+    $available_clearances = $clearance_options_map[$user_type] ?? ['public'];
+
+    $clearance_labels = [
+        'public'       => 'Public — Everyone can access',
+        'volunteer'    => 'Volunteer — Volunteers and above',
+        'manager'      => 'Manager — Event Managers and above',
+        'board_member' => 'Board Member — Board Members, Admins, Super Admins',
+        'admin'        => 'Admin — Admins and Super Admins only',
+        'superadmin'   => 'Super Admin — Super Admins only',
+    ];
 
     $error = null;
 
@@ -25,7 +60,10 @@
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $connection = connect();
         $doc_name = mysqli_real_escape_string($connection, trim($_POST['doc_name']));
-        $uploaded_by = $_SESSION['_id'];
+        $clearance_level = trim($_POST['clearance_level']);
+        if (!in_array($clearance_level, $available_clearances)) {
+            $error = "Invalid role access level selected.";
+        } else{
 
         if (isset($_FILES['doc_file']) && $_FILES['doc_file']['error'] === 0) {
             $allowed_types = [
@@ -45,8 +83,10 @@
 
             if (in_array($file_type, $allowed_types)) {
                 if (move_uploaded_file($_FILES['doc_file']['tmp_name'], $target_path)) {
-                    $insertQuery = "INSERT INTO boarddocuments (doc_name, file_path, uploaded_by) 
-                                    VALUES ('$doc_name', '$target_path', '$uploaded_by')";
+                    $safe_clearance   = mysqli_real_escape_string($connection, $clearance_level);
+                    $safe_uploaded_by = mysqli_real_escape_string($connection, $_SESSION['_id']);
+                    $insertQuery = "INSERT INTO boarddocuments (doc_name, file_path, uploaded_by, clearance_level)
+                                    VALUES ('$doc_name', '$target_path', '$safe_uploaded_by', '$safe_clearance')";
                     mysqli_query($connection, $insertQuery);
                     header("Location: boardDocuments.php?success=1");
                     exit();
@@ -59,6 +99,7 @@
         } else {
             $error = "No file uploaded or an upload error occurred.";
         }
+        }
     }
 ?>
 <!DOCTYPE html>
@@ -68,7 +109,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link href="./css/base.css" rel="stylesheet">
-    <title>Add Board Document</title>
+    <title>Add Document</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: Quicksand, sans-serif; background-color: #ffffff; }
@@ -148,7 +189,7 @@
 <?php require 'header.php'; ?>
 
 <div class="page-container">
-    <h2><b>Add Board Document</b></h2>
+    <h2><b>Add Document</b></h2>
 
     <?php if ($error): ?>
         <div class="error-msg"><?php echo htmlspecialchars($error); ?></div>
@@ -159,7 +200,17 @@
             <label for="doc_name">Document Name:</label>
             <input type="text" id="doc_name" name="doc_name" placeholder="e.g. Board Minutes – March 2025" required>
         </div>
-
+        <div class="form-group">
+            <label for="clearance_level">Role Access:</label>
+            <select id="clearance_level" name="clearance_level" required>
+                <?php foreach ($available_clearances as $cl): ?>
+                    <option value="<?php echo $cl; ?>">
+                        <?php echo $clearance_labels[$cl] ?? ucfirst($cl); ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+            <p style="font-size:13px; color:#828282; margin-top:5px;">Only users with the selected role or higher will see this document.</p>
+        </div>
         <div class="form-group">
             <label for="doc_file">Attach File (PDF, Word, Excel, or TXT):</label>
             <input type="file" id="doc_file" name="doc_file" accept=".pdf,.doc,.docx,.xls,.xlsx,.txt" required>
