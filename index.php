@@ -273,6 +273,10 @@ $notRoot = $person->get_id() != 'vmsroot';
             </div>
 
         </div>
+        
+    </div>
+
+    
 
 
 
@@ -345,6 +349,28 @@ $notRoot = $person->get_id() != 'vmsroot';
         <div style="margin-top: 0px; padding: 30px 20px;">
             <h2><b>Welcome <?php echo $person->get_first_name() ?>!</b> Let's get started.</h2>
         </div>
+    </div>
+
+    
+    </div>
+
+    <div style="margin-top: 50px; padding: 0px 80px;">
+        <h2><b>Your Dashboard</h2>
+    </div>
+    <div class="full-width-bar-sub">
+        <!-- Board Documents -->
+        <div class="content-box-test" onclick="window.location.href='boardDocuments.php'">
+            <div class="icon-overlay">
+                <img style="border-radius: 5px;" src="images/file-regular.svg" alt="Documents Icon">
+            </div>
+            <img class="background-image" src="images/blank-white-background.jpg" />
+            <div class="large-text-sub">Documents</div>
+            <div class="graph-text">Access organization documents.</div>
+            <button class="arrow-button">→</button>
+        </div>
+        <div class="content-box-test" onclick="window.location.href='calendar.php'">
+            <div class="icon-overlay">
+                <img style="border-radius: 5px;" src="images/view-calendar.svg" alt="Calendar Icon">
 
         <div class="full-width-bar">
             <div class="content-box">

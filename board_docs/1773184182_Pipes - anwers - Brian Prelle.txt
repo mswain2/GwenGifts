@@ -1,0 +1,60 @@
+﻿1. What does open () return?
+* The File descriptor, which is always a non-negative number that i the index to an entry in the process’s subsequent system calls to refer to the open file.
+Source - https://man7.org/linux/man-pages/man2/open.2.html
+
+
+2. What is the first argument to read() and write()?
+* The file descriptor (int fd)
+Source - https://www.geeksforgeeks.org/c/basics-file-handling-c/
+
+
+3. What is a file descriptor?
+* A File descriptor is a non-negative number that i the index to an entry in the process’s subsequent system calls to refer to the open file.
+Source - https://man7.org/linux/man-pages/man2/open.2.html
+
+
+4. What is file descriptor 0? 1? 2? 3+?
+* 0 is the standard input (stdin), 1 is the standard output (stdout), 2 is standard error (stderr), 3 is any other open file or pipe or device.
+Source - https://stackoverflow.com/questions/5256599/what-are-file-descriptors-explained-in-simple-terms
+
+
+5. What program opens file descriptors 0, 1, and 2?
+* The shell sets up those before executing.
+Source - google
+6. When are file descriptors 0, 1, and 2 opened?
+* They’re opened automatically when the shell starts a program. 
+Source - https://stackoverflow.com/questions/22367920/is-it-possible-that-linux-file-descriptor-0-1-2-not-for-stdin-stdout-and-stderr
+
+
+7. What does the fork() function call do?
+* Creates a new child process.
+
+
+8. What does the exec() function call do?
+* Replaces current process’s memory with a new program.
+Source - https://stackoverflow.com/questions/4204915/please-explain-the-exec-function-and-its-family
+
+
+9. How do you redirect stdout? (hint – remember what open returns)
+* Open a file with open(), then use dup() to duplicate it into stdout.
+
+
+10. What is a pipe?
+* A communication channel between one file and another. It usually only works in one direction with one end being write only and the other being read.
+
+
+11. Relate the read/write end of a pipe to stdin/stdout.
+* The write end of a pipe can be duplicated to stdout of one process, and the read end can be duplicated to stdin of another process.
+
+
+12. What is a way (other that a pipe) for two processes to communicate? What are pipes
+advantages over this option?
+* You could use shared memory. But pipes are better because they are simpler to use and automatically synchronize. They also have built-in buffering capabilities.
+Source - google
+13. xv6 is ~6KSLOC, why is it considered a monolithic kernel?
+* Because all core operating system services run in kernel space as a single program.
+
+
+14. What is the main security requirement in kernel design?
+* Preventing user processes from accessing or directly modifying kernel memory or other processes’ memory.
+Source - google
