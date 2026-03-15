@@ -1490,7 +1490,6 @@ function get_total_vol_hours($dateFrom, $dateTo) {
         return [];
     }
 
-
     function add_languages($person_id, $language_data) {
         if (empty($language_data)) return true;
 
