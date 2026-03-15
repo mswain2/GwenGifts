@@ -253,7 +253,7 @@
             <img style="border-radius: 5px;" src="images/file-regular.svg" alt="Drafts Icon">
         </div>
         
-        <div class="large-text-sub">Manage Board Documents</div>
+        <div class="large-text-sub">Documents</div>
         <div class="graph-text">Manage files.</div>
         <button class="arrow-button">→</button>
     </div>
@@ -383,7 +383,7 @@
                 <img style="border-radius: 5px;" src="images/file-regular.svg" alt="Documents Icon">
             </div>
             <img class="background-image" src="images/blank-white-background.jpg" />
-            <div class="large-text-sub">Board Documents</div>
+            <div class="large-text-sub">Documents</div>
             <div class="graph-text">Access organization documents.</div>
             <button class="arrow-button">→</button>
         </div>

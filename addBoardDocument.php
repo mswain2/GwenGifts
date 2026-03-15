@@ -109,7 +109,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link href="./css/base.css" rel="stylesheet">
-    <title>Add Board Document</title>
+    <title>Add Document</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: Quicksand, sans-serif; background-color: #ffffff; }
@@ -189,7 +189,7 @@
 <?php require 'header.php'; ?>
 
 <div class="page-container">
-    <h2><b>Add Board Document</b></h2>
+    <h2><b>Add Document</b></h2>
 
     <?php if ($error): ?>
         <div class="error-msg"><?php echo htmlspecialchars($error); ?></div>

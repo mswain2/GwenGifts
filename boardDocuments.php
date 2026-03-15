@@ -87,7 +87,7 @@ $result = mysqli_query($connection, $query);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link href="./css/base.css" rel="stylesheet">
-    <title>Board Documents</title>
+    <title>Documents</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: Quicksand, sans-serif; background-color: #ffffff; }
@@ -225,7 +225,7 @@ $result = mysqli_query($connection, $query);
 <?php require 'header.php'; ?>
 
 <div class="page-container">
-    <h2><b>Board Documents</b></h2>
+    <h2><b>Documents</b></h2>
 
     <?php if (isset($_GET['success'])): ?>
         <div class="happy-toast">Document uploaded successfully!</div>
