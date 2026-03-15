@@ -60,6 +60,14 @@ require_once('header.php');
         <img class="button-icon h-12 w-12 left-4" src="images/plus-solid.svg" alt="Calendar Icon">
       </button>
 
+      <?php if ($accessLevel >= 2): ?>
+      <button onclick="window.location.href='viewBoardDiscussions.php';">
+          <div class="button-left-gray"></div>
+          <div>Board Discussions</div>
+          <img class="button-icon h-12 w-12 left-4" src="images/group.svg" alt="Calendar Icon">
+      </button>
+      <?php endif; ?>
+
 	<div class="text-center mt-6">
         	<a href="index.php" class="return-button">Return to Dashboard</a>
 	</div>

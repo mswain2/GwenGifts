@@ -227,6 +227,17 @@ $notRoot = $person->get_id() != 'vmsroot';
                 <button class="arrow-button">→</button>
             </div>
 
+            <!-- Discussions -->
+            <div class="content-box-test" onclick="window.location.href='discussionMain.php'">
+                <div class="icon-overlay">
+                    <img style="border-radius: 5px;" src="images/group.svg" alt="Discussions Icon">
+                </div>
+
+                <div class="large-text-sub">Discussions</div>
+                <div class="graph-text">View discussions.</div>
+                <button class="arrow-button">→</button>
+            </div>
+
             <!-- Add Board Meeting -->
             <div class="content-box-test" onclick="window.location.href='addBoardMeeting.php'">
                 <div class="icon-overlay">
@@ -404,6 +415,16 @@ $notRoot = $person->get_id() != 'vmsroot';
                     Notifications<?php if ($unreadMessageCount > 0) { echo ' (' . $unreadMessageCount . ')'; } ?>
                 </div>
                 <div class="graph-text">Stay up to date.</div>
+                <button class="arrow-button">→</button>
+            </div>
+
+            <!-- Discussions -->
+            <div class="content-box-test" onclick="window.location.href='discussionMain.php'">
+                <div class="icon-overlay">
+                    <img style="border-radius: 5px;" src="images/group.svg" alt="Discussions Icon">
+                </div>
+                <div class="large-text-sub">Discussions</div>
+                <div class="graph-text">View discussions.</div>
                 <button class="arrow-button">→</button>
             </div>
 
