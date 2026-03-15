@@ -31,14 +31,6 @@ require_once('header.php');
         $ignoreList = array('password', 'password-reenter');
         $args = sanitize($_POST, $ignoreList);
 
-        echo '<pre>';
-echo 'RAW POST selected_languages: '; 
-var_dump($_POST['selected_languages'] ?? 'MISSING');
-echo 'AFTER SANITIZE selected_languages: '; 
-var_dump($args['selected_languages'] ?? 'MISSING');
-echo '</pre>';
-die();
-
         // Original array. Changed to fit WVF needs
         /*$required = array(
             'first_name', 'last_name', 'birthdate',
