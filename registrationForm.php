@@ -43,6 +43,7 @@ $args = $args ?? [];
 <main>
   <div class="main-content-box">
     <form class="signup-form" method="post">
+        <input type="hidden" name="form_submitted" value="1">
         <?php if (!empty($error_messages)): ?>
             <div class="error-toast">Please correct the errors below before submitting.</div>
         <?php endif; ?>
@@ -325,19 +326,22 @@ $args = $args ?? [];
 
         // Reset availability checkboxes and time selectors on page load
         window.addEventListener('pageshow', function(event) {
-            var days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-            days.forEach(function(day) {
-                var checkbox = document.getElementById(day);
-                if (checkbox) {
-                    checkbox.checked = false;
-                    var times = document.getElementById(day + '_times');
-                    if (times) times.style.display = 'none';
-                    var start = document.querySelector('[name=' + day + '_start]');
-                    var end = document.querySelector('[name=' + day + '_end]');
-                    if (start) { start.disabled = true; start.value = ''; }
-                    if (end) { end.disabled = true; end.value = ''; }
-                }
-            });
+            // Only reset if coming from back/forward cache, not a validation re-render
+            if (event.persisted) {
+                var days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+                days.forEach(function(day) {
+                    var checkbox = document.getElementById(day);
+                    if (checkbox) {
+                        checkbox.checked = false;
+                        var times = document.getElementById(day + '_times');
+                        if (times) times.style.display = 'none';
+                        var start = document.querySelector('[name=' + day + '_start]');
+                        var end = document.querySelector('[name=' + day + '_end]');
+                        if (start) { start.disabled = true; start.value = ''; }
+                        if (end) { end.disabled = true; end.value = ''; }
+                    }
+                });
+            }
         });
         </script>
 
@@ -347,17 +351,19 @@ $args = $args ?? [];
         $args = $args ?? [];
 
         // Generate time options for the availability selectors
-        function timeOptions() {
-            $time_selection = '<option value="" selected>-- Select time --</option>';
+        function timeOptions($selected_value = '') {
+            $time_selection = '<option value="" ' . ($selected_value === '' ? 'selected' : '') . '>-- Select time --</option>';
             for ($h = 0; $h < 24; $h++) {
                 if ($h == 0) { $value = '12am'; $label = '12 AM'; }
                 elseif ($h < 12) { $value = $h . 'am'; $label = $h . ' AM'; }
                 elseif ($h == 12) { $value = '12pm'; $label = '12 PM'; }
                 else { $value = ($h - 12) . 'pm'; $label = ($h - 12) . ' PM'; }
-                $time_selection .= "<option value=\"$value\">$label</option>";
+                $selected = ($selected_value === $value) ? 'selected' : '';
+                $time_selection .= "<option value=\"$value\" $selected>$label</option>";
             }
             return $time_selection;
         }
+
         
         /* 
         Generate availability checkboxes and time selectors for each day of the week
@@ -367,18 +373,26 @@ $args = $args ?? [];
             "sunday_times" for the div containing time selectors
             "sunday_start" and "sunday_end" for time selectors
         */
-        function dayAvailability($day) {
+        function dayAvailability($day, $day_availability, $args) {
             $d = strtolower($day);
+            $is_checked = in_array($day, $day_availability);
+            $checked_attr = $is_checked ? 'checked' : '';
+            $display = $is_checked ? 'block' : 'none';
+            $disabled = $is_checked ? '' : 'disabled';
+            $start_val = $args[$d . '_start'] ?? '';
+            $end_val   = $args[$d . '_end'] ?? '';
+
             echo "
             <div>
-                <input type='checkbox' id='$d' name='day_availability[]' value='$day' onchange='toggleDay(\"$d\")'>
+                <input type='checkbox' id='$d' name='day_availability[]' value='$day' 
+                    onchange='toggleDay(\"$d\")' $checked_attr>
                 <label for='$d'> $day</label>
-                <div id='{$d}_times' style='display:none'>
+                <div id='{$d}_times' style='display:$display'>
                     <p class='mb-2'>If you are available on $day, please indicate your availability below.</p>
                     <p class='mb-2'>Start Availability Time (From):</p>
-                    <select name='{$d}_start' disabled>" . timeOptions() . "</select>
+                    <select name='{$d}_start' $disabled>" . timeOptions($start_val) . "</select>
                     <p class='mb-2'>End Availability Time (To):</p>
-                    <select name='{$d}_end' disabled>" . timeOptions() . "</select>
+                    <select name='{$d}_end' $disabled>" . timeOptions($end_val) . "</select>
                 </div>
             </div>";
         }
@@ -387,7 +401,7 @@ $args = $args ?? [];
         
         // Loop through days of the week to generate availability checkboxes and time selectors
         foreach ($days as $day) {
-            dayAvailability($day);
+            dayAvailability($day, $day_availability, $args);
         }
         ?>
         
@@ -407,6 +421,12 @@ $args = $args ?? [];
             'Korean', 'Mandarin Chinese', 'Punjabi', 'Portuguese', 'Russian',
             'Somali', 'Tagalog', 'Tigrinya', 'Urdu', 'Vietnamese'
         ];
+
+        // Previously selected languages from a failed submission, default to English
+        // Use raw submitted languages if available, otherwise default to English
+        $selected_languages = isset($args['selected_languages']) && is_array($args['selected_languages']) 
+            ? array_map(fn($l) => preg_replace('/[^a-z_]/', '', $l), $args['selected_languages'])
+            : ['english'];
         ?>
 
         <!-- 
@@ -414,89 +434,164 @@ $args = $args ?? [];
             English and Spanish are anchored to the top, rest is sorted alphabetically in the list
         -->
         <label>Languages spoken:</label>
-        <p class="mb-2">Select all languages you are proficient in. We will ask you to indicate your competency level for each language selected.</p>
-        
+        <p class="mb-2">Select all languages you are proficient in.</p>
+
         <select id="language_select" multiple size="6">
             <option value="" disabled>-- Select languages --</option>
             <?php foreach ($languages as $lang): ?>
                 <?php $d = strtolower(str_replace(' ', '_', $lang)); ?>
-                <option value="<?= $d ?>" data-label="<?= $lang ?>" <?= $lang === 'English' ? 'selected' : '' ?>><?= $lang ?></option>
+                <option value="<?= $d ?>" data-label="<?= $lang ?>"
+                    <?= in_array($d, $selected_languages) ? 'selected' : '' ?>>
+                    <?= $lang ?>
+                </option>
             <?php endforeach; ?>
         </select>
-        <div id="language_hidden_inputs"></div>
+        <div id="language_hidden_inputs">
+            <?php foreach ($selected_languages as $lang): ?>
+                <input type="hidden" name="selected_languages[]" value="<?= htmlspecialchars($lang) ?>">
+            <?php endforeach; ?>
+        </div>
         <p class="mb-2"><small>Hold Ctrl (Windows | Linux) or Cmd (Mac) to select multiple.</small></p>
 
         <?php field_error('language_competency'); ?>
-        <div id="competency_container"></div>
+
+        <?php
+        // Helper to render a competency select, preserving previously selected value
+        function competencySelect($name, $label, $lang_label, $selected_val = '') {
+            $options = ['beginner' => 'Beginner', 'intermediate' => 'Intermediate', 'advanced' => 'Advanced', 'fluent' => 'Native/Fluent'];
+            echo "<label><em>* </em>$lang_label $label Competency:</label>";
+            echo "<p class='mb-2'>Please indicate your $label competency level in $lang_label.</p>";
+            echo "<select name='$name' required>";
+            echo "<option value=''>-- Select competency --</option>";
+            foreach ($options as $val => $display) {
+                $sel = ($selected_val === $val) ? 'selected' : '';
+                echo "<option value='$val' $sel>$display</option>";
+            }
+            echo "</select>";
+        }
+        ?>
+
+        <!-- Server-side rendered competency fields for previously selected languages -->
+        <div id="competency_container">
+            <?php foreach ($selected_languages as $lang):
+                $lang = preg_replace('/[^a-z_]/', '', $lang);
+                $lang_label = ucwords(str_replace('_', ' ', $lang));
+                $speaking  = $args['speaking_competency_'  . $lang] ?? '';
+                $listening = $args['listening_competency_' . $lang] ?? '';
+                $reading   = $args['reading_competency_'   . $lang] ?? '';
+                $writing   = $args['writing_competency_'   . $lang] ?? '';
+            ?>
+                <div class="language-competency-block" data-lang="<?= $lang ?>" data-label="<?= $lang_label ?>">
+                    <?php competencySelect("speaking_competency_$lang",  'Speaking',  $lang_label, $speaking);  ?>
+                    <?php competencySelect("listening_competency_$lang", 'Listening', $lang_label, $listening); ?>
+                    <?php competencySelect("reading_competency_$lang",   'Reading',   $lang_label, $reading);   ?>
+                    <?php competencySelect("writing_competency_$lang",   'Writing',   $lang_label, $writing);   ?>
+                    <div class="median-div"></div>
+                </div>
+            <?php endforeach; ?>
+        </div>
 
         <script>
         
+        var serverRendered = document.querySelectorAll('.language-competency-block').length > 0;
+
         // Listen for changes to the language multi-select and dynamically show competency selectors for each selected language
         document.getElementById('language_select').addEventListener('change', function() {
+            // On first change after server-render, flip the flag but don't rebuild
+            if (serverRendered) {
+                serverRendered = false;
+                return;
+            }
+
             var selected = Array.from(this.selectedOptions);
             var container = document.getElementById('competency_container');
             var hiddenContainer = document.getElementById('language_hidden_inputs');
 
-            container.innerHTML = '';
-            hiddenContainer.innerHTML = '';
+            // Keep track of which blocks currently exist
+            var existingBlocks = {};
+            container.querySelectorAll('.language-competency-block').forEach(function(block) {
+                existingBlocks[block.dataset.lang] = block;
+            });
 
+            // Update hidden inputs
+            hiddenContainer.innerHTML = '';
             selected.forEach(function(option) {
                 var hidden = document.createElement('input');
                 hidden.type = 'hidden';
                 hidden.name = 'selected_languages[]';
                 hidden.value = option.value;
                 hiddenContainer.appendChild(hidden);
+            });
 
-                var div = document.createElement('div');
-                div.innerHTML = `
-                    <label><em>* </em>${option.dataset.label} Speaking Competency:</label>
-                    <p class="mb-2">Please indicate your speaking competency level in ${option.dataset.label}.</p>
-                    <select name="speaking_competency_${option.value}" required>
-                        <option value="">-- Select competency --</option>
-                        <option value="beginner">Beginner</option>
-                        <option value="intermediate">Intermediate</option>
-                        <option value="advanced">Advanced</option>
-                        <option value="fluent">Native/Fluent</option>
-                    </select>
+            // Add blocks for newly selected languages, remove deselected ones
+            var selectedValues = selected.map(function(o) { return o.value; });
 
-                    <label><em>* </em>${option.dataset.label} Listening Competency:</label>
-                    <p class="mb-2">Please indicate your listening competency level in ${option.dataset.label}.</p>
-                    <select name="listening_competency_${option.value}" required>
-                        <option value="">-- Select competency --</option>
-                        <option value="beginner">Beginner</option>
-                        <option value="intermediate">Intermediate</option>
-                        <option value="advanced">Advanced</option>
-                        <option value="fluent">Native/Fluent</option>
-                    </select>
+            // Remove deselected
+            Object.keys(existingBlocks).forEach(function(lang) {
+                if (!selectedValues.includes(lang)) {
+                    existingBlocks[lang].remove();
+                }
+            });
 
-                    <label><em>* </em>${option.dataset.label} Reading Competency:</label>
-                    <p class="mb-2">Please indicate your reading competency level in ${option.dataset.label}.</p>
-                    <select name="reading_competency_${option.value}" required>
-                        <option value="">-- Select competency --</option>
-                        <option value="beginner">Beginner</option>
-                        <option value="intermediate">Intermediate</option>
-                        <option value="advanced">Advanced</option>
-                        <option value="fluent">Native/Fluent</option>
-                    </select>
+            // Add newly selected
+            selected.forEach(function(option) {
+                if (!existingBlocks[option.value]) {
+                    var div = document.createElement('div');
+                    div.className = 'language-competency-block';
+                    div.dataset.lang = option.value;
+                    div.dataset.label = option.dataset.label;
+                    div.innerHTML = `
+                        <label><em>* </em>${option.dataset.label} Speaking Competency:</label>
+                        <p class="mb-2">Please indicate your speaking competency level in ${option.dataset.label}.</p>
+                        <select name="speaking_competency_${option.value}" required>
+                            <option value="">-- Select competency --</option>
+                            <option value="beginner">Beginner</option>
+                            <option value="intermediate">Intermediate</option>
+                            <option value="advanced">Advanced</option>
+                            <option value="fluent">Native/Fluent</option>
+                        </select>
 
-                    <label><em>* </em>${option.dataset.label} Writing Competency:</label>
-                    <p class="mb-2">Please indicate your writing competency level in ${option.dataset.label}.</p>
-                    <select name="writing_competency_${option.value}" required>
-                        <option value="">-- Select competency --</option>
-                        <option value="beginner">Beginner</option>
-                        <option value="intermediate">Intermediate</option>
-                        <option value="advanced">Advanced</option>
-                        <option value="fluent">Native/Fluent</option>
-                    </select>
+                        <label><em>* </em>${option.dataset.label} Listening Competency:</label>
+                        <p class="mb-2">Please indicate your listening competency level in ${option.dataset.label}.</p>
+                        <select name="listening_competency_${option.value}" required>
+                            <option value="">-- Select competency --</option>
+                            <option value="beginner">Beginner</option>
+                            <option value="intermediate">Intermediate</option>
+                            <option value="advanced">Advanced</option>
+                            <option value="fluent">Native/Fluent</option>
+                        </select>
 
-                    <div class="median-div"></div>
-                `;
-                container.appendChild(div);
+                        <label><em>* </em>${option.dataset.label} Reading Competency:</label>
+                        <p class="mb-2">Please indicate your reading competency level in ${option.dataset.label}.</p>
+                        <select name="reading_competency_${option.value}" required>
+                            <option value="">-- Select competency --</option>
+                            <option value="beginner">Beginner</option>
+                            <option value="intermediate">Intermediate</option>
+                            <option value="advanced">Advanced</option>
+                            <option value="fluent">Native/Fluent</option>
+                        </select>
+
+                        <label><em>* </em>${option.dataset.label} Writing Competency:</label>
+                        <p class="mb-2">Please indicate your writing competency level in ${option.dataset.label}.</p>
+                        <select name="writing_competency_${option.value}" required>
+                            <option value="">-- Select competency --</option>
+                            <option value="beginner">Beginner</option>
+                            <option value="intermediate">Intermediate</option>
+                            <option value="advanced">Advanced</option>
+                            <option value="fluent">Native/Fluent</option>
+                        </select>
+
+                        <div class="median-div"></div>
+                    `;
+                    container.appendChild(div);
+                }
             });
         });
 
-        // Trigger on page load so English competency shows automatically
-        document.getElementById('language_select').dispatchEvent(new Event('change'));
+       // Only dispatch on fresh load, OUTSIDE the listener
+        if (!serverRendered) {
+            document.getElementById('language_select').dispatchEvent(new Event('change'));
+        }
         </script>
 
         <!-- I manually added an unlisted lang section. This might be a placeholder as I feel there's a better implementation for this, but it will work for now. -->

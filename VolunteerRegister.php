@@ -31,6 +31,14 @@ require_once('header.php');
         $ignoreList = array('password', 'password-reenter');
         $args = sanitize($_POST, $ignoreList);
 
+        echo '<pre>';
+echo 'RAW POST selected_languages: '; 
+var_dump($_POST['selected_languages'] ?? 'MISSING');
+echo 'AFTER SANITIZE selected_languages: '; 
+var_dump($args['selected_languages'] ?? 'MISSING');
+echo '</pre>';
+die();
+
         // Original array. Changed to fit WVF needs
         /*$required = array(
             'first_name', 'last_name', 'birthdate',
@@ -211,14 +219,21 @@ require_once('header.php');
         $language_data = [];
         $selected_languages = isset($args['selected_languages']) ? $args['selected_languages'] : [];
 
+        // Sanitize all selected languages upfront
+        $selected_languages = array_map(fn($l) => preg_replace('/[^a-z_]/', '', $l), $selected_languages);
+
+        // Collect all competency data
         foreach ($selected_languages as $lang) {
-            $lang = preg_replace('/[^a-z_]/', '', $lang);
             $language_data[$lang] = [
                 'speaking'  => $args['speaking_competency_' . $lang] ?? null,
                 'listening' => $args['listening_competency_' . $lang] ?? null,
                 'reading'   => $args['reading_competency_' . $lang] ?? null,
                 'writing'   => $args['writing_competency_' . $lang] ?? null,
             ];
+        }
+
+        // Validate AFTER collecting all — no break 2 needed
+        foreach ($selected_languages as $lang) {
             foreach (['speaking', 'listening', 'reading', 'writing'] as $skill) {
                 if (empty($language_data[$lang][$skill])) {
                     $errors = true;
@@ -238,7 +253,7 @@ require_once('header.php');
                 'reading'   => $args['reading_competency_other_language'] ?? null,
                 'writing'   => $args['writing_competency_other_language'] ?? null,
             ];
-            
+
             // Validate that all competency fields are filled if a language was entered
             foreach (['speaking', 'listening', 'reading', 'writing'] as $skill) {
                 if (empty($language_data[$lang_key][$skill])) {
