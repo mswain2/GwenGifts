@@ -64,12 +64,12 @@ require_once('header.php');
                             <td><?php echo htmlspecialchars($discussion['title']); ?></td>
                             <td><?php echo htmlspecialchars($discussion['time']); ?></td>
                             <td>
-                                <a href="discussionContent.php?author=<?php echo urlencode($discussion['author_id']); ?>&title=<?php echo urlencode($discussion['title']); ?>" class="blue-button">View</a>
- 
+                                <a href="discussionContent.php?author=<?php echo urlencode($discussion['author_id']); ?>&title=<?php echo urlencode($discussion['title']); ?>&category=board" class="blue-button">View</a>
                                 <?php if ($accessLevel > 2): ?>
                                     <form action="deleteDiscussion.php" method="POST" style="display:inline;">
                                         <input type="hidden" name="author_id" value="<?php echo htmlspecialchars($discussion['author_id']); ?>">
                                         <input type="hidden" name="title" value="<?php echo htmlspecialchars($discussion['title']); ?>">
+                                        <input type="hidden" name="category" value="board">
                                         <button type="submit" class="delete-button" onclick="return confirm('Are you sure you want to delete this discussion?');">Delete</button>
                                     </form>
                                 <?php endif; ?>

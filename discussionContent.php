@@ -27,9 +27,10 @@ if (!isset($_GET['author']) || !isset($_GET['title'])) {
 
 $authorID = htmlspecialchars(trim($_GET['author']));
 $title = htmlspecialchars(trim($_GET['title']));
+$category = isset($_GET['category']) ? $_GET['category'] : null;
 
 // Fetch discussion and author info
-$discussion = get_discussion($title);
+$discussion = get_discussion($title, $category);
 if (!$discussion) {
     die("Error: Discussion not found.");
 }
@@ -69,7 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $body = "A user has replied to a discussion.";
             system_message_all_admins($systemMessageTitle, $body);
 
-            header("Location: discussionContent.php?author=" . urlencode($authorID) . "&title=" . urlencode($title));
+            header("Location: discussionContent.php?author=" . urlencode($authorID) . "&title=" . urlencode($title) . "&category=" . urlencode($category));
             exit;
         }
     }
@@ -263,7 +264,8 @@ function get_username_by_reply_id($reply_id) {
             <?php displayReplies('root', $repliesByParent, 0, $accessLevel, $discussion['title']); ?>
         </div>
 
-        <a href="viewDiscussions.php" class="back-btn">Back to Discussions</a>
+        <?php $backUrl = ($category === 'board') ? 'viewBoardDiscussions.php' : 'viewDiscussions.php'; ?>
+        <a href="<?php echo $backUrl; ?>" class="back-btn">Back to Discussions</a>
     </div>
 </body>
 </html>

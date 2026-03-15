@@ -32,25 +32,31 @@ function add_discussion($discussion, $category = 'general') {
     return false;
 }
 
-function remove_discussion($author_id, $title) {
+function remove_discussion($author_id, $title, $category = null) {
     $con = connect();
-    $query = "DELETE FROM dbdiscussions WHERE author_id = '" . $author_id . "' AND title = '" . $title . "'";
+    if ($category) {
+        $query = "DELETE FROM dbdiscussions WHERE author_id = '$author_id' AND title = '$title' AND category = '$category'";
+    } else {
+        $query = "DELETE FROM dbdiscussions WHERE author_id = '$author_id' AND title = '$title'";
+    }
     $result = mysqli_query($con, $query);
     mysqli_close($con);
     return $result;
 }
 
-function get_discussion($title) {
+function get_discussion($title, $category = null) {
     $con = connect();
-    $query = "SELECT * FROM dbdiscussions WHERE title = '" . $title . "'";
+    if ($category) {
+        $query = "SELECT * FROM dbdiscussions WHERE title = '$title' AND category = '$category'";
+    } else {
+        $query = "SELECT * FROM dbdiscussions WHERE title = '$title'";
+    }
     $result = mysqli_query($con, $query);
-
     if ($result && mysqli_num_rows($result) > 0) {
         $discussion = mysqli_fetch_assoc($result);
         mysqli_close($con);
         return $discussion;
     }
-
     mysqli_close($con);
     return null;
 }
@@ -111,18 +117,6 @@ function discussion_exists($title, $category = null) {
     return $exists;
 }
 
-function deleteAllDiscussions() {
-    $con = connect();
-    $query = "TRUNCATE TABLE dbdiscussions";
-    $query1 = "TRUNCATE TABLE discussion_replies";
-
-    $result1 = mysqli_query($con, $query);
-    $result2 = mysqli_query($con, $query1);
-
-    mysqli_close($con);
-    
-    return $result1 && $result2;
-}
 
 function deleteDiscussions($discussions) {
     $con = connect();
