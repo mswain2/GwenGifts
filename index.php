@@ -225,7 +225,7 @@
         <button class="arrow-button">→</button>
     </div>
 
-    <!-- Discussions -->
+    <!-- Suggestions -->
     <div class="content-box-test" onclick="window.location.href='viewSuggestions.php'">
         <div class="icon-overlay">
             <img style="border-radius: 5px;" src="images/clipboard-regular.svg" alt="Discussions Icon">
@@ -236,10 +236,21 @@
         <button class="arrow-button">→</button>
     </div>
 
+    <!-- Discussions -->
+    <div class="content-box-test" onclick="window.location.href='discussionMain.php'">
+        <div class="icon-overlay">
+            <img style="border-radius: 5px;" src="images/group.svg" alt="Discussions Icon">
+        </div>
+        
+        <div class="large-text-sub">Discussions</div>
+        <div class="graph-text">View discussions.</div>
+        <button class="arrow-button">→</button>
+    </div>
+
         <!-- Add Board Meeting -->
     <div class="content-box-test" onclick="window.location.href='addBoardMeeting.php'">
         <div class="icon-overlay">
-            <img style="border-radius: 5px;" src="images/search.svg" alt="Drafts Icon">
+            <img style="border-radius: 5px;" src="images/create-report.svg" alt="Drafts Icon">
         </div>
         
         <div class="large-text-sub">Add Board Meeting</div>

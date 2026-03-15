@@ -219,9 +219,11 @@ if (date("H:i:s") > "18:19:59") {
         $permission_array['viewsuggestion.php'] = 2;
         $permission_array['boarddocuments.php'] = 2;
         $permission_array['addboarddocument.php'] = 2;
-        $permission_array['addboardmeeting.php'] = 1;
+        $permission_array['addboardmeeting.php'] = 2;
         $permission_array['viewsuggestions.php'] = 2;
         $permission_array['eventtrainingmanagement.php'] = 2;
+        $permission_array['viewboarddiscussions.php'] = 2;
+        $permission_array['createboarddiscussion.php'] = 2;
         // LOWERCASE
 
 

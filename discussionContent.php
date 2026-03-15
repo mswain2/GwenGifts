@@ -34,6 +34,11 @@ if (!$discussion) {
     die("Error: Discussion not found.");
 }
 
+if ($discussion['category'] === 'board' && $accessLevel < 2) {
+    header('Location: index.php');
+    die();
+}
+
 $author = get_user_from_author($authorID);
 $author_name = $author->get_first_name() . ' ' . $author->get_last_name();
 $discussionDate = $discussion['time'];
