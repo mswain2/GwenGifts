@@ -196,7 +196,7 @@ require_once('header.php');
 
         // So this availability section is NOT deprecated I added this, but I cannot quite place how to go about the actual implementation into the database. Work in progress.
         $day_availability = isset($args['day_availability']) ? (array)$args['day_availability'] : [];
-        
+
         /*$availability = [];
         foreach (['sunday','monday','tuesday','wednesday','thursday','friday','saturday'] as $d) {
             if (in_array(ucfirst($d), $day_availability)) {
@@ -238,6 +238,15 @@ require_once('header.php');
                 'reading'   => $args['reading_competency_other_language'] ?? null,
                 'writing'   => $args['writing_competency_other_language'] ?? null,
             ];
+            
+            // Validate that all competency fields are filled if a language was entered
+            foreach (['speaking', 'listening', 'reading', 'writing'] as $skill) {
+                if (empty($language_data[$lang_key][$skill])) {
+                    $errors = true;
+                    $error_messages['other_language_competency'] = 'Please fill in all competency fields for your unlisted language.';
+                    break;
+                }
+            }
         }
 
 
