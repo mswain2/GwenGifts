@@ -41,7 +41,7 @@ CREATE TABLE `dbevents` (
   `location` text DEFAULT NULL,
   `access` enum('Public','Private') NOT NULL DEFAULT 'Public',
   `completed` enum('Y','N') NOT NULL DEFAULT 'N',
-  `series_id` int(11) DEFAULT NULL
+  `series_id` varchar(32) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
