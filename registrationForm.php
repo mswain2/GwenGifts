@@ -94,6 +94,16 @@ $args = $args ?? [];
             <option value="Unlisted" <?php echo (old('gender') === 'Unlisted' || old('gender') === '') ? 'selected' : ''; ?>>Prefer not to say</option>
         </select>
 
+        <label for="t_shirt_size"><em>* </em>T-shirt Size</label>
+        <select id="t_shirt_size" name="t_shirt_size" required>
+            <option value="" disabled <?php echo old('t_shirt_size') === '' ? 'selected' : ''; ?>>-- Select t-shirt size --</option>
+            <option value="S" <?php echo old('t_shirt_size') === 'S' ? 'selected' : ''; ?>>S</option>
+            <option value="M" <?php echo old('t_shirt_size') === 'M' ? 'selected' : ''; ?>>M</option>
+            <option value="L" <?php echo old('t_shirt_size') === 'L' ? 'selected' : ''; ?>>L</option>
+            <option value="XL" <?php echo old('t_shirt_size') === 'XL' ? 'selected' : ''; ?>>XL</option>
+            <option value="XXL" <?php echo old('t_shirt_size') === 'XXL' ? 'selected' : ''; ?>>2XL</option>
+        </select>
+
         <label for="birthday"><em>* </em>Date of Birth</label>
         <input type="date" id="birthday" name="birthday" required 
             max="<?php echo date('Y-m-d'); ?>" value="<?php echo old('birthday'); ?>">
@@ -153,19 +163,6 @@ $args = $args ?? [];
         <input type="text" id="zip_code" name="zip" pattern="[0-9]{5}" title="5-digit zip code" required placeholder="Enter your 5-digit zip code"
             value="<?php echo old('zip'); ?>">
         <?php field_error('zip'); ?>
-
-        <div class="median-div"></div>
-
-        <label for="t_shirt_size"><em>* </em>T-shirt Size</label>
-        <p class="mb-2">Please select your t-shirt size for event purposes.</p>
-        <select id="t_shirt_size" name="t_shirt_size" required>
-            <option value="" disabled <?php echo old('t_shirt_size') === '' ? 'selected' : ''; ?>>-- Select t-shirt size --</option>
-            <option value="S" <?php echo old('t_shirt_size') === 'S' ? 'selected' : ''; ?>>S</option>
-            <option value="M" <?php echo old('t_shirt_size') === 'M' ? 'selected' : ''; ?>>M</option>
-            <option value="L" <?php echo old('t_shirt_size') === 'L' ? 'selected' : ''; ?>>L</option>
-            <option value="XL" <?php echo old('t_shirt_size') === 'XL' ? 'selected' : ''; ?>>XL</option>
-            <option value="XXL" <?php echo old('t_shirt_size') === 'XXL' ? 'selected' : ''; ?>>2XL</option>
-        </select>
 
         <!--
         The following fields are deprecated for volunteer registration form, but may be useful for future event registration forms
