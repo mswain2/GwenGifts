@@ -217,11 +217,13 @@ if (date("H:i:s") > "18:19:59") {
         $permission_array['upload_encrypted_image.php'] = 1;
         $permission_array['createsuggestion.php'] = 1;
         $permission_array['viewsuggestion.php'] = 2;
-        $permission_array['boarddocuments.php'] = 2;
+        $permission_array['boarddocuments.php'] = 1;
         $permission_array['addboarddocument.php'] = 2;
         $permission_array['addboardmeeting.php'] = 1;
         $permission_array['viewsuggestions.php'] = 2;
         $permission_array['eventtrainingmanagement.php'] = 2;
+        $permission_array['deleteboarddocument.php'] = 2;
+        $permission_array['boarddocumentstrash.php'] = 2;
         // LOWERCASE
 
 
