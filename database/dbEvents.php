@@ -88,6 +88,7 @@ function add_event($event) {
     return null;
 }*/
 
+
 function request_event_signup($event_name_str, $account_name, $role, $notes) {
     // This function is deprecated. Use create_app() in dbApplications.php for Retreat signups.
     // Kept for backwards compatibility only.
