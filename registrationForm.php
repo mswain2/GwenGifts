@@ -1,3 +1,13 @@
+<?php
+function field_error($key) {
+    global $error_messages;
+    if (!empty($error_messages[$key])) {
+        echo '<p class="error">' . htmlspecialchars($error_messages[$key]) . '</p>';
+    }
+}
+$error_messages = $error_messages ?? [];
+?>
+
 <!-- imports -->
 <script src="https://nosir.github.io/cleave.js/dist/cleave.min.js"></script>
 <script src="https://nosir.github.io/cleave.js/dist/cleave-phone.i18n.js"></script>
@@ -24,12 +34,15 @@
 <main>
   <div class="main-content-box">
     <form class="signup-form" method="post">
+        <?php if (!empty($error_messages)): ?>
+            <div class="error-toast">Please correct the errors below before submitting.</div>
+        <?php endif; ?>
 	<div class="text-center spacing-bottom">
 
         <!-- Title -->
         <h2 class="mb-8">Registration Form</h2>
         <div class="info-box">
-            <p class="sub-text">Welcome to our registration form. We thank you sincerely for your interest in volunteering as a part of our foundation.</p>
+            <p class="sub-text">We thank you sincerely for your interest in volunteering as a part of our foundation.</p>
         </div>
 	</div>
 
@@ -71,7 +84,8 @@
 
         <label for="birthday"><em>* </em>Date of Birth</label>
         <input type="date" id="birthday" name="birthday" required placeholder="Choose your birthday" max="<?php echo date('Y-m-d'); ?>">
-        
+        <?php field_error('birthday'); ?>
+
         <!--
         Deprecated Code for Over 21 Question - No longer relevant for volunteer registration form, but may be useful for future event registration forms
 
@@ -150,9 +164,24 @@
             <option value="WI">Wisconsin</option>
             <option value="WY">Wyoming</option>
         </select>
+        <?php field_error('state'); ?>
 
         <label for="zip_code"><em>* </em>Zip Code</label>
         <input type="text" id="zip_code" name="zip" pattern="[0-9]{5}" title="5-digit zip code" required placeholder="Enter your 5-digit zip code">
+        <?php field_error('zip'); ?>
+
+        <div class="median-div"></div>
+
+        <label for="t_shirt_size"><em>* </em>T-shirt Size</label>
+        <p class="mb-2">Please select your t-shirt size for event purposes.</p>
+        <select id="t_shirt_size" name="t_shirt_size" required>
+            <option value="" disabled selected>-- Select t-shirt size --</option>
+            <option value="S">S</option>
+            <option value="M">M</option>
+            <option value="L">L</option>
+            <option value="XL">XL</option>
+            <option value="XXL">2XL</option>
+        </select>
 
         <!--
         The following fields are deprecated for volunteer registration form, but may be useful for future event registration forms
@@ -192,22 +221,13 @@
 
         <label for="email"><em>* </em>E-mail</label>
         <input type="email" id="email" name="email" required placeholder="Enter your e-mail address">
-
-        <label for="email_consent">E-mail Notifications</label>
-        <p>By checking the box below, you acknowledge that you hereby consent to being contactd by Gwyneth's Gift via email for the purpose of:</p>
-        <ol>
-            <li>- Event Registration Confirmations</li>
-            <li>- Event Reminders</li>
-            <li>- Event and General Communications</li>
-        </ol>
-        <p>You may change your email preferences at any time through your account settings.</p>
-
-        <label><input type="checkbox" id="email_prefs" name="email_prefs" value="true"> I consent.</label>
+        <?php field_error('email'); ?>
 
         <div class="median-div"></div>
 
         <label for="phone1"><em>* </em>Phone Number</label>
         <input type="tel" id="phone1" name="phone1" pattern="(\D{0,1})\d{3}(\D{0,2})\d{3}(.{0,1})\d{4}" placeholder="Ex. (555) 555-5555" required>
+        <?php field_error('phone1'); ?>
 
         <label for="phone1type"><em>* </em>Phone Type</label>
         <div class="radio-group">
@@ -220,9 +240,29 @@
         <div class="radio-element">
             <input type="radio" id="phone-type-work" name="phone_type" value="work" required><label for="phone-type-work">Work</label>
         </div>
-    </div>
+        </div>
+        <?php field_error('phone_type'); ?>
 
     </fieldset>
+
+    <!-- Notification Preferences -->
+    <fieldset>
+        <h3>Notification Preferences</h3>
+        <p class="mb-2">You may change your email preferences at any time.</p>
+        <div class="blue-div"></div>
+
+        <label for="email_consent">E-mail Notifications</label>
+        <p>By checking the box below, you acknowledge that you hereby consent to being contactd by Gwyneth's Gift via email for the purpose of:</p>
+        <ol>
+            <li>- Event Registration Confirmations</li>
+            <li>- Event Reminders</li>
+            <li>- Event and General Communications</li>
+        </ol>
+        <p>You may change your email preferences at any time through your account settings.</p>
+
+        <label><input type="checkbox" id="email_prefs" name="email_prefs" value="true"> I consent.</label>
+    </fieldset>
+
 
     <!-- Emergency Contact Information Section -->
     <fieldset class="section-box mb-4">
@@ -240,20 +280,24 @@
         <input type="text" id="emergency_contact_relation" name="emergency_contact_relation" required placeholder="Ex. Spouse, Mother, Father, Sister, Brother, Friend">
 
         <label for="emergency_contact_phone"><em>* </em>Phone Number</label>
-        <input type="tel" id="emergency_contact_phone" name="emergency_contact_phone" pattern="\([0-9]{3}\) [0-9]{3}-[0-9]{4}" required placeholder="Enter emergency contact phone number. Ex. (555) 555-5555">
+        <input type="tel" id="emergency_contact_phone" name="emergency_contact_phone" 
+            pattern="(\D{0,1})\d{3}(\D{0,2})\d{3}(.{0,1})\d{4}" 
+            required placeholder="Ex. (555) 555-5555">
+        <?php field_error('emergency_contact_phone'); ?>
 
         <label for="emergency_contact_phone_type"><em>* </em>Phone Type</label>
         <div class="radio-group">
         <div class="radio-element">
-            <input type="radio" id="phone-type-cellphone" name="emergency_contact_phone_type" value="cellphone" required><label for="phone-type-cellphone"> Cell</label>
+            <input type="radio" id="emergency-phone-type-cellphone" name="emergency_contact_phone_type" value="cellphone" required><label for="emergency-phone-type-cellphone"> Cell</label>
         </div>
         <div class="radio-element">
-            <input type="radio" id="phone-type-home" name="emergency_contact_phone_type" value="home" required><label for="phone-type-home"> Home</label>
+            <input type="radio" id="emergency-phone-type-home" name="emergency_contact_phone_type" value="home" required><label for="emergency-phone-type-home"> Home</label>
         </div>
         <div class="radio-element">
-            <input type="radio" id="phone-type-work" name="emergency_contact_phone_type" value="work" required><label for="phone-type-work"> Work</label>
+            <input type="radio" id="emergency-phone-type-work" name="emergency_contact_phone_type" value="work" required><label for="emergency-phone-type-work"> Work</label>
         </div>
         </div>
+        <?php field_error('emergency_contact_phone_type'); ?>
     </fieldset>
 
     <!-- Availability Section -->
@@ -276,6 +320,23 @@
             start.disabled = !checked;
             end.disabled = !checked;
         }
+
+        // Reset availability checkboxes and time selectors on page load
+        window.addEventListener('pageshow', function(event) {
+            var days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+            days.forEach(function(day) {
+                var checkbox = document.getElementById(day);
+                if (checkbox) {
+                    checkbox.checked = false;
+                    var times = document.getElementById(day + '_times');
+                    if (times) times.style.display = 'none';
+                    var start = document.querySelector('[name=' + day + '_start]');
+                    var end = document.querySelector('[name=' + day + '_end]');
+                    if (start) { start.disabled = true; start.value = ''; }
+                    if (end) { end.disabled = true; end.value = ''; }
+                }
+            });
+        });
         </script>
 
         <?php
@@ -284,8 +345,10 @@
         function timeOptions() {
             $time_selection = '<option value="" selected>-- Select time --</option>';
             for ($h = 0; $h < 24; $h++) {
-                $value = $h < 12 ? $h . 'am' : ($h - 12) . 'pm';
-                $label = $h == 0 ? '12 AM' : ($h < 12 ? $h . ' AM' : ($h == 12 ? '12 PM' : ($h - 12) . ' PM'));
+                if ($h == 0) { $value = '12am'; $label = '12 AM'; }
+                elseif ($h < 12) { $value = $h . 'am'; $label = $h . ' AM'; }
+                elseif ($h == 12) { $value = '12pm'; $label = '12 PM'; }
+                else { $value = ($h - 12) . 'pm'; $label = ($h - 12) . ' PM'; }
                 $time_selection .= "<option value=\"$value\">$label</option>";
             }
             return $time_selection;
@@ -303,7 +366,7 @@
             $d = strtolower($day);
             echo "
             <div>
-                <input type='checkbox' id='$d' name='day_availability' value='$day' onchange='toggleDay(\"$d\")'>
+                <input type='checkbox' id='$d' name='day_availability[]' value='$day' onchange='toggleDay(\"$d\")'>
                 <label for='$d'> $day</label>
                 <div id='{$d}_times' style='display:none'>
                     <p class='mb-2'>If you are available on $day, please indicate your availability below.</p>
@@ -347,6 +410,7 @@
         -->
         <label>Languages spoken:</label>
         <p class="mb-2">Select all languages you are proficient in. We will ask you to indicate your competency level for each language selected.</p>
+        
         <select id="language_select" multiple size="6">
             <option value="" disabled>-- Select languages --</option>
             <?php foreach ($languages as $lang): ?>
@@ -354,8 +418,10 @@
                 <option value="<?= $d ?>" data-label="<?= $lang ?>" <?= $lang === 'English' ? 'selected' : '' ?>><?= $lang ?></option>
             <?php endforeach; ?>
         </select>
+        <div id="language_hidden_inputs"></div>
         <p class="mb-2"><small>Hold Ctrl (Windows | Linux) or Cmd (Mac) to select multiple.</small></p>
 
+        <?php field_error('language_competency'); ?>
         <div id="competency_container"></div>
 
         <script>
@@ -364,14 +430,23 @@
         document.getElementById('language_select').addEventListener('change', function() {
             var selected = Array.from(this.selectedOptions);
             var container = document.getElementById('competency_container');
+            var hiddenContainer = document.getElementById('language_hidden_inputs');
+
             container.innerHTML = '';
+            hiddenContainer.innerHTML = '';
 
             selected.forEach(function(option) {
+                var hidden = document.createElement('input');
+                hidden.type = 'hidden';
+                hidden.name = 'selected_languages[]';
+                hidden.value = option.value;
+                hiddenContainer.appendChild(hidden);
+
                 var div = document.createElement('div');
                 div.innerHTML = `
-                    <label>${option.dataset.label} Speaking Competency:</label>
+                    <label><em>* </em>${option.dataset.label} Speaking Competency:</label>
                     <p class="mb-2">Please indicate your speaking competency level in ${option.dataset.label}.</p>
-                    <select name="speaking_competency_${option.value}">
+                    <select name="speaking_competency_${option.value}" required>
                         <option value="">-- Select competency --</option>
                         <option value="beginner">Beginner</option>
                         <option value="intermediate">Intermediate</option>
@@ -379,9 +454,9 @@
                         <option value="fluent">Native/Fluent</option>
                     </select>
 
-                    <label>${option.dataset.label} Listening Competency:</label>
+                    <label><em>* </em>${option.dataset.label} Listening Competency:</label>
                     <p class="mb-2">Please indicate your listening competency level in ${option.dataset.label}.</p>
-                    <select name="listening_competency_${option.value}">
+                    <select name="listening_competency_${option.value}" required>
                         <option value="">-- Select competency --</option>
                         <option value="beginner">Beginner</option>
                         <option value="intermediate">Intermediate</option>
@@ -389,9 +464,9 @@
                         <option value="fluent">Native/Fluent</option>
                     </select>
 
-                    <label>${option.dataset.label} Reading Competency:</label>
+                    <label><em>* </em>${option.dataset.label} Reading Competency:</label>
                     <p class="mb-2">Please indicate your reading competency level in ${option.dataset.label}.</p>
-                    <select name="reading_competency_${option.value}">
+                    <select name="reading_competency_${option.value}" required>
                         <option value="">-- Select competency --</option>
                         <option value="beginner">Beginner</option>
                         <option value="intermediate">Intermediate</option>
@@ -399,9 +474,9 @@
                         <option value="fluent">Native/Fluent</option>
                     </select>
 
-                    <label>${option.dataset.label} Writing Competency:</label>
+                    <label><em>* </em>${option.dataset.label} Writing Competency:</label>
                     <p class="mb-2">Please indicate your writing competency level in ${option.dataset.label}.</p>
-                    <select name="writing_competency_${option.value}">
+                    <select name="writing_competency_${option.value}" required>
                         <option value="">-- Select competency --</option>
                         <option value="beginner">Beginner</option>
                         <option value="intermediate">Intermediate</option>
@@ -416,7 +491,7 @@
         });
 
         // Trigger on page load so English competency shows automatically
-        document .getElementById('language_select').dispatchEvent(new Event('change'));
+        document.getElementById('language_select').dispatchEvent(new Event('change'));
         </script>
 
         <!-- I manually added an unlisted lang section. This might be a placeholder as I feel there's a better implementation for this, but it will work for now. -->
@@ -527,19 +602,6 @@
             </div>
         </div>
 
-        <div class="median-div"></div>
-
-        <label for="t_shirt_size"><em>* </em>T-shirt Size</label>
-        <p class="mb-2">Please select your t-shirt size for event purposes.</p>
-        <select id="t_shirt_size" name="t_shirt_size" required>
-            <option value="" disabled selected>-- Select t-shirt size --</option>
-            <option value="S">S</option>
-            <option value="M">M</option>
-            <option value="L">L</option>
-            <option value="XL">XL</option>
-            <option value="XXL">2XL</option>
-        </select>
-
     </fieldset>
 
 
@@ -582,12 +644,17 @@
     </script>
     -->
 
-    <!-- Unsure about this implementation -->
     <script>
     // Initialize Cleave.js for primary phone number
     new Cleave('#phone1', {
-        phone: true,
-        phoneRegionCode: 'US',
+        blocks: [3, 3, 4],
+        delimiter: '-',
+        numericOnly: true,
+    });
+
+    // Initialize Cleave.js for emergency contact phone number
+    new Cleave('#emergency_contact_phone', {
+        blocks: [3, 3, 4],
         delimiter: '-',
         numericOnly: true,
     });
@@ -607,6 +674,7 @@
         <label for="password"><em>* </em>Password</label>
         <p>Your password must be at least 8 characters long, contain at least one number, one uppercase letter, and one lowercase letter.</p>
         <input type="password" id="password" name="password" placeholder="Enter a strong password" required>
+        <?php field_error('password'); ?>
         <p id="password-error" class="error hidden">Password does not meet requirements.</p>
 
         <label for="password-reenter"><em>* </em>Re-enter Password</label>

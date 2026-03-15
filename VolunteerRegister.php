@@ -83,8 +83,11 @@ require_once('header.php');
 
         // Validation
         $errors = false;
+        $error_messages = [];
+
         if (!wereRequiredFieldsSubmitted($args, $required)) {
             $errors = true;
+            $error_messages['general'] = 'Please fill in all required fields.';
         }
 
         // Name validation
@@ -100,8 +103,8 @@ require_once('header.php');
         // Birthday validation
         $birthday = validateDate($args['birthday']);
         if (!$birthday) {
-            echo "<p>Invalid birthday.</p>";
             $errors = true;
+            $error_messages['birthday'] = 'Invalid birthday.';
         } 
 
         // Address validation
@@ -112,21 +115,21 @@ require_once('header.php');
             'AK','AL','AR','AZ','CA','CO','CT','DC','DE','FL','GA','HI','IA','ID','IL','IN','KS','KY','LA','MA','MD','ME',
             'MI','MN','MO','MS','MT','NC','ND','NE','NH','NJ','NM','NV','NY','OH','OK','OR','PA','RI','SC','SD','TN','TX',
             'UT','VA','VT','WA','WI','WV','WY'))) {
-            echo "<p>Invalid state.</p>";
             $errors = true;
+            $error_messages['state'] = 'Invalid state.';
         }
 
         $zip_code = $args['zip'];
         if (!validateZipcode($zip_code)) {
-            echo "<p>Invalid ZIP code.</p>";
             $errors = true;
+            $error_messages['zip'] = 'Invalid ZIP code.';
         }
 
         // Email validation
         $email = strtolower($args['email']);
         if (!validateEmail($email)) {
-            echo "<p>Invalid email.</p>";
             $errors = true;
+            $error_messages['email'] = 'Invalid email address.';
         }
 
         // Email consent validation
@@ -135,8 +138,8 @@ require_once('header.php');
         // Phone validation
         $phone1 = validateAndFilterPhoneNumber($args['phone1']);
         if (!$phone1) {
-            echo "<p>Invalid phone number.</p>";
             $errors = true;
+            $error_messages['phone1'] = 'Invalid phone number.';
         }
 
 
@@ -170,8 +173,8 @@ require_once('header.php');
         // Phone type validation
         $phone1type = $args['phone_type'];
         if (!valueConstrainedTo($phone1type, array('cellphone', 'home', 'work'))) {
-            echo "<p>Invalid phone type.</p>";
             $errors = true;
+            $error_messages['phone_type'] = 'Please select a phone type.';
         }
 
         // Emergency contact validation
@@ -181,18 +184,19 @@ require_once('header.php');
 
         $emergency_contact_phone = validateAndFilterPhoneNumber($args['emergency_contact_phone']);
         if (!$emergency_contact_phone) {
-            echo "<p>Invalid emergency contact phone.</p>";
             $errors = true;
+            $error_messages['emergency_contact_phone'] = 'Invalid phone number.';
         } 
 
         $emergency_contact_phone_type = $args['emergency_contact_phone_type'];
         if (!valueConstrainedTo($emergency_contact_phone_type, array('cellphone', 'home', 'work'))) {
-            echo "<p>Invalid emergency phone type.</p>";
             $errors = true;
+            $error_messages['emergency_contact_phone_type'] = 'Please select a phone type.';
         }
 
         // So this availability section is NOT deprecated I added this, but I cannot quite place how to go about the actual implementation into the database. Work in progress.
-        $day_availability = isset($args['day_availability']) ? $args['day_availability'] : [];
+        $day_availability = isset($args['day_availability']) ? (array)$args['day_availability'] : [];
+        
         /*$availability = [];
         foreach (['sunday','monday','tuesday','wednesday','thursday','friday','saturday'] as $d) {
             if (in_array(ucfirst($d), $day_availability)) {
@@ -204,24 +208,38 @@ require_once('header.php');
         }*/
 
         // Languages
-        $languages = ['english','spanish','amharic','arabic','french','german','gujarati',
-            'haitian_creole','hindi','japanese','korean','mandarin_chinese','punjabi',
-            'portuguese','russian','somali','tagalog','tigrinya','urdu','vietnamese'];
-
-        // Loop through languages and collect competency data for each language if provided, stored into arrays.
         $language_data = [];
-        foreach ($languages as $lang) {
-            if (isset($args['speaking_competency_' . $lang])) {
-                $language_data[$lang] = [
-                    'speaking'   => $args['speaking_competency_' . $lang],
-                    'listening'  => $args['listening_competency_' . $lang] ?? null,
-                    'reading'    => $args['reading_competency_' . $lang] ?? null,
-                    'writing'    => $args['writing_competency_' . $lang] ?? null,
-                ];
+        $selected_languages = isset($args['selected_languages']) ? $args['selected_languages'] : [];
+
+        foreach ($selected_languages as $lang) {
+            $lang = preg_replace('/[^a-z_]/', '', $lang);
+            $language_data[$lang] = [
+                'speaking'  => $args['speaking_competency_' . $lang] ?? null,
+                'listening' => $args['listening_competency_' . $lang] ?? null,
+                'reading'   => $args['reading_competency_' . $lang] ?? null,
+                'writing'   => $args['writing_competency_' . $lang] ?? null,
+            ];
+            foreach (['speaking', 'listening', 'reading', 'writing'] as $skill) {
+                if (empty($language_data[$lang][$skill])) {
+                    $errors = true;
+                    $error_messages['language_competency'] = 'Please fill in all competency fields for each selected language.';
+                    break 2;
+                }
             }
         }
 
+        // Unlisted language
         $other_language = isset($args['other_language']) ? $args['other_language'] : null;
+        if (!empty($other_language)) {
+            $lang_key = strtolower(preg_replace('/[^a-zA-Z0-9]/', '_', trim($other_language)));
+            $language_data[$lang_key] = [
+                'speaking'  => $args['speaking_competency_other_language'] ?? null,
+                'listening' => $args['listening_competency_other_language'] ?? null,
+                'reading'   => $args['reading_competency_other_language'] ?? null,
+                'writing'   => $args['writing_competency_other_language'] ?? null,
+            ];
+        }
+
 
         // Skills and experience validation
         $skills = isset($args['skills']) ? $args['skills'] : null;
@@ -249,70 +267,72 @@ require_once('header.php');
 
         $password = isSecurePassword($args['password']);
         if (!$password) {
-            echo "<p>Password is not secure enough.</p>";
             $errors = true;
+            $error_messages['password'] = 'Password must be at least 8 characters and contain at least one number, one uppercase, and one lowercase letter.';
         } else {
             $password = password_hash($args['password'], PASSWORD_BCRYPT);
         }
 
         if ($errors) {
-            echo '<p class="error">Your form submission contained unexpected or invalid input.</p>';
-            die();
-        }
+            require_once('registrationForm.php');
+            } else {
 
-        // About consent validation
-        $about_consent = isset($args['about_consent']) ? $args['about_consent'] : null;
+            // About consent validation
+            $about_consent = isset($args['about_consent']) ? $args['about_consent'] : null;
 
-        // Deprecated constructor, left for reference. Updated version below.
-        /*$newperson = new Person(
-            $id, $password, date("Y-m-d"),
-            $first_name, $last_name, $birthday,
-            $street_address, $city, $state, $zip_code,
-            $phone1, $phone1type, $email,
-            $emergency_contact_first_name, $emergency_contact_last_name,
-            $emergency_contact_phone, $emergency_contact_phone_type,
-            $emergency_contact_relation, $type, $status, $archived, 
-            $skills, $interests, $training_level,
-            $is_community_service_volunteer, $is_new_volunteer,
-            $total_hours_volunteered
-        ); */
+            // Deprecated constructor, left for reference. Updated version below.
+            /*$newperson = new Person(
+                $id, $password, date("Y-m-d"),
+                $first_name, $last_name, $birthday,
+                $street_address, $city, $state, $zip_code,
+                $phone1, $phone1type, $email,
+                $emergency_contact_first_name, $emergency_contact_last_name,
+                $emergency_contact_phone, $emergency_contact_phone_type,
+                $emergency_contact_relation, $type, $status, $archived, 
+                $skills, $interests, $training_level,
+                $is_community_service_volunteer, $is_new_volunteer,
+                $total_hours_volunteered
+            ); */
 
-        // Deprecated constructor, left for reference. Updated version below.
-        /*$newperson = new Person(
-            $id, date("Y-m-d"),
-            $first_name, $last_name, null,
-            $city, $state, $zip_code, $phone1, $age, 
-            null, null, null, null, 
-            $email, $email_consent, null,
-            null, null, null, null, null, $status, null, 
-            $password, $affiliation, $branch, null, null
-        );*/
+            // Deprecated constructor, left for reference. Updated version below.
+            /*$newperson = new Person(
+                $id, date("Y-m-d"),
+                $first_name, $last_name, null,
+                $city, $state, $zip_code, $phone1, $age, 
+                null, null, null, null, 
+                $email, $email_consent, null,
+                null, null, null, null, null, $status, null, 
+                $password, $affiliation, $branch, null, null
+            );*/
 
-        // Updated constructor with new fields. Note that some fields are being passed as null because they are not currently being collected in the form. These will be updated in the future as needed.
-        $newperson = new Person(
-            $id, date("Y-m-d"),
-            $first_name, $last_name, $street_address,
-            $city, $state, $zip_code, $phone1, '',
-            $phone1type, $emergency_contact_phone, $emergency_contact_phone_type, $birthday,
-            $email, $email_consent, $t_shirt_size,
-            $emergency_contact_first_name, null, $emergency_contact_relation,
-            null, null, null, null,
-            $password, null, null, null,
-            $emergency_contact_last_name,
-            // new fields
-            $gender, $t_shirt_size, $computer_access, $camera_access,
-            $transportation_access, $skills, $experience, $about_consent
-        );
+            // Updated constructor with new fields. Note that some fields are being passed as null because they are not currently being collected in the form. These will be updated in the future as needed.
+            $newperson = new Person(
+                $id, date("Y-m-d"),
+                $first_name, $last_name, $street_address,
+                $city, $state, $zip_code, $phone1, '',
+                $phone1type, $emergency_contact_phone, $emergency_contact_phone_type, $birthday,
+                $email, $email_consent,
+                $emergency_contact_first_name, null, $emergency_contact_relation,
+                null, "volunteer", "Active", null,
+                $password, null, null, null,
+                $emergency_contact_last_name,
+                // new fields
+                $gender, $t_shirt_size, $computer_access, $camera_access,
+                $transportation_access, $skills, $experience, $about_consent
+            );
 
-        // Push of new person into dbpersons
-        $result = add_person($newperson);
-        if (!$result) {
-            $showPopup = true;
-        } else {
-            echo '<script>document.location = "login.php?registerSuccess";</script>';
-            $title = $id . " has been added as a volunteer";
-            $body = "New volunteer account has been created";
-            system_message_all_admins($title, $body);
+            // Push of new person into dbpersons
+            $result = add_person($newperson);
+            if (!$result) {
+                $showPopup = true;
+            } else {
+                if (!empty($language_data)) add_languages($id, $language_data);
+                if (!empty($day_availability)) add_availabilities($id, $day_availability, $args);
+                echo '<script>document.location = "login.php?registerSuccess";</script>';
+                $title = $id . " has been added as a volunteer";
+                $body = "New volunteer account has been created";
+                system_message_all_admins($title, $body);
+            }
         }
     } else {
         require_once('registrationForm.php');
