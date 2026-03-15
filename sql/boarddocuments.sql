@@ -31,7 +31,7 @@ CREATE TABLE `boarddocuments` (
   `id` int(11) NOT NULL,
   `doc_name` varchar(255) NOT NULL,
   `file_path` varchar(255) NOT NULL,
-  `uploaded_by` int(11) DEFAULT NULL,
+  `uploaded_by` varchar(255) DEFAULT NULL,
   `uploaded_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 

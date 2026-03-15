@@ -84,7 +84,7 @@
             if (in_array($file_type, $allowed_types)) {
                 if (move_uploaded_file($_FILES['doc_file']['tmp_name'], $target_path)) {
                     $safe_clearance   = mysqli_real_escape_string($connection, $clearance_level);
-                    $safe_uploaded_by = mysqli_real_escape_string($connection, $uploaded_by);
+                    $safe_uploaded_by = mysqli_real_escape_string($connection, $_SESSION['_id']);
                     $insertQuery = "INSERT INTO boarddocuments (doc_name, file_path, uploaded_by, clearance_level)
                                     VALUES ('$doc_name', '$target_path', '$safe_uploaded_by', '$safe_clearance')";
                     mysqli_query($connection, $insertQuery);
