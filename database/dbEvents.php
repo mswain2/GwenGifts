@@ -52,6 +52,7 @@ function add_event($event) {
         mysqli_query($con,'INSERT INTO dbevents VALUES("' .
                 $event->getID() . '","' .
                 $event->getName() . '","' . 
+                $event->getAbbr() . '","' .
                 $event->getType() . '","' . 
                 $event->getStartDate() . '","' .
                 $event->getStartTime() . "," .
@@ -60,8 +61,6 @@ function add_event($event) {
                 $event->getDescription() . '","' .
                 $event->getCapacity() . "," .
                 $event->getLocation() . "," .
-                $event->getAffiliation() . "," .
-                $event->getBranch() . '","' . 
                 $event->Access() . '","' . 
                 $event->getCompleted() . "," .
                 #$event->getID() .            
@@ -88,6 +87,7 @@ function add_event($event) {
     mysqli_close($connection);
     return null;
 }*/
+
 
 function request_event_signup($event_name_str, $account_name, $role, $notes) {
     // This function is deprecated. Use create_app() in dbApplications.php for Retreat signups.
@@ -369,6 +369,7 @@ function make_an_event($result_row) {
     $theEvent = new Event(
                     $result_row['id'],
                     $result_row['name'],       
+                    $result_row['abbr_name'],
                     type: $result_row['type'],            
                     startDate: $result_row['startDate'],
                     startTime: $result_row['startTime'],
@@ -377,8 +378,6 @@ function make_an_event($result_row) {
                     description: $result_row['description'],
                     capacity: $result_row['capacity'],
                     location: $result_row['location'],
-                    affiliation: $result_row['affiliation'],
-                    branch: $result_row['branch'],
                     access: $result_row['access'],
                     completed: $result_row['completed']
                     
@@ -554,6 +553,7 @@ function fetch_num_attendees($id) {
 function create_event($event) {
     $connection = connect();
     $name = $event["name"];
+    $abbr = $event["abbr"];
     //$abbrevName = $event["abbrev-name"];
     // $date = $event["date"];
     $date    = $event["startDate"] ?? $event["date"];
@@ -595,8 +595,8 @@ function create_event($event) {
         : null;
 
     $query = "
-        insert into dbevents (name, startDate, startTime, endTime, endDate, access, description, capacity, completed, location, type, series_id)
-        values ('$name', '$date', '$startTime', '$endTime', '$endDate', '$access', '$description', $capacity, '$completed', '$location', '$type', " .($series_id ? "'$series_id'" : "NULL") . ")
+        insert into dbevents (name, abbr_name, startDate, startTime, endTime, endDate, access, description, capacity, completed, location, type, series_id)
+        values ('$name', '$abbr', '$date', '$startTime', '$endTime', '$endDate', '$access', '$description', $capacity, '$completed', '$location', '$type', " .($series_id ? "'$series_id'" : "NULL") . ")
     ";
     $result = mysqli_query($connection, $query);
     if (!$result) {

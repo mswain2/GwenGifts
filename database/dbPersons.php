@@ -27,32 +27,28 @@ function add_person($person) {
     $con = connect();
     $query = "SELECT * FROM dbpersons WHERE id = '" . $person->get_id() . "'";
     $result = mysqli_query($con, $query);
-    // if (!$person instanceof Person) {
-    //     die("Error: add_person type mismatch");
-    // }
 
-    
-
-    // If the result is empty, it means the person doesn't exist, so we can add the person
     if (mysqli_num_rows($result) == 0) {
-        // Prepare the insert query
         $insert_query = 'INSERT INTO dbpersons (
-            id, start_date, first_name, last_name, city, state,  
-            phone1, 
-            over21, phone1type, 
-            emergency_contact_phone, emergency_contact_phone_type, birthday, 
+            id, start_date, first_name, last_name, street_address, city, state,
+            zip_code, phone1,
+            over21, phone1type,
+            emergency_contact_phone, emergency_contact_phone_type, birthday,
             email, email_prefs, emergency_contact_first_name, contact_num,
-            emergency_contact_relation, contact_method, type, status, notes, 
-            password, affiliation, branch, emergency_contact_last_name, t_shirt_size
+            emergency_contact_relation, contact_method, type, status, notes,
+            password, affiliation, branch, emergency_contact_last_name,
+            gender, t_shirt_size,
+            computer_access, camera_access, transportation_access,
+            skills, experience, about_consent
         ) VALUES ("' .
             $person->get_id() . '","' .
             $person->get_start_date() . '","' .
             $person->get_first_name() . '","' .
             $person->get_last_name() . '","' .
-            //$person->get_street_address() . '","' .
+            $person->get_street_address() . '","' .
             $person->get_city() . '","' .
             $person->get_state() . '","' .
-            //$person->get_zip_code() . '","' .
+            $person->get_zip_code() . '","' .
             $person->get_phone1() . '",null,"' .
             $person->get_phone1type() . '","' .
             $person->get_emergency_contact_phone() . '","' .
@@ -70,21 +66,21 @@ function add_person($person) {
             $person->get_password() . '","' .
             $person->get_affiliation() . '","' .
             $person->get_branch() . '","' .
-            //$person->get_archived() . '","' .                
             $person->get_emergency_contact_last_name() . '","' .
-            $person->get_t_shirt_size() . '");';  
-    
-        // Check if the query is properly built
-        if (empty($insert_query)) {
-            die("Error: insert query is empty");
-        }
+            $person->get_gender() . '","' .
+            $person->get_t_shirt_size() . '","' .
+            $person->get_computer_access() . '","' .
+            $person->get_camera_access() . '","' .
+            $person->get_transportation_access() . '","' .
+            $person->get_skills() . '","' .
+            $person->get_experience() . '","' .
+            $person->get_about_consent() . '");';
 
-        // Perform the insert
         if (mysqli_query($con, $insert_query)) {
             mysqli_close($con);
             return true;
         } else {
-            die("Error: " . mysqli_error($con)); // Debugging MySQL error
+            die("Error: " . mysqli_error($con));
         }
     }
 
@@ -623,7 +619,6 @@ function make_a_person($result_row) {
     @$result_row['birthday'],
     @$result_row['email'],
     @$result_row['email_prefs'],
-    @$result_row['t_shirt_size'],
     @$result_row['emergency_contact_first_name'],
     @$result_row['contact_num'],
     @$result_row['emergency_contact_relation'],
@@ -637,6 +632,7 @@ function make_a_person($result_row) {
     @$result_row['archived'],
     @$result_row['emergency_contact_last_name'],
     @$result_row['gender'],
+    @$result_row['t_shirt_size'],
     @$result_row['computer_access'],
     @$result_row['camera_access'],
     @$result_row['transportation_access'],
@@ -856,15 +852,16 @@ function get_logged_hours($from, $to, $name_from, $name_to, $venue) {
     function update_person_required(
         $id, $first_name, $last_name, $city, $state,
         $email, $phone1, $email_prefs, $affiliation,
-        $branch
+        $branch, $notes = ''
     ) {
-        $query = "update dbpersons set 
-            first_name='$first_name', last_name='$last_name', 
+        $query = "update dbpersons set
+            first_name='$first_name', last_name='$last_name',
             city='$city', state='$state',
             email='$email', phone1='$phone1',
             affiliation='$affiliation', branch='$branch',
-            email_prefs='$email_prefs'
-        
+            email_prefs='$email_prefs',
+            notes='$notes'
+
             where id='$id'";
         $connection = connect();
         $result = mysqli_query($connection, $query);
@@ -1491,6 +1488,56 @@ function get_total_vol_hours($dateFrom, $dateTo) {
 
         mysqli_close($con);
         return [];
+    }
+
+    function add_languages($person_id, $language_data) {
+        if (empty($language_data)) return true;
+
+        $con = connect();
+        foreach ($language_data as $lang => $competencies) {
+            $lang      = mysqli_real_escape_string($con, $lang);
+            $speaking  = mysqli_real_escape_string($con, $competencies['speaking'] ?? '');
+            $listening = mysqli_real_escape_string($con, $competencies['listening'] ?? '');
+            $reading   = mysqli_real_escape_string($con, $competencies['reading'] ?? '');
+            $writing   = mysqli_real_escape_string($con, $competencies['writing'] ?? '');
+
+            $query = "INSERT INTO dblanguages 
+                        (person_id, language, speaking, listening, reading, writing)
+                    VALUES 
+                        ('$person_id', '$lang', '$speaking', '$listening', '$reading', '$writing')";
+
+            if (!mysqli_query($con, $query)) {
+                mysqli_close($con);
+                return false;
+            }
+        }
+        mysqli_close($con);
+        return true;
+    }
+
+    function add_availabilities($person_id, $day_availability, $args) {
+        if (empty($day_availability)) return true;
+
+        $con = connect();
+        foreach ($day_availability as $day) {
+            $day   = mysqli_real_escape_string($con, $day);
+            $d     = strtolower($day);
+            $start = isset($args[$d . '_start']) ? mysqli_real_escape_string($con, $args[$d . '_start']) : null;
+            $end   = isset($args[$d . '_end'])   ? mysqli_real_escape_string($con, $args[$d . '_end'])   : null;
+
+            $start_val = $start ? "'$start'" : "NULL";
+            $end_val   = $end   ? "'$end'"   : "NULL";
+
+            $query = "INSERT INTO dbavailabilities (person_id, day, start_time, end_time)
+                    VALUES ('$person_id', '$day', $start_val, $end_val)";
+
+            if (!mysqli_query($con, $query)) {
+                mysqli_close($con);
+                return false;
+            }
+        }
+        mysqli_close($con);
+        return true;
     }
 
     /*

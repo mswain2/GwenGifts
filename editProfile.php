@@ -155,18 +155,17 @@
         } else {
             $affiliation = $person->get_affiliation();
         }
-        
-       
-        // For the new fields, default to 0 if not set
-        
-       
+
+        $notes = isset($args['notes']) ? $args['notes'] : $person->get_notes();
+
         if ($errors) {
             $updateSuccess = false;
         }
         
         $result = update_person_required(
             $id, $first_name, $last_name, $city, $state,
-            $email, $phone1, $email_consent, $affiliation, $branch
+            $email, $phone1, $email_consent, $affiliation, $branch,
+            $notes
         );
         if ($result) {
             if ($editingSelf) {

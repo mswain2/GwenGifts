@@ -915,7 +915,7 @@ form.signup-form em {
     margin-right: auto;
     background-color: var(--page-background-color);
     border-radius: 0.5rem;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    /*box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);*/
 }
 
 .info-box {
@@ -925,7 +925,7 @@ form.signup-form em {
     background-color: var(--page-background-color);
     border: 2px solid var(--light-border);
     border-radius: 0.5rem;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    /*box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);*/
 }
 
 /* Utility Classes */
@@ -944,6 +944,7 @@ form.signup-form em {
     padding: 1.5rem;
     margin-bottom: 1rem;
     border: 1px solid var(--light-border);
+    scroll-margin-top: 6rem;
 }
 
 .blue-div {

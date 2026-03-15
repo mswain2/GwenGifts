@@ -4,21 +4,24 @@ include_once('dbinfo.php');
 include_once('dbDiscussionReplies.php');
 include_once(dirname(__FILE__).'/../domain/Discussion.php');
 
-function add_discussion($discussion) {
+function add_discussion($discussion, $category = 'general') {
     if (!$discussion instanceof Discussion)
         die("Error: add_discussion type mismatch");
 
     $con = connect();
-    $query = "SELECT * FROM dbdiscussions WHERE author_id = '" . $discussion->get_author_id() . 
-             "' AND title = '" . $discussion->get_title() . "'";
+    $query = "SELECT * FROM dbdiscussions 
+          WHERE author_id = '" . $discussion->get_author_id() . "' 
+          AND title = '" . $discussion->get_title() . "' 
+          AND category = '" . $category . "'";
     $result = mysqli_query($con, $query);
 
     if ($result == null || mysqli_num_rows($result) == 0) {
-        $query = 'INSERT INTO dbdiscussions (author_id, title, body, time) VALUES ("' .
-            $discussion->get_author_id() . '", "' .
-            $discussion->get_title() . '", "' .
-            $discussion->get_body() . '", "' .
-            $discussion->get_time() . '")';
+        $query = "INSERT INTO dbdiscussions (author_id, title, body, time, category) VALUES ('" .
+            $discussion->get_author_id() . "', '" .
+            $discussion->get_title() . "', '" .
+            $discussion->get_body() . "', '" .
+            $discussion->get_time() . "', '" .
+            $category . "')";
 
         mysqli_query($con, $query);
         mysqli_close($con);
@@ -29,32 +32,38 @@ function add_discussion($discussion) {
     return false;
 }
 
-function remove_discussion($author_id, $title) {
+function remove_discussion($author_id, $title, $category = null) {
     $con = connect();
-    $query = "DELETE FROM dbdiscussions WHERE author_id = '" . $author_id . "' AND title = '" . $title . "'";
+    if ($category) {
+        $query = "DELETE FROM dbdiscussions WHERE author_id = '$author_id' AND title = '$title' AND category = '$category'";
+    } else {
+        $query = "DELETE FROM dbdiscussions WHERE author_id = '$author_id' AND title = '$title'";
+    }
     $result = mysqli_query($con, $query);
     mysqli_close($con);
     return $result;
 }
 
-function get_discussion($title) {
+function get_discussion($title, $category = null) {
     $con = connect();
-    $query = "SELECT * FROM dbdiscussions WHERE title = '" . $title . "'";
+    if ($category) {
+        $query = "SELECT * FROM dbdiscussions WHERE title = '$title' AND category = '$category'";
+    } else {
+        $query = "SELECT * FROM dbdiscussions WHERE title = '$title'";
+    }
     $result = mysqli_query($con, $query);
-
     if ($result && mysqli_num_rows($result) > 0) {
         $discussion = mysqli_fetch_assoc($result);
         mysqli_close($con);
         return $discussion;
     }
-
     mysqli_close($con);
     return null;
 }
 
 function get_all_discussions() {
     $con = connect();
-    $query = "SELECT * FROM dbdiscussions";
+    $query = "SELECT * FROM dbdiscussions WHERE category = 'general' OR category IS NULL";
     $result = mysqli_query($con, $query);
     $discussions = [];
 
@@ -65,6 +74,21 @@ function get_all_discussions() {
     mysqli_close($con);
     return $discussions;
 }
+
+function get_board_discussions() {
+    $con = connect();
+    $query = "SELECT * FROM dbdiscussions WHERE category = 'board'";
+    $result = mysqli_query($con, $query);
+    $discussions = [];
+ 
+    while ($row = mysqli_fetch_assoc($result)) {
+        $discussions[] = $row;
+    }
+ 
+    mysqli_close($con);
+    return $discussions;
+}
+
 function get_user_from_author($author_id){
     $con=connect();
     $query = "SELECT * FROM dbpersons WHERE id = '" . $author_id . "'";
@@ -79,23 +103,20 @@ function get_user_from_author($author_id){
 //    mysqli_close($con);
     return $thePerson;
 }
-function discussion_exists($title) {
-    $existingDiscussion = get_discussion($title);
-    return !empty($existingDiscussion); // If a discussion is found, return true.
-}
-
-function deleteAllDiscussions() {
+function discussion_exists($title, $category = null) {
     $con = connect();
-    $query = "TRUNCATE TABLE dbdiscussions";
-    $query1 = "TRUNCATE TABLE discussion_replies";
-
-    $result1 = mysqli_query($con, $query);
-    $result2 = mysqli_query($con, $query1);
-
+    $title = mysqli_real_escape_string($con, $title);
+    if ($category) {
+        $query = "SELECT * FROM dbdiscussions WHERE title = '$title' AND category = '$category'";
+    } else {
+        $query = "SELECT * FROM dbdiscussions WHERE title = '$title'";
+    }
+    $result = mysqli_query($con, $query);
+    $exists = $result && mysqli_num_rows($result) > 0;
     mysqli_close($con);
-    
-    return $result1 && $result2;
+    return $exists;
 }
+
 
 function deleteDiscussions($discussions) {
     $con = connect();
@@ -103,13 +124,13 @@ function deleteDiscussions($discussions) {
 
     foreach ($discussions as $entry) {
         $data = explode('|', $entry); // expects "author_id|title"
-        if (count($data) == 2) {
+        $data = explode('|', $entry);
+        if (count($data) == 3) {
             $author_id = mysqli_real_escape_string($con, $data[0]);
             $title = mysqli_real_escape_string($con, $data[1]);
-
-            delete_all_replies_in($title); //delete replies in the discussion
-            
-            $query = "DELETE FROM dbdiscussions WHERE author_id = '$author_id' AND title = '$title'";
+            $category = mysqli_real_escape_string($con, $data[2]);
+            delete_all_replies_in($title, $category);
+            $query = "DELETE FROM dbdiscussions WHERE author_id = '$author_id' AND title = '$title' AND category = '$category'";
             $result = mysqli_query($con, $query);
             if (!$result) $success = false;
         }

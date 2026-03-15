@@ -26,16 +26,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $author_id = $_POST['author_id'] ?? '';
     $title = $_POST['title'] ?? '';
 
-    if (!empty($author_id) && !empty($title)) {
-        delete_all_replies_in($title);
-        $result = remove_discussion($author_id, $title);
-        if ($result) {
-            header('Location: viewDiscussions.php?deleted=1');
-        } else {
-            header('Location: viewDiscussions.php?error=1');
-        }
-        exit;
+if (!empty($author_id) && !empty($title)) {
+    $category = $_POST['category'] ?? null;
+    delete_all_replies_in($title, $category);
+    $result = remove_discussion($author_id, $title, $category);
+    if ($result) {
+        $redirect = ($category === 'board') ? 'viewBoardDiscussions.php' : 'viewDiscussions.php';
+        header('Location: ' . $redirect . '?deleted=1');
+    } else {
+        header('Location: viewDiscussions.php?error=1');
     }
+    exit;
+  }
 }
 
 header('Location: viewDiscussions.php?error=1');
