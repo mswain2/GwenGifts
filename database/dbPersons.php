@@ -856,15 +856,16 @@ function get_logged_hours($from, $to, $name_from, $name_to, $venue) {
     function update_person_required(
         $id, $first_name, $last_name, $city, $state,
         $email, $phone1, $email_prefs, $affiliation,
-        $branch
+        $branch, $notes = ''
     ) {
-        $query = "update dbpersons set 
-            first_name='$first_name', last_name='$last_name', 
+        $query = "update dbpersons set
+            first_name='$first_name', last_name='$last_name',
             city='$city', state='$state',
             email='$email', phone1='$phone1',
             affiliation='$affiliation', branch='$branch',
-            email_prefs='$email_prefs'
-        
+            email_prefs='$email_prefs',
+            notes='$notes'
+
             where id='$id'";
         $connection = connect();
         $result = mysqli_query($connection, $query);
