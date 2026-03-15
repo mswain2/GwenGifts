@@ -124,13 +124,13 @@ function deleteDiscussions($discussions) {
 
     foreach ($discussions as $entry) {
         $data = explode('|', $entry); // expects "author_id|title"
-        if (count($data) == 2) {
+        $data = explode('|', $entry);
+        if (count($data) == 3) {
             $author_id = mysqli_real_escape_string($con, $data[0]);
             $title = mysqli_real_escape_string($con, $data[1]);
-
-            delete_all_replies_in($title); //delete replies in the discussion
-            
-            $query = "DELETE FROM dbdiscussions WHERE author_id = '$author_id' AND title = '$title'";
+            $category = mysqli_real_escape_string($con, $data[2]);
+            delete_all_replies_in($title, $category);
+            $query = "DELETE FROM dbdiscussions WHERE author_id = '$author_id' AND title = '$title' AND category = '$category'";
             $result = mysqli_query($con, $query);
             if (!$result) $success = false;
         }

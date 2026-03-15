@@ -67,7 +67,7 @@ require_once('header.php');
                     <?php foreach ($discussions as $discussion): 
                         $person = get_user_from_author($discussion['author_id']);
                         $author_name = $person->get_first_name() . ' ' . $person->get_last_name();
-                        $entryValue = htmlspecialchars($discussion['author_id']) . '|' . htmlspecialchars($discussion['title']);
+                        $entryValue = htmlspecialchars($discussion['author_id']) . '|' . htmlspecialchars($discussion['title']) . '|general';
                     ?>
                         <tr>
                             <?php if ($accessLevel > 2): ?>

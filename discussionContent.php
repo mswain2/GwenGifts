@@ -87,14 +87,14 @@ foreach ($replies as $reply) {
 }
 
 // Recursive function to display replies
-function displayReplies($parentId, $repliesByParent, $level = 0, $accessLevel = 0, $discussionTitle = '') {
+function displayReplies($parentId, $repliesByParent, $level = 0, $accessLevel = 0, $discussionTitle = '', $category = '') {
     if (!isset($repliesByParent[$parentId])) return;
 
     foreach ($repliesByParent[$parentId] as $reply) {
         ?>
         <div class="reply" style="margin-left: <?php echo ($level * 40); ?>px; position: relative; border-left: <?php echo $level > 0 ? '2px solid #ccc' : 'none'; ?>; padding-left: 15px;">
             <?php if ($accessLevel > 2): ?>
-                <a href="deleteReply.php?reply_id=<?php echo htmlspecialchars($reply['reply_id']); ?>&title=<?php echo urlencode($discussionTitle); ?>" onclick="return confirm('Are you sure you want to delete this reply?');">
+                <a href="deleteReply.php?reply_id=<?php echo htmlspecialchars($reply['reply_id']); ?>&title=<?php echo urlencode($discussionTitle); ?>&category=<?php echo urlencode($category); ?>" onclick="return confirm('Are you sure you want to delete this reply?');">
                     <img src="images/trash.svg" alt="Delete" style="width: 20px; height: 20px; cursor: pointer; position: absolute; top: 10px; right: 10px;">
                 </a>
             <?php endif; ?>
@@ -261,7 +261,7 @@ function get_username_by_reply_id($reply_id) {
 
         <div class="replies">
             <h3>Replies</h3>
-            <?php displayReplies('root', $repliesByParent, 0, $accessLevel, $discussion['title']); ?>
+            <<?php displayReplies('root', $repliesByParent, 0, $accessLevel, $discussion['title'], $category); ?>
         </div>
 
         <?php $backUrl = ($category === 'board') ? 'viewBoardDiscussions.php' : 'viewDiscussions.php'; ?>

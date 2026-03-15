@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 if (!empty($author_id) && !empty($title)) {
     $category = $_POST['category'] ?? null;
-    delete_all_replies_in($title);
+    delete_all_replies_in($title, $category);
     $result = remove_discussion($author_id, $title, $category);
     if ($result) {
         $redirect = ($category === 'board') ? 'viewBoardDiscussions.php' : 'viewDiscussions.php';
