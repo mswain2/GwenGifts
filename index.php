@@ -189,7 +189,7 @@ $notRoot = $person->get_id() != 'vmsroot';
                 <div class="icon-overlay">
                     <img style="border-radius: 5px;" src="images/create-report.svg" alt="Report Icon">
                 </div>
-
+                
                 <div class="large-text-sub">Generate Report</div>
                 <div class="graph-text">From this quarter or annual.</div>
                 <button class="arrow-button">→</button>
@@ -200,7 +200,7 @@ $notRoot = $person->get_id() != 'vmsroot';
                 <div class="icon-overlay">
                     <img style="border-radius: 5px;" src="images/inbox.svg" alt="Email Icon">
                 </div>
-
+                
                 <div class="large-text-sub">Create Email</div>
                 <div class="graph-text">Send new messages to volunteers.</div>
                 <button class="arrow-button">→</button>
@@ -211,7 +211,7 @@ $notRoot = $person->get_id() != 'vmsroot';
                 <div class="icon-overlay">
                     <img style="border-radius: 5px;" src="images/search.svg" alt="Drafts Icon">
                 </div>
-
+                
                 <div class="large-text-sub">View Drafts</div>
                 <div class="graph-text">Check saved email drafts.</div>
                 <button class="arrow-button">→</button>
@@ -222,142 +222,57 @@ $notRoot = $person->get_id() != 'vmsroot';
                 <div class="icon-overlay">
                     <img style="border-radius: 5px;" src="images/send.png" alt="Email List Icon">
                 </div>
-
+                
                 <div class="large-text-sub">Generate Email List</div>
                 <div class="graph-text">Volunteer Emails</div>
                 <button class="arrow-button">→</button>
             </div>
 
-            <!-- Discussions -->
+            <!-- Suggestions -->
             <div class="content-box-test" onclick="window.location.href='viewSuggestions.php'">
                 <div class="icon-overlay">
                     <img style="border-radius: 5px;" src="images/clipboard-regular.svg" alt="Discussions Icon">
                 </div>
-
+                
                 <div class="large-text-sub">User Suggestions</div>
                 <div class="graph-text">View user submitted suggestions.</div>
                 <button class="arrow-button">→</button>
             </div>
 
-            <!-- Add Board Meeting -->
+            <!-- Discussions -->
+            <div class="content-box-test" onclick="window.location.href='discussionMain.php'">
+                <div class="icon-overlay">
+                    <img style="border-radius: 5px;" src="images/group.svg" alt="Discussions Icon">
+                </div>
+                
+                <div class="large-text-sub">Discussions</div>
+                <div class="graph-text">View discussions.</div>
+                <button class="arrow-button">→</button>
+            </div>
+
+                <!-- Add Board Meeting -->
             <div class="content-box-test" onclick="window.location.href='addBoardMeeting.php'">
                 <div class="icon-overlay">
-                    <img style="border-radius: 5px;" src="images/search.svg" alt="Drafts Icon">
+                    <img style="border-radius: 5px;" src="images/create-report.svg" alt="Drafts Icon">
                 </div>
-
+                
                 <div class="large-text-sub">Add Board Meeting</div>
                 <div class="graph-text">Schedule a Board Meeting.</div>
                 <button class="arrow-button">→</button>
             </div>
 
-            <!-- Add Board Documents -->
+                <!-- Add Board Documents -->
             <div class="content-box-test" onclick="window.location.href='boardDocuments.php'">
                 <div class="icon-overlay">
                     <img style="border-radius: 5px;" src="images/file-regular.svg" alt="Drafts Icon">
                 </div>
-
+                
                 <div class="large-text-sub">Manage Board Documents</div>
                 <div class="graph-text">Manage files.</div>
                 <button class="arrow-button">→</button>
             </div>
 
         </div>
-<<<<<<< HEAD
-        <div class="graph-text">Stay up to date.</div>
-        <button class="arrow-button">→</button>
-    </div>
-
-    <!-- Generate Report -->
-    <div class="content-box-test" onclick="window.location.href='generateReport.php'">
-        <div class="icon-overlay">
-            <img style="border-radius: 5px;" src="images/create-report.svg" alt="Report Icon">
-        </div>
-        
-        <div class="large-text-sub">Generate Report</div>
-        <div class="graph-text">From this quarter or annual.</div>
-        <button class="arrow-button">→</button>
-    </div>
-
-    <!-- Create Email -->
-    <div class="content-box-test" onclick="window.location.href='createEmail.php'">
-        <div class="icon-overlay">
-            <img style="border-radius: 5px;" src="images/inbox.svg" alt="Email Icon">
-        </div>
-        
-        <div class="large-text-sub">Create Email</div>
-        <div class="graph-text">Send new messages to volunteers.</div>
-        <button class="arrow-button">→</button>
-    </div>
-
-    <!-- View Drafts -->
-    <div class="content-box-test" onclick="window.location.href='viewDrafts.php'">
-        <div class="icon-overlay">
-            <img style="border-radius: 5px;" src="images/search.svg" alt="Drafts Icon">
-        </div>
-        
-        <div class="large-text-sub">View Drafts</div>
-        <div class="graph-text">Check saved email drafts.</div>
-        <button class="arrow-button">→</button>
-    </div>
-
-    <!-- Generate Email List -->
-    <div class="content-box-test" onclick="window.location.href='generateEmailList.php'">
-        <div class="icon-overlay">
-            <img style="border-radius: 5px;" src="images/send.png" alt="Email List Icon">
-        </div>
-         
-        <div class="large-text-sub">Generate Email List</div>
-        <div class="graph-text">Volunteer Emails</div>
-        <button class="arrow-button">→</button>
-    </div>
-
-    <!-- Suggestions -->
-    <div class="content-box-test" onclick="window.location.href='viewSuggestions.php'">
-        <div class="icon-overlay">
-            <img style="border-radius: 5px;" src="images/clipboard-regular.svg" alt="Discussions Icon">
-        </div>
-        
-        <div class="large-text-sub">User Suggestions</div>
-        <div class="graph-text">View user submitted suggestions.</div>
-        <button class="arrow-button">→</button>
-    </div>
-
-    <!-- Discussions -->
-    <div class="content-box-test" onclick="window.location.href='discussionMain.php'">
-        <div class="icon-overlay">
-            <img style="border-radius: 5px;" src="images/group.svg" alt="Discussions Icon">
-        </div>
-        
-        <div class="large-text-sub">Discussions</div>
-        <div class="graph-text">View discussions.</div>
-        <button class="arrow-button">→</button>
-    </div>
-
-        <!-- Add Board Meeting -->
-    <div class="content-box-test" onclick="window.location.href='addBoardMeeting.php'">
-        <div class="icon-overlay">
-            <img style="border-radius: 5px;" src="images/create-report.svg" alt="Drafts Icon">
-        </div>
-        
-        <div class="large-text-sub">Add Board Meeting</div>
-        <div class="graph-text">Schedule a Board Meeting.</div>
-        <button class="arrow-button">→</button>
-    </div>
-
-        <!-- Add Board Documents -->
-    <div class="content-box-test" onclick="window.location.href='boardDocuments.php'">
-        <div class="icon-overlay">
-            <img style="border-radius: 5px;" src="images/file-regular.svg" alt="Drafts Icon">
-        </div>
-        
-        <div class="large-text-sub">Manage Board Documents</div>
-        <div class="graph-text">Manage files.</div>
-        <button class="arrow-button">→</button>
-    </div>
-
-</div>
-=======
->>>>>>> dev
 
 
 
