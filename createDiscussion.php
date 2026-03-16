@@ -31,11 +31,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $body = trim($_POST['body']);
         $time = date("Y-m-d-H:i");
 
-        if (discussion_exists($title)) {
+        if (discussion_exists($title, 'general')) {
             $error = "Error: A discussion with this title already exists.";
         } else {
             $discussion = new Discussion($userID, $title, $body, $time);
-            if (add_discussion($discussion)) {
+            if (add_discussion($discussion, 'general')) {
                 $from = "vmsroot";
                 $msgTitle = "A new discussion has been created. View under discussions page.";
                 $msgBody = "New Discussion";

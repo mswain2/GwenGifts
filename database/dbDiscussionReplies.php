@@ -8,33 +8,34 @@ include_once(dirname(__FILE__).'/../domain/Discussion.php');
 function get_replies_from($discussion){
     $con = connect();
     $discussion_title = mysqli_real_escape_string($con, $discussion['title']);
+    $category = mysqli_real_escape_string($con, $discussion['category'] ?? 'general');
     
-    $query = "SELECT * FROM discussion_replies WHERE discussion_title = '$discussion_title' ORDER BY created_at ASC";
+    $query = "SELECT * FROM discussion_replies 
+              WHERE discussion_title = '$discussion_title' 
+              AND category = '$category'
+              ORDER BY created_at ASC";
     $result = mysqli_query($con, $query);
     
     $replies = [];
     while ($row = mysqli_fetch_assoc($result)) {
         $replies[] = $row;
     }
-
     mysqli_close($con);
     return $replies;
 }
 function add_reply_to_discussion($discussion, $user_reply_id, $reply_body){
     $con = connect();
-    
     $discussion_title = mysqli_real_escape_string($con, $discussion['title']);
     $author_id = mysqli_real_escape_string($con, $discussion['author_id']);
     $reply_body = mysqli_real_escape_string($con, $reply_body);
-    $author_id = mysqli_real_escape_string($con, $author_id);
+    $category = mysqli_real_escape_string($con, $discussion['category'] ?? 'general');
     $created_at = date("Y-m-d-H:i");
 
-    $query = "INSERT INTO discussion_replies (user_reply_id, author_id, discussion_title, reply_body, created_at) 
-              VALUES ('$user_reply_id', '$author_id', '$discussion_title', '$reply_body', '$created_at')";
+    $query = "INSERT INTO discussion_replies (user_reply_id, author_id, discussion_title, reply_body, created_at, category) 
+              VALUES ('$user_reply_id', '$author_id', '$discussion_title', '$reply_body', '$created_at', '$category')";
 
     $result = mysqli_query($con, $query);
     mysqli_close($con);
-    
     return $result;
 }
 
@@ -84,13 +85,17 @@ function remove_reply($replyID) {
     mysqli_close($con);
     return $result;
 }
-function delete_all_replies_in($title) {
+function delete_all_replies_in($title, $category = null) {
     $con = connect();
     $title = mysqli_real_escape_string($con, $title);
-
-    $query = "DELETE FROM discussion_replies WHERE discussion_title = '$title'";
+    
+    if ($category) {
+        $query = "DELETE FROM discussion_replies WHERE discussion_title = '$title' AND category = '$category'";
+    } else {
+        $query = "DELETE FROM discussion_replies WHERE discussion_title = '$title'";
+    }
+    
     $result = mysqli_query($con, $query);
-
     mysqli_close($con);
     return $result;
 }
