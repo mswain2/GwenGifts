@@ -31,10 +31,10 @@ function connect() {
  
     
     $con = mysqli_connect($host,$user,$pass,$database);
-    if (!$con) { echo "not connected to server"; return mysqli_error($con);}
+    if (!$con) { echo "not connected to server: " . mysqli_connect_error(); return false; }
     $selected = mysqli_select_db($con,$database);
-    if (!$selected) { echo "database not selected"; return mysqli_error($con); }
-    else return $con;
+    if (!$selected) { echo "database not selected: " . mysqli_error($con); return false; }
+    return $con;
     
 }
 
