@@ -41,12 +41,6 @@ require_once('header.php');
         <?php if (isset($error)) echo "<p style='color: red;'>$error</p>"; ?>
 
         <div class="top-bar">
-            <?php if ($accessLevel > 2): ?>
-
-                <form action="deleteBulk.php" method="POST" onsubmit="return confirm('Are you sure you want to delete ALL discussions?');">
-                    <button type="submit" name="delete_all" class="delete-button">Delete All</button>
-                </form>
-            <?php endif; ?>
 
             <div id="bulk-actions" style="display:none;">
                 <span style="font-weight: bold;">With Selected:</span>
@@ -73,7 +67,7 @@ require_once('header.php');
                     <?php foreach ($discussions as $discussion): 
                         $person = get_user_from_author($discussion['author_id']);
                         $author_name = $person->get_first_name() . ' ' . $person->get_last_name();
-                        $entryValue = htmlspecialchars($discussion['author_id']) . '|' . htmlspecialchars($discussion['title']);
+                        $entryValue = htmlspecialchars($discussion['author_id']) . '|' . htmlspecialchars($discussion['title']) . '|general';
                     ?>
                         <tr>
                             <?php if ($accessLevel > 2): ?>
@@ -86,12 +80,13 @@ require_once('header.php');
                             <td><?php echo $discussion['title']; ?></td>
                             <td><?php echo $discussion['time']; ?></td>
                             <td>
-                                <a href="discussionContent.php?author=<?php echo urlencode($person->get_id()); ?>&title=<?php echo urlencode($discussion['title']); ?>" class="blue-button">View</a>
+                                <a href="discussionContent.php?author=<?php echo urlencode($person->get_id()); ?>&title=<?php echo urlencode($discussion['title']); ?>&category=general" class="blue-button">View</a>
 
                                 <?php if ($accessLevel > 2): ?>
                                     <form action="deleteDiscussion.php" method="POST" style="display:inline;">
                                         <input type="hidden" name="author_id" value="<?php echo htmlspecialchars($person->get_id()); ?>">
                                         <input type="hidden" name="title" value="<?php echo htmlspecialchars($discussion['title']); ?>">
+                                        <input type="hidden" name="category" value="general">
                                         <button type="submit" class="delete-button" onclick="return confirm('Are you sure you want to delete this discussion?');">Delete</button>
                                     </form>
                                 <?php endif; ?>

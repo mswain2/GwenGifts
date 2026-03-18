@@ -31,7 +31,7 @@ CREATE TABLE `boarddocuments` (
   `id` int(11) NOT NULL,
   `doc_name` varchar(255) NOT NULL,
   `file_path` varchar(255) NOT NULL,
-  `uploaded_by` int(11) DEFAULT NULL,
+  `uploaded_by` varchar(255) DEFAULT NULL,
   `uploaded_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -66,3 +66,9 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
+ALTER TABLE boarddocuments
+  ADD COLUMN clearance_level ENUM('public', 'volunteer', 'manager', 'board_member', 'admin', 'superadmin') NOT NULL DEFAULT 'public' AFTER uploaded_at,
+  ADD COLUMN deleted TINYINT(1) NOT NULL DEFAULT 0 AFTER clearance_level,
+  ADD COLUMN deleted_at TIMESTAMP NULL DEFAULT NULL AFTER deleted,
+  ADD COLUMN deleted_by VARCHAR(255) NULL DEFAULT NULL AFTER deleted_at;

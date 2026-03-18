@@ -27,11 +27,17 @@ if (!isset($_GET['author']) || !isset($_GET['title'])) {
 
 $authorID = htmlspecialchars(trim($_GET['author']));
 $title = htmlspecialchars(trim($_GET['title']));
+$category = isset($_GET['category']) ? $_GET['category'] : null;
 
 // Fetch discussion and author info
-$discussion = get_discussion($title);
+$discussion = get_discussion($title, $category);
 if (!$discussion) {
     die("Error: Discussion not found.");
+}
+
+if ($discussion['category'] === 'board' && $accessLevel < 2) {
+    header('Location: index.php');
+    die();
 }
 
 $author = get_user_from_author($authorID);
@@ -64,7 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $body = "A user has replied to a discussion.";
             system_message_all_admins($systemMessageTitle, $body);
 
-            header("Location: discussionContent.php?author=" . urlencode($authorID) . "&title=" . urlencode($title));
+            header("Location: discussionContent.php?author=" . urlencode($authorID) . "&title=" . urlencode($title) . "&category=" . urlencode($category));
             exit;
         }
     }
@@ -81,14 +87,14 @@ foreach ($replies as $reply) {
 }
 
 // Recursive function to display replies
-function displayReplies($parentId, $repliesByParent, $level = 0, $accessLevel = 0, $discussionTitle = '') {
+function displayReplies($parentId, $repliesByParent, $level = 0, $accessLevel = 0, $discussionTitle = '', $category = '') {
     if (!isset($repliesByParent[$parentId])) return;
 
     foreach ($repliesByParent[$parentId] as $reply) {
         ?>
         <div class="reply" style="margin-left: <?php echo ($level * 40); ?>px; position: relative; border-left: <?php echo $level > 0 ? '2px solid #ccc' : 'none'; ?>; padding-left: 15px;">
             <?php if ($accessLevel > 2): ?>
-                <a href="deleteReply.php?reply_id=<?php echo htmlspecialchars($reply['reply_id']); ?>&title=<?php echo urlencode($discussionTitle); ?>" onclick="return confirm('Are you sure you want to delete this reply?');">
+                <a href="deleteReply.php?reply_id=<?php echo htmlspecialchars($reply['reply_id']); ?>&title=<?php echo urlencode($discussionTitle); ?>&category=<?php echo urlencode($category); ?>" onclick="return confirm('Are you sure you want to delete this reply?');">
                     <img src="images/trash.svg" alt="Delete" style="width: 20px; height: 20px; cursor: pointer; position: absolute; top: 10px; right: 10px;">
                 </a>
             <?php endif; ?>
@@ -255,10 +261,11 @@ function get_username_by_reply_id($reply_id) {
 
         <div class="replies">
             <h3>Replies</h3>
-            <?php displayReplies('root', $repliesByParent, 0, $accessLevel, $discussion['title']); ?>
+            <<?php displayReplies('root', $repliesByParent, 0, $accessLevel, $discussion['title'], $category); ?>
         </div>
 
-        <a href="viewDiscussions.php" class="back-btn">Back to Discussions</a>
+        <?php $backUrl = ($category === 'board') ? 'viewBoardDiscussions.php' : 'viewDiscussions.php'; ?>
+        <a href="<?php echo $backUrl; ?>" class="back-btn">Back to Discussions</a>
     </div>
 </body>
 </html>

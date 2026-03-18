@@ -88,14 +88,14 @@ require_once('header.php');
                         echo '
                         <div class="overflow-x-auto">
                             <table>
-                                <thead class="bg-blue-400">
+                                <thead>
                                     <tr>
                                         <th>First</th>
                                         <th>Last</th>
                                         <th>Username</th>
                                         <th>Phone</th>
                                         <th>Zip Code</th>
-                                        <th>type</th>
+                                        <th>Role</th>
                                         <th>Archive Status</th>
                                         <th>Profile</th>
                                         <th>Actions</th>
@@ -115,8 +115,8 @@ require_once('header.php');
                                     <tr>
                                         <td>' . $person->get_first_name() . '</td>
                                         <td>' . $person->get_last_name() . '</td>
-                                        <td><a href="mailto:' . $person->get_id() . '" class="text-blue-700 underline">' . $person->get_id() . '</a></td>
-                                        <td><a href="tel:' . $person->get_phone1() . '" class="text-blue-700 underline">' . formatPhoneNumber($person->get_phone1()) . '</a></td>
+                                        <td>' . $person->get_id() . '</td>
+                                        <td>' . formatPhoneNumber($person->get_phone1()) . '</a></td>
                                         <td>' . $person->get_zip_code() . '</td>
                                         <td>' . ucfirst($person->get_type()) . '</td>
                                         <td>' . ucfirst($person->get_status()) . '</td>

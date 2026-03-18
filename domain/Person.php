@@ -18,7 +18,7 @@
 class Person {
 
 	private $id; // (username)
-	private $start_date; // (dete of account creation)
+	private $start_date; // (date of account creation)
 	private $first_name;
 	private $last_name;
 	private $street_address;
@@ -26,7 +26,7 @@ class Person {
 	private $state;
 	private $zip_code;
 	private $phone1;
-	private $age; // if they're over or under 21
+	private $age; // if they're over or under 21, not used as of spring 2026
 	private $phone1type;
 	private $emergency_contact_phone;
 	private $emergency_contact_phone_type;
@@ -35,16 +35,16 @@ class Person {
 	private $email_prefs;
 	private $t_shirt_size;
 	private $emergency_contact_first_name;
-	private $contact_num;
+	private $contact_num; // not used as of spring 2026
 	private $emergency_contact_relation;
-	private $contact_method;
+	private $contact_method; // not used as of spring 2026
 	private $type;
 	private $status;
 	private $notes;
 	private $password;
-	private $affiliation;
-	private $branch;
-	private $archived;
+	private $affiliation; // not used as of spring 2026
+	private $branch; // not used as of spring 2026
+	private $archived; // not used as of spring 2026
 	private $emergency_contact_last_name;
 	private $gender;
 	private $computer_access;
@@ -58,10 +58,10 @@ class Person {
 	function __construct(
 		$id, $start_date, $first_name, $last_name, $street_address, $city, $state,
 		$zip_code, $phone1, $age, $phone1type, $emergency_contact_phone,
-		$emergency_contact_phone_type, $birthday, $email, $email_prefs, $t_shirt_size,
+		$emergency_contact_phone_type, $birthday, $email, $email_prefs, 
 		$emergency_contact_first_name, $contact_num, $emergency_contact_relation,
 		$contact_method, $type, $status, $notes, $password, $affiliation, $branch, $archived,
-		$emergency_contact_last_name, $gender, $computer_access, $camera_access, 
+		$emergency_contact_last_name, $gender, $t_shirt_size, $computer_access, $camera_access, 
 		$transportation_access, $skills, $experience, $about_consent
 	) {
         $this->id = $id;
@@ -80,7 +80,6 @@ class Person {
 		$this->birthday = $birthday;
 		$this->email = $email;
 		$this->email_prefs = $email_prefs;
-		$this->t_shirt_size = $t_shirt_size;
 		$this->emergency_contact_first_name = $emergency_contact_first_name;
 		$this->contact_num = $contact_num;
 		$this->emergency_contact_relation = $emergency_contact_relation;
@@ -94,6 +93,7 @@ class Person {
 		$this->archived = $archived;
 		$this->emergency_contact_last_name = $emergency_contact_last_name;
 		$this->gender = $gender;
+		$this->t_shirt_size = $t_shirt_size;
 		$this->computer_access = $computer_access;
 		$this->camera_access = $camera_access;
 		$this->transportation_access = $transportation_access;
