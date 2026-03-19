@@ -2022,3 +2022,9 @@ main.user-role {
 .actions .btn-send:hover {
     background-color: var(--accent-color);
 }
+
+.modal-content {
+    background-color: white;
+    border-radius: 10px;
+    padding: 10px;
+}

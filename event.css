@@ -84,6 +84,7 @@ table th { word-break: break-word; }
 .button.signup:hover { background-color: var(--accent-color) !important; }
 .button.success { background-color: #28a745; color: #fff; }
 .button.danger  { background-color: #dc3545; color: #fff; }
+.button.danger:hover { background-color: #84111c;}
 .button.warning  { background-color: #ff8b3e; color: #fff; }
 
 /* Toasts */
@@ -133,9 +134,3 @@ html, body { background-color: var(--page-background-color); color: var(--page-f
 .edit-icon:hover, .delete-icon:hover {
   color: var(--accent-color);
 }
-
-a:visited {
-  color: var(--main-color);
-}
-
-
