@@ -71,7 +71,9 @@
                 $args['is_recurring'] = 1;
                 $args['recurrence_type'] = $recurrenceType;                  // daily|weekly|monthly|custom
                 $args['recurrence_interval_days'] = ($recurrenceType === 'custom') ? $customDays : null;
+                $args['series_id'] = bin2hex(random_bytes(16)); // new new
             } else {
+                $args['series_id'] = NULL;
                 $args['is_recurring'] = 0;
                 $args['recurrence_type'] = null;
                 $args['recurrence_interval_days'] = null;
@@ -84,7 +86,7 @@
                 die();
             }
 
-            $args['series_id'] = bin2hex(random_bytes(16)); // new new
+            
 
             $id = create_event($args);
             if (!$id) {

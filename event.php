@@ -468,26 +468,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <!-- Confirmation Modals -->
         <?php if (isset($_SESSION['access_level']) && $access_level >= 2) : ?>
-            <div id="delete-confirmation-wrapper" class="modal hidden">
-                <div class="modal-content">
-                    <p>This event is part of a repeating series.</p>
-                    <p>What would you like to delete?</p>
+            <?php if (isset($event_info['series_id']) && $event_info['series_id'] != NULL) : ?>
+                <div id="delete-confirmation-wrapper" class="modal hidden">
+                    <div class="modal-content">
+                        <p>This event is part of a repeating series.</p>
+                        <p>What would you like to delete?</p>
 
-                    <form method="get" action="deleteEvent.php">
-                        <input type="hidden" name="id" value="<?= $id ?>">
+                        <form method="get" action="deleteEvent.php">
+                            <input type="hidden" name="id" value="<?= $id ?>">
 
-                        <button type="submit" name="confirm" value="single" class="button danger">
-                            Delete ONLY this event
-                        </button>
+                            <button type="submit" name="confirm" value="single" class="button danger">
+                                Delete ONLY this event
+                            </button>
 
-                        <button type="submit" name="confirm" value="series" class="button danger">
-                            Delete ENTIRE series
-                        </button>
-                    </form>
+                            <button type="submit" name="confirm" value="series" class="button danger">
+                                Delete ENTIRE series
+                            </button>
+                        </form>
 
-                    <button id="delete-cancel" class="button cancel">Cancel</button>
+                        <button id="delete-cancel" class="button cancel">Cancel</button>
+                    </div>
                 </div>
-            </div>
+            <?php else : ?>
+                <div id="delete-confirmation-wrapper" class="modal hidden">
+                    <div class="modal-content">
+                        <p>Are you sure you want to delete this event?</p>
+
+                        <form method="get" action="deleteEvent.php">
+                            <input type="hidden" name="id" value="<?= $id ?>">
+                            <button type="submit" name="confirm" value="single" class="button danger">
+                                Delete this event
+                            </button>
+                        </form>
+
+                        <button id="delete-cancel" class="button cancel">Cancel</button>
+                    </div>
+                </div>
+            <?php endif ?>
 
             <div id="complete-confirmation-wrapper" class="modal hidden">
                 <div class="modal-content">
