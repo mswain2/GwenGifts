@@ -10,12 +10,7 @@ if (isset($_SESSION['_id'])) {
     $loggedIn = true;
     $accessLevel = $_SESSION['access_level'];
     $userID = $_SESSION['_id'];
-}
- 
-if ($accessLevel < 2 && $userID !== $reply['user_reply_id']) {
-    header('Location: index.php');
-    die();
-}
+} 
  
 include_once 'database/dbDiscussionReplies.php';
 include_once 'database/dbDiscussions.php';
@@ -33,6 +28,11 @@ if (!$replyID) {
 $reply = get_reply_by_id($replyID);
 if (!$reply) {
     die("Error: Reply not found.");
+}
+
+if ($accessLevel < 2 && $userID !== $reply['user_reply_id']) {
+    header('Location: index.php');
+    die();
 }
  
 if ($_SERVER["REQUEST_METHOD"] == "POST") {

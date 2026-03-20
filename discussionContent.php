@@ -87,7 +87,7 @@ foreach ($replies as $reply) {
 }
 
 // Recursive function to display replies
-function displayReplies($parentId, $repliesByParent, $level = 0, $accessLevel = 0, $discussionTitle = '', $category = '') {
+function displayReplies($parentId, $repliesByParent, $level = 0, $accessLevel = 0, $discussionTitle = '', $category = '', $userID = '') {
     if (!isset($repliesByParent[$parentId])) return;
 
     foreach ($repliesByParent[$parentId] as $reply) {
@@ -99,7 +99,7 @@ function displayReplies($parentId, $repliesByParent, $level = 0, $accessLevel = 
                 </a>
             <?php endif; ?>
             
-            <?php if ($accessLevel > 2): ?>
+            <?php if ($accessLevel >= 2 || $userID === $reply['user_reply_id']): ?>
                 <a href="editReply.php?reply_id=<?php echo htmlspecialchars($reply['reply_id']); ?>&title=<?php echo urlencode($discussionTitle); ?>&category=<?php echo urlencode($category); ?>">
                     <img src="images/settings.png" alt="Edit" style="width: 20px; height: 20px; cursor: pointer; position: absolute; top: 10px; right: 35px;">
                 </a>
@@ -132,7 +132,7 @@ function displayReplies($parentId, $repliesByParent, $level = 0, $accessLevel = 
         </div>
 
         <?php
-        displayReplies($reply['reply_id'], $repliesByParent, $level + 1, $accessLevel, $discussionTitle);
+        displayReplies($reply['reply_id'], $repliesByParent, $level + 1, $accessLevel, $discussionTitle, $category, $userID);
     }
 }
 function get_username_by_reply_id($reply_id) {
@@ -261,6 +261,10 @@ function get_username_by_reply_id($reply_id) {
             </div>
         <?php endif; ?>
 
+        <?php if ($accessLevel >= 2 || $userID === $discussion['author_id']): ?>
+            <a href="editDiscussion.php?title=<?php echo urlencode($discussion['title']); ?>&category=<?php echo urlencode($category); ?>" class="back-btn">Edit Discussion</a>
+        <?php endif; ?>
+
         <div class="reply-section">
             <?php if ($loggedIn): ?>
                 <button class="reply-btn" onclick="toggleMainReplyBox()">Reply to Discussion</button>
@@ -277,7 +281,7 @@ function get_username_by_reply_id($reply_id) {
 
         <div class="replies">
             <h3>Replies</h3>
-            <<?php displayReplies('root', $repliesByParent, 0, $accessLevel, $discussion['title'], $category); ?>
+            <?php displayReplies('root', $repliesByParent, 0, $accessLevel, $discussion['title'], $category, $userID); ?>
         </div>
 
         <?php $backUrl = ($category === 'board') ? 'viewBoardDiscussions.php' : 'viewDiscussions.php'; ?>

@@ -12,11 +12,6 @@ if (isset($_SESSION['_id'])) {
     $userID = $_SESSION['_id'];
 }
  
-if ($accessLevel < 2 && $userID !== $discussion['author_id']) {
-    header('Location: index.php');
-    die();
-}
- 
 include_once 'database/dbDiscussions.php';
 include_once 'domain/Discussion.php';
  
@@ -32,6 +27,11 @@ if (!$title) {
 $discussion = get_discussion($title, $category);
 if (!$discussion) {
     die("Error: Discussion not found.");
+}
+
+if ($accessLevel < 2 && $userID !== $discussion['author_id']) {
+    header('Location: index.php');
+    die();
 }
  
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
