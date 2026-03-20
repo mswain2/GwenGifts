@@ -1515,6 +1515,21 @@ function get_total_vol_hours($dateFrom, $dateTo) {
         return true;
     }
 
+    function get_languages($person_id) {
+        $con = connect();
+        $person_id = mysqli_real_escape_string($con, $person_id);
+        $query = "SELECT language, speaking, listening, reading, writing 
+                FROM dblanguages WHERE person_id = '$person_id'";
+        $result = mysqli_query($con, $query);
+        if (!$result) {
+            mysqli_close($con);
+            return [];
+        }
+        $languages = mysqli_fetch_all($result, MYSQLI_ASSOC);
+        mysqli_close($con);
+        return $languages;
+    }
+
     function add_availabilities($person_id, $day_availability, $args) {
         if (empty($day_availability)) return true;
 
@@ -1538,6 +1553,22 @@ function get_total_vol_hours($dateFrom, $dateTo) {
         }
         mysqli_close($con);
         return true;
+    }
+
+    function get_availabilities($person_id) {
+        $con = connect();
+        $person_id = mysqli_real_escape_string($con, $person_id);
+        $query = "SELECT day, start_time, end_time 
+                FROM dbavailabilities WHERE person_id = '$person_id'
+                ORDER BY FIELD(day, 'Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday')";
+        $result = mysqli_query($con, $query);
+        if (!$result) {
+            mysqli_close($con);
+            return [];
+        }
+        $availabilities = mysqli_fetch_all($result, MYSQLI_ASSOC);
+        mysqli_close($con);
+        return $availabilities;
     }
 
     /*
