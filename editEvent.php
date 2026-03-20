@@ -31,7 +31,7 @@
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $args = sanitize($_POST, null);
         $required = array(
-            "id", "name", "date", "start-time", "description"
+            "id", "name", "abbr", "date", "start-time", "description"
         );
 
         if (!wereRequiredFieldsSubmitted($args, $required)) {
@@ -168,10 +168,14 @@
             <div class="error-toast"><?php echo $errors ?></div>
         <?php endif ?>
             <h2>Event Details</h2>
+            
             <form id="new-event-form" method="post">
                 <label for="name">Event Name </label>
                 <input type="hidden" name="id" value="<?php echo $id ?>"/> 
                 <input type="text" id="name" name="name" value="<?php echo $event['name'] ?>" required placeholder="Enter name"> 
+
+                <label for="name">Event Name </label>
+                <input type="text" id="abbr" name="abbr" value="<?php echo $event['abbr_name'] ?>" required placeholder="Enter name that will appear on calendar"> 
 
                 <label for="name">Date </label>
                 <input type="date" id="date" name="date" value="<?php echo $event['startDate'] ?>" min="<?php echo date('Y-m-d'); ?>" required>
