@@ -196,8 +196,14 @@
         <?php if ($canEditUsers || $viewingOwnProfile): ?>
           <button onclick="window.location.href='editProfile.php<?php if ($id != $userID) echo '?id=' . $id ?>';" class="text-lg font-medium w-full px-4 py-2 bg-[#2f4159] text-[#FFFFFF] rounded-md hover:bg-[#f5c16e] hover:text-[#FFFFFF] cursor-pointer">Edit Profile</button>
         <?php endif ?>
+        <?php if (in_array($loggedInUser->get_type(), ['admin', 'superadmin']) && !$viewingOwnProfile): ?>
+          <button onclick="window.location.href='modifyUserRole.php<?php if ($id != $userID) echo '?id=' . $id ?>';" class="text-lg font-medium w-full px-4 py-2 bg-[#2f4159] text-[#FFFFFF] rounded-md hover:bg-[#f5c16e] hover:text-[#FFFFFF] cursor-pointer">Modify Role / Status</button>
+        <?php endif ?>
+        <!--
+        <a href="modifyUserRole.php?id=' . $person->get_id() . '" class="text-blue-700 underline">Update Status</a>
+        -->
           <?php if ($canSearchUsers && !$viewingOwnProfile): ?>
-          <button onclick="window.location.href='personSearch.php';" class="text-lg font-medium w-full px-4 py-2 bg-[#2f4159] text-[#FFFFFF] border-2 rounded-md cursor-pointer">Search Users</button>
+          <button onclick="window.location.href='personSearch.php';" class="text-lg font-medium w-full px-4 py-2 bg-[#f6a4b5] text-[#FFFFFF] rounded-md hover:bg-[#f5c16e] hover:text-[#FFFFFF] cursor-pointer">Back to User Search</button>
         <?php endif ?>
         <button onclick="window.location.href='index.php<?php if ($id != $userID) echo '?id=' . $id ?>';" class="text-lg font-medium w-full px-4 py-2 bg-[#f6a4b5] text-[#FFFFFF] rounded-md hover:bg-[#f5c16e] hover:text-[#FFFFFF] cursor-pointer">Return to Dashboard</button>
       </div>
