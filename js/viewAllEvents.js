@@ -95,11 +95,19 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             // Past events filter
-            if (show && activePastFilter) {
+            if (show) {
                 var today = new Date().toISOString().split('T')[0];
                 var eventDate = item.getAttribute('data-start-date') || '';
-                if (eventDate >= today) {
-                    show = false;
+                if (activePastFilter) {
+                    // Show only past events
+                    if (eventDate >= today) {
+                        show = false;
+                    }
+                } else {
+                    // Hide past events by default
+                    if (eventDate < today) {
+                        show = false;
+                    }
                 }
             }
 
@@ -417,6 +425,90 @@ document.addEventListener('DOMContentLoaded', function () {
                 setView(btn.getAttribute('data-view'));
             });
         })(viewBtns[v]);
+    }
+
+    // ---- Bulk Signup ----
+
+    var bulkBar = document.getElementById('bulk-bar');
+    var bulkCount = document.getElementById('bulk-count');
+    var bulkSignupBtn = document.getElementById('bulk-signup-btn');
+    var bulkClearBtn = document.getElementById('bulk-clear-btn');
+    var selectedEventIds = {};
+
+    function updateBulkBar() {
+        var count = Object.keys(selectedEventIds).length;
+        if (!bulkBar) return;
+        if (count > 0) {
+            bulkBar.classList.remove('hidden');
+            bulkCount.textContent = count + ' event' + (count > 1 ? 's' : '') + ' selected';
+        } else {
+            bulkBar.classList.add('hidden');
+        }
+    }
+
+    function syncCheckboxes() {
+        var allCbs = document.querySelectorAll('.bulk-signup-cb');
+        for (var i = 0; i < allCbs.length; i++) {
+            var eid = allCbs[i].getAttribute('data-event-id');
+            allCbs[i].checked = !!selectedEventIds[eid];
+        }
+    }
+
+    document.addEventListener('change', function (e) {
+        if (!e.target.classList.contains('bulk-signup-cb')) return;
+        var eid = e.target.getAttribute('data-event-id');
+        if (e.target.checked) {
+            selectedEventIds[eid] = true;
+        } else {
+            delete selectedEventIds[eid];
+        }
+        syncCheckboxes();
+        updateBulkBar();
+    });
+
+    if (bulkClearBtn) {
+        bulkClearBtn.addEventListener('click', function () {
+            selectedEventIds = {};
+            syncCheckboxes();
+            updateBulkBar();
+        });
+    }
+
+    if (bulkSignupBtn) {
+        bulkSignupBtn.addEventListener('click', function () {
+            var ids = Object.keys(selectedEventIds).map(function (id) { return parseInt(id, 10); });
+            if (ids.length === 0) return;
+
+            bulkSignupBtn.disabled = true;
+            bulkSignupBtn.textContent = 'Signing up...';
+
+            fetch('bulkSignUp.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'same-origin',
+                body: JSON.stringify({ event_ids: ids })
+            })
+            .then(function (res) {
+                return res.text().then(function (text) {
+                    try { return JSON.parse(text); }
+                    catch (e) { throw new Error(text.substring(0, 200)); }
+                });
+            })
+            .then(function (data) {
+                if (data.success && data.success.length > 0) {
+                    window.location.reload();
+                } else {
+                    alert(data.error || data.message || 'Signup failed. Please try again.');
+                    bulkSignupBtn.disabled = false;
+                    bulkSignupBtn.textContent = 'Sign Up All';
+                }
+            })
+            .catch(function (err) {
+                alert('Error: ' + (err.message || err));
+                bulkSignupBtn.disabled = false;
+                bulkSignupBtn.textContent = 'Sign Up All';
+            });
+        });
     }
 
     // ---- Initial run ----

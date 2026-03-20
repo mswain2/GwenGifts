@@ -55,8 +55,6 @@
         $boardEvents    = [];
 
         foreach ($allEvents as $event) {
-            $eventDate = new DateTime($event->getStartDate());
-            if ($eventDate < $today) continue;
             $evtType = $event->getEventType();
             if ($evtType === 'Board') {
                 $boardEvents[] = $event;
@@ -166,6 +164,15 @@
                  . ' data-desc="' . htmlspecialchars(strtolower($d['desc'])) . '"';
         }
 
+        // Bulk signup checkbox (only for eligible events)
+        function bulkCheckbox($d, $loggedIn, $userID) {
+            if (!$loggedIn || $userID === 'guest') return '';
+            if ($d['type'] === 'Retreat') return '';
+            if ($d['numSignups'] >= $d['capacity']) return '';
+            if ($d['isSignedUp']) return '';
+            return '<input type="checkbox" class="bulk-signup-cb" data-event-id="' . intval($d['eventID']) . '" title="Select for bulk signup">';
+        }
+
         // Action button / link
         function actionBtn($d, $loggedIn, $userID, $style = 'full') {
             $access = $d['access'];
@@ -178,7 +185,7 @@
                 return '<a class="act-btn act-signedup" href="event.php?id=' . urlencode($d['eventID']) . '">Signed Up</a>' . $viewBtn;
             }
             if ($d['numSignups'] >= $d['capacity']) {
-                return '<a class="act-btn act-waitlist" href="eventSignUp.php?event_name=' . urlencode($d['title']) . '&restricted=' . urlencode($access) . '&id=' . urlencode($d['eventID']) . '&waitlist=1">Join Waitlist</a>' . $viewBtn;
+                return '<span class="act-btn act-full">Full</span>' . $viewBtn;
             }
             return '<a class="act-btn act-register" href="eventSignUp.php?event_name=' . urlencode($d['title']) . '&restricted=' . urlencode($access) . '&id=' . urlencode($d['eventID']) . '">Sign Up</a>' . $viewBtn;
         }
@@ -269,6 +276,7 @@
             // Center: info
             $html .= '<div class="ev-card-body">';
             $html .= '<div class="ev-card-badges">';
+            $html .= bulkCheckbox($d, $loggedIn, $userID);
             $html .= typeBadge($d['type']);
             $html .= '</div>';
             $html .= '<h3 class="ev-card-title"><a href="event.php?id=' . urlencode($d['eventID']) . '">' . htmlspecialchars($d['title']) . '</a></h3>';
@@ -309,6 +317,7 @@
             // Header row: badge + icons
             $html .= '<div class="gc-header">';
             $html .= '<div class="gc-badges">';
+            $html .= bulkCheckbox($d, $loggedIn, $userID);
             $html .= typeBadge($d['type']);
             $html .= '</div>';
             $html .= '</div>';
@@ -349,7 +358,7 @@
 
             // Event info
             $html .= '<div class="lr-info">';
-            $html .= '<div class="lr-badges">' . typeBadge($d['type']) . '</div>';
+            $html .= '<div class="lr-badges">' . bulkCheckbox($d, $loggedIn, $userID) . typeBadge($d['type']) . '</div>';
             $html .= '<div class="lr-title-wrap">';
             $html .= '<a class="lr-title" href="event.php?id=' . urlencode($d['eventID']) . '">' . htmlspecialchars($d['title']) . '</a>';
             if ($d['listDesc'] !== '') {
@@ -544,6 +553,17 @@
             <?php endif; ?>
             <a class="button cancel" href="index.php">Return to Dashboard</a>
         </div>
+
+        <?php if ($loggedIn && $userID !== 'guest'): ?>
+        <!-- Bulk Signup Floating Bar -->
+        <div id="bulk-bar" class="bulk-bar hidden">
+            <span id="bulk-count">0 events selected</span>
+            <div class="bulk-bar-actions">
+                <button type="button" id="bulk-signup-btn" class="bulk-signup-btn">Sign Up All</button>
+                <button type="button" id="bulk-clear-btn" class="bulk-clear-btn">Clear</button>
+            </div>
+        </div>
+        <?php endif; ?>
 
     </main>
     <script src="js/viewAllEvents.js"></script>
