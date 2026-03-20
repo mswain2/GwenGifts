@@ -65,6 +65,11 @@ require_once('header.php');
                             <td><?php echo htmlspecialchars($discussion['time']); ?></td>
                             <td>
                                 <a href="discussionContent.php?author=<?php echo urlencode($discussion['author_id']); ?>&title=<?php echo urlencode($discussion['title']); ?>&category=board" class="blue-button">View</a>
+
+                                <?php if ($accessLevel > 2): ?>
+                                    <a href="editDiscussion.php?title=<?php echo urlencode($discussion['title']); ?>&category=board" class="blue-button">Edit</a>
+                                <?php endif; ?>
+
                                 <?php if ($accessLevel > 2): ?>
                                     <form action="deleteDiscussion.php" method="POST" style="display:inline;">
                                         <input type="hidden" name="author_id" value="<?php echo htmlspecialchars($discussion['author_id']); ?>">

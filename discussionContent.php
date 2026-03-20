@@ -98,6 +98,12 @@ function displayReplies($parentId, $repliesByParent, $level = 0, $accessLevel = 
                     <img src="images/trash.svg" alt="Delete" style="width: 20px; height: 20px; cursor: pointer; position: absolute; top: 10px; right: 10px;">
                 </a>
             <?php endif; ?>
+            
+            <?php if ($accessLevel > 2): ?>
+                <a href="editReply.php?reply_id=<?php echo htmlspecialchars($reply['reply_id']); ?>&title=<?php echo urlencode($discussionTitle); ?>&category=<?php echo urlencode($category); ?>">
+                    <img src="images/settings.png" alt="Edit" style="width: 20px; height: 20px; cursor: pointer; position: absolute; top: 10px; right: 35px;">
+                </a>
+            <?php endif; ?>
 
             <?php if (!empty($reply['parent_reply_id'])): ?>
                 <div style="font-size: 12px; color: #777; margin-bottom: 5px;">
@@ -107,6 +113,11 @@ function displayReplies($parentId, $repliesByParent, $level = 0, $accessLevel = 
 
             <div class="reply-author"><?php echo htmlspecialchars($reply['user_reply_id']); ?></div>
             <div class="reply-body"><?php echo nl2br(htmlspecialchars($reply['reply_body'])); ?></div>
+            <?php if (!empty($reply['edited_at'])): ?>
+                <div style="font-size:12px; color:#999; margin-top:5px;">
+                    edited by <?php echo htmlspecialchars($reply['edited_by']); ?> at <?php echo htmlspecialchars($reply['edited_at']); ?>
+                </div>
+            <?php endif; ?>
 
             <?php if (isset($_SESSION['_id'])): ?>
                 <button class="small-reply-btn" style="width: 10%;" onclick="toggleReplyBox('<?php echo $reply['reply_id']; ?>')">Reply</button>
@@ -244,6 +255,11 @@ function get_username_by_reply_id($reply_id) {
         
         <div class="title"><?php echo htmlspecialchars($discussion['title']); ?></div>
         <div class="body"><?php echo nl2br(htmlspecialchars($discussion['body'])); ?></div>
+        <?php if (!empty($discussion['edited_at'])): ?>
+            <div style="font-size:12px; color:#999; margin-top:5px;">
+                edited by <?php echo htmlspecialchars($discussion['edited_by']); ?> at <?php echo htmlspecialchars($discussion['edited_at']); ?>
+            </div>
+        <?php endif; ?>
 
         <div class="reply-section">
             <?php if ($loggedIn): ?>

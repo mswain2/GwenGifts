@@ -75,6 +75,21 @@ function add_reply_to_reply($discussion, $replyID, $reply_body, $author_id, $par
     return $result;
 }
 
+function update_reply($replyID, $newBody, $edited_by) {
+    $con = connect();
+    $replyID = mysqli_real_escape_string($con, $replyID);
+    $newBody = mysqli_real_escape_string($con, $newBody);
+    $edited_by = mysqli_real_escape_string($con, $edited_by);
+    $edited_at = date("Y-m-d-H:i");
+
+    $query = "UPDATE discussion_replies SET reply_body='$newBody', edited_by='$edited_by', edited_at='$edited_at'
+              WHERE reply_id='$replyID'";
+
+    $result = mysqli_query($con, $query);
+    mysqli_close($con);
+    return $result;
+}
+
 
 function remove_reply($replyID) {
     $con = connect();
