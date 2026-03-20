@@ -1571,6 +1571,48 @@ function get_total_vol_hours($dateFrom, $dateTo) {
         return $availabilities;
     }
 
+    function update_person_full(
+        $id, $first_name, $last_name, $gender, $t_shirt_size, $birthday,
+        $street_address, $city, $state, $zip_code,
+        $email, $email_prefs, $phone1, $phone1type,
+        $emergency_contact_first_name, $emergency_contact_last_name,
+        $emergency_contact_phone, $emergency_contact_phone_type, $emergency_contact_relation,
+        $computer_access, $camera_access, $transportation_access,
+        $skills, $experience, $notes = ''
+    ) {
+        $con = connect();
+        $query = "UPDATE dbpersons SET
+            first_name='$first_name',
+            last_name='$last_name',
+            gender='$gender',
+            t_shirt_size='$t_shirt_size',
+            birthday='$birthday',
+            street_address='$street_address',
+            city='$city',
+            state='$state',
+            zip_code='$zip_code',
+            email='$email',
+            email_prefs='$email_prefs',
+            phone1='$phone1',
+            phone1type='$phone1type',
+            emergency_contact_first_name='$emergency_contact_first_name',
+            emergency_contact_last_name='$emergency_contact_last_name',
+            emergency_contact_phone='$emergency_contact_phone',
+            emergency_contact_phone_type='$emergency_contact_phone_type',
+            emergency_contact_relation='$emergency_contact_relation',
+            computer_access='$computer_access',
+            camera_access='$camera_access',
+            transportation_access='$transportation_access',
+            skills='$skills',
+            experience='$experience',
+            notes='$notes'
+            WHERE id='$id'";
+        $result = mysqli_query($con, $query);
+        mysqli_commit($con);
+        mysqli_close($con);
+        return $result;
+    }
+
     /*
     function get_tot_vol_hours($type,$stats,$dateFrom,$dateTo,$lastFrom,$lastTo){
         $con = connect();
