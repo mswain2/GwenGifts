@@ -244,7 +244,7 @@
         </div>
         <?php if (in_array($loggedInUser->get_type(), ['admin', 'superadmin'])): ?>
           <div>
-            <span class="block text-sm font-medium text-[#1F1F21]">Personal Notes</span>
+            <span class="block text-sm font-medium text-[#1F1F21]">Admin Notes</span>
             <p class="text-gray-900 font-medium text-xl"><?php echo $user->get_notes() ?></p>
           </div>
         <?php endif ?>
