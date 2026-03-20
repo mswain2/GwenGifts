@@ -170,6 +170,10 @@
             if ($d['type'] === 'Retreat') return '';
             if ($d['numSignups'] >= $d['capacity']) return '';
             if ($d['isSignedUp']) return '';
+            $eventDate = new DateTime($d['startDate']);
+            $now = new DateTime();
+            $now->setTime(0, 0, 0);
+            if ($eventDate < $now) return '';
             return '<input type="checkbox" class="bulk-signup-cb" data-event-id="' . intval($d['eventID']) . '" title="Select for bulk signup">';
         }
 
@@ -177,6 +181,14 @@
         function actionBtn($d, $loggedIn, $userID, $style = 'full') {
             $access = $d['access'];
             $viewBtn = '<a class="act-btn act-view" href="event.php?id=' . urlencode($d['eventID']) . '">View Event</a>';
+
+            // Past events only get the view button
+            $eventDate = new DateTime($d['startDate']);
+            $now = new DateTime();
+            $now->setTime(0, 0, 0);
+            if ($eventDate < $now) {
+                return $viewBtn;
+            }
 
             if (!$loggedIn || $userID === 'guest') {
                 return '<a class="act-btn act-login" href="login.php">Login to Sign Up</a>' . $viewBtn;
@@ -450,7 +462,7 @@
             <div class="toolbar-filters">
                 <div class="filter-pills">
                     <select id="filter-tab" class="pill-select">
-                        <option value="upcoming">All</option>
+                        <option value="upcoming">All Types</option>
                         <option value="normal">Normal</option>
                         <option value="past">Past</option>
                         <?php if ($isBoardMember): ?>
@@ -461,7 +473,7 @@
                         <?php endif; ?>
                     </select>
                     <select id="filter-location" class="pill-select">
-                        <option value="">All</option>
+                        <option value="">All Locations</option>
                         <?php foreach ($locations as $loc): ?>
                             <option value="<?php echo htmlspecialchars(strtolower($loc)); ?>"><?php echo htmlspecialchars($loc); ?></option>
                         <?php endforeach; ?>
