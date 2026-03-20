@@ -9,17 +9,27 @@ $userID = null;
 if (isset($_SESSION['_id'])) {
     $loggedIn = true;
     $accessLevel = $_SESSION['access_level'];
+    $userType = 'volunteer';
     $userID = $_SESSION['_id'];
-}
- 
-if ($accessLevel < 1) {
-    header('Location: login.php');
-    die();
 }
  
 include_once "database/dbDiscussions.php";
 include_once "domain/Discussion.php";
 include_once "database/dbPersons.php";
+
+if (isset($_SESSION['_id'])) {
+    if ($_SESSION['_id'] === 'vmsroot') {
+        $userType = 'superadmin';
+    } else {
+        $person = retrieve_person($_SESSION['_id']);
+        if ($person) $userType = $person->get_type();
+    }
+}
+
+if (!in_array($userType ?? 'volunteer', ['board_member', 'admin', 'superadmin'])) {
+    header('Location: login.php');
+    die();
+}
  
 $discussions = get_board_discussions();
 ?>
@@ -66,11 +76,11 @@ require_once('header.php');
                             <td>
                                 <a href="discussionContent.php?author=<?php echo urlencode($discussion['author_id']); ?>&title=<?php echo urlencode($discussion['title']); ?>&category=board" class="blue-button">View</a>
 
-                                <?php if ($accessLevel > 2): ?>
+                                <?php if (in_array($userType, ['admin', 'superadmin']) || $userID === $discussion['author_id']): ?>
                                     <a href="editDiscussion.php?title=<?php echo urlencode($discussion['title']); ?>&category=board" class="blue-button">Edit</a>
                                 <?php endif; ?>
 
-                                <?php if ($accessLevel > 2): ?>
+                                <?php if (in_array($userType, ['admin', 'superadmin']) || $userID === $discussion['author_id']): ?>
                                     <form action="deleteDiscussion.php" method="POST" style="display:inline;">
                                         <input type="hidden" name="author_id" value="<?php echo htmlspecialchars($discussion['author_id']); ?>">
                                         <input type="hidden" name="title" value="<?php echo htmlspecialchars($discussion['title']); ?>">

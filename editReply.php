@@ -9,11 +9,22 @@ $userID = null;
 if (isset($_SESSION['_id'])) {
     $loggedIn = true;
     $accessLevel = $_SESSION['access_level'];
+    $userType = 'volunteer';
     $userID = $_SESSION['_id'];
 } 
  
 include_once 'database/dbDiscussionReplies.php';
 include_once 'database/dbDiscussions.php';
+
+include_once 'database/dbPersons.php';
+if (isset($_SESSION['_id'])) {
+    if ($_SESSION['_id'] === 'vmsroot') {
+        $userType = 'superadmin';
+    } else {
+        $person = retrieve_person($_SESSION['_id']);
+        if ($person) $userType = $person->get_type();
+    }
+}
  
 $error = "";
  
@@ -30,7 +41,7 @@ if (!$reply) {
     die("Error: Reply not found.");
 }
 
-if ($accessLevel < 2 && $userID !== $reply['user_reply_id']) {
+if (!in_array($userType, ['admin', 'superadmin']) && $userID !== $reply['user_reply_id']) {
     header('Location: index.php');
     die();
 }

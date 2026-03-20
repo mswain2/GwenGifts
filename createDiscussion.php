@@ -6,13 +6,14 @@ session_start();
 $loggedIn = false;
 $accessLevel = 0;
 $userID = null;
+$userType = 'volunteer';
 if (isset($_SESSION['_id'])) {
     $loggedIn = true;
     $accessLevel = $_SESSION['access_level'];
     $userID = $_SESSION['_id'];
 }
 
-if ($accessLevel < 1) {
+if (!$loggedIn) {
     header('Location: index.php');
     die();
 }
@@ -20,6 +21,16 @@ if ($accessLevel < 1) {
 include_once 'database/dbDiscussions.php';
 include_once 'domain/Discussion.php';
 include_once 'database/dbMessages.php';
+
+include_once 'database/dbPersons.php';
+if (isset($_SESSION['_id'])) {
+    if ($_SESSION['_id'] === 'vmsroot') {
+        $userType = 'superadmin';
+    } else {
+        $person = retrieve_person($_SESSION['_id']);
+        if ($person) $userType = $person->get_type();
+    }
+}
 
 $error = "";
 
