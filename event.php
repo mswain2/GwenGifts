@@ -3,6 +3,14 @@
 session_cache_expire(30);
 session_start();
 
+$type = strtolower($_SESSION['type'] ?? 'guest');
+
+if (($_SESSION['_id'] ?? '') === 'vmsroot') {
+    $type = 'admin';
+}
+
+$isAdmin = ($type === 'admin');
+
 // Ensure user is logged in
 if (!isset($_SESSION['access_level']) || $_SESSION['access_level'] < 1) {
     //header('Location: login.php');
@@ -232,10 +240,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="happy-toast">Attendance information updated successfully!</div>
         <?php endif ?>
         <?php if (isset($_GET['trainingUploadSuccess'])): ?>
-            <div class="happy-toast">Training material uploaded successfully!</div>
+            <div class="happy-toast">Training Document uploaded successfully!</div>
         <?php endif ?>
         <?php if (isset($_GET['trainingDeleteSuccess'])): ?>
-            <div class="happy-toast">Training material removed successfully!</div>
+            <div class="happy-toast">Training Document removed successfully!</div>
         <?php endif ?>
 
         <!-- Facebook share button -->
@@ -342,10 +350,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
 
         <section class="event-training-materials">
-            <h2>Training Materials</h2>
+            <h2>Training Documents</h2>
 
             <?php if (empty($trainingMaterials)): ?>
-                <p>No training materials have been uploaded for this event yet.</p>
+                <p>No Training Documents have been uploaded for this event yet.</p>
             <?php else: ?>
                 <ul>
                     <?php foreach ($trainingMaterials as $material): ?>
@@ -357,9 +365,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 - <?= htmlspecialchars($material['description']) ?>
                             <?php endif; ?>
 
-                            <?php if (isset($_SESSION['access_level']) && $access_level >= 2): ?>
+                            <?php if ($isAdmin): ?>
                                 <a href="deleteTrainingMaterial.php?id=<?= urlencode($material['id']) ?>&eventID=<?= urlencode($id) ?>"
-                                    onclick="return confirm('Delete this training material?');"
+                                    onclick="return confirm('Delete this Training Document?');"
                                     style="color: red; margin-left: 10px;">
                                     Remove
                                 </a>
@@ -369,10 +377,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </ul>
             <?php endif; ?>
 
-            <?php if (isset($_SESSION['access_level']) && $access_level >= 2): ?>
+            <?php if ($isAdmin): ?>
                 <p>
                     <a href="addTrainingMaterial.php?eventID=<?= urlencode($id) ?>" class="button signup">
-                        Add Training Material
+                        Add Training Document
                     </a>
                 </p>
             <?php endif; ?>
