@@ -25,7 +25,7 @@
         require_once('database/dbEvents.php');
         $args = sanitize($_POST, null);
         $required = array(
-            "name", "abbr", "date", "start-time", "end-time", "description", "type"
+            "name", "abbr", "date", "start-time", "end-time", "description"
         );
         if (!wereRequiredFieldsSubmitted($args, $required)) {
             echo 'bad form data';
@@ -51,13 +51,12 @@
             $args['endDate']   = $date;   
             $args['startTime'] = $startTime;
             $args['endTime']   = $endTime;
-
+            $args['type'] = "Normal";
 
             //1. Start of use case #8 recurring, etc
             $isRecurring = isset($_POST['recurring']) ? 1 : 0;
             $recurrenceType = $isRecurring ? ($_POST['recurrence_type'] ?? '') : '';
             $customDays = ($isRecurring && $recurrenceType === 'custom') ? (int)($_POST['custom_days'] ?? 0) : null;
-
             
             if ($isRecurring) {
                 if (!in_array($recurrenceType, ['daily','weekly','monthly','custom'], true)) {
@@ -70,8 +69,19 @@
                 }
                 $args['is_recurring'] = 1;
                 $args['recurrence_type'] = $recurrenceType;                  // daily|weekly|monthly|custom
-                $args['recurrence_interval_days'] = ($recurrenceType === 'custom') ? $customDays : null;
+                //$args['recurrence_interval_days'] = ($recurrenceType === 'custom') ? $customDays : null;
+                if ($recurrenceType == 'daily') {
+                    $args['recurrence_interval_days'] = 1;
+                } elseif ($recurrenceType == 'weekly'){
+                    $args['recurrence_interval_days'] = 7;
+                } elseif ($recurrenceType == 'monthly'){
+                    $args['recurrence_interval_days'] = 30;
+                } else {
+                    $args['recurrence_interval_days'] = $customDays;
+                }
+                $args['series_id'] = bin2hex(random_bytes(16)); // new new
             } else {
+                $args['series_id'] = NULL;
                 $args['is_recurring'] = 0;
                 $args['recurrence_type'] = null;
                 $args['recurrence_interval_days'] = null;
@@ -84,7 +94,7 @@
                 die();
             }
 
-            $args['series_id'] = bin2hex(random_bytes(16)); // new new
+            
 
             $id = create_event($args);
             if (!$id) {
@@ -191,32 +201,7 @@
                 <div class="event-sect">
                 <label for="name">* Description </label>
                 <input type="text" id="description" name="description" required placeholder="Enter description">
-
-                <label for="name">* Event Type </label>
-                <select id="type" name="type">
-                    <option value="Normal">Normal</option>
-                    <option value="Retreat">Retreat</option>
-                </select>
-                </div>
-
-                <div class="event-sect">
-                <label for="name">* Event Visibility</label>
-                <p class="sub-text" style="margin-bottom: 1rem;">Visibility controls who can see the event listing on the calendar.</p>
-                <div class="radio-group">
-                    <div class="radio-element">
-                    <label>
-                        <input type="radio" name="visibility" value="public" checked>Public
-                    </label>
-                    </div>
-                    <div class="radio-element">
-                    <label>
-                        <input type="radio" name="visibility" value="private">Private
-                    </label>
-                    </div>
-                </div>
-                </div>
-
-                <div class="event-sect">
+                
                 <label for="name">Location </label>
                 <input type="text" id="location" name="location" placeholder="Enter location">
 
