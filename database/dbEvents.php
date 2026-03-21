@@ -197,6 +197,35 @@ function fetch_event_signups($eventID) {
     return $signups;
 }
 
+function fetch_all_signup_counts() {
+    $connection = connect();
+    $query = "SELECT eventID, COUNT(*) as cnt FROM dbeventpersons GROUP BY eventID";
+    $result = mysqli_query($connection, $query);
+    $counts = [];
+    if ($result) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            $counts[$row['eventID']] = (int) $row['cnt'];
+        }
+    }
+    mysqli_close($connection);
+    return $counts;
+}
+
+function fetch_user_signups($userID) {
+    $connection = connect();
+    $safe = mysqli_real_escape_string($connection, $userID);
+    $query = "SELECT eventID FROM dbeventpersons WHERE userID = '$safe'";
+    $result = mysqli_query($connection, $query);
+    $eventIDs = [];
+    if ($result) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            $eventIDs[$row['eventID']] = true;
+        }
+    }
+    mysqli_close($connection);
+    return $eventIDs;
+}
+
 /*
  * Fetch pending signups for an event (rows in `dbpendingsignups`)
  * Returns array of rows with keys: username, role, notes
