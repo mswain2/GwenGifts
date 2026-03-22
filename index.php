@@ -260,6 +260,18 @@ $notRoot = $person->get_id() != 'vmsroot';
                 <button class="arrow-button">→</button>
             </div>
 
+            <!-- Add Training Materials -->
+            <div class="content-box-test" onclick="window.location.href='myTrainingMaterials.php'">
+                <div class="icon-overlay">
+                    <img style="border-radius: 5px;" src="images/file-regular.svg" alt="Training Materials Icon">
+                </div>
+
+                <div class="large-text-sub">Training Materials</div>
+                <div class="graph-text">Access files for your events.</div>
+                <button class="arrow-button">→</button>
+            </div>
+
+
         </div>
 
         <div style="width: 90%;
@@ -433,7 +445,7 @@ $notRoot = $person->get_id() != 'vmsroot';
                 <div class="icon-overlay">
                     <img style="border-radius: 5px;" src="images/file-regular.svg" alt="Training Materials Icon">
                 </div>
-                <div class="large-text-sub">Training Materials</div>
+                <div class="large-text-sub">My Training Materials</div>
                 <div class="graph-text">Access files for your events.</div>
                 <button class="arrow-button">→</button>
             </div>
