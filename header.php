@@ -228,6 +228,7 @@ if (date("H:i:s") > "18:19:59") {
         $permission_array['boarddocumentstrash.php'] = 2;
         $permission_array['addtrainingmaterial.php'] = 2;
         $permission_array['mytrainingmaterials.php'] = 1;
+        $permission_array['editboarddocument.php'] = 1;
         $permission_array['editdiscussion.php'] = 1;
         $permission_array['editreply.php'] = 1;
         // LOWERCASE
