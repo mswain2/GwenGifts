@@ -196,8 +196,14 @@
         <?php if ($canEditUsers || $viewingOwnProfile): ?>
           <button onclick="window.location.href='editProfile.php<?php if ($id != $userID) echo '?id=' . $id ?>';" class="text-lg font-medium w-full px-4 py-2 bg-[#2f4159] text-[#FFFFFF] rounded-md hover:bg-[#f5c16e] hover:text-[#FFFFFF] cursor-pointer">Edit Profile</button>
         <?php endif ?>
+        <?php if (in_array($loggedInUser->get_type(), ['admin', 'superadmin']) && !$viewingOwnProfile): ?>
+          <button onclick="window.location.href='modifyUserRole.php<?php if ($id != $userID) echo '?id=' . $id ?>';" class="text-lg font-medium w-full px-4 py-2 bg-[#2f4159] text-[#FFFFFF] rounded-md hover:bg-[#f5c16e] hover:text-[#FFFFFF] cursor-pointer">Modify Role / Status</button>
+        <?php endif ?>
+        <!--
+        <a href="modifyUserRole.php?id=' . $person->get_id() . '" class="text-blue-700 underline">Update Status</a>
+        -->
           <?php if ($canSearchUsers && !$viewingOwnProfile): ?>
-          <button onclick="window.location.href='personSearch.php';" class="text-lg font-medium w-full px-4 py-2 bg-[#2f4159] text-[#FFFFFF] border-2 rounded-md cursor-pointer">Search Users</button>
+          <button onclick="window.location.href='personSearch.php';" class="text-lg font-medium w-full px-4 py-2 bg-[#f6a4b5] text-[#FFFFFF] rounded-md hover:bg-[#f5c16e] hover:text-[#FFFFFF] cursor-pointer">Back to User Search</button>
         <?php endif ?>
         <button onclick="window.location.href='index.php<?php if ($id != $userID) echo '?id=' . $id ?>';" class="text-lg font-medium w-full px-4 py-2 bg-[#f6a4b5] text-[#FFFFFF] rounded-md hover:bg-[#f5c16e] hover:text-[#FFFFFF] cursor-pointer">Return to Dashboard</button>
       </div>
@@ -238,7 +244,7 @@
         </div>
         <?php if (in_array($loggedInUser->get_type(), ['admin', 'superadmin'])): ?>
           <div>
-            <span class="block text-sm font-medium text-[#1F1F21]">Personal Notes</span>
+            <span class="block text-sm font-medium text-[#1F1F21]">Admin Notes</span>
             <p class="text-gray-900 font-medium text-xl"><?php echo $user->get_notes() ?></p>
           </div>
         <?php endif ?>
@@ -298,6 +304,50 @@
 
       <!-- Additional Information -->
       <div id="additional" class="profile-section space-y-4 hidden">
+
+          <?php
+          $availabilities = get_availabilities($user->get_id());
+
+          $days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+          $avail_by_day = [];
+          foreach ($availabilities as $avail) {
+            $avail_by_day[$avail['day']] = $avail;
+          }
+
+          function formatAvailTime($t) {
+            if (empty($t)) return '';
+              preg_match('/^(\d+)(am|pm)$/i', $t, $matches);
+            if (!$matches) return strtoupper($t);
+              return $matches[1] . ':00 ' . strtoupper($matches[2]);
+          }
+          ?>
+
+          <h2 class="text-xl font-semibold mb-4 border-b border-gray-300 pb-2">Availability</h2>
+          <table class="text-left text-xl font-medium text-gray-900 whitespace-nowrap">
+            <?php foreach ($days as $day): ?>
+              <tr>
+                <td class="pr-4 w-36"><?php echo $day; ?></td>
+                <td class="text-right w-48">
+                  <?php
+                  if (isset($avail_by_day[$day]) && $avail_by_day[$day]['start_time'] && $avail_by_day[$day]['end_time']) {
+                    echo htmlspecialchars(
+                    formatAvailTime($avail_by_day[$day]['start_time']) .
+                      ' - ' .
+                      formatAvailTime($avail_by_day[$day]['end_time'])
+                    );
+                  } else {
+                    echo 'N/A';
+                  }
+                  ?>
+                </td>
+              </tr>
+              <?php endforeach; ?>
+          </table>
+          
+
+          <!-- 
+            Deprecated placeholder for avails
+
           <h2 class="text-xl font-semibold mb-4 border-b border-gray-300 pb-2">Availability</h2>
           <table class="text-left text-xl font-medium text-gray-900 whitespace-nowrap">
             <tr><td class="pr-4">Sunday</td><td class="text-right">6:00 pm - 7:00 pm</td></tr>
@@ -308,9 +358,34 @@
             <tr><td class="pr-4">Friday</td><td class="text-right">N/A</td></tr>
             <tr><td class="pr-4">Saturday</td><td class="text-right">N/A</td></tr>
           </table>
+          -->
 
+          
+          <?php $languages = get_languages($user->get_id()); ?>
+          
           <h2 class="text-xl font-semibold mb-4 border-b border-gray-300 pb-2">Languages</h2>
-          <div>
+          <?php if (empty($languages)): ?>
+              <p class="text-gray-900 font-medium text-xl">No languages on file.</p>
+          <?php else: ?>
+              <?php foreach ($languages as $lang): ?>
+                  <div class="mb-4">
+                      <span class="block text-sm font-medium text-[#1F1F21]">
+                          <?php echo htmlspecialchars(ucwords(str_replace('_', ' ', $lang['language']))); ?>
+                      </span>
+                      <p class="text-gray-900 font-medium text-xl">Speaking: <?php echo htmlspecialchars(ucfirst($lang['speaking'])); ?></p>
+                      <p class="text-gray-900 font-medium text-xl">Listening: <?php echo htmlspecialchars(ucfirst($lang['listening'])); ?></p>
+                      <p class="text-gray-900 font-medium text-xl">Reading: <?php echo htmlspecialchars(ucfirst($lang['reading'])); ?></p>
+                      <p class="text-gray-900 font-medium text-xl">Writing: <?php echo htmlspecialchars(ucfirst($lang['writing'])); ?></p>
+                  </div>
+              <?php endforeach; ?>
+          <?php endif; ?>
+
+          
+
+
+          <!--
+            Deprecated placeholder for langs
+
             <span class="block text-sm font-medium text-[#1F1F21]">English</span>
             <p class="text-gray-900 font-medium text-xl">Speaking: Fluent</p>
             <p class="text-gray-900 font-medium text-xl">Writing: Fluent</p>
@@ -324,19 +399,13 @@
             <p class="text-gray-900 font-medium text-xl">Reading: Intermediate</p>
             <p class="text-gray-900 font-medium text-xl">Listening: Intermediate</p>
           </div>
+          -->
 
           <h2 class="text-xl font-semibold mb-4 border-b border-gray-300 pb-2">Skills</h2>
-          <ul class="list-inside text-gray-900 font-medium text-xl">
-            <li style="list-style-type: disc;">First Aid</li>
-            <li style="list-style-type: disc;">Public Speaking</li>
-            <li style="list-style-type: disc;">Event Planning</li>
-          </ul>
+          <p class="text-gray-900 font-medium text-xl"><?php echo $user->get_skills() ?></p>
 
           <h2 class="text-xl font-semibold mb-4 border-b border-gray-300 pb-2">Experience</h2>
-          <ul class="list-inside text-gray-900 font-medium text-xl">
-            <li style="list-style-type: disc;">3 years volunteering at local food bank</li>
-            <li style="list-style-type: disc;">Youth mentorship program coordinator</li>
-          </ul>
+          <p class="text-gray-900 font-medium text-xl"><?php echo $user->get_experience() ?></p>
 
           <h2 class="text-xl font-semibold mb-4 border-b border-gray-300 pb-2">Access</h2>
           <div>

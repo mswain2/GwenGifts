@@ -31,7 +31,7 @@
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $args = sanitize($_POST, null);
         $required = array(
-            "id", "name", "date", "start-time", "description"
+            "id", "name", "abbr", "date", "start-time", "end-time", "description"
         );
 
         if (!wereRequiredFieldsSubmitted($args, $required)) {
@@ -43,15 +43,21 @@
             $id = $args['id'];
             $existingEvent = fetch_event_by_id($id);
 
-            $validated = validate12hTimeRangeAndConvertTo24h($args["start-time"], $args["end-time"]);
-            if (!$validated) {
-                $errors .= '<p>The provided time range was invalid.</p>';
+            if (validate24hTimeRange($args['start-time'], $args['end-time'])) {
+                $startTime = $args['start-time'];
+                $endTime = $args['end-time'];
+            } else {
+                $validated = validate12hTimeRangeAndConvertTo24h($args["start-time"], $args["end-time"]);
+                if (!$validated) {
+                    echo 'bad time range';
+                    die();
+                }
+                $startTime = $args['start-time'] = $validated[0];
+                $endTime = $args['end-time'] = $validated[1];
             }
 
-            $startTime = $args['start-time'] = $validated[0];
-            $endTime   = $args['end-time']   = $validated[1];
             $date      = $args['date']       = validateDate($args["date"]);
-
+            $args['type'] = "Normal";
             $capacity = intval($args["capacity"]);
             $assignedVolunteerCount = count(getvolunteers_byevent($id));
             $difference = $assignedVolunteerCount - $capacity;
@@ -64,17 +70,31 @@
             }
 
             if (!$errors) {
-                $success = update_event($id, $args);
-                if (!$success){
-                    echo "Oopsy!";
-                    die();
-                }
-
+            
                 $isRecurring    = isset($_POST['recurring']) ? 1 : 0;
                 $recurrenceType = $isRecurring ? ($_POST['recurrence_type'] ?? '') : '';
                 $customDays     = ($isRecurring && $recurrenceType === 'custom')
                                   ? (int)($_POST['custom_days'] ?? 0)
                                   : 0;
+
+                $args['is_recurring'] = 1;
+                $args['recurrence_type'] = $recurrenceType;                  // daily|weekly|monthly|custom
+                //$args['recurrence_interval_days'] = ($recurrenceType === 'custom') ? $customDays : null;
+                if ($recurrenceType == 'daily') {
+                    $args['recurrence_interval_days'] = 1;
+                } elseif ($recurrenceType == 'weekly'){
+                    $args['recurrence_interval_days'] = 7;
+                } elseif ($recurrenceType == 'monthly'){
+                    $args['recurrence_interval_days'] = 30;
+                } else {
+                    $args['recurrence_interval_days'] = $customDays;
+                }
+
+                $success = update_event($id, $args);
+                if (!$success){
+                    echo "Oopsy!";
+                    die();
+                }
 
                 if (
                     $isRecurring &&
@@ -169,52 +189,77 @@
         <?php endif ?>
             <h2>Event Details</h2>
             <form id="new-event-form" method="post">
-                <label for="name">Event Name </label>
-                <input type="hidden" name="id" value="<?php echo $id ?>"/> 
-                <input type="text" id="name" name="name" value="<?php echo $event['name'] ?>" required placeholder="Enter name"> 
+                <div class="event-sect">
+                    <label for="name">Event Name </label>
+                    <input type="hidden" name="id" value="<?php echo $id ?>"/> 
+                    <input type="text" id="name" name="name" value="<?php echo $event['name'] ?>" required placeholder="Enter name"> 
 
-                <label for="name">Date </label>
-                <input type="date" id="date" name="date" value="<?php echo $event['startDate'] ?>" min="<?php echo date('Y-m-d'); ?>" required>
+                    <label for="name">Abbreviated Name (20 Character Max)</label>
+                    <input type="text" id="abbr" name="abbr" maxLength="20" value="<?php echo $event['abbr_name'] ?>" required placeholder="Enter name that will appear on calendar"> 
+                </div>
 
-                <label for="name">Start Time </label>
-                <input type="text" id="start-time" name="start-time" value="<?php echo time24hto12h($event['startTime']) ?>" pattern="([1-9]|10|11|12):[0-5][0-9] ?([aApP][mM])" required placeholder="Enter start time. Ex. 12:00 PM">
-
-                <label for="name">End Time </label>
-                <input type="text" id="end-time" name="end-time" value="<?php echo time24hto12h($event['endTime']) ?>" pattern="([1-9]|10|11|12):[0-5][0-9] ?([aApP][mM])" required placeholder="Enter end time. Ex. 12:00 PM">
-
-                <label for="name">Description </label>
-                <input type="text" id="description" name="description" value="<?php echo $event['description'] ?>" required placeholder="Enter description">
-
-                <label for="name">Location </label>
-                <input type="text" id="location" name="location" value="<?php echo $event['location'] ?>" placeholder="Enter location">
-
-                <label for="name">Capacity </label>
-                <input type="number" id="capacity" name="capacity" value="<?php echo $event['capacity'] ?>" placeholder="Enter capacity (e.g. 1-99)">
-
-                    <label>Make this a recurring event</label><br>
-
-                    <input type="checkbox" id="recurring" name="recurring" value="1">
-                    Recurring
-
-                    <div id="recurring-options" style="display:none; margin-top:6px;">
-                        <label for="recurrence_type">Recurrence:</label>
-                        <select name="recurrence_type" id="recurrence_type">
-                            <option value="">-- Select --</option>
-                            <option value="daily">Daily</option>
-                            <option value="weekly">Weekly</option>
-                            <option value="monthly">Monthly</option>
-                            <option value="custom">Custom</option>
-                        </select>
-
-                        <div id="custom-interval" style="display:none; margin-top:8px;">
-                            <label for="custom_days">Repeat every:</label>
-                            <input type="number" min="1" id="custom_days" name="custom_days" placeholder="e.g. 10">
-                            <span>days</span>
+                <div class="event-sect">
+                <div class="event-datetime">
+                    <div class="event-time">
+                        <div class="event-date">
+                        <label for="name">Date </label>
+                        <input type="date" id="date" name="date" value="<?php echo $event['startDate'] ?>" min="<?php echo date('Y-m-d'); ?>" required>
+                        </div>
+                        <div class="event-date">
+                            <label for="name">Start Time </label>
+                            <input type="time" id="start-time" name="start-time" value="<?php echo $event['startTime'] ?>" required>
                         </div>
                     </div>
+                    <div class="event-time">
+                        <div class="event-date">
+                        <label for="name">End Time </label>
+                        <input type="time" id="end-time" name="end-time" value="<?php echo $event['endTime'] ?>" required>
+                        </div>
+                    </div>
+                </div>
+                </div>
+
+                <div class="event-sect">
+                    <label for="name">Description </label>
+                    <input type="text" id="description" name="description" value="<?php echo $event['description'] ?>" required placeholder="Enter description">
+
+                    <label for="name">Location </label>
+                    <input type="text" id="location" name="location" value="<?php echo $event['location'] ?>" placeholder="Enter location">
+
+                    <label for="name">Capacity </label>
+                    <input type="number" id="capacity" name="capacity" value="<?php echo $event['capacity'] ?>" placeholder="Enter capacity (e.g. 1-99)">
+                </div>
+
+                <div class="event-sect">
+                    <?php if (isset($event['series_id']) && $event['series_id'] != NULL): ?>
+                        <p>This is a recurring event!</p>
+                    <?php else: ?>
+                        <label>Make this a recurring event</label><br>
+
+                        <input type="checkbox" id="recurring" name="recurring" value="1">
+                        Recurring
+
+                        <div id="recurring-options" style="display:none; margin-top:6px;">
+                            <label for="recurrence_type">Recurrence:</label>
+                            <select name="recurrence_type" id="recurrence_type">
+                                <option value="">-- Select --</option>
+                                <option value="daily">Daily</option>
+                                <option value="weekly">Weekly</option>
+                                <option value="monthly">Monthly</option>
+                                <option value="custom">Custom</option>
+                            </select>
+
+                            <div id="custom-interval" style="display:none; margin-top:8px;">
+                                <label for="custom_days">Repeat every:</label>
+                                <input type="number" min="1" id="custom_days" name="custom_days" placeholder="e.g. 10">
+                                <span>days</span>
+                            </div>
+                        </div>
+                    <?php endif ?>
+                </div>
 
                 <input type="submit" value="Update Event">
-                <a class="button cancel" href="event.php?id=<?php echo htmlspecialchars($_GET['id']) ?>" style="margin-top: .5rem">Cancel</a>
+                <a class="button cancel" href="event.php?id=<?php echo htmlspecialchars($_GET['id']) ?>" style="margin-top: .5rem">Cancel</a>    
             </form>
 
             <script type="text/javascript">

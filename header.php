@@ -181,7 +181,7 @@ if (date("H:i:s") > "18:19:59") {
         $permission_array['volunteermanagement.php'] = 2;
         $permission_array['groupmanagement.php'] = 2;
         $permission_array['eventmanagement.php'] = 2;
-        $permission_array['creatediscussion.php'] = 2;
+        $permission_array['creatediscussion.php'] = 1;
         $permission_array['checkedinvolunteers.php'] = 2;
         $permission_array['deletediscussion.php'] = 2;
         $permission_array['generatereport.php'] = 2; //adding this to the generate report page
@@ -222,13 +222,15 @@ if (date("H:i:s") > "18:19:59") {
         $permission_array['addboardmeeting.php'] = 2;
         $permission_array['viewsuggestions.php'] = 2;
         $permission_array['eventtrainingmanagement.php'] = 2;
-        $permission_array['viewboarddiscussions.php'] = 2;
-        $permission_array['createboarddiscussion.php'] = 2;
+        $permission_array['viewboarddiscussions.php'] = 1;
+        $permission_array['createboarddiscussion.php'] = 1;
         $permission_array['deleteboarddocument.php'] = 2;
         $permission_array['boarddocumentstrash.php'] = 2;
         $permission_array['addtrainingmaterial.php'] = 2;
         $permission_array['mytrainingmaterials.php'] = 1;
         $permission_array['editboarddocument.php'] = 1;
+        $permission_array['editdiscussion.php'] = 1;
+        $permission_array['editreply.php'] = 1;
         // LOWERCASE
 
 

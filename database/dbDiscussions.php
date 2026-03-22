@@ -44,6 +44,28 @@ function remove_discussion($author_id, $title, $category = null) {
     return $result;
 }
 
+function update_discussion($author_id, $title, $newBody, $edited_by, $category = null) {
+    $con = connect();
+    $author_id = mysqli_real_escape_string($con, $author_id);
+    $title = mysqli_real_escape_string($con, $title);
+    $newBody = mysqli_real_escape_string($con, $newBody);
+    $edited_by = mysqli_real_escape_string($con, $edited_by);
+    $edited_at = date("Y-m-d-H:i");
+
+    if ($category) {
+        $category = mysqli_real_escape_string($con, $category);
+        $query = "UPDATE dbdiscussions SET body='$newBody', edited_by='$edited_by', edited_at='$edited_at'
+                  WHERE author_id='$author_id' AND title='$title' AND category='$category'";
+    } else {
+        $query = "UPDATE dbdiscussions SET body='$newBody', edited_by='$edited_by', edited_at='$edited_at'
+                  WHERE author_id='$author_id' AND title='$title'";
+    }
+
+    $result = mysqli_query($con, $query);
+    mysqli_close($con);
+    return $result;
+}
+
 function get_discussion($title, $category = null) {
     $con = connect();
     if ($category) {

@@ -6,21 +6,30 @@ session_start();
 $loggedIn = false;
 $accessLevel = 0;
 $userID = null;
-
+$userType = 'volunteer';
 if (isset($_SESSION['_id'])) {
     $loggedIn = true;
     $accessLevel = $_SESSION['access_level'];
     $userID = $_SESSION['_id'];
 }
 
-// Only allow admins (access level > 2)
-if ($accessLevel < 3) {
+include_once "database/dbDiscussions.php";
+include_once "database/dbDiscussionReplies.php";
+include_once 'database/dbPersons.php';
+if (isset($_SESSION['_id'])) {
+    if ($_SESSION['_id'] === 'vmsroot') {
+        $userType = 'superadmin';
+    } else {
+        $person = retrieve_person($_SESSION['_id']);
+        if ($person) $userType = $person->get_type();
+    }
+}
+
+$posted_author_id = $_POST['author_id'] ?? '';
+if (!in_array($userType ?? 'volunteer', ['admin', 'superadmin']) &&  $userID !== $posted_author_id) {
     header('Location: index.php');
     exit;
 }
-
-include_once "database/dbDiscussions.php";
-include_once "database/dbDiscussionReplies.php";
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $author_id = $_POST['author_id'] ?? '';
