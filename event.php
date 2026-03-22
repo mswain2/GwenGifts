@@ -3,6 +3,14 @@
 session_cache_expire(30);
 session_start();
 
+$type = strtolower($_SESSION['type'] ?? 'guest');
+
+if (($_SESSION['_id'] ?? '') === 'vmsroot') {
+    $type = 'admin';
+}
+
+$isAdmin = ($type === 'admin');
+
 // Ensure user is logged in
 if (!isset($_SESSION['access_level']) || $_SESSION['access_level'] < 1) {
     //header('Location: login.php');
@@ -232,10 +240,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="happy-toast">Attendance information updated successfully!</div>
         <?php endif ?>
         <?php if (isset($_GET['trainingUploadSuccess'])): ?>
-            <div class="happy-toast">Training material uploaded successfully!</div>
+            <div class="happy-toast">Training Document uploaded successfully!</div>
         <?php endif ?>
         <?php if (isset($_GET['trainingDeleteSuccess'])): ?>
-            <div class="happy-toast">Training material removed successfully!</div>
+            <div class="happy-toast">Training Document removed successfully!</div>
         <?php endif ?>
 
         <!-- Facebook share button -->
@@ -291,7 +299,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <i class="fas fa-pencil-alt"></i>
                 </a>
                 <a href="deleteEvent.php?id=<?= $id ?>" title="Delete Event" class="delete-icon"
-                    onclick="return confirm('<?= htmlspecialchars($confirmText, ENT_QUOTES) ?>');">
+                    onclick="showDeleteConfirmation(); return false;">
                     <i class="fas fa-trash"></i>
                 </a>
             <?php endif; ?>
@@ -357,9 +365,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 - <?= htmlspecialchars($material['description']) ?>
                             <?php endif; ?>
 
-                            <?php if (isset($_SESSION['access_level']) && $access_level >= 2): ?>
+                            <?php if ($isAdmin): ?>
                                 <a href="deleteTrainingMaterial.php?id=<?= urlencode($material['id']) ?>&eventID=<?= urlencode($id) ?>"
-                                    onclick="return confirm('Delete this training material?');"
+                                    onclick="return confirm('Delete this Training Document?');"
                                     style="color: red; margin-left: 10px;">
                                     Remove
                                 </a>
@@ -369,10 +377,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </ul>
             <?php endif; ?>
 
-            <?php if (isset($_SESSION['access_level']) && $access_level >= 2): ?>
+            <?php if ($isAdmin): ?>
                 <p>
                     <a href="addTrainingMaterial.php?eventID=<?= urlencode($id) ?>" class="button signup">
-                        Add Training Material
+                        Add Training Document
                     </a>
                 </p>
             <?php endif; ?>
@@ -468,17 +476,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <!-- Confirmation Modals -->
         <?php if (isset($_SESSION['access_level']) && $access_level >= 2) : ?>
-            <div id="delete-confirmation-wrapper" class="modal hidden">
-                <div class="modal-content">
-                    <p>Are you sure you want to delete this event?</p>
-                    <p>This action cannot be undone.</p>
-                    <form method="post" action="deleteEvent.php">
-                        <input type="submit" value="Delete Event" class="button danger">
-                        <input type="hidden" name="id" value="<?= $id ?>">
-                    </form>
-                    <button id="delete-cancel" class="button cancel">Cancel</button>
+            <?php if (isset($event_info['series_id']) && $event_info['series_id'] != NULL) : ?>
+                <div id="delete-confirmation-wrapper" class="modal hidden">
+                    <div class="modal-content">
+                        <p>This event is part of a repeating series.</p>
+                        <p>What would you like to delete?</p>
+
+                        <form method="get" action="deleteEvent.php">
+                            <input type="hidden" name="id" value="<?= $id ?>">
+
+                            <button type="submit" name="confirm" value="single" class="button danger">
+                                Delete ONLY this event
+                            </button>
+
+                            <button type="submit" name="confirm" value="series" class="button danger">
+                                Delete ENTIRE series
+                            </button>
+                        </form>
+
+                        <button id="delete-cancel" class="button cancel">Cancel</button>
+                    </div>
                 </div>
-            </div>
+            <?php else : ?>
+                <div id="delete-confirmation-wrapper" class="modal hidden">
+                    <div class="modal-content">
+                        <p>Are you sure you want to delete this event?</p>
+
+                        <form method="get" action="deleteEvent.php">
+                            <input type="hidden" name="id" value="<?= $id ?>">
+                            <button type="submit" name="confirm" value="single" class="button danger">
+                                Delete this event
+                            </button>
+                        </form>
+
+                        <button id="delete-cancel" class="button cancel">Cancel</button>
+                    </div>
+                </div>
+            <?php endif ?>
 
             <div id="complete-confirmation-wrapper" class="modal hidden">
                 <div class="modal-content">
@@ -519,7 +553,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             function showDeleteConfirmation() {
                 document.getElementById('delete-confirmation-wrapper').classList.remove('hidden');
             }
-
+            
             function showCancelConfirmation() {
                 document.getElementById('cancel-confirmation-wrapper').classList.remove('hidden');
             }

@@ -9,11 +9,21 @@
     $loggedIn = false;
     $accessLevel = 0;
     $userID = null;
+    $userType = 'volunteer';
     if (isset($_SESSION['_id'])) {
         $loggedIn = true;
         // 0 = not logged in, 1 = standard user, 2 = manager (Admin), 3 super admin (TBI)
         $accessLevel = $_SESSION['access_level'];
         $userID = $_SESSION['_id'];
+    }
+    include_once 'database/dbPersons.php';
+    if (isset($_SESSION['_id'])) {
+        if ($_SESSION['_id'] === 'vmsroot') {
+            $userType = 'superadmin';
+        } else {
+            $person = retrieve_person($_SESSION['_id']);
+            if ($person) $userType = $person->get_type();
+        }
     }
     // admin-only access
     if ($accessLevel < 2) {
@@ -60,7 +70,7 @@ require_once('header.php');
         <img class="button-icon h-12 w-12 left-4" src="images/plus-solid.svg" alt="Calendar Icon">
       </button>
 
-      <?php if ($accessLevel >= 2): ?>
+      <?php if (in_array($userType, ['board_member', 'admin', 'superadmin'])): ?>
       <button onclick="window.location.href='viewBoardDiscussions.php';">
           <div class="button-left-gray"></div>
           <div>Board Discussions</div>

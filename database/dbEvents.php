@@ -197,6 +197,35 @@ function fetch_event_signups($eventID) {
     return $signups;
 }
 
+function fetch_all_signup_counts() {
+    $connection = connect();
+    $query = "SELECT eventID, COUNT(*) as cnt FROM dbeventpersons GROUP BY eventID";
+    $result = mysqli_query($connection, $query);
+    $counts = [];
+    if ($result) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            $counts[$row['eventID']] = (int) $row['cnt'];
+        }
+    }
+    mysqli_close($connection);
+    return $counts;
+}
+
+function fetch_user_signups($userID) {
+    $connection = connect();
+    $safe = mysqli_real_escape_string($connection, $userID);
+    $query = "SELECT eventID FROM dbeventpersons WHERE userID = '$safe'";
+    $result = mysqli_query($connection, $query);
+    $eventIDs = [];
+    if ($result) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            $eventIDs[$row['eventID']] = true;
+        }
+    }
+    mysqli_close($connection);
+    return $eventIDs;
+}
+
 /*
  * Fetch pending signups for an event (rows in `dbpendingsignups`)
  * Returns array of rows with keys: username, role, notes
@@ -590,13 +619,17 @@ function create_event($event) {
     //$animal = $event["animal"];
     $completed = 'N';
 
+    $recurrence_interval_days = isset($event['recurrence_interval_days'])
+        ? mysqli_real_escape_string($connection, $event['recurrence_interval_days'])
+        : null;
+
     $series_id = isset($event['series_id'])
         ? mysqli_real_escape_string($connection, $event['series_id'])
         : null;
 
     $query = "
-        insert into dbevents (name, abbr_name, startDate, startTime, endTime, endDate, access, description, capacity, completed, location, type, series_id)
-        values ('$name', '$abbr', '$date', '$startTime', '$endTime', '$endDate', '$access', '$description', $capacity, '$completed', '$location', '$type', " .($series_id ? "'$series_id'" : "NULL") . ")
+        insert into dbevents (name, abbr_name, startDate, startTime, endTime, endDate, access, description, capacity, completed, location, type, series_id, recurrence_interval_days)
+        values ('$name', '$abbr', '$date', '$startTime', '$endTime', '$endDate', '$access', '$description', $capacity, '$completed', '$location', '$type', " .($series_id ? "'$series_id'" : "NULL") . ", " .($recurrence_interval_days ? "'$recurrence_interval_days'" : "0") . ")
     ";
     $result = mysqli_query($connection, $query);
     if (!$result) {
@@ -627,6 +660,7 @@ function update_event($eventID, $eventDetails) {
     $connection = connect();
     $id = $eventDetails["id"];
     $name = $eventDetails["name"];
+    $abbr_name = $eventDetails["abbr"];
     #$abbrevName = $eventDetails["abbrev-name"];
     $date = $eventDetails["date"];
     $startTime = $eventDetails["start-time"];
@@ -637,6 +671,7 @@ function update_event($eventID, $eventDetails) {
     #$completed = $eventDetails["completed"];
     #$restricted_signup = $eventDetails["restricted_signup"];
     $location = $eventDetails["location"];
+    $recurrence_interval_days = $eventDetails["recurrence_interval_days"];
     //$services = $eventDetails["service"];
     
     #$completed = $eventDetails["completed"];
@@ -649,7 +684,7 @@ function update_event($eventID, $eventDetails) {
     #    where id='$eventID'
     #";
     $query = "
-        update dbevents set id='$id', name='$name', startDate='$date', endDate='$date', startTime='$startTime', endTime='$endTime', description='$description', location='$location', capacity=$capacity
+        update dbevents set id='$id', name='$name', abbr_name='$abbr_name', startDate='$date', endDate='$date', startTime='$startTime', endTime='$endTime', description='$description', location='$location', capacity=$capacity, recurrence_interval_days='$recurrence_interval_days'
         where id='$eventID'
     ";
     $result = mysqli_query($connection, $query);

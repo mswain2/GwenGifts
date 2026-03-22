@@ -1515,6 +1515,21 @@ function get_total_vol_hours($dateFrom, $dateTo) {
         return true;
     }
 
+    function get_languages($person_id) {
+        $con = connect();
+        $person_id = mysqli_real_escape_string($con, $person_id);
+        $query = "SELECT language, speaking, listening, reading, writing 
+                FROM dblanguages WHERE person_id = '$person_id'";
+        $result = mysqli_query($con, $query);
+        if (!$result) {
+            mysqli_close($con);
+            return [];
+        }
+        $languages = mysqli_fetch_all($result, MYSQLI_ASSOC);
+        mysqli_close($con);
+        return $languages;
+    }
+
     function add_availabilities($person_id, $day_availability, $args) {
         if (empty($day_availability)) return true;
 
@@ -1538,6 +1553,64 @@ function get_total_vol_hours($dateFrom, $dateTo) {
         }
         mysqli_close($con);
         return true;
+    }
+
+    function get_availabilities($person_id) {
+        $con = connect();
+        $person_id = mysqli_real_escape_string($con, $person_id);
+        $query = "SELECT day, start_time, end_time 
+                FROM dbavailabilities WHERE person_id = '$person_id'
+                ORDER BY FIELD(day, 'Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday')";
+        $result = mysqli_query($con, $query);
+        if (!$result) {
+            mysqli_close($con);
+            return [];
+        }
+        $availabilities = mysqli_fetch_all($result, MYSQLI_ASSOC);
+        mysqli_close($con);
+        return $availabilities;
+    }
+
+    function update_person_full(
+        $id, $first_name, $last_name, $gender, $t_shirt_size, $birthday,
+        $street_address, $city, $state, $zip_code,
+        $email, $email_prefs, $phone1, $phone1type,
+        $emergency_contact_first_name, $emergency_contact_last_name,
+        $emergency_contact_phone, $emergency_contact_phone_type, $emergency_contact_relation,
+        $computer_access, $camera_access, $transportation_access,
+        $skills, $experience, $notes = ''
+    ) {
+        $con = connect();
+        $query = "UPDATE dbpersons SET
+            first_name='$first_name',
+            last_name='$last_name',
+            gender='$gender',
+            t_shirt_size='$t_shirt_size',
+            birthday='$birthday',
+            street_address='$street_address',
+            city='$city',
+            state='$state',
+            zip_code='$zip_code',
+            email='$email',
+            email_prefs='$email_prefs',
+            phone1='$phone1',
+            phone1type='$phone1type',
+            emergency_contact_first_name='$emergency_contact_first_name',
+            emergency_contact_last_name='$emergency_contact_last_name',
+            emergency_contact_phone='$emergency_contact_phone',
+            emergency_contact_phone_type='$emergency_contact_phone_type',
+            emergency_contact_relation='$emergency_contact_relation',
+            computer_access='$computer_access',
+            camera_access='$camera_access',
+            transportation_access='$transportation_access',
+            skills='$skills',
+            experience='$experience',
+            notes='$notes'
+            WHERE id='$id'";
+        $result = mysqli_query($con, $query);
+        mysqli_commit($con);
+        mysqli_close($con);
+        return $result;
     }
 
     /*

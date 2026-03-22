@@ -44,7 +44,7 @@
                 $_SESSION['l_name'] = $user->get_last_name();
 
                 
-                $_SESSION['type'] = 'admin';
+                $_SESSION['type'] = strtolower($user->get_type());
                 $_SESSION['_id'] = $user->get_id();
                 
                  //hard code root privileges

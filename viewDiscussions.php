@@ -10,12 +10,22 @@ $userID = null;
 if (isset($_SESSION['_id'])) {
     $loggedIn = true;
     $accessLevel = $_SESSION['access_level'];
+    $userType = 'volunteer';
     $userID = $_SESSION['_id'];
 }
 
 include_once "database/dbDiscussions.php";
 include_once "domain/Discussion.php";
 include_once "database/dbPersons.php";
+
+if (isset($_SESSION['_id'])) {
+    if ($_SESSION['_id'] === 'vmsroot') {
+        $userType = 'superadmin';
+    } else {
+        $person = retrieve_person($_SESSION['_id']);
+        if ($person) $userType = $person->get_type();
+    }
+}
 
 $discussions = get_all_discussions();
 ?>
@@ -53,7 +63,7 @@ require_once('header.php');
         <table>
             <thead>
                 <tr>
-                    <?php if ($accessLevel > 2): ?>
+                    <?php if (in_array($userType, ['admin', 'superadmin'])): ?>
                         <th><input type="checkbox" id="selectAll"></th>
                     <?php endif; ?>
                     <th>Author</th>
@@ -70,7 +80,7 @@ require_once('header.php');
                         $entryValue = htmlspecialchars($discussion['author_id']) . '|' . htmlspecialchars($discussion['title']) . '|general';
                     ?>
                         <tr>
-                            <?php if ($accessLevel > 2): ?>
+                            <?php if (in_array($userType, ['admin', 'superadmin'])): ?>
                                 <td>
                                     <input type="checkbox" class="rowCheckbox" name="selected_discussions[]" value="<?php echo $entryValue; ?>">
                                 </td>
@@ -82,7 +92,11 @@ require_once('header.php');
                             <td>
                                 <a href="discussionContent.php?author=<?php echo urlencode($person->get_id()); ?>&title=<?php echo urlencode($discussion['title']); ?>&category=general" class="blue-button">View</a>
 
-                                <?php if ($accessLevel > 2): ?>
+                                <?php if (in_array($userType, ['admin', 'superadmin']) || $userID === $discussion['author_id']): ?>
+                                    <a href="editDiscussion.php?title=<?php echo urlencode($discussion['title']); ?>&category=general" class="blue-button">Edit</a>
+                                <?php endif; ?>
+
+                                <?php if (in_array($userType, ['admin', 'superadmin']) || $userID === $discussion['author_id']): ?>
                                     <form action="deleteDiscussion.php" method="POST" style="display:inline;">
                                         <input type="hidden" name="author_id" value="<?php echo htmlspecialchars($person->get_id()); ?>">
                                         <input type="hidden" name="title" value="<?php echo htmlspecialchars($discussion['title']); ?>">
@@ -101,7 +115,7 @@ require_once('header.php');
 
         <br>
         <?php
-            if ($accessLevel > 2):
+            if (in_array($userType, ['admin', 'superadmin'])):
             ?>
                 <div class="text-center">
                     <a href="createDiscussion.php" class="blue-button">Create Discussion</a>
