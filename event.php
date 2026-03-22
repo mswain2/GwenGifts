@@ -350,10 +350,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
 
         <section class="event-training-materials">
-            <h2>Training Documents</h2>
+            <h2>Training Materials</h2>
 
             <?php if (empty($trainingMaterials)): ?>
-                <p>No Training Documents have been uploaded for this event yet.</p>
+                <p>No training materials have been uploaded for this event yet.</p>
             <?php else: ?>
                 <ul>
                     <?php foreach ($trainingMaterials as $material): ?>

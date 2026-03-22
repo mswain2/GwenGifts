@@ -39,16 +39,16 @@ if ($isAdmin) {
     $materials = get_training_materials_by_user($_SESSION['_id'], $search_name);
 }
 
-$pageTitle = $isAdmin ? 'Training Documents' : 'My Training Documents';
+$pageTitle = $isAdmin ? 'Training Materials' : 'My Training Materials';
 $pageSubtitle = $isAdmin
-    ? 'View all uploaded training documents across events.'
-    : 'Training documents for events you are signed up for.';
+    ? 'View all uploaded training materials across events.'
+    : 'Training materials for events you are signed up for.';
 if ($search_name !== '') {
-    $emptyMessage = 'No training documents matched your search.';
+    $emptyMessage = 'No training materials matched your search.';
 } else {
     $emptyMessage = $isAdmin
-        ? 'No training documents have been uploaded yet.'
-        : 'You do not have any training documents for your events yet.';
+        ? 'No training materials have been uploaded yet.'
+        : 'You do not have any training materials for your events yet.';
 }
 
 function getDocumentTypeLabel($fileName)
