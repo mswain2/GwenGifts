@@ -23,8 +23,7 @@ include_once('domain/Person.php');
 if (isset($_SESSION['_id'])) {
     $person = retrieve_person($_SESSION['_id']);
 }
-
-$notRoot = isset($person) && $person->get_id() != 'vmsroot';
+$notRoot = $person->get_id() != 'vmsroot';
 ?>
 
 <!DOCTYPE html>
@@ -261,17 +260,6 @@ $notRoot = isset($person) && $person->get_id() != 'vmsroot';
                 <button class="arrow-button">→</button>
             </div>
 
-            <!-- Training Documents -->
-            <div class="content-box-test" onclick="window.location.href='myTrainingMaterials.php'">
-                <div class="icon-overlay">
-                    <img style="border-radius: 5px;" src="images/file-regular.svg" alt="Training Documents Icon">
-                </div>
-
-                <div class="large-text-sub">Training Documents</div>
-                <div class="graph-text">View uploaded training documents across events.</div>
-                <button class="arrow-button">→</button>
-            </div>
-
         </div>
 
         <div style="width: 90%;
@@ -316,8 +304,8 @@ $notRoot = isset($person) && $person->get_id() != 'vmsroot';
 <?php endif ?>
 
 <!-- ONLY VOLUNTEERS WILL SEE THIS -->
-<?php if (isset($_SESSION['access_level']) && $_SESSION['access_level'] < 2 && $notRoot) : ?>
-    
+<?php if ($notRoot) : ?>
+
     <body>
         <?php require 'header.php'; ?>
 
@@ -424,9 +412,7 @@ $notRoot = isset($person) && $person->get_id() != 'vmsroot';
                     <img style="border-radius: 5px;" src="images/<?php echo $inboxIcon ?>" alt="Notification Icon">
                 </div>
                 <div class="large-text-sub">
-                    Notifications<?php if ($unreadMessageCount > 0) {
-                                        echo ' (' . $unreadMessageCount . ')';
-                                    } ?>
+                    Notifications<?php if ($unreadMessageCount > 0) { echo ' (' . $unreadMessageCount . ')'; } ?>
                 </div>
                 <div class="graph-text">Stay up to date.</div>
                 <button class="arrow-button">→</button>
@@ -442,12 +428,12 @@ $notRoot = isset($person) && $person->get_id() != 'vmsroot';
                 <button class="arrow-button">→</button>
             </div>
 
-            <!-- Training Documents -->
+            <!-- Training Materials -->
             <div class="content-box-test" onclick="window.location.href='myTrainingMaterials.php'">
                 <div class="icon-overlay">
-                    <img style="border-radius: 5px;" src="images/file-regular.svg" alt="Training Documents Icon">
+                    <img style="border-radius: 5px;" src="images/file-regular.svg" alt="Training Materials Icon">
                 </div>
-                <div class="large-text-sub">Training Documents</div>
+                <div class="large-text-sub">Training Materials</div>
                 <div class="graph-text">Access files for your events.</div>
                 <button class="arrow-button">→</button>
             </div>
