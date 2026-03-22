@@ -45,8 +45,8 @@ CREATE TABLE `dbtraining_materials` (
 --
 
 INSERT INTO `dbtraining_materials` (`id`, `eventID`, `title`, `description`, `file_name`, `file_path`, `file_type`, `uploaded_by`, `uploaded_at`, `is_active`) VALUES
-(4, '249', 'Test Doc #1', 'PDF training material', 'TEST DOC pdf.pdf', 'training_docs/1773532503_TEST DOC pdf.pdf', 'application/pdf', 'vmsroot', '2026-03-14 19:55:03', 1),
-(5, '249', 'Test Doc #2', 'docx training material', 'TEST DOC docx.docx', 'training_docs/1773532538_TEST DOC docx.docx', 'application/vnd.openxmlformats-officedocument.word', 'vmsroot', '2026-03-14 19:55:38', 1),
+(4, '249', 'Test Doc #1', 'PDF training document', 'TEST DOC pdf.pdf', 'training_docs/1773532503_TEST DOC pdf.pdf', 'application/pdf', 'vmsroot', '2026-03-14 19:55:03', 1),
+(5, '249', 'Test Doc #2', 'docx training document', 'TEST DOC docx.docx', 'training_docs/1773532538_TEST DOC docx.docx', 'application/vnd.openxmlformats-officedocument.word', 'vmsroot', '2026-03-14 19:55:38', 1),
 (6, '249', 'Test Doc #3', 'txt training document', 'TEST DOC txt.txt', 'training_docs/1773532575_TEST DOC txt.txt', 'text/plain', 'vmsroot', '2026-03-14 19:56:15', 1),
 (7, '249', 'Test Doc #4', 'Powerpoint training document', 'TEST PRES pptx.pptx', 'training_docs/1773532607_TEST PRES pptx.pptx', 'application/vnd.openxmlformats-officedocument.pres', 'vmsroot', '2026-03-14 19:56:47', 1);
 
