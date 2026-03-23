@@ -192,10 +192,10 @@
                 <div class="event-sect">
                     <label for="name">Event Name </label>
                     <input type="hidden" name="id" value="<?php echo $id ?>"/> 
-                    <input type="text" id="name" name="name" value="<?php echo $event['name'] ?>" required placeholder="Enter name"> 
+                    <input type="text" id="name" name="name" value="<?php echo htmlspecialchars_decode($event['name']) ?>" required placeholder="Enter name"> 
 
                     <label for="name">Abbreviated Name (20 Character Max)</label>
-                    <input type="text" id="abbr" name="abbr" maxLength="20" value="<?php echo $event['abbr_name'] ?>" required placeholder="Enter name that will appear on calendar"> 
+                    <input type="text" id="abbr" name="abbr" maxLength="20" value="<?php echo htmlspecialchars_decode($event['abbr_name'])?>" required placeholder="Enter name that will appear on calendar"> 
                 </div>
 
                 <div class="event-sect">
@@ -221,7 +221,7 @@
 
                 <div class="event-sect">
                     <label for="name">Description </label>
-                    <input type="text" id="description" name="description" value="<?php echo $event['description'] ?>" required placeholder="Enter description">
+                    <input type="text" id="description" name="description" value="<?php echo htmlspecialchars_decode($event['description']) ?>" required placeholder="Enter description">
 
                     <label for="name">Location </label>
                     <input type="text" id="location" name="location" value="<?php echo $event['location'] ?>" placeholder="Enter location">
