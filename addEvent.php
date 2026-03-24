@@ -46,7 +46,7 @@
             }
             $date = $args['date'] = validateDate($args["date"]);
             $args["training_level_required"] = $_POST['training_level_required'] ?? 'None';
-    
+            $args['board_event'] = 0;
             $args['startDate'] = $date;
             $args['endDate']   = $date;   
             $args['startTime'] = $startTime;

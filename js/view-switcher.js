@@ -2,74 +2,65 @@ $(document).ready(function () {
     // Helper: normalize month param
     function normalizeMonthParam(val) {
         if (!val) return null;
-        // YYYY-MM-DD -> keep full date
         if (/^\d{4}-\d{2}-\d{2}$/.test(val)) return val;
-        // YYYY-MM -> keep month
         if (/^\d{4}-\d{2}$/.test(val)) return val;
-        // try parseable date string
         const d = new Date(val);
         if (!isNaN(d)) {
-            // prefer full date (YYYY-MM-DD)
             return d.toISOString().slice(0,10);
         }
         return null;
     }
 
-    // Prefer explicit URL param, then data attribute on #calendar, then today
     let urlMonth = new URLSearchParams(window.location.search).get('month');
-    let attrMonth = $('#calendar').data('current-month'); // may be undefined
+    let attrMonth = $('#calendar').data('current-month');
     let paramToUse = urlMonth || attrMonth;
-    let currentMonth = normalizeMonthParam(paramToUse) || new Date().toISOString().slice(0,10); // full date default
+    let currentMonth = normalizeMonthParam(paramToUse) || new Date().toISOString().slice(0,10);
 
-    // Helper to get YYYY-MM for calendar/list operations
+    // SCRUM-16: get current event filter (default: public)
+    let currentFilter = new URLSearchParams(window.location.search).get('event_filter') || 'public';
+
     function monthOnlyFrom(val) {
         if (!val) return new Date().toISOString().slice(0,7);
         return val.slice(0,7);
     }
 
-    // Initialize filters
     initializeFilters();
 
-    // Load initial calendar view (pass YYYY-MM)
-    loadView(`calendar-view.php?month=${encodeURIComponent(monthOnlyFrom(currentMonth))}`);
+    // Load initial calendar view
+    loadView(`calendar-view.php?month=${encodeURIComponent(monthOnlyFrom(currentMonth))}&event_filter=${currentFilter}`);
 
-    // Switch to calendar view (when clicking the view toggle)
+    // Switch to calendar (monthly) view
     $("#calendar-view-button").click(function (e) {
         e.preventDefault();
-        loadView(`calendar-view.php?month=${encodeURIComponent(monthOnlyFrom(currentMonth))}`);
+        loadView(`calendar-view.php?month=${encodeURIComponent(monthOnlyFrom(currentMonth))}&event_filter=${currentFilter}`);
     });
 
-    // Switch to list view
-    $("#list-view-button").click(function (e) {
-        e.preventDefault();
-        loadView(`event-list.php?month=${encodeURIComponent(monthOnlyFrom(currentMonth))}`);
-    });
+    // SCRUM-116: list view button removed — no handler
 
-    // Switch to weekly view (requires full YYYY-MM-DD)
+    // Switch to weekly view
     $("#calendar-weekly-view-button").click(function (e) {
         e.preventDefault();
         let dayParam = currentMonth;
         if (/^\d{4}-\d{2}$/.test(currentMonth)) dayParam = currentMonth + '-01';
-        loadView(`calendar-view_weekly.php?month=${encodeURIComponent(dayParam)}`);
+        loadView(`calendar-view_weekly.php?month=${encodeURIComponent(dayParam)}&event_filter=${currentFilter}`);
     });
 
-    // Switch to daily view (requires full YYYY-MM-DD)
+    // Switch to daily view
     $("#calendar-day-view-button").click(function (e) {
         e.preventDefault();
         let dayParam = currentMonth;
         if (/^\d{4}-\d{2}$/.test(currentMonth)) dayParam = currentMonth + '-01';
-        loadView(`calendar-view_daily.php?month=${encodeURIComponent(dayParam)}`);
+        loadView(`calendar-view_daily.php?month=${encodeURIComponent(dayParam)}&event_filter=${currentFilter}`);
     });
 
-    // Navigate to previous month (reads data-month on the clicked control first,
-    // falls back to the calendar table's data-prev-month)
+    // Navigate to previous month
     $(document).on("click", "#previous-month-button", function (e) {
         e.preventDefault();
         const raw = $(this).data('month') || $('#calendar').data('prev-month');
         const normalized = normalizeMonthParam(raw);
         if (normalized) {
             currentMonth = normalized;
-            loadView(`calendar-view.php?month=${encodeURIComponent(monthOnlyFrom(normalized))}`);
+            loadView(`calendar-view.php?month=${encodeURIComponent(monthOnlyFrom(normalized))}&event_filter=${currentFilter}`);
         }
     });
 
@@ -80,12 +71,35 @@ $(document).ready(function () {
         const normalized = normalizeMonthParam(raw);
         if (normalized) {
             currentMonth = normalized;
-            loadView(`calendar-view.php?month=${encodeURIComponent(monthOnlyFrom(normalized))}`);
+            loadView(`calendar-view.php?month=${encodeURIComponent(monthOnlyFrom(normalized))}&event_filter=${currentFilter}`);
         }
     });
+
+    // SCRUM-16: Event filter dropdown change handler
+    $(document).on("click", "#apply-filter-btn", function() {
+        currentFilter = $("#event-filter-select").val();
+        const currentView = getCurrentView();
+        if (currentView === 'weekly') {
+            let dayParam = currentMonth;
+            if (/^\d{4}-\d{2}$/.test(currentMonth)) dayParam = currentMonth + '-01';
+            loadView(`calendar-view_weekly.php?month=${encodeURIComponent(dayParam)}&event_filter=${currentFilter}`);
+        } else {
+            loadView(`calendar-view.php?month=${encodeURIComponent(monthOnlyFrom(currentMonth))}&event_filter=${currentFilter}`);
+        }
+    });
+
+    function getCurrentView() {
+        // Simple heuristic based on which view is currently loaded
+        return window._currentCalView || 'monthly';
+    }
 });
 
 function loadView(viewFile) {
+    // Track which view is loaded
+    if (viewFile.includes('weekly')) window._currentCalView = 'weekly';
+    else if (viewFile.includes('daily')) window._currentCalView = 'daily';
+    else window._currentCalView = 'monthly';
+
     $.ajax({
         url: viewFile,
         method: "GET",
@@ -94,7 +108,6 @@ function loadView(viewFile) {
         },
         success: function (response) {
             $("#event-viewer").html(response);
-            // Re-initialize any filter handlers
             initializeFilters();
         },
         error: function () {
@@ -103,7 +116,6 @@ function loadView(viewFile) {
     });
 }
 
-// Function to initialize filter functionality
 function initializeFilters() {
     $('.filter-wrapper input').on('change', function() {
         const popout = $(this).siblings('.calendar-filter');
