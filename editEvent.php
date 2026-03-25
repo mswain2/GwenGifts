@@ -71,7 +71,7 @@
 
             if (!$errors) {
             
-                $isRecurring    = isset($_POST['recurring']) ? 1 : 0;
+                $isRecurring    = (isset($_POST['recurring']) && $_POST['recurring'] == 1) ? 1 : 0;
                 $recurrenceType = $isRecurring ? ($_POST['recurrence_type'] ?? '') : '';
                 $customDays     = ($isRecurring && $recurrenceType === 'custom')
                                   ? (int)($_POST['custom_days'] ?? 0)
@@ -88,6 +88,28 @@
                     $args['recurrence_interval_days'] = 30;
                 } else {
                     $args['recurrence_interval_days'] = $customDays;
+                }
+
+                if ($isRecurring && (isset($existingEvent['series_id']) && $existingEvent['series_id'] != NULL)){
+                    $result = delete_bulk_events($id, $existingEvent['series_id']);
+                    if(!$result){
+                        echo "uh oh";
+                        die();
+                    }
+                    $existingEvent['series_id'] = NULL;
+                }
+
+                if (!$isRecurring && (isset($existingEvent['series_id']) && $existingEvent['series_id'] != NULL)){
+                    $result = delete_bulk_events($id, $existingEvent['series_id']);
+                    if(!$result){
+                        echo "uh oh";
+                        die();
+                    }
+                    $result = set_not_recurring($id);
+                    if(!$result){
+                        echo "uh oh";
+                        die();
+                    }
                 }
 
                 $success = update_event($id, $args);
@@ -168,6 +190,16 @@
         echo "Event does not exist";
         die();
     }
+    $recurrence = $event['recurrence_interval_days'];
+    if ($recurrence == 1){
+        $recurrence_type = "Daily";
+    } elseif ($recurrence == 7){
+        $recurrence_type = "Weekly";
+    } elseif ($recurrence == 30){
+        $recurrence_type = "Monthly";
+    } else {
+        $recurrence_type = "Custom";
+    }
 
     require_once('include/output.php');
 
@@ -232,7 +264,26 @@
 
                 <div class="event-sect">
                     <?php if (isset($event['series_id']) && $event['series_id'] != NULL): ?>
-                        <p>This is a recurring event!</p>
+                        <input type="radio" id="recurring" name="recurring" value="1" checked>
+                        Recurring <br>
+                        <div id="recurring-options" style="display:none; margin-top:6px;">
+                            <label for="recurrence_type">Recurrence:</label>
+                            <select name="recurrence_type" id="recurrence_type">
+                                <option value="">-- Select --</option>
+                                <option value="daily" <?php if ($recurrence_type === "Daily") echo "selected"; ?>>Daily</option>
+                                <option value="weekly" <?php if ($recurrence_type === "Weekly") echo "selected"; ?>>Weekly</option>
+                                <option value="monthly" <?php if ($recurrence_type === "Monthly") echo "selected"; ?>>Monthly</option>
+                                <option value="custom" <?php if ($recurrence_type === "Custom") echo "selected"; ?>>Custom</option>
+                            </select>
+
+                            <div id="custom-interval" style="display:none; margin-top:8px;">
+                                <label for="custom_days">Repeat every:</label>
+                                <input type="number" min="1" id="custom_days" name="custom_days" placeholder="<?php if ($recurrence_type === "Custom"){ echo $recurrence;}else{ echo "e.g. 10";} ?>">
+                                <span>days</span>
+                            </div>
+                        </div>
+                        <input type="radio" id="recurring" name="recurring" value="2">
+                        Remove recurrence
                     <?php else: ?>
                         <label>Make this a recurring event</label><br>
 
@@ -290,6 +341,7 @@
                             if (customDays) customDays.value = '';
                         }
                     }
+
                     function toggleCustom(){
                         if (!recurrenceType || !customBlock) return;
                         customBlock.style.display = (recurrenceType.value === 'custom') ? 'block' : 'none';

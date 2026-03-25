@@ -875,6 +875,24 @@ function delete_event($id) {
     return $result;
 }
 
+function delete_bulk_events($id, $series_id){
+    $query = "delete from dbevents where series_id='$series_id' and not id='$id'";
+    $connection = connect();
+    $result = mysqli_query($connection, $query);
+    $result = boolval($result);
+    mysqli_close($connection);
+    return $result;
+}
+
+function set_not_recurring($id){
+    $query = "update dbevents set series_id=NULL where id='$id'";
+    $connection = connect();
+    $result = mysqli_query($connection, $query);
+    $result = boolval($result);
+    mysqli_close($connection);
+    return $result;
+}
+
 function cancel_event($event_id, $account_name) {
     $query = "DELETE from dbeventpersons where userID LIKE '$account_name' AND eventID LIKE $event_id";
     $connection = connect();
