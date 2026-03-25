@@ -34,6 +34,10 @@
             "id", "name", "abbr", "date", "start-time", "end-time", "description"
         );
 
+        
+        /*If update has been set, use the given value. If it was not set, use NULL*/
+        $update = $_POST['update'] ?? NULL;
+
         if (!wereRequiredFieldsSubmitted($args, $required)) {
             echo 'bad form data';
             die();
@@ -90,7 +94,8 @@
                     $args['recurrence_interval_days'] = $customDays;
                 }
 
-                if ($isRecurring && (isset($existingEvent['series_id']) && $existingEvent['series_id'] != NULL)){
+                if ($isRecurring && $existingEvent['recurrence_interval_days'] != $args['recurrence_interval_days']
+                   && (isset($existingEvent['series_id']) && $existingEvent['series_id'] != NULL)){
                     $result = delete_bulk_events($id, $existingEvent['series_id']);
                     if(!$result){
                         echo "uh oh";
@@ -112,10 +117,18 @@
                     }
                 }
 
-                $success = update_event($id, $args);
-                if (!$success){
-                    echo "Oopsy!";
-                    die();
+                if ($update != NULL && $update == 'Update Entire Series'){
+                    $success = update_series($existingEvent['series_id'], $args);
+                    if (!$success){
+                        echo "Oopsy!";
+                        die();
+                    }
+                }else{
+                    $success = update_event($id, $args);
+                    if (!$success){
+                        echo "Oopsy!";
+                        die();
+                    }
                 }
 
                 if (
@@ -211,6 +224,7 @@
     <head>
         <?php require_once('universal.inc') ?>
         <title>Gwyneth's Gift | Edit Event</title>
+        <link rel="stylesheet" href="event.css" type="text/css" />
     </head>
     <body>
         <?php require_once('header.php') ?>
@@ -309,7 +323,10 @@
                     <?php endif ?>
                 </div>
 
-                <input type="submit" value="Update Event">
+                <input type="submit" name="update" value="Update Event">
+                <?php if (isset($event['series_id']) && $event['series_id'] != NULL): ?>
+                    <input type="submit" name="update" value="Update Entire Series" onclick="return confirm('Are you sure you want to edit the entire series?');">
+                <?php endif ?>
                 <a class="button cancel" href="event.php?id=<?php echo htmlspecialchars($_GET['id']) ?>" style="margin-top: .5rem">Cancel</a>    
             </form>
 

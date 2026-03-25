@@ -694,6 +694,42 @@ function update_event($eventID, $eventDetails) {
     return $result;
 }
 
+function update_series($series_id, $eventDetails){
+    $connection = connect();
+    $name = $eventDetails["name"];
+    $abbr_name = $eventDetails["abbr"];
+    #$abbrevName = $eventDetails["abbrev-name"];
+    #$date = $eventDetails["date"];
+    $startTime = $eventDetails["start-time"];
+    #$restricted = $eventDetails["restricted"];
+    $endTime = $eventDetails["end-time"];
+    $description = $eventDetails["description"];
+    $capacity = $eventDetails["capacity"];
+    #$completed = $eventDetails["completed"];
+    #$restricted_signup = $eventDetails["restricted_signup"];
+    $location = $eventDetails["location"];
+    $recurrence_interval_days = $eventDetails["recurrence_interval_days"];
+    //$services = $eventDetails["service"];
+    
+    #$completed = $eventDetails["completed"];
+    #$query = "
+       # update dbEvents set name='$name', abbrevName='$abbrevName', date='$date', startTime='$startTime', restricted='$restricted', description='$description', locationID='$location', completed='$completed'
+       # where id='$eventID'
+    #";
+   # $query = "
+    #    update dbevents set id='$id', name='$name', date='$date', startTime='$startTime', endTime='$endTime', description='$description', capacity='$capacity', completed='$completed', event_type='$event_type', restricted_signup='$restricted_signup'
+    #    where id='$eventID'
+    #";
+    $query = "
+        update dbevents set name='$name', abbr_name='$abbr_name', startTime='$startTime', endTime='$endTime', description='$description', location='$location', capacity=$capacity, recurrence_interval_days='$recurrence_interval_days'
+        where series_id='$series_id'
+    ";
+    $result = mysqli_query($connection, $query);
+    mysqli_commit($connection);
+    mysqli_close($connection);
+    return $result;
+}
+
 function update_event2($eventID, $eventDetails) {
     $connection = connect();
     $id = $eventDetails["id"];
