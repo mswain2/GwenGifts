@@ -278,7 +278,7 @@
 
                             <div id="custom-interval" style="display:none; margin-top:8px;">
                                 <label for="custom_days">Repeat every:</label>
-                                <input type="number" min="1" id="custom_days" name="custom_days" placeholder="<?php if ($recurrence_type === "Custom"){ echo $recurrence;}else{ echo "e.g. 10";} ?>">
+                                <input type="number" min="1" id="custom_days" name="custom_days" <?php if ($recurrence_type === "Custom"){ echo "value='$recurrence'";}else{ echo "e.g. 10";} ?>  placeholder="e.g. 10">
                                 <span>days</span>
                             </div>
                         </div>
