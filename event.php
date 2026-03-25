@@ -346,7 +346,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <td class="label">Time</td>
                     <td><?php echo $event_startTime . " - " . $event_endTime; ?></td>
                 </tr>
-                <?php echo($event_info['series_id'])?>
+                
                 <?php if (isset($event_info['series_id']) && $event_info['series_id'] != NULL): ?>
                     <tr>
                         <td class="label">Recurrence</td>
