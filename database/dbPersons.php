@@ -1230,7 +1230,7 @@ function find_user_names($name) {
     $con = connect();
     $rows = [];
 
-    $query = "SELECT start_time, end_time 
+    $query = "SELECT start_time, end_time, status 
               FROM dbpersonhours 
               WHERE personID = '" . $personID . "' 
               AND eventID = '" . $event . "' 
