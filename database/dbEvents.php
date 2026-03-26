@@ -916,7 +916,10 @@ function delete_event($id) {
 }
 
 function delete_bulk_events($id, $series_id){
-    $query = "delete from dbevents where series_id='$series_id' and not id='$id'";
+    $query = "delete from dbevents where series_id='$series_id' and not id='$id' AND (
+            startDate > CURDATE()
+            OR (startDate = CURDATE() AND startTime > CURTIME())
+            )";
     $connection = connect();
     $result = mysqli_query($connection, $query);
     $result = boolval($result);

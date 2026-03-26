@@ -102,6 +102,7 @@
                         die();
                     }
                     $existingEvent['series_id'] = NULL;
+                    $existingEvent['recurrence_interval_days'] = NULL;
                 }
 
                 if (!$isRecurring && (isset($existingEvent['series_id']) && $existingEvent['series_id'] != NULL)){
@@ -117,7 +118,7 @@
                     }
                 }
 
-                if ($update != NULL && $update == 'Update Entire Series'){
+                if ($update != NULL && $update == 'Update Entire Series' && $existingEvent['series_id'] != NULL){
                     $success = update_series($existingEvent['series_id'], $args);
                     if (!$success){
                         echo "Oopsy!";
