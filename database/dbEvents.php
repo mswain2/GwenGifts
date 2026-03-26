@@ -711,18 +711,22 @@ function update_series($series_id, $eventDetails){
     $recurrence_interval_days = $eventDetails["recurrence_interval_days"];
     //$services = $eventDetails["service"];
     
-    #$completed = $eventDetails["completed"];
-    #$query = "
-       # update dbEvents set name='$name', abbrevName='$abbrevName', date='$date', startTime='$startTime', restricted='$restricted', description='$description', locationID='$location', completed='$completed'
-       # where id='$eventID'
-    #";
-   # $query = "
-    #    update dbevents set id='$id', name='$name', date='$date', startTime='$startTime', endTime='$endTime', description='$description', capacity='$capacity', completed='$completed', event_type='$event_type', restricted_signup='$restricted_signup'
-    #    where id='$eventID'
-    #";
     $query = "
-        update dbevents set name='$name', abbr_name='$abbr_name', startTime='$startTime', endTime='$endTime', description='$description', location='$location', capacity=$capacity, recurrence_interval_days='$recurrence_interval_days'
-        where series_id='$series_id'
+    UPDATE dbevents
+    SET 
+        name='$name',
+        abbr_name='$abbr_name',
+        startTime='$startTime',
+        endTime='$endTime',
+        description='$description',
+        location='$location',
+        capacity=$capacity,
+        recurrence_interval_days='$recurrence_interval_days'
+    WHERE series_id='$series_id'
+    AND (
+        startDate > CURDATE()
+        OR (startDate = CURDATE() AND startTime > CURTIME())
+    )
     ";
     $result = mysqli_query($connection, $query);
     mysqli_commit($connection);

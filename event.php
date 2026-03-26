@@ -358,6 +358,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 $repeats = "Weekly";
                             } elseif ($recurrence == 30){
                                 $repeats = "Monthly";
+                            }elseif ($recurrence == -1){
+                                $repeats = "Part of a deleted series";
                             }
                         ?>
                         <td><?php echo $repeats;?></td>
