@@ -346,6 +346,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <td class="label">Time</td>
                     <td><?php echo $event_startTime . " - " . $event_endTime; ?></td>
                 </tr>
+                
                 <?php if (isset($event_info['series_id']) && $event_info['series_id'] != NULL): ?>
                     <tr>
                         <td class="label">Recurrence</td>
@@ -357,6 +358,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 $repeats = "Weekly";
                             } elseif ($recurrence == 30){
                                 $repeats = "Monthly";
+                            }elseif ($recurrence == -1){
+                                $repeats = "Part of a deleted series";
                             }
                         ?>
                         <td><?php echo $repeats;?></td>

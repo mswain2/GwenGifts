@@ -694,6 +694,46 @@ function update_event($eventID, $eventDetails) {
     return $result;
 }
 
+function update_series($series_id, $eventDetails){
+    $connection = connect();
+    $name = $eventDetails["name"];
+    $abbr_name = $eventDetails["abbr"];
+    #$abbrevName = $eventDetails["abbrev-name"];
+    #$date = $eventDetails["date"];
+    $startTime = $eventDetails["start-time"];
+    #$restricted = $eventDetails["restricted"];
+    $endTime = $eventDetails["end-time"];
+    $description = $eventDetails["description"];
+    $capacity = $eventDetails["capacity"];
+    #$completed = $eventDetails["completed"];
+    #$restricted_signup = $eventDetails["restricted_signup"];
+    $location = $eventDetails["location"];
+    $recurrence_interval_days = $eventDetails["recurrence_interval_days"];
+    //$services = $eventDetails["service"];
+    
+    $query = "
+    UPDATE dbevents
+    SET 
+        name='$name',
+        abbr_name='$abbr_name',
+        startTime='$startTime',
+        endTime='$endTime',
+        description='$description',
+        location='$location',
+        capacity=$capacity,
+        recurrence_interval_days='$recurrence_interval_days'
+    WHERE series_id='$series_id'
+    AND (
+        startDate > CURDATE()
+        OR (startDate = CURDATE() AND startTime > CURTIME())
+    )
+    ";
+    $result = mysqli_query($connection, $query);
+    mysqli_commit($connection);
+    mysqli_close($connection);
+    return $result;
+}
+
 function update_event2($eventID, $eventDetails) {
     $connection = connect();
     $id = $eventDetails["id"];
@@ -868,6 +908,27 @@ function get_services($eventID) {
 
 function delete_event($id) {
     $query = "delete from dbevents where id='$id'";
+    $connection = connect();
+    $result = mysqli_query($connection, $query);
+    $result = boolval($result);
+    mysqli_close($connection);
+    return $result;
+}
+
+function delete_bulk_events($id, $series_id){
+    $query = "delete from dbevents where series_id='$series_id' and not id='$id' AND (
+            startDate > CURDATE()
+            OR (startDate = CURDATE() AND startTime > CURTIME())
+            )";
+    $connection = connect();
+    $result = mysqli_query($connection, $query);
+    $result = boolval($result);
+    mysqli_close($connection);
+    return $result;
+}
+
+function set_not_recurring($id){
+    $query = "update dbevents set series_id=NULL where id='$id'";
     $connection = connect();
     $result = mysqli_query($connection, $query);
     $result = boolval($result);

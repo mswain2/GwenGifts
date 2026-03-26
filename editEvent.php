@@ -34,6 +34,10 @@
             "id", "name", "abbr", "date", "start-time", "end-time", "description"
         );
 
+        
+        /*If update has been set, use the given value. If it was not set, use NULL*/
+        $update = $_POST['update'] ?? NULL;
+
         if (!wereRequiredFieldsSubmitted($args, $required)) {
             echo 'bad form data';
             die();
@@ -71,7 +75,7 @@
 
             if (!$errors) {
             
-                $isRecurring    = isset($_POST['recurring']) ? 1 : 0;
+                $isRecurring    = (isset($_POST['recurring']) && $_POST['recurring'] == 1) ? 1 : 0;
                 $recurrenceType = $isRecurring ? ($_POST['recurrence_type'] ?? '') : '';
                 $customDays     = ($isRecurring && $recurrenceType === 'custom')
                                   ? (int)($_POST['custom_days'] ?? 0)
@@ -90,10 +94,42 @@
                     $args['recurrence_interval_days'] = $customDays;
                 }
 
-                $success = update_event($id, $args);
-                if (!$success){
-                    echo "Oopsy!";
-                    die();
+                if ($isRecurring && $existingEvent['recurrence_interval_days'] != $args['recurrence_interval_days']
+                   && (isset($existingEvent['series_id']) && $existingEvent['series_id'] != NULL)){
+                    $result = delete_bulk_events($id, $existingEvent['series_id']);
+                    if(!$result){
+                        echo "uh oh";
+                        die();
+                    }
+                    $existingEvent['series_id'] = NULL;
+                    $existingEvent['recurrence_interval_days'] = NULL;
+                }
+
+                if (!$isRecurring && (isset($existingEvent['series_id']) && $existingEvent['series_id'] != NULL)){
+                    $result = delete_bulk_events($id, $existingEvent['series_id']);
+                    if(!$result){
+                        echo "uh oh";
+                        die();
+                    }
+                    $result = set_not_recurring($id);
+                    if(!$result){
+                        echo "uh oh";
+                        die();
+                    }
+                }
+
+                if ($update != NULL && $update == 'Update Entire Series' && $existingEvent['series_id'] != NULL){
+                    $success = update_series($existingEvent['series_id'], $args);
+                    if (!$success){
+                        echo "Oopsy!";
+                        die();
+                    }
+                }else{
+                    $success = update_event($id, $args);
+                    if (!$success){
+                        echo "Oopsy!";
+                        die();
+                    }
                 }
 
                 if (
@@ -168,6 +204,16 @@
         echo "Event does not exist";
         die();
     }
+    $recurrence = $event['recurrence_interval_days'];
+    if ($recurrence == 1){
+        $recurrence_type = "Daily";
+    } elseif ($recurrence == 7){
+        $recurrence_type = "Weekly";
+    } elseif ($recurrence == 30){
+        $recurrence_type = "Monthly";
+    } else {
+        $recurrence_type = "Custom";
+    }
 
     require_once('include/output.php');
 
@@ -179,6 +225,7 @@
     <head>
         <?php require_once('universal.inc') ?>
         <title>Gwyneth's Gift | Edit Event</title>
+        <link rel="stylesheet" href="event.css" type="text/css" />
     </head>
     <body>
         <?php require_once('header.php') ?>
@@ -232,7 +279,26 @@
 
                 <div class="event-sect">
                     <?php if (isset($event['series_id']) && $event['series_id'] != NULL): ?>
-                        <p>This is a recurring event!</p>
+                        <input type="radio" id="recurring" name="recurring" value="1" checked>
+                        Recurring <br>
+                        <div id="recurring-options" style="display:none; margin-top:6px;">
+                            <label for="recurrence_type">Recurrence:</label>
+                            <select name="recurrence_type" id="recurrence_type">
+                                <option value="">-- Select --</option>
+                                <option value="daily" <?php if ($recurrence_type === "Daily") echo "selected"; ?>>Daily</option>
+                                <option value="weekly" <?php if ($recurrence_type === "Weekly") echo "selected"; ?>>Weekly</option>
+                                <option value="monthly" <?php if ($recurrence_type === "Monthly") echo "selected"; ?>>Monthly</option>
+                                <option value="custom" <?php if ($recurrence_type === "Custom") echo "selected"; ?>>Custom</option>
+                            </select>
+
+                            <div id="custom-interval" style="display:none; margin-top:8px;">
+                                <label for="custom_days">Repeat every:</label>
+                                <input type="number" min="1" id="custom_days" name="custom_days" <?php if ($recurrence_type === "Custom"){ echo "value='$recurrence'";}else{ echo "e.g. 10";} ?>  placeholder="e.g. 10">
+                                <span>days</span>
+                            </div>
+                        </div>
+                        <input type="radio" id="recurring" name="recurring" value="2">
+                        Remove recurrence
                     <?php else: ?>
                         <label>Make this a recurring event</label><br>
 
@@ -258,7 +324,10 @@
                     <?php endif ?>
                 </div>
 
-                <input type="submit" value="Update Event">
+                <input type="submit" name="update" value="Update Event">
+                <?php if (isset($event['series_id']) && $event['series_id'] != NULL): ?>
+                    <input type="submit" name="update" value="Update Entire Series" onclick="return confirm('Are you sure you want to edit the entire series?');">
+                <?php endif ?>
                 <a class="button cancel" href="event.php?id=<?php echo htmlspecialchars($_GET['id']) ?>" style="margin-top: .5rem">Cancel</a>    
             </form>
 
@@ -290,6 +359,7 @@
                             if (customDays) customDays.value = '';
                         }
                     }
+
                     function toggleCustom(){
                         if (!recurrenceType || !customBlock) return;
                         customBlock.style.display = (recurrenceType.value === 'custom') ? 'block' : 'none';

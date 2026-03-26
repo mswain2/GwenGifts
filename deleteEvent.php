@@ -25,7 +25,13 @@
     if ($event && !empty($event['series_id']) && $_GET['confirm'] == 'series') {
         $con = connect(); // uses the same DB connection from dbEvents.php
         $series_id = mysqli_real_escape_string($con, $event['series_id']);
-        mysqli_query($con, "DELETE FROM dbevents WHERE series_id = '$series_id'");
+        mysqli_query($con, "DELETE FROM dbevents WHERE series_id = '$series_id' AND (
+            startDate > CURDATE()
+            OR (startDate = CURDATE() AND startTime > CURTIME())
+            )");
+        $recurrence = $event['recurrence_interval_days'];
+        mysqli_query($con, "UPDATE dbevents SET recurrence_interval_days=-1 
+            WHERE series_id= '$series_id'");
         mysqli_close($con);
 
         header('Location: calendar.php?deleteSuccess');
