@@ -86,7 +86,7 @@ if (date("H:i:s") > "18:19:59") {
                     <div class="icon">
                         <img src="images/usaicon.png" alt="User Icon" class="icon-img in-nav-img">
                         <div class="dropdown">
-                            <a href="signup.php" class="dropdown-link"><div>Create Account</div></a>
+                            <a href="VolunteerRegister.php" class="dropdown-link"><div>Create Account</div></a>
                             <a href="login.php" class="dropdown-link"><div>Log in</div></a>
                         </div>
                     </div>
@@ -254,7 +254,14 @@ if (date("H:i:s") > "18:19:59") {
         //they're logged in and session variables are set.
 	
         // load header according to user role/type
-        if ($type === 'admin' || $type === 'board_member' || $type === 'event_manager') {
+        $type = $_SESSION['type'];
+        if ($type === 'admin' || $type === "superadmin") {
+            require 'partials/nav_admin.php';
+        }
+        else if ($type === 'board_member') {
+            require 'partials/nav_admin.php';
+        }
+        else if ($type === 'event_manager.php') {
             require 'partials/nav_admin.php';
         }
         else {

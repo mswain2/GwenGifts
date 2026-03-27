@@ -5,37 +5,37 @@
             <a href="index.php"><img src="images/cropped-logo.png" alt="Logo"></a>
         </div>
         <div class="nav-links">
-        <div class="nav-item"><a href="index.php">Home<a></div>
-            <div class="nav-item">Events <span>&#9660</span>
-                <div class="dropdown">
-                    <a href="viewMyUpcomingEvents.php" style="text-decoration: none;">
+            <div class="nav-item"><a href="index.php">Home</a></div>
+                <div class="nav-item">Events <span>&#9660</span>
+                    <div class="dropdown">
+                        <a href="viewMyUpcomingEvents.php" style="text-decoration: none;">
+                            <div class="in-nav">
+                                <img src="images/list-solid.svg">
+                                <span>My Upcoming</span>
+                            </div>
+                        </a>
+                        <a href="calendar.php" style="text-decoration: none;">
                         <div class="in-nav">
-                            <img src="images/list-solid.svg">
-                            <span>My Upcoming</span>
+                            <img src="images/new-event.svg">
+                            <span>Sign-Up</span>
                         </div>
-                    </a>
-                    <a href="calendar.php" style="text-decoration: none;">
-                    <div class="in-nav">
-                        <img src="images/new-event.svg">
-                        <span>Sign-Up</span>
+                        </a>
+                        <a href="editHours.php" style="text-decoration: none;">
+                        <div class="in-nav">
+                            <img src="images/clock-regular.svg">
+                            <span>Edit Hours</span>
+                        </div>
+                        </a>
                     </div>
-                    </a>
-                    <a href="editHours.php" style="text-decoration: none;">
-                    <div class="in-nav">
-                        <img src="images/clock-regular.svg">
-                        <span>Edit Hours</span>
-                    </div>
-                    </a>
                 </div>
-            </div>
-            <div class="nav-item">
-                <div class="dropdown">
-                    <a href="volunteerViewGroup.php" style="text-decoration: none;">
-                    <div class="in-nav">
-                        <img src="images/group.svg">
-                        <span>My Groups</span>
-                    </div>
-                    </a>
+                <div class="nav-item">
+                    <div class="dropdown">
+                        <a href="volunteerViewGroup.php" style="text-decoration: none;">
+                        <div class="in-nav">
+                            <img src="images/group.svg">
+                            <span>My Groups</span>
+                        </div>
+                        </a>
                 </div>
             </div>
         </div>

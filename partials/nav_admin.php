@@ -8,7 +8,7 @@
         </div>
             <!--<a href="viewCheckInOut.php" style="color: white; text-decoration: none;"><div class="date-box">Check In/Out</div></a>-->
         <div class="nav-links">
-            <div class="nav-item"><a href="index.php">Home<a></div>
+            <div class="nav-item"><a href="index.php">Home</a></div>
             <div class="nav-item">Events <span>&#9660</span>
                 <div class="dropdown">
                     <a href="addEvent.php" style="text-decoration: none;">
