@@ -79,10 +79,12 @@ $args = $args ?? [];
         <label for="first_name"><em>* </em>First Name</label>
         <input type="text" id="first_name" name="first_name" required placeholder="Enter your first name" 
             value="<?php echo old('first_name'); ?>">
+        <?php field_error('first_name'); ?>
 
         <label for="last_name"><em>* </em>Last Name</label>
         <input type="text" id="last_name" name="last_name" required placeholder="Enter your last name"
             value="<?php echo old('last_name'); ?>">
+        <?php field_error('last_name'); ?>
 
         <div class="median-div"></div>
             
@@ -93,6 +95,7 @@ $args = $args ?? [];
             <option value="Other" <?php echo old('gender') === 'Other' ? 'selected' : ''; ?>>Nonbinary | Other</option>
             <option value="Unlisted" <?php echo (old('gender') === 'Unlisted' || old('gender') === '') ? 'selected' : ''; ?>>Prefer not to say</option>
         </select>
+        <?php field_error('gender'); ?>
 
         <label for="t_shirt_size"><em>* </em>T-shirt Size</label>
         <select id="t_shirt_size" name="t_shirt_size" required>
@@ -103,6 +106,7 @@ $args = $args ?? [];
             <option value="XL" <?php echo old('t_shirt_size') === 'XL' ? 'selected' : ''; ?>>XL</option>
             <option value="XXL" <?php echo old('t_shirt_size') === 'XXL' ? 'selected' : ''; ?>>2XL</option>
         </select>
+        <?php field_error('t_shirt_size'); ?>
 
         <label for="birthday"><em>* </em>Date of Birth</label>
         <input type="date" id="birthday" name="birthday" required 
@@ -129,10 +133,12 @@ $args = $args ?? [];
         <label for="street_address"><em>* </em>Street Address</label>
         <input type="text" id="street_address" name="street_address" required placeholder="Enter your street address"
             value="<?php echo old('street_address'); ?>">
+        <?php field_error('street_address'); ?>
 
         <label for="city"><em>* </em>City</label>
         <input type="text" id="city" name="city" required placeholder="Enter your city"
             value="<?php echo old('city'); ?>">
+        <?php field_error('city'); ?>
 
         <label for="state"><em>* </em>State</label>
         
@@ -371,6 +377,7 @@ $args = $args ?? [];
             "sunday_start" and "sunday_end" for time selectors
         */
         function dayAvailability($day, $day_availability, $args) {
+            global $error_messages;
             $d = strtolower($day);
             $is_checked = in_array($day, $day_availability);
             $checked_attr = $is_checked ? 'checked' : '';
@@ -378,6 +385,9 @@ $args = $args ?? [];
             $disabled = $is_checked ? '' : 'disabled';
             $start_val = $args[$d . '_start'] ?? '';
             $end_val   = $args[$d . '_end'] ?? '';
+            $error = !empty($error_messages[$d . '_time']) 
+                ? '<p class="error">' . htmlspecialchars($error_messages[$d . '_time']) . '</p>' 
+                : '';
 
             echo "
             <div>
@@ -390,13 +400,12 @@ $args = $args ?? [];
                     <select name='{$d}_start' $disabled>" . timeOptions($start_val) . "</select>
                     <p class='mb-2'>End Availability Time (To):</p>
                     <select name='{$d}_end' $disabled>" . timeOptions($end_val) . "</select>
+                    $error
                 </div>
             </div>";
         }
 
         $days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-        
-        // Loop through days of the week to generate availability checkboxes and time selectors
         foreach ($days as $day) {
             dayAvailability($day, $day_availability, $args);
         }
@@ -676,6 +685,7 @@ $args = $args ?? [];
                 <label for="computer_access_no"> No</label>
             </div>
         </div>
+        <?php field_error('computer_access'); ?>
 
         <div class="median-div"></div>
 
@@ -693,6 +703,7 @@ $args = $args ?? [];
                 <label for="camera_access_no"> No</label>
             </div>
         </div>
+        <?php field_error('camera_access'); ?>
 
         <div class="median-div"></div>
 
@@ -710,6 +721,7 @@ $args = $args ?? [];
                 <label for="transportation_access_no"> No</label>
             </div>
         </div>
+        <?php field_error('transportation_access'); ?>
 
     </fieldset>
 
@@ -780,6 +792,7 @@ $args = $args ?? [];
         <label for="username"><em>* </em>Username</label>
         <input type="text" id="username" name="username" required placeholder="Enter a username"
             value="<?php echo old('username'); ?>">
+        <?php field_error('username'); ?>
 
         <label for="password"><em>* </em>Password</label>
         <p>Your password must be at least 8 characters long, contain at least one number, one uppercase letter, and one lowercase letter.</p>
@@ -818,6 +831,7 @@ $args = $args ?? [];
                 <label for="disagree-about">I do not agree.</label>
             </div>
         </div>
+        <?php field_error('about_consent'); ?>
 
         <!--
         This is deprecated as there is no privacy policy for our project in place at the moment. This may change. 

@@ -31,6 +31,8 @@ require_once('header.php');
         $ignoreList = array('password', 'password-reenter');
         $args = sanitize($_POST, $ignoreList);
 
+        $showPopup = false;
+
         // Original array. Changed to fit WVF needs
         /*$required = array(
             'first_name', 'last_name', 'birthdate',
@@ -61,7 +63,8 @@ require_once('header.php');
         */
 
 
-        // Current updated version
+        // Current updated version -- DEPRECATED
+        /*
         $required = array(
             'first_name', 'last_name', 'gender', 'birthday',
             'street_address', 'city', 'state', 'zip',
@@ -79,23 +82,39 @@ require_once('header.php');
             'email_prefs', 'skills', 'experience', 'other_language',
             'day_availability'
         );
+        */
 
 
         // Validation
         $errors = false;
         $error_messages = [];
 
+        /*
         if (!wereRequiredFieldsSubmitted($args, $required)) {
             $errors = true;
             $error_messages['general'] = 'Please fill in all required fields.';
         }
+        */
 
         // Name validation
         $first_name = $args['first_name'];
+        if (empty($first_name)) {
+            $errors = true;
+            $error_messages['first_name'] = 'First name is required.';
+        }
+
         $last_name = $args['last_name'];
+        if (empty($last_name)) {
+            $errors = true;
+            $error_messages['last_name'] = 'Last name is required.';
+        }
 
         // Gender validation
         $gender = $args['gender'];
+        if (empty($gender)) {
+            $errors = true;
+            $error_messages['gender'] = 'Please select a gender.';
+        }
 
         // Unused
         /*$age = $args['age'];  Passes either "true" or "false" */
@@ -109,7 +128,17 @@ require_once('header.php');
 
         // Address validation
         $street_address = $args['street_address'];
+        if (empty($street_address)) {
+            $errors = true;
+            $error_messages['street_address'] = 'Street address is required.';
+        }
+
         $city = $args['city'];
+        if (empty($city)) {
+            $errors = true;
+            $error_messages['city'] = 'City is required.';
+        }
+
         $state = $args['state'];
         if (!valueConstrainedTo($state, array(
             'AK','AL','AR','AZ','CA','CO','CT','DC','DE','FL','GA','HI','IA','ID','IL','IN','KS','KY','LA','MA','MD','ME',
@@ -197,6 +226,33 @@ require_once('header.php');
         // So this availability section is NOT deprecated I added this, but I cannot quite place how to go about the actual implementation into the database. Work in progress.
         $day_availability = isset($args['day_availability']) ? (array)$args['day_availability'] : [];
 
+        // Validate availability time ranges
+        $time_order = [
+            '12am'=>0, '1am'=>1, '2am'=>2, '3am'=>3, '4am'=>4, '5am'=>5,
+            '6am'=>6, '7am'=>7, '8am'=>8, '9am'=>9, '10am'=>10, '11am'=>11,
+            '12pm'=>12, '1pm'=>13, '2pm'=>14, '3pm'=>15, '4pm'=>16, '5pm'=>17,
+            '6pm'=>18, '7pm'=>19, '8pm'=>20, '9pm'=>21, '10pm'=>22, '11pm'=>23
+        ];
+
+        foreach ($day_availability as $day) {
+            $d         = strtolower($day);
+            $start     = $args[$d . '_start'] ?? '';
+            $end       = $args[$d . '_end']   ?? '';
+            $start_val = $time_order[$start] ?? -1;
+            $end_val   = $time_order[$end]   ?? -1;
+
+            if (empty($start) || empty($end)) {
+                $errors = true;
+                $error_messages[$d . '_time'] = $day . ': please select both a start and end time.';
+            } elseif ($start_val === -1 || $end_val === -1) {
+                $errors = true;
+                $error_messages[$d . '_time'] = $day . ': invalid time selection.';
+            } elseif ($start_val >= $end_val) {
+                $errors = true;
+                $error_messages[$d . '_time'] = $day . ': start time must be before end time.';
+            }
+        }
+
         /*$availability = [];
         foreach (['sunday','monday','tuesday','wednesday','thursday','friday','saturday'] as $d) {
             if (in_array(ucfirst($d), $day_availability)) {
@@ -209,7 +265,7 @@ require_once('header.php');
 
         // Languages
         $language_data = [];
-        
+
         // Sanitize all selected languages upfront
         $selected_languages = isset($args['selected_languages']) ? array_map(function($l) { return preg_replace('/[^a-z_]/', '', $l); }, $args['selected_languages']) : [];  
         
@@ -261,10 +317,29 @@ require_once('header.php');
         $experience = isset($args['experience']) ? $args['experience'] : null;
 
         // Additional validations
-        $computer_access = $args['computer_access'];
-        $camera_access = $args['camera_access'];
-        $transportation_access = $args['transportation_access'];
-        $t_shirt_size = $args['t_shirt_size'];
+        $computer_access = $args['computer_access'] ?? null;
+        if (empty($computer_access)) {
+            $errors = true;
+            $error_messages['computer_access'] = 'Please select an option.';
+        }
+
+        $camera_access = $args['camera_access'] ?? null;
+        if (empty($camera_access)) {
+            $errors = true;
+            $error_messages['camera_access'] = 'Please select an option.';
+        }
+
+        $transportation_access = $args['transportation_access'] ?? null;
+        if (empty($transportation_access)) {
+            $errors = true;
+            $error_messages['transportation_access'] = 'Please select an option.';
+        }
+
+        $t_shirt_size = $args['t_shirt_size'] ?? null;
+        if (empty($t_shirt_size)) {
+            $errors = true;
+            $error_messages['t_shirt_size'] = 'Please select a t-shirt size.';
+        }
 
         // Unused fields from previous iteration, left for reference. These may be added back in the future as needed.
 
@@ -278,7 +353,11 @@ require_once('header.php');
         $training_level = "None";*/
 
         // user and password validation
-        $id = $args['username'];
+        $id = $args['username'] ?? '';
+        if (empty($id)) {
+            $errors = true;
+            $error_messages['username'] = 'Username is required.';
+        }
 
         $password = isSecurePassword($args['password']);
         if (!$password) {
@@ -287,13 +366,17 @@ require_once('header.php');
         } else {
             $password = password_hash($args['password'], PASSWORD_BCRYPT);
         }
+            
+        // About consent validation
+        $about_consent = isset($args['about_consent']) ? $args['about_consent'] : null;
+        if (($args['about_consent'] ?? '') !== 'yes') {
+            $errors = true;
+            $error_messages['about_consent'] = 'You must agree to the About Us affirmation.';
+        }
 
         if ($errors) {
             require_once('registrationForm.php');
             } else {
-
-            // About consent validation
-            $about_consent = isset($args['about_consent']) ? $args['about_consent'] : null;
 
             // Deprecated constructor, left for reference. Updated version below.
             /*$newperson = new Person(
@@ -336,10 +419,12 @@ require_once('header.php');
                 $transportation_access, $skills, $experience, $about_consent
             );
 
+            $showPopup = false;
+            
             // Push of new person into dbpersons
             $result = add_person($newperson);
             if (!$result) {
-                $showPopup = true;
+                //$showPopup = true;
             } else {
                 if (!empty($language_data)) add_languages($id, $language_data);
                 if (!empty($day_availability)) add_availabilities($id, $day_availability, $args);
@@ -354,7 +439,7 @@ require_once('header.php');
     }
 ?>
 
-<?php if ($showPopup): ?>
+<?php if ($showPopup && !$errors): ?>
 <div id="popupMessage" class="absolute left-[40%] top-[20%] z-50 bg-red-800 p-4 text-white rounded-xl text-xl shadow-lg">
     That username is already taken.
 </div>
