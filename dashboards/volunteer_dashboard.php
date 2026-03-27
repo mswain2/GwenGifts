@@ -35,13 +35,13 @@
             <div class="small-text">Let's have some fun!</div>
             <div class="large-text">My Events</div>
             <div class="nav-buttons">
-                <button class="nav-button" onclick="window.location.href='viewAllEvents.php'">
-                    <span class="arrow"><img src="images/new-event.svg" style="width: 40px; border-radius:5px; border-bottom-right-radius: 10px;"></span>
-                    <span class="text">Sign-Up</span>
-                </button>
                 <button class="nav-button" onclick="window.location.href='viewMyUpcomingEvents.php'">
-                    <span class="arrow"><img src="images/list-solid.svg" style="width: 40px; border-radius:5px; border-bottom-right-radius: 10px;"></span>
+                    <span class="arrow"><img src="images/new-event.svg" style="width: 40px; border-radius:5px; border-bottom-right-radius: 10px;"></span>
                     <span class="text">Upcoming</span>
+                </button>
+                <button class="nav-button" onclick="window.location.href='viewAllEvents.php'">
+                    <span class="arrow"><img src="images/list-solid.svg" style="width: 40px; border-radius:5px; border-bottom-right-radius: 10px;"></span>
+                    <span class="text">Browse</span>
                 </button>
             </div>
         </div>
