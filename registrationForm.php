@@ -208,7 +208,7 @@ $args = $args ?? [];
         <div class="median-div"></div>
 
         <label for="phone1"><em>* </em>Phone Number</label>
-        <input type="tel" id="phone1" name="phone1" pattern="(\D{0,1})\d{3}(\D{0,2})\d{3}(.{0,1})\d{4}" placeholder="Ex. (555) 555-5555" required
+        <input type="tel" id="phone1" name="phone1" pattern="(\D{0,1})\d{3}(\D{0,2})\d{3}(.{0,1})\d{4}" placeholder="Ex. 555-555-5555" required
             value="<?php echo old('phone1'); ?>">
         <?php field_error('phone1'); ?>
 
@@ -275,7 +275,7 @@ $args = $args ?? [];
         <label for="emergency_contact_phone"><em>* </em>Phone Number</label>
         <input type="tel" id="emergency_contact_phone" name="emergency_contact_phone" 
             pattern="(\D{0,1})\d{3}(\D{0,2})\d{3}(.{0,1})\d{4}" 
-            required placeholder="Ex. (555) 555-5555"
+            required placeholder="Ex. 555-555-5555"
             value="<?php echo old('emergency_contact_phone'); ?>">
         <?php field_error('emergency_contact_phone'); ?>
 
