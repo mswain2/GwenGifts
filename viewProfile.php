@@ -182,7 +182,7 @@
         </div>
         <div class="space-y-2 divide-y divide-gray-300">
           <div class="flex justify-between py-2">
-            <span class="font-medium">Role</span><span><?php echo ucfirst($user->get_type())?></span>
+            <span class="font-medium">Role</span><span><?php echo ucfirst($user->get_type_formatted())?></span>
           </div>
           <div class="flex justify-between py-2">
             <span class="font-medium">Status</span><span><?php echo ucfirst($user->get_status())?></span>
