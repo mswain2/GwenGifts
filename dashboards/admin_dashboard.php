@@ -44,14 +44,14 @@
             </button>
         </div>
     </div>
-        
+
+    <!-- Admin dashboard -->
     <div style="margin-top: 50px; padding: 0px 80px;">
         <h2><b>Admin Dashboard</b></h2>
     </div>
-
     <div class="full-width-bar-sub">
 
-        <!-- number of inbox messages -->
+        <!-- calculate number of inbox messages -->
         <?php
         require_once('database/dbMessages.php');
         $unreadMessageCount = 0;
@@ -75,7 +75,7 @@
             <button class="arrow-button">→</button>
         </div>
 
-        <!-- Manage Documents -->
+        <!-- Pending IDs -->
         <!-- <div class="content-box-test" onclick="window.location.href='view_encrypted_gallery.php'">
             <div class="icon-overlay">
                 <img style="border-radius: 5px;" src="images/file-regular.svg" alt="Document Icon">
@@ -201,7 +201,6 @@
             <div class="graph-text">Access files for your events.</div>
             <button class="arrow-button">→</button>
         </div>
-
 
     </div>
 
