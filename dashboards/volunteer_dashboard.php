@@ -1,13 +1,18 @@
 <body>
+    <!-- get header.php -->
     <?php require 'header.php'; ?>
 
+    <!-- welcome message -->
     <div style="margin-top: 0px; padding: 30px 20px;">
         <h2><b>Welcome <?php echo $person->get_first_name() ?>!</b> Let's get started.</h2>
     </div>
 
+    <!-- get toasts.php -->
     <?php require 'partials/toasts.php'; ?>
 
+    <!-- main toolbar -->
     <div class="full-width-bar">
+        <!-- My Profile -->
         <div class="content-box">
             <img src="images/gwenVol.jpg" style="filter:brightness(1) contrast(40%) blur(4px) opacity(60%);" />
             <div class="small-text">Make a difference.</div>
@@ -24,6 +29,7 @@
             </div>
         </div>
 
+        <!-- My Events -->
         <div class="content-box">
             <img src="images/gg.jpg" style="filter:brightness(1) contrast(40%) blur(4px) opacity(60%);" />
             <div class="small-text">Let's have some fun!</div>
@@ -41,12 +47,13 @@
         </div>
     </div>
 
+    <!-- Your Dashboard -->
     <div style="margin-top: 50px; padding: 0px 80px;">
         <h2><b>Your Dashboard</b></h2>
     </div>
-
     <div class="full-width-bar-sub">
 
+        <!-- calculate number of unread messages in inbox -->
         <?php
         require_once('database/dbMessages.php');
         $unreadMessageCount = get_user_unread_count($person->get_id());
@@ -77,14 +84,14 @@
         </div>
 
         <!-- Documentation Upload -->
-        <div class="content-box-test" onclick="window.location.href='upload_encrypted_image.php'">
+        <!-- <div class="content-box-test" onclick="window.location.href='upload_encrypted_image.php'">
             <div class="icon-overlay">
                 <img style="border-radius: 5px;" src="images/file-regular.svg" alt="Upload Icon">
             </div>
             <div class="large-text-sub">Documentation Upload</div>
             <div class="graph-text">Upload an ID for verification.</div>
             <button class="arrow-button">→</button>
-        </div>
+        </div> -->
 
         <!-- Suggestions -->
         <div class="content-box-test" onclick="window.location.href='createSuggestion.php'">
@@ -96,13 +103,13 @@
             <button class="arrow-button">→</button>
         </div>
 
-        <!-- Notifications -->
+        <!-- Inbox -->
         <div class="content-box-test" onclick="window.location.href='inbox.php'">
             <div class="icon-overlay">
                 <img style="border-radius: 5px;" src="images/<?php echo $inboxIcon ?>" alt="Notification Icon">
             </div>
             <div class="large-text-sub">
-                Notifications<?php if ($unreadMessageCount > 0) { echo ' (' . $unreadMessageCount . ')'; } ?>
+                Inbox<?php if ($unreadMessageCount > 0) { echo ' (' . $unreadMessageCount . ')'; } ?>
             </div>
             <div class="graph-text">Stay up to date.</div>
             <button class="arrow-button">→</button>
@@ -130,6 +137,7 @@
 
     </div>
 
+    <!-- get footer -->
     <?php require 'partials/footer.php'; ?>
 
 </body>
