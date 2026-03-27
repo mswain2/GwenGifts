@@ -1,4 +1,9 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+?>
+<?php
 
 date_default_timezone_set("America/New_York");
 
@@ -90,27 +95,31 @@ if (date('m', strtotime($calendarEnd . ' +1 day')) != $monthEpoch) {
 
                                 if (isset($events[$e])) {
                                     $dayEvents = $events[$e];
-                                    foreach ($dayEvents as $info) {
-
-                                        $backgroundCol = 'var(--calendar-event-color)'; // default color
-
-                                        if(isset($_SESSION['access_level'])) {
-                                            if (is_archived($info['id'])) { // archived event
-                                                if ($_SESSION['access_level'] < 2) {
-                                                    continue; // users cannot see archived events
+                                    $maxEvents = 3;
+                                    $eventCount = count($dayEvents);
+                                    $displayEvents = array_slice($dayEvents, 0, $maxEvents);
+                                    foreach ($displayEvents as $info) {
+                                        $backgroundCol = 'var(--calendar-event-color)';
+                                        if (isset($_SESSION['access_level']) && isset($_SESSION['_id'])) {
+                                            if (is_archived($info['id'])) {
+                                                if ($_SESSION['access_level'] < 2) continue;
+                                                $backgroundCol = '#b0b0b0';
+                                            } elseif (!empty($info['board_event']) && $info['board_event'] == 1) {
+                                                $backgroundCol = '#1a3a6b';
+                                                if (check_if_signed_up($info['id'], $_SESSION['_id'])) {
+                                                    $backgroundCol = '#4CAF50';
                                                 }
-                                                $backgroundCol = '#b0b0b0'; //archived grey
-
-                                            } elseif (check_if_signed_up($info['id'], $_SESSION['_id'])) {// user is signed-up for event
+                                            } elseif (check_if_signed_up($info['id'], $_SESSION['_id'])) {
                                                 $backgroundCol = '#4CAF50';
-
                                             }
                                             $eventsStr .= '<a class="calendar-event" style="background-color: ' . $backgroundCol . '" href="event.php?id=' . $info['id'] . '&user_id=' . $_SESSION['_id'] . '">' . htmlspecialchars_decode($info['abbr_name']) . '</a>';
-
                                         } else {
-                                            $eventsStr .= '<a class="calendar-event" style="background-color: ' . $backgroundCol . '" href="event.php?id=' . $info['id'] . '&user_id=guest' . '">' . htmlspecialchars_decode($info['abbr_name']) . '</a>';
+                                            $eventsStr .= '<a class="calendar-event" style="background-color: ' . $backgroundCol . '" href="event.php?id=' . $info['id'] . '&user_id=guest">' . htmlspecialchars_decode($info['abbr_name']) . '</a>';
                                         }
-                                        
+                                    }
+                                    if ($eventCount > $maxEvents) {
+                                        $remaining = $eventCount - $maxEvents;
+                                        $eventsStr .= '<a class="calendar-event" style="background-color:#6b8caf;text-align:center;" href="viewAllEvents.php?date=' . $e . '">+ ' . $remaining . ' more</a>';
                                     }
                                 }
                                 echo '<td class="calendar-day' . $extraClasses . '" ' . $extraAttributes . ' data-date="' . date('Y-m-d', $date) . '">

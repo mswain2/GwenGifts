@@ -1,5 +1,7 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 date_default_timezone_set("America/New_York");
 
@@ -7,88 +9,125 @@ date_default_timezone_set("America/New_York");
 if (isset($_GET['month']) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $_GET['month'])) {
     $dayStr = $_GET['month'];
 } else {
-    $dayStr = date('Y-m-d'); // Default to today
+    $dayStr = date('Y-m-d');
 }
 
-// Get the timestamp for the day we are viewing
 $dayEpoch = strtotime($dayStr);
 if (!$dayEpoch) {
     header('Location: calendar.php?month=' . date("Y-m-d"));
     exit;
 }
 
-$today = strtotime(date("Y-m-d"));
+$today      = strtotime(date("Y-m-d"));
+$previousDay = date('Y-m-d', strtotime($dayStr . ' -1 day'));
+$nextDay     = date('Y-m-d', strtotime($dayStr . ' +1 day'));
 
-// Compute previous and next week
-$previousWeek = strtotime(date('Y-m-d', $dayEpoch) . ' -7 days');
-$nextWeek = strtotime(date('Y-m-d', $dayEpoch) . ' +7 days');
+require_once('database/dbEvents.php');
+require_once('database/dbPersons.php');
+
+$loggedIn   = isset($_SESSION['_id']) ? 1 : 0;
+$userID     = isset($_SESSION['_id']) ? $_SESSION['_id'] : null;
+$accessLevel = isset($_SESSION['access_level']) ? $_SESSION['access_level'] : 0;
+
+$dayEvents = fetch_events_on_date($dayStr, $loggedIn);
+
+$formattedDate = date('l, F j, Y', $dayEpoch);
 ?>
 
-<table id="calendar"
-       data-current-month="<?php echo date('Y-m-d', $dayEpoch); ?>"
-       data-prev-month="<?php echo date('Y-m-d', $previousWeek); ?>"
-       data-next-month="<?php echo date('Y-m-d', $nextWeek); ?>">
-    <thead>
-        <?php
-        // Use the validated day string
-        $selectedDateString = $dayStr;
-        $date = $dayEpoch;
+<div style="padding: 1rem;">
 
-        require_once('database/dbEvents.php');
-        echo "<tr><th>" . htmlspecialchars($selectedDateString) . "</th></tr>";
-        ?>
-    </thead>
-    <tbody>
-    <?php
-    // Determine logged-in status for db query (avoid undefined variable)
-    $loggedIn = isset($_SESSION['_id']) ? 1 : 0;
+    <!-- Date heading with prev/next navigation -->
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem;">
+        <a href="#" onclick="loadDailyView('<?php echo $previousDay; ?>')" 
+           style="color:var(--main-color); font-size:1.5rem; text-decoration:none; padding:0.25rem 0.75rem;">&#8249;</a>
+        <h2 style="font-size:1.1rem; font-weight:600; color:var(--main-color);">
+            <?php echo htmlspecialchars($formattedDate); ?>
+        </h2>
+        <a href="#" onclick="loadDailyView('<?php echo $nextDay; ?>')"
+           style="color:var(--main-color); font-size:1.5rem; text-decoration:none; padding:0.25rem 0.75rem;">&#8250;</a>
+    </div>
 
-    $dayEvents = fetch_events_on_date($selectedDateString, $loggedIn);
-    echo "<script>console.log('Events:', " . json_encode($dayEvents) . ");</script>";
+    <?php if (!empty($dayEvents)): ?>
+        <table class="general" style="width:100%;">
+            <thead>
+                <tr>
+                    <th>Event</th>
+                    <th>Time</th>
+                    <th>Type</th>
+                    <th>Capacity</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($dayEvents as $info):
+                    $eventID   = $info['id'];
+                    $title     = htmlspecialchars($info['name']);
+                    $startTime = htmlspecialchars($info['startTime']);
+                    $endTime   = htmlspecialchars($info['endTime']);
+                    $type      = htmlspecialchars($info['type']);
+                    $capacity  = (int)$info['capacity'];
+                    $isBoardEvent = !empty($info['board_event']) && $info['board_event'] == 1;
 
-    // Prepare cell attributes
-    $extraAttributes = '';
-    $extraClasses = '';
-    if (date('Y-m-d', $date) == date('Y-m-d', $today)) {
-        $extraClasses = ' today';
-    }
-
-    $eventsStr = '';
-    if (!empty($dayEvents)) {
-        foreach ($dayEvents as $info) {
-            $backgroundCol = 'var(--calendar-event-color)'; // default color
-
-            if (isset($_SESSION['access_level'])) {
-                // Logged-in user logic
-                if (is_archived($info['id'])) {
-                    if ($_SESSION['access_level'] < 2) {
-                        continue; // users cannot see archived events
+                    if (is_archived($eventID)) {
+                        if ($accessLevel < 2) continue;
                     }
-                    $backgroundCol = '#aaaaaa';
-                } elseif (check_if_signed_up($info['id'], $_SESSION['_id'])) {
-                    $backgroundCol = '#4CAF50';
-                }
 
-                $eventsStr .= '<a class="calendar-event" style="background-color: ' . $backgroundCol . '" href="event.php?id=' . $info['id'] . '&user_id=' . $_SESSION['_id'] . '">' . htmlspecialchars_decode($info['abbr_name']) . '</a>';
-            } else {
-                // Guest logic
-                if (is_archived($info['id'])) {
-                    continue;
-                }
-                $eventsStr .= '<a class="calendar-event" style="background-color: ' . $backgroundCol . '" href="event.php?id=' . $info['id'] . '&user_id=guest">' . htmlspecialchars_decode($info['abbr_name']) . '</a>';
-            }
-        }
+                    $signups   = fetch_event_signups($eventID);
+                    $numSignups = count($signups);
+                    $isSignedUp = $userID ? check_if_signed_up($eventID, $userID) : false;
+
+                    $rowStyle = $isBoardEvent ? 'background-color:#e8eef5;' : '';
+                    $titleColor = $isBoardEvent ? 'color:#1a3a6b;font-weight:700;' : '';
+                ?>
+                <tr style="<?php echo $rowStyle; ?>">
+                    <td>
+                        <a href="event.php?id=<?php echo $eventID; ?>" 
+                           class="event-link" style="<?php echo $titleColor; ?>">
+                            <?php echo $title; ?>
+                            <?php if ($isBoardEvent): ?>
+                                <span style="font-size:11px;background:#1a3a6b;color:white;padding:1px 6px;border-radius:10px;margin-left:4px;">Board</span>
+                            <?php endif; ?>
+                        </a>
+                    </td>
+                    <td style="white-space:nowrap;"><?php echo $startTime . ' – ' . $endTime; ?></td>
+                    <td><?php echo $type; ?></td>
+                    <td>
+                        <?php if ($numSignups >= $capacity): ?>
+                            <span class="full-capacity">Full</span>
+                        <?php else: ?>
+                            <?php echo $numSignups . ' / ' . $capacity; ?>
+                        <?php endif; ?>
+                    </td>
+                    <td>
+                        <?php if ($loggedIn): ?>
+                            <?php if ($isSignedUp): ?>
+                                <span style="color:#4CAF50;font-weight:700;">✓ Signed Up</span>
+                            <?php elseif ($numSignups < $capacity): ?>
+                                <a href="eventSignUp.php?id=<?php echo $eventID; ?>&event_name=<?php echo urlencode($info['name']); ?>"
+                                   class="button" style="width:auto;padding:0.3rem 0.8rem;margin:0;font-size:0.85rem;">
+                                    Sign Up
+                                </a>
+                            <?php else: ?>
+                                <span style="color:#cc0000;">Full</span>
+                            <?php endif; ?>
+                        <?php else: ?>
+                            <a href="login.php" style="font-size:0.85rem;">Login to Sign Up</a>
+                        <?php endif; ?>
+                    </td>
+                </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    <?php else: ?>
+        <p style="text-align:center;color:#828282;padding:2rem 0;">No events on this day.</p>
+    <?php endif; ?>
+
+</div>
+
+<script>
+function loadDailyView(date) {
+    if (typeof loadView === 'function') {
+        loadView('calendar-view_daily.php?month=' + date);
     }
-
-    // Output the single-row daily view
-    echo '<tr class="calendar-week">';
-    echo '<td class="calendar-day' . $extraClasses . '" ' . $extraAttributes . ' data-date="' . date('Y-m-d', $date) . '">
-            <div class="calendar-day-wrapper">
-                <p class="calendar-day-number">' . date('j', $date) . '</p>
-                ' . $eventsStr . '
-            </div>
-        </td>';
-    echo '</tr>';
-    ?>
-    </tbody>
-</table>
+}
+</script>
