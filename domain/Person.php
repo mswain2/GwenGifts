@@ -224,6 +224,22 @@ class Person {
 		return $this->type;
 	}
 
+	// Returns display-friendly type string (e.g. board_member -> Board Member)
+	function get_type_formatted() {
+		if ($this->type == "volunteer") {
+			return "Volunteer";
+		} 
+		else if ($this->type == "event_manager") {
+			return "Event Manager";
+		} 
+		else if ($this->type == "board_member") {
+			return "Board Member";
+		} 
+		else if ($this->type == "admin") {
+			return "Administrator";
+		}
+	}
+
 	function get_status() {
 		return $this->status;
 	}
