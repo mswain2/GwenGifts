@@ -588,8 +588,8 @@
         <label>Unlisted Language</label>
         <p class="mb-2">If there is a language you are proficient in that is not listed above, please indicate it here.</p>
         <input type="text" id="other_language" name="other_language" placeholder=""
-            value="<?= htmlspecialchars(ucwords(str_replace('_', ' ', $unlisted ?? ''))) ?>">
-
+        value="<?= htmlspecialchars(ucwords(str_replace('_', ' ', $unlisted ?? '')), ENT_QUOTES, 'UTF-8') ?>"
+        
         <?php competencySelectEdit('speaking_competency_other_language',  'Speaking',  'Unlisted Language', $unlisted_data['speaking']  ?? ''); ?>
         <?php competencySelectEdit('listening_competency_other_language', 'Listening', 'Unlisted Language', $unlisted_data['listening'] ?? ''); ?>
         <?php competencySelectEdit('reading_competency_other_language',   'Reading',   'Unlisted Language', $unlisted_data['reading']   ?? ''); ?>

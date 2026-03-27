@@ -30,7 +30,6 @@
             // This should be removed, with htmlspecialchars being
             // called prior to OUTPUT. I will try to change this later.
             $input = mysqli_real_escape_string($connection, $input);
-            $input = htmlspecialchars($input);
         }
 
         return $input;
