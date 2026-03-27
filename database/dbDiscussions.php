@@ -9,19 +9,25 @@ function add_discussion($discussion, $category = 'general') {
         die("Error: add_discussion type mismatch");
 
     $con = connect();
+
+    $author_id = mysqli_real_escape_string($con, $discussion->get_author_id());
+    $title = mysqli_real_escape_string($con, $discussion->get_title());
+    $body = mysqli_real_escape_string($con, $discussion->get_body());
+    $time = mysqli_real_escape_string($con, $discussion->get_time());
+    $category_esc = mysqli_real_escape_string($con, $category);
+
     $query = "SELECT * FROM dbdiscussions 
-          WHERE author_id = '" . $discussion->get_author_id() . "' 
-          AND title = '" . $discussion->get_title() . "' 
-          AND category = '" . $category . "'";
+              WHERE author_id = '$author_id' 
+              AND title = '$title' 
+              AND category = '$category_esc'";
+
     $result = mysqli_query($con, $query);
 
     if ($result == null || mysqli_num_rows($result) == 0) {
-        $query = "INSERT INTO dbdiscussions (author_id, title, body, time, category) VALUES ('" .
-            $discussion->get_author_id() . "', '" .
-            $discussion->get_title() . "', '" .
-            $discussion->get_body() . "', '" .
-            $discussion->get_time() . "', '" .
-            $category . "')";
+
+        $query = "INSERT INTO dbdiscussions 
+        (author_id, title, body, time, category) 
+        VALUES ('$author_id', '$title', '$body', '$time', '$category_esc')";
 
         mysqli_query($con, $query);
         mysqli_close($con);
@@ -68,17 +74,31 @@ function update_discussion($author_id, $title, $newBody, $edited_by, $category =
 
 function get_discussion($title, $category = null) {
     $con = connect();
+
+    $title = mysqli_real_escape_string($con, $title);
+
     if ($category) {
-        $query = "SELECT * FROM dbdiscussions WHERE title = '$title' AND category = '$category'";
+        $category = mysqli_real_escape_string($con, $category);
+        $query = "SELECT * FROM dbdiscussions 
+                  WHERE title = '$title' 
+                  AND category = '$category'";
     } else {
-        $query = "SELECT * FROM dbdiscussions WHERE title = '$title'";
+        $query = "SELECT * FROM dbdiscussions 
+                  WHERE title = '$title'";
     }
+
     $result = mysqli_query($con, $query);
-    if ($result && mysqli_num_rows($result) > 0) {
+
+    if (!$result) {
+        die("SQL Error: " . mysqli_error($con));
+    }
+
+    if (mysqli_num_rows($result) > 0) {
         $discussion = mysqli_fetch_assoc($result);
         mysqli_close($con);
         return $discussion;
     }
+
     mysqli_close($con);
     return null;
 }

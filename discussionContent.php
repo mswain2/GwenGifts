@@ -37,7 +37,7 @@ if (!isset($_GET['author']) || !isset($_GET['title'])) {
 }
 
 $authorID = htmlspecialchars(trim($_GET['author']));
-$title = htmlspecialchars(trim($_GET['title']));
+$title = trim($_GET['title']);
 $category = isset($_GET['category']) ? $_GET['category'] : null;
 
 // Fetch discussion and author info
@@ -112,7 +112,7 @@ function displayReplies($parentId, $repliesByParent, $level = 0, $accessLevel = 
             
             <?php if (in_array($userType, ['admin', 'superadmin']) || $userID === $reply['user_reply_id']): ?>
                 <a href="editReply.php?reply_id=<?php echo htmlspecialchars($reply['reply_id']); ?>&title=<?php echo urlencode($discussionTitle); ?>&category=<?php echo urlencode($category); ?>">
-                    <img src="images/settings.png" alt="Edit" style="width: 20px; height: 20px; cursor: pointer; position: absolute; top: 10px; right: 35px;">
+                    <i class="fas fa-pencil-alt" style="cursor: pointer; position: absolute; top: 10px; right: 35px; color: var(--main-color);"></i>
                 </a>
             <?php endif; ?>
 

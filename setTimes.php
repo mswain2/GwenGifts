@@ -10,7 +10,10 @@
     $loggedIn = false;
     $accessLevel = 0;
     $userID = null;
-    $user = null;
+    $userType = 'volunteer';  
+    $error = '';
+    $success = false;
+
 
     if (isset($_SESSION['_id'])) {
         $loggedIn = true;
@@ -18,43 +21,74 @@
         $accessLevel = $_SESSION['access_level'];
         $userID = $_SESSION['_id'];
     }
-    if ($accessLevel < 1) {
+
+    require_once('database/dbPersons.php');
+	require_once('database/dbEvents.php');
+	require_once('include/input-validation.php');
+
+    if (isset($_SESSION['_id'])) {
+        if ($_SESSION['_id'] === 'vmsroot') {
+            $userType = 'superadmin';
+        } else {
+            $person = retrieve_person($_SESSION['_id']);
+            if ($person) $userType = $person->get_type();
+        }
+    }
+
+    if (!in_array($userType, ['event_manager', 'admin', 'superadmin', 'board_member'])) {
         header('Location: login.php');
         die();
     }
-    if ($accessLevel == 1) {
-        $user = $_SESSION['_id'];
-    }
+    
 
 	if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-		require_once('database/dbPersons.php');
-		require_once('database/dbEvents.php');
-		require_once('include/input-validation.php');
+        $connection = connect();
 
-		$userID = $_POST['userID'];
-    	$eventID = $_POST['eventID'];
+        $userID = mysqli_real_escape_string($connection, $_POST['userID']);
+        $eventID = mysqli_real_escape_string($connection, $_POST['eventID']);
 
-		$the_event = retrieve_event2($eventID);
-		$date = $the_event['date'];
-		$startTime = $_POST['start-time'];
-    	$endTime = $_POST['end-time'];
-
-		$formatted_start_time = $date . ' ' . validate12hTimeAndConvertTo24h($startTime);
-		$formatted_end_time = $date . ' ' . validate12hTimeAndConvertTo24h($endTime);
-
-		check_in($userID, $eventID, $formatted_start_time);
-		check_out($userID, $eventID, $formatted_end_time);
-
-		$success = 1;
-
-        if ($accessLevel == 1) {
-            header('Location: eventList.php');
+		$event = retrieve_event2($eventID);
+        if (!$event || !isset($event['startDate'])) {       
+            mysqli_close($connection);     
+            $error = "Invalid event.";
         } else {
-            header('Location: eventList.php?username=' . $userID);
-        }
-	}
+            $date = $event['startDate'];
+            $startTime = trim($_POST['start-time'] ?? '');
+            $endTime = trim($_POST['end-time'] ?? '');
 
-    require_once('include/input-validation.php');
+
+    
+            $start24 = validate12hTimeAndConvertTo24h($startTime);
+            $end24 = validate12hTimeAndConvertTo24h($endTime);
+
+            if (!$start24 || !$end24) {
+                $error = "Invalid time format. Use format like 10:00 AM";
+            } else {
+                $formatted_start_time = $date . ' ' . $start24;
+                $formatted_end_time = $date . ' ' . $end24;
+
+    
+                if (strtotime($formatted_end_time) <= strtotime($formatted_start_time)) {
+                    $error = "End time must be after start time.";
+                } else {
+                    $query = "INSERT INTO dbpersonhours 
+                            (personID, eventID, start_time, end_time)
+                            VALUES ('$userID', '$eventID', '$formatted_start_time', '$formatted_end_time')";
+
+                if (!mysqli_query($connection, $query)) {
+                    $error = "Database error. Please try again.";
+                } else {
+                    mysqli_close($connection);
+                    header('Location: eventList.php?username=' . urlencode($userID));
+                    exit();
+                }
+            }
+        }
+    }
+
+    mysqli_close($connection);
+    
+}
 
 	// Fetch event data
 	if (isset($_GET['eventID'], $_GET['eventName'])) {
@@ -65,18 +99,17 @@
 		die();
 	}
 
-	if ($accessLevel == 1) {
-		$userID = $_SESSION['_id'];
-	} else {
-		if (isset($_GET['userID'])) {
-			$userID = $_GET['userID'];
-		} else {
-			header('Location: login.php');
-			die();
-		}
-	}
+    if ($userType === 'volunteer') {
+        $userID = $_SESSION['_id'];
+    } else {
+        $userID = $_GET['userID'] ?? null;
+        if (!$userID) {
+            header('Location: login.php');
+            die();
+        }
+    }
 
-	require_once('include/input-validation.php');
+    
 
  ?>
 
@@ -90,13 +123,16 @@
 	<?php require_once('header.php') ?>
         <h1>Add New Check-In</h1>
 
-		<?php if (isset($success)): ?>
+		<?php if ($success): ?>
             <div class="happy-toast">Check-In Added Successfully!</div>
         <?php endif ?>
 
         <main class="date">
 
 			<h2><?php echo $eventName ?></h2>
+            <?php if (isset($error)): ?>
+                <p style="color:red;"><?php echo htmlspecialchars($error); ?></p>
+            <?php endif; ?>
             
 			<form id="new-check-in" method="post">
 

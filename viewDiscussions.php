@@ -48,6 +48,11 @@ require_once('header.php');
     <main>
 
       <div class="main-content-box w-[90%] p-8">
+
+        <div class="top-bar">
+            <a href="createDiscussion.php" class="blue-button">+ New Discussion</a>
+        </div>
+
         <?php if (isset($error)) echo "<p style='color: red;'>$error</p>"; ?>
 
         <div class="top-bar">
@@ -114,25 +119,20 @@ require_once('header.php');
         </table>
 
         <br>
-        <?php
-            if (in_array($userType, ['admin', 'superadmin'])):
-            ?>
-                <div class="text-center">
-                    <a href="createDiscussion.php" class="blue-button">Create Discussion</a>
-                </div>
-            <?php
-            endif;
-        ?>
+
+   
+
+
 
 	</div>
     <div class="text-center mt-6">
         <a href="index.php" class="return-button">Return to Dashboard</a>
     </div>
+    <div class="text-center mt-6">
+        <a href="discussionMain.php" class="return-button">Back to Discussions Management</a>
+    </div>
     <div class="info-section">
         <div class="blue-div"></div>
-        <p class="info-text">
-            Use this tool to filter and search for volunteers or participants by their role, event involvement, and status. Mailing list support is built in.
-        </p>
     </div>
 
     </main>

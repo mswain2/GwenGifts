@@ -64,12 +64,7 @@ require_once('header.php');
         <img class="button-icon h-12 w-12 left-4" src="images/group.svg" alt="Calendar Icon">
       </button>
 
-      <button onclick="window.location.href='createDiscussion.php';">
-        <div class="button-left-gray"></div>
-        <div>Create Discussion</div>
-        <img class="button-icon h-12 w-12 left-4" src="images/plus-solid.svg" alt="Calendar Icon">
-      </button>
-
+      
       <?php if (in_array($userType, ['board_member', 'admin', 'superadmin'])): ?>
       <button onclick="window.location.href='viewBoardDiscussions.php';">
           <div class="button-left-gray"></div>

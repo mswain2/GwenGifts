@@ -51,7 +51,7 @@ require_once('header.php');
     <div class="main-content-box w-[90%] p-8">
  
         <div class="top-bar">
-            <a href="createBoardDiscussion.php" class="blue-button">+ New Discussion</a>
+            <a href="createBoardDiscussion.php" class="blue-button">+ New Board Discussion</a>
         </div>
  
         <table>
@@ -101,6 +101,9 @@ require_once('header.php');
  
     <div class="text-center mt-6">
         <a href="index.php" class="return-button">Return to Dashboard</a>
+    </div>
+    <div class="text-center mt-6">
+        <a href="discussionMain.php" class="return-button">Back to Discussions Management</a>
     </div>
 </main>
 </body>
