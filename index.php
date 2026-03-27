@@ -19,7 +19,7 @@ if (!isset($_SESSION['access_level']) || $_SESSION['access_level'] < 1) {
 
 include_once('database/dbPersons.php');
 include_once('domain/Person.php');
-// Get date?
+
 if (isset($_SESSION['_id'])) {
     $person = retrieve_person($_SESSION['_id']);
 }
