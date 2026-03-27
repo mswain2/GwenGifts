@@ -20,7 +20,7 @@
                     <a href="viewAllEvents.php" style="text-decoration: none;">
                     <div class="in-nav">
                         <img src="images/list-solid.svg">
-                        <span>View Events</span>
+                        <span>Browse Events</span>
                     </div>
                     </a>
                     <a href="editHours.php" style="text-decoration: none;">
@@ -43,7 +43,7 @@
                     </a>
                 </div>
             </div>
-            <div class="nav-item">
+            <!-- <div class="nav-item"> Groups <span>&#9660</span>
                 <div class="dropdown">
                     <a href="createGroup.php" style="text-decoration: none;">
                     <div class="in-nav">
@@ -66,7 +66,7 @@
                     </div>
                     </a>
                 </div>
-            </div>
+            </div> -->
         </div>
     </div>
 
