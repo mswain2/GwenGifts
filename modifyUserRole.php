@@ -118,7 +118,7 @@
                                 'board_member' => 'Board Member', 'admin' => 'Administrator');
                 echo '<label for="role">Change Role</label><select id="role" class="form-select-sm" name="s_role">' ;
                 // echo '<option value="" SELECTED></option>' ;
-                $currentRole = $thePerson->get_type()[0];
+                $currentRole = $thePerson->get_type();
                 foreach ($roles as $role => $typename) {
                     if($role != $currentRole) {
                         echo '<option value="'. $role .'">'. $typename .'</option>';
