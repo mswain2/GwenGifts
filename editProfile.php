@@ -23,6 +23,7 @@
         $args = sanitize($_POST, $ignoreList);
 
         $editingSelf = true;
+        $errors = false;
         if ($_SESSION['access_level'] >= 2 && isset($_POST['id'])) {
             $id = $_POST['id'];
             $editingSelf = $id == $_SESSION['_id'];
@@ -30,7 +31,7 @@
             // Check to see if user is a lower-level manager here
         } else {
             $id = $_SESSION['_id'];
-            $errors = false;
+            
         }
 
         // echo "<p>The form was submitted:</p>";
@@ -171,7 +172,41 @@
         */
 
         //$notes = isset($args['notes']) ? $args['notes'] : $person->get_notes();
+$day_availability = isset($args['day_availability']) ? (array)$args['day_availability'] : [];
 
+            // Validate availability time ranges BEFORE saving
+            $time_order = [
+                '12am'=>0, '1am'=>1, '2am'=>2, '3am'=>3, '4am'=>4, '5am'=>5,
+                '6am'=>6, '7am'=>7, '8am'=>8, '9am'=>9, '10am'=>10, '11am'=>11,
+                '12pm'=>12, '1pm'=>13, '2pm'=>14, '3pm'=>15, '4pm'=>16, '5pm'=>17,
+                '6pm'=>18, '7pm'=>19, '8pm'=>20, '9pm'=>21, '10pm'=>22, '11pm'=>23
+            ];
+
+            foreach ($day_availability as $day) {
+                $d = strtolower($day);
+                $start = $args[$d . '_start'] ?? '';
+                $end   = $args[$d . '_end']   ?? '';
+
+                if (empty($start) || empty($end)) {
+                    $errors = true;
+                    $error_messages[] = $day . ': please select both a start and end time.';
+                    continue;
+                }
+
+                $start_val = $time_order[$start] ?? -1;
+                $end_val   = $time_order[$end]   ?? -1;
+
+                if ($start_val === -1 || $end_val === -1) {
+                    $errors = true;
+                    $error_messages[] = $day . ': invalid time selection.';
+                    continue;
+                }
+
+                if ($start_val >= $end_val) {
+                    $errors = true;
+                    $error_messages[] = $day . ': start time must be before end time.';
+                }
+            }
         if (!$errors) {
             $result = update_person_full(
                 $id, $first_name, $last_name, $gender, $t_shirt_size, $birthday,
@@ -182,7 +217,8 @@
                 $computer_access, $camera_access, $transportation_access,
                 $skills, $experience, $notes
             );
-
+            
+            
             if ($result) {
                 // Handle availabilities — delete old, insert new
                 $con = connect();
@@ -190,7 +226,6 @@
                 mysqli_query($con, "DELETE FROM dbavailabilities WHERE person_id = '$safe_id'");
                 mysqli_close($con);
 
-                $day_availability = isset($args['day_availability']) ? (array)$args['day_availability'] : [];
                 if (!empty($day_availability)) {
                     add_availabilities($id, $day_availability, $args);
                 }

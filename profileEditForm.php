@@ -77,6 +77,7 @@
         <?php else: ?>
             <div class="error-toast">An error occurred.</div>
         <?php endif ?>
+        
     <?php endif ?>
     <?php if ($isAdmin): ?>
         <?php if (strtolower($id) == 'vmsroot') : ?>
@@ -85,6 +86,13 @@
         <?php elseif (isset($_GET['id']) && $_GET['id'] != $_SESSION['_id']): ?>
             <!-- <a class="button" href="modifyUserRole.php?id=<?php echo htmlspecialchars($_GET['id']) ?>">Modify User Access</a> -->
         <?php endif ?>
+    <?php endif ?>
+    <?php if (!empty($error_messages)): ?>
+        <div class="error-toast">
+            <?php foreach ($error_messages as $msg): ?>
+                <p><?php echo htmlspecialchars($msg); ?></p>
+            <?php endforeach; ?>
+        </div>
     <?php endif ?>
     <div class="sidebar-wrapper">
         <div class="sidebar">
