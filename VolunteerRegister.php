@@ -209,11 +209,10 @@ require_once('header.php');
 
         // Languages
         $language_data = [];
-        $selected_languages = isset($args['selected_languages']) ? $args['selected_languages'] : [];
-
+        
         // Sanitize all selected languages upfront
-        $selected_languages = array_map(fn($l) => preg_replace('/[^a-z_]/', '', $l), $selected_languages);
-
+        $selected_languages = isset($args['selected_languages']) ? array_map(function($l) { return preg_replace('/[^a-z_]/', '', $l); }, $args['selected_languages']) : [];  
+        
         // Collect all competency data
         foreach ($selected_languages as $lang) {
             $language_data[$lang] = [

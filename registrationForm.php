@@ -12,7 +12,7 @@ $error_messages = $error_messages ?? [];
 // Hydration and persistance
 function old($key, $default = '') {
     global $args;
-    return htmlspecialchars($args[$key] ?? $default);
+    return htmlspecialchars($args[$key] ?? $default, ENT_QUOTES, 'UTF-8');
 }
 $args = $args ?? [];
 ?>
@@ -422,7 +422,7 @@ $args = $args ?? [];
         // Previously selected languages from a failed submission, default to English
         // Use raw submitted languages if available, otherwise default to English
         $selected_languages = isset($args['selected_languages']) && is_array($args['selected_languages']) 
-            ? array_map(fn($l) => preg_replace('/[^a-z_]/', '', $l), $args['selected_languages'])
+            ? array_map(function($l) { return preg_replace('/[^a-z_]/', '', $l); }, $args['selected_languages'])
             : ['english'];
         ?>
 
@@ -602,40 +602,39 @@ $args = $args ?? [];
         <p class="mb-2">Please indicate your speaking competency level in the language you have provided.</p>
         <select name="speaking_competency_other_language">
             <option value="">-- Select competency --</option>
-            <option value="beginner">Beginner</option>
-            <option value="intermediate">Intermediate</option>
-            <option value="advanced">Advanced</option>
-            <option value="fluent">Native/Fluent</option>
+            <option value="beginner" <?php echo old('speaking_competency_other_language') === 'beginner' ? 'selected' : ''; ?>>Beginner</option>
+            <option value="intermediate" <?php echo old('speaking_competency_other_language') === 'intermediate' ? 'selected' : ''; ?>>Intermediate</option>
+            <option value="advanced" <?php echo old('speaking_competency_other_language') === 'advanced' ? 'selected' : ''; ?>>Advanced</option>
+            <option value="fluent" <?php echo old('speaking_competency_other_language') === 'fluent' ? 'selected' : ''; ?>>Native/Fluent</option>
         </select>
 
         <label>Listening Competency:</label>
-        <p class="mb-2">Please indicate your listening competency level in the language you have provided.</p>
         <select name="listening_competency_other_language">
             <option value="">-- Select competency --</option>
-            <option value="beginner">Beginner</option>
-            <option value="intermediate">Intermediate</option>
-            <option value="advanced">Advanced</option>
-            <option value="fluent">Native/Fluent</option>
+            <option value="beginner" <?php echo old('listening_competency_other_language') === 'beginner' ? 'selected' : ''; ?>>Beginner</option>
+            <option value="intermediate" <?php echo old('listening_competency_other_language') === 'intermediate' ? 'selected' : ''; ?>>Intermediate</option>
+            <option value="advanced" <?php echo old('listening_competency_other_language') === 'advanced' ? 'selected' : ''; ?>>Advanced</option>
+            <option value="fluent" <?php echo old('listening_competency_other_language') === 'fluent' ? 'selected' : ''; ?>>Native/Fluent</option>
         </select>
 
         <label>Reading Competency:</label>
         <p class="mb-2">Please indicate your reading competency level in the language you have provided.</p>
         <select name="reading_competency_other_language">
             <option value="">-- Select competency --</option>
-            <option value="beginner">Beginner</option>
-            <option value="intermediate">Intermediate</option>
-            <option value="advanced">Advanced</option>
-            <option value="fluent">Native/Fluent</option>
+            <option value="beginner" <?php echo old('reading_competency_other_language') === 'beginner' ? 'selected' : ''; ?>>Beginner</option>
+            <option value="intermediate" <?php echo old('reading_competency_other_language') === 'intermediate' ? 'selected' : ''; ?>>Intermediate</option>
+            <option value="advanced" <?php echo old('reading_competency_other_language') === 'advanced' ? 'selected' : ''; ?>>Advanced</option>
+            <option value="fluent" <?php echo old('reading_competency_other_language') === 'fluent' ? 'selected' : ''; ?>>Native/Fluent</option>
         </select>
 
         <label>Writing Competency:</label>
         <p class="mb-2">Please indicate your writing competency level in the language you have provided.</p>
         <select name="writing_competency_other_language">
             <option value="">-- Select competency --</option>
-            <option value="beginner">Beginner</option>
-            <option value="intermediate">Intermediate</option>
-            <option value="advanced">Advanced</option>
-            <option value="fluent">Native/Fluent</option>
+            <option value="beginner" <?php echo old('writing_competency_other_language') === 'beginner' ? 'selected' : ''; ?>>Beginner</option>
+            <option value="intermediate" <?php echo old('writing_competency_other_language') === 'intermediate' ? 'selected' : ''; ?>>Intermediate</option>
+            <option value="advanced" <?php echo old('writing_competency_other_language') === 'advanced' ? 'selected' : ''; ?>>Advanced</option>
+            <option value="fluent" <?php echo old('writing_competency_other_language') === 'fluent' ? 'selected' : ''; ?>>Native/Fluent</option>
         </select>
         <?php field_error('other_language_competency'); ?>
 
