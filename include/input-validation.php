@@ -15,6 +15,25 @@
 
     function _sanitize($connection, $input) {
         if (is_array($input)) {
+            foreach ($input as $key => $value) {
+                if (is_array($value)) {
+                    $input[$key] = _sanitize($connection, $value);
+                } else {
+                    $input[$key] = trim($value);
+                    $input[$key] = mysqli_real_escape_string($connection, $input[$key]);
+                }
+            }
+        } else {
+            $input = trim($input);
+            $input = mysqli_real_escape_string($connection, $input);
+        }
+        return $input;
+    }
+
+
+    /*
+    function _sanitize($connection, $input) {
+        if (is_array($input)) {
             $length = count($input);
             for ($i = 0; $i < $length; $i++) {
                  $input[$i] = trim($input[$i]);
@@ -34,6 +53,7 @@
 
         return $input;
     }
+    */
 
     /**
      * Takes an associative array ($_POST or $_GET, for example)

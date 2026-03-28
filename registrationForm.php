@@ -14,7 +14,6 @@ function old($key, $default = '') {
     global $args;
     return htmlspecialchars($args[$key] ?? $default, ENT_QUOTES, 'UTF-8');
 }
-$args = $args ?? [];
 ?>
 
 <!-- imports -->
@@ -813,6 +812,8 @@ $args = $args ?? [];
     </fieldset>
     
     <!-- Consent Notice Section -->
+
+    <?php if (!$isAdminCreating): ?>
     <fieldset class="section-box mb-4">
         <h3>Consent Notice</h3>
         <p class="mb-2">Please review the following before creating your account.</p>
@@ -851,8 +852,67 @@ $args = $args ?? [];
         </div>
         -->
     </fieldset>
+    <?php endif; ?>
+
     <p class="text-center notice"></p>
     <input type="submit" name="registration-form" value="Submit" style="width: 50%; margin: auto;">
     </form>
    </div> 
+   <script>
+    // Save form data to localStorage on input
+    function saveFormData() {
+        var form = document.querySelector('form.signup-form');
+        if (!form) return;
+        var data = {};
+        var inputs = form.querySelectorAll('input:not([type=password]):not([type=submit]):not([type=hidden]), select, textarea');
+        inputs.forEach(function(el) {
+            if (el.type === 'radio' || el.type === 'checkbox') {
+                if (el.checked) {
+                    if (el.type === 'checkbox') {
+                        data[el.name] = el.value;
+                    } else {
+                        data[el.name] = el.value;
+                    }
+                }
+            } else if (el.name) {
+                data[el.name] = el.value;
+            }
+        });
+        localStorage.setItem('regFormData', JSON.stringify(data));
+    }
+
+    // Restore form data from localStorage
+    function restoreFormData() {
+        var saved = localStorage.getItem('regFormData');
+        if (!saved) return;
+        var data = JSON.parse(saved);
+        Object.keys(data).forEach(function(name) {
+            var els = document.querySelectorAll('[name="' + name + '"]');
+            els.forEach(function(el) {
+                if (el.type === 'radio') {
+                    if (el.value === data[name]) el.checked = true;
+                } else if (el.type === 'checkbox') {
+                    if (el.value === data[name]) el.checked = true;
+                } else {
+                    el.value = data[name];
+                }
+            });
+        });
+    }
+
+    // Clear saved data on successful submit
+    document.querySelector('form.signup-form').addEventListener('submit', function() {
+        localStorage.removeItem('regFormData');
+    });
+
+    // Save on any change
+    document.querySelector('form.signup-form').addEventListener('input', saveFormData);
+    document.querySelector('form.signup-form').addEventListener('change', saveFormData);
+
+    // Restore on page load — but only if the form wasn't server-rendered with errors
+    var hasServerErrors = <?php echo !empty($error_messages) ? 'true' : 'false'; ?>;
+    if (!hasServerErrors) {
+        restoreFormData();
+    }
+    </script>
 </main>
