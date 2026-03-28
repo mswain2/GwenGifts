@@ -31,24 +31,33 @@ require_once('database/dbPersons.php');
 $person = retrieve_person($_SESSION['_id']);
 
 $search_name = isset($_GET['search_name']) ? trim($_GET['search_name']) : '';
+$view_scope = $isAdmin ? trim($_GET['view_scope'] ?? 'all') : 'mine';
+$filter_type = isset($_GET['filter_type']) ? trim($_GET['filter_type']) : '';
+$filter_event = isset($_GET['filter_event']) ? trim($_GET['filter_event']) : '';
+$filter_sort = isset($_GET['filter_sort']) ? trim($_GET['filter_sort']) : 'date_desc';
 
-//$materials = get_training_materials_by_user($_SESSION['_id']);
-if ($isAdmin) {
+if (!in_array($view_scope, ['all', 'mine'], true)) {
+    $view_scope = 'all';
+}
+
+if (!in_array($filter_sort, ['date_desc', 'date_asc', 'name_asc', 'name_desc', 'type_asc'], true)) {
+    $filter_sort = 'date_desc';
+}
+
+if ($isAdmin && $view_scope === 'mine') {
+    $materials = get_training_materials_by_user($_SESSION['_id'], $search_name);
+} elseif ($isAdmin) {
     $materials = get_all_training_materials($search_name);
 } else {
     $materials = get_training_materials_by_user($_SESSION['_id'], $search_name);
 }
 
-$pageTitle = $isAdmin ? 'Training Materials' : 'My Training Materials';
-$pageSubtitle = $isAdmin
-    ? 'View all uploaded training materials across events.'
-    : 'Training materials for events you are signed up for.';
-if ($search_name !== '') {
-    $emptyMessage = 'No training materials matched your search.';
+$pageTitle = ($isAdmin && $view_scope === 'all') ? 'Training Materials' : 'My Training Materials';
+
+if ($isAdmin && $view_scope === 'all') {
+    $pageSubtitle = 'View all uploaded training materials across events.';
 } else {
-    $emptyMessage = $isAdmin
-        ? 'No training materials have been uploaded yet.'
-        : 'You do not have any training materials for your events yet.';
+    $pageSubtitle = 'Training materials for events you are signed up for.';
 }
 
 function getDocumentTypeLabel($fileName)
@@ -75,11 +84,105 @@ function getDocumentTypeLabel($fileName)
             return strtoupper($ext ?: 'FILE');
     }
 }
-?>
 
+function formatDisplayDate($dateValue)
+{
+    $timestamp = strtotime((string)$dateValue);
+    return $timestamp ? date('M j, Y', $timestamp) : 'Unknown date';
+}
+
+$eventOptions = [];
+$typeOptions = [];
+
+foreach ($materials as $material) {
+    $eventName = trim((string)($material['event_name'] ?? ''));
+    $typeLabel = getDocumentTypeLabel($material['file_name'] ?? '');
+
+    if ($eventName !== '') {
+        $eventOptions[$eventName] = $eventName;
+    }
+
+    if ($typeLabel !== '') {
+        $typeOptions[$typeLabel] = $typeLabel;
+    }
+}
+
+natcasesort($eventOptions);
+natcasesort($typeOptions);
+
+if ($filter_event !== '') {
+    $materials = array_values(array_filter($materials, function ($material) use ($filter_event) {
+        return (string)($material['event_name'] ?? '') === $filter_event;
+    }));
+}
+
+if ($filter_type !== '') {
+    $materials = array_values(array_filter($materials, function ($material) use ($filter_type) {
+        return getDocumentTypeLabel($material['file_name'] ?? '') === $filter_type;
+    }));
+}
+
+usort($materials, function ($a, $b) use ($filter_sort) {
+    $aEventDate = strtotime((string)($a['event_date'] ?? '')) ?: 0;
+    $bEventDate = strtotime((string)($b['event_date'] ?? '')) ?: 0;
+
+    $aUploaded = strtotime((string)($a['uploaded_at'] ?? '')) ?: 0;
+    $bUploaded = strtotime((string)($b['uploaded_at'] ?? '')) ?: 0;
+
+    $aTitle = strtolower((string)($a['title'] ?? ''));
+    $bTitle = strtolower((string)($b['title'] ?? ''));
+
+    $aType = strtolower(getDocumentTypeLabel($a['file_name'] ?? ''));
+    $bType = strtolower(getDocumentTypeLabel($b['file_name'] ?? ''));
+
+    switch ($filter_sort) {
+        case 'date_asc':
+            return $aEventDate <=> $bEventDate;
+
+        case 'name_asc':
+            return $aTitle <=> $bTitle;
+
+        case 'name_desc':
+            return $bTitle <=> $aTitle;
+
+        case 'type_asc':
+            $typeCompare = $aType <=> $bType;
+            if ($typeCompare !== 0) {
+                return $typeCompare;
+            }
+            return $aTitle <=> $bTitle;
+
+        case 'date_desc':
+        default:
+            if ($aEventDate !== $bEventDate) {
+                return $bEventDate <=> $aEventDate;
+            }
+            return $bUploaded <=> $aUploaded;
+    }
+});
+
+$hasFiltersApplied =
+    $search_name !== '' ||
+    $filter_event !== '' ||
+    $filter_type !== '' ||
+    $filter_sort !== 'date_desc' ||
+    ($isAdmin && $view_scope !== 'all');
+
+if ($hasFiltersApplied) {
+    $emptyMessage = 'No training materials matched your filters.';
+} else {
+    $emptyMessage = ($isAdmin && $view_scope === 'all')
+        ? 'No training materials have been uploaded yet.'
+        : 'You do not have any training materials for your events yet.';
+}
+
+$clearUrl = 'myTrainingMaterials.php';
+if ($isAdmin && $view_scope === 'mine') {
+    $clearUrl .= '?view_scope=mine';
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -99,7 +202,7 @@ function getDocumentTypeLabel($fileName)
         }
 
         .page-container {
-            max-width: 900px;
+            max-width: 1150px;
             margin: 120px auto 60px auto;
             padding: 0 20px;
         }
@@ -125,9 +228,9 @@ function getDocumentTypeLabel($fileName)
             align-items: center;
         }
 
-        .filter-bar input[type="text"] {
-            flex: 1;
-            min-width: 280px;
+        .filter-bar input[type="text"],
+        .filter-bar select {
+            min-width: 170px;
             padding: 10px 16px;
             border: 1px solid #e0e0e0;
             border-radius: 50px;
@@ -135,10 +238,15 @@ function getDocumentTypeLabel($fileName)
             font-size: 14px;
             background-color: #f8f8f8;
             outline: none;
-            transition: border-color 0.2s ease, box-shadow 0.2s ease;
         }
 
-        .filter-bar input[type="text"]:focus {
+        .filter-bar input[type="text"] {
+            flex: 1;
+            min-width: 260px;
+        }
+
+        .filter-bar input[type="text"]:focus,
+        .filter-bar select:focus {
             border-color: #314767;
             box-shadow: 0 0 0 3px rgba(49, 71, 103, 0.08);
         }
@@ -178,18 +286,71 @@ function getDocumentTypeLabel($fileName)
             background-color: #e0e0e0;
         }
 
-        @media (max-width: 640px) {
-            .filter-bar {
-                flex-direction: column;
-                align-items: stretch;
-            }
+        .table-wrap {
+            overflow-x: auto;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            background: #fff;
+        }
 
-            .filter-bar input[type="text"],
-            .filter-bar button,
-            .filter-bar .clear-btn {
-                width: 100%;
-                text-align: center;
-            }
+        .doc-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 15px;
+        }
+
+        .doc-table th {
+            background-color: #f8f8f8;
+            border-bottom: 1px solid #e0e0e0;
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .doc-table td {
+            border-top: 1px solid #f0f0f0;
+            padding: 12px 16px;
+            vertical-align: top;
+        }
+
+        .doc-table tbody tr:hover td {
+            background-color: #fafafa;
+        }
+
+        .file-badge {
+            display: inline-block;
+            background-color: #eef3f8;
+            color: #314767;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 5px 10px;
+            border-radius: 999px;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+        }
+
+        .view-link,
+        .event-link {
+            color: #6b8caf;
+            font-weight: 700;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .view-link:hover,
+        .event-link:hover {
+            text-decoration: underline;
+        }
+
+        .description-cell {
+            min-width: 240px;
+            color: #555;
+            line-height: 1.45;
+        }
+
+        .muted-cell {
+            color: #888;
         }
 
         .empty-msg {
@@ -201,164 +362,142 @@ function getDocumentTypeLabel($fileName)
             margin-bottom: 20px;
         }
 
-        .material-card {
-            background: #fff;
-            border: 1px solid #e8e8e8;
-            border-radius: 14px;
-            padding: 22px;
-            margin-bottom: 18px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-        }
-
-        .material-event {
-            font-size: 22px;
-            font-weight: 700;
-            color: #314767;
-            margin-bottom: 6px;
-        }
-
-        .material-date {
-            font-size: 15px;
-            color: #777;
-            margin-bottom: 14px;
-        }
-
-        .file-badge {
-            display: inline-block;
-            background-color: #eef3f8;
-            color: #314767;
-            font-size: 12px;
-            font-weight: 700;
-            padding: 6px 12px;
-            border-radius: 999px;
-            margin-bottom: 12px;
-            letter-spacing: 0.4px;
-        }
-
-        .material-title {
-            font-size: 18px;
-            font-weight: 700;
-            color: #222;
-            margin-bottom: 8px;
-        }
-
-        .material-description {
-            font-size: 15px;
-            color: #555;
-            margin-bottom: 18px;
-            line-height: 1.5;
-        }
-
-        .button-row {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .btn-primary {
-            display: inline-block;
-            background-color: #314767;
-            color: white;
-            padding: 10px 24px;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: 700;
-            font-size: 15px;
-            transition: background 0.2s ease;
-        }
-
-        .btn-primary:hover {
-            background-color: #263955;
-        }
-
-        .btn-secondary {
-            display: inline-block;
-            background-color: #f0f0f0;
-            color: #333;
-            padding: 10px 24px;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: 700;
-            font-size: 15px;
-            transition: background 0.2s ease;
-        }
-
-        .btn-secondary:hover {
-            background-color: #e0e0e0;
-        }
-
         .bottom-actions {
             margin-top: 26px;
         }
+
+        .dashboard-return {
+            display: inline-block;
+            padding: 10px 24px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 15px;
+        }
+
+        @media (max-width: 820px) {
+            .filter-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filter-bar input[type="text"],
+            .filter-bar select,
+            .filter-bar button,
+            .filter-bar .clear-btn {
+                width: 100%;
+                text-align: center;
+            }
+        }
     </style>
 </head>
-
 <body>
-    <?php require 'header.php'; ?>
+<?php require 'header.php'; ?>
 
-    <div class="page-container">
-        <h2><b><?php echo htmlspecialchars($pageTitle); ?></b></h2>
-        <div class="subtitle"><?php echo htmlspecialchars($pageSubtitle); ?></div>
+<div class="page-container">
+    <h2><b><?php echo htmlspecialchars($pageTitle); ?></b></h2>
+    <div class="subtitle"><?php echo htmlspecialchars($pageSubtitle); ?></div>
 
-        <form method="GET" action="myTrainingMaterials.php">
-            <div class="filter-bar">
-                <input
-                    type="text"
-                    name="search_name"
-                    placeholder="Search by event, title, description, or file name..."
-                    value="<?php echo htmlspecialchars($search_name); ?>">
-                <button type="submit">Search</button>
+    <form method="GET" action="myTrainingMaterials.php">
+        <div class="filter-bar">
+            <input
+                type="text"
+                name="search_name"
+                placeholder="Search by event, title, description, or file name..."
+                value="<?php echo htmlspecialchars($search_name); ?>">
 
-                <?php if ($search_name !== ''): ?>
-                    <a href="myTrainingMaterials.php" class="clear-btn">Clear</a>
-                <?php endif; ?>
-            </div>
-        </form>
+            <?php if ($isAdmin): ?>
+                <select name="view_scope">
+                    <option value="all" <?php if ($view_scope === 'all') echo 'selected'; ?>>All Materials</option>
+                    <option value="mine" <?php if ($view_scope === 'mine') echo 'selected'; ?>>My Materials</option>
+                </select>
+            <?php endif; ?>
 
-        <?php if (empty($materials)): ?>
-            <div class="empty-msg"><?php echo htmlspecialchars($emptyMessage); ?></div>
-        <?php else: ?>
-            <?php foreach ($materials as $material): ?>
-                <div class="material-card">
-                    <div class="material-event">
-                        <?php echo htmlspecialchars_decode($material['event_name']); ?>
-                    </div>
-                    
-                    <div class="material-date">
-                        <?php echo date('l, F j, Y', strtotime($material['event_date'])); ?>
-                    </div>
+            <select name="filter_event">
+                <option value="">All Events</option>
+                <?php foreach ($eventOptions as $eventName): ?>
+                    <option value="<?php echo htmlspecialchars($eventName); ?>" <?php if ($filter_event === $eventName) echo 'selected'; ?>>
+                        <?php echo htmlspecialchars_decode($eventName); ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
 
-                    <div class="file-badge">
-                        <?php echo htmlspecialchars(getDocumentTypeLabel($material['file_name'])); ?>
-                    </div>
+            <select name="filter_type">
+                <option value="">All File Types</option>
+                <?php foreach ($typeOptions as $typeLabel): ?>
+                    <option value="<?php echo htmlspecialchars($typeLabel); ?>" <?php if ($filter_type === $typeLabel) echo 'selected'; ?>>
+                        <?php echo htmlspecialchars($typeLabel); ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
 
-                    <div class="material-title">
-                        <?php echo htmlspecialchars($material['title']); ?>
-                    </div>
+            <select name="filter_sort">
+                <option value="date_desc" <?php if ($filter_sort === 'date_desc') echo 'selected'; ?>>Newest Event First</option>
+                <option value="date_asc" <?php if ($filter_sort === 'date_asc') echo 'selected'; ?>>Oldest Event First</option>
+                <option value="name_asc" <?php if ($filter_sort === 'name_asc') echo 'selected'; ?>>Title A–Z</option>
+                <option value="name_desc" <?php if ($filter_sort === 'name_desc') echo 'selected'; ?>>Title Z–A</option>
+                <option value="type_asc" <?php if ($filter_sort === 'type_asc') echo 'selected'; ?>>File Type</option>
+            </select>
 
-                    <?php if (!empty($material['description'])): ?>
-                        <div class="material-description">
-                            <?php echo htmlspecialchars($material['description']); ?>
-                        </div>
-                    <?php endif; ?>
-
-                    <div class="button-row">
-                        <a class="btn-primary" href="<?php echo htmlspecialchars($material['file_path']); ?>" target="_blank">
-                            Open Document
-                        </a>
-                        <a class="btn-secondary" href="event.php?id=<?php echo urlencode($material['eventID']); ?>">
-                            Go to Event
-                        </a>
-                    </div>
-                </div>
-            <?php endforeach; ?>
-        <?php endif; ?>
-
-        <div class="bottom-actions">
-            <a class="btn-secondary" href="index.php">Return to Dashboard</a>
+            <button type="submit">Search</button>
+            <a href="<?php echo htmlspecialchars($clearUrl); ?>" class="clear-btn">Clear</a>
         </div>
+    </form>
+
+    <?php if (empty($materials)): ?>
+        <div class="empty-msg"><?php echo htmlspecialchars($emptyMessage); ?></div>
+    <?php else: ?>
+        <div class="table-wrap">
+            <table class="doc-table">
+                <thead>
+                    <tr>
+                        <th>Event</th>
+                        <th>Event Date</th>
+                        <th>File Type</th>
+                        <th>Title</th>
+                        <th>Description</th>
+                        <th>Download</th>
+                        <th>Event</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($materials as $material): ?>
+                        <tr>
+                            <td><?php echo htmlspecialchars_decode($material['event_name']); ?></td>
+                            <td><?php echo htmlspecialchars(formatDisplayDate($material['event_date'])); ?></td>
+                            <td>
+                                <span class="file-badge">
+                                    <?php echo htmlspecialchars(getDocumentTypeLabel($material['file_name'])); ?>
+                                </span>
+                            </td>
+                            <td><?php echo htmlspecialchars($material['title']); ?></td>
+                            <td class="description-cell">
+                                <?php if (!empty($material['description'])): ?>
+                                    <?php echo htmlspecialchars($material['description']); ?>
+                                <?php else: ?>
+                                    <span class="muted-cell">No description</span>
+                                <?php endif; ?>
+                            </td>
+                            <td>
+                                <a class="view-link" href="<?php echo htmlspecialchars($material['file_path']); ?>" target="_blank" rel="noopener noreferrer">
+                                    Open Document
+                                </a>
+                            </td>
+                            <td>
+                                <a class="event-link" href="event.php?id=<?php echo urlencode($material['eventID']); ?>">
+                                    Go to Event
+                                </a>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+    <?php endif; ?>
+
+    <div class="bottom-actions">
+        <a class="cancel dashboard-return no-span" href="index.php">Return to Dashboard</a>
     </div>
-
+</div>
 </body>
-
 </html>
