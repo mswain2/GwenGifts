@@ -12,9 +12,8 @@ $error_messages = $error_messages ?? [];
 // Hydration and persistance
 function old($key, $default = '') {
     global $args;
-    return htmlspecialchars($args[$key] ?? $default);
+    return htmlspecialchars($args[$key] ?? $default, ENT_QUOTES, 'UTF-8');
 }
-$args = $args ?? [];
 ?>
 
 <!-- imports -->
@@ -79,10 +78,12 @@ $args = $args ?? [];
         <label for="first_name"><em>* </em>First Name</label>
         <input type="text" id="first_name" name="first_name" required placeholder="Enter your first name" 
             value="<?php echo old('first_name'); ?>">
+        <?php field_error('first_name'); ?>
 
         <label for="last_name"><em>* </em>Last Name</label>
         <input type="text" id="last_name" name="last_name" required placeholder="Enter your last name"
             value="<?php echo old('last_name'); ?>">
+        <?php field_error('last_name'); ?>
 
         <div class="median-div"></div>
             
@@ -93,6 +94,7 @@ $args = $args ?? [];
             <option value="Other" <?php echo old('gender') === 'Other' ? 'selected' : ''; ?>>Nonbinary | Other</option>
             <option value="Unlisted" <?php echo (old('gender') === 'Unlisted' || old('gender') === '') ? 'selected' : ''; ?>>Prefer not to say</option>
         </select>
+        <?php field_error('gender'); ?>
 
         <label for="t_shirt_size"><em>* </em>T-shirt Size</label>
         <select id="t_shirt_size" name="t_shirt_size" required>
@@ -103,6 +105,7 @@ $args = $args ?? [];
             <option value="XL" <?php echo old('t_shirt_size') === 'XL' ? 'selected' : ''; ?>>XL</option>
             <option value="XXL" <?php echo old('t_shirt_size') === 'XXL' ? 'selected' : ''; ?>>2XL</option>
         </select>
+        <?php field_error('t_shirt_size'); ?>
 
         <label for="birthday"><em>* </em>Date of Birth</label>
         <input type="date" id="birthday" name="birthday" required 
@@ -129,10 +132,12 @@ $args = $args ?? [];
         <label for="street_address"><em>* </em>Street Address</label>
         <input type="text" id="street_address" name="street_address" required placeholder="Enter your street address"
             value="<?php echo old('street_address'); ?>">
+        <?php field_error('street_address'); ?>
 
         <label for="city"><em>* </em>City</label>
         <input type="text" id="city" name="city" required placeholder="Enter your city"
             value="<?php echo old('city'); ?>">
+        <?php field_error('city'); ?>
 
         <label for="state"><em>* </em>State</label>
         
@@ -208,7 +213,7 @@ $args = $args ?? [];
         <div class="median-div"></div>
 
         <label for="phone1"><em>* </em>Phone Number</label>
-        <input type="tel" id="phone1" name="phone1" pattern="(\D{0,1})\d{3}(\D{0,2})\d{3}(.{0,1})\d{4}" placeholder="Ex. (555) 555-5555" required
+        <input type="tel" id="phone1" name="phone1" pattern="(\D{0,1})\d{3}(\D{0,2})\d{3}(.{0,1})\d{4}" placeholder="Ex. 555-555-5555" required
             value="<?php echo old('phone1'); ?>">
         <?php field_error('phone1'); ?>
 
@@ -275,7 +280,7 @@ $args = $args ?? [];
         <label for="emergency_contact_phone"><em>* </em>Phone Number</label>
         <input type="tel" id="emergency_contact_phone" name="emergency_contact_phone" 
             pattern="(\D{0,1})\d{3}(\D{0,2})\d{3}(.{0,1})\d{4}" 
-            required placeholder="Ex. (555) 555-5555"
+            required placeholder="Ex. 555-555-5555"
             value="<?php echo old('emergency_contact_phone'); ?>">
         <?php field_error('emergency_contact_phone'); ?>
 
@@ -371,6 +376,7 @@ $args = $args ?? [];
             "sunday_start" and "sunday_end" for time selectors
         */
         function dayAvailability($day, $day_availability, $args) {
+            global $error_messages;
             $d = strtolower($day);
             $is_checked = in_array($day, $day_availability);
             $checked_attr = $is_checked ? 'checked' : '';
@@ -378,6 +384,9 @@ $args = $args ?? [];
             $disabled = $is_checked ? '' : 'disabled';
             $start_val = $args[$d . '_start'] ?? '';
             $end_val   = $args[$d . '_end'] ?? '';
+            $error = !empty($error_messages[$d . '_time']) 
+                ? '<p class="error">' . htmlspecialchars($error_messages[$d . '_time']) . '</p>' 
+                : '';
 
             echo "
             <div>
@@ -390,13 +399,12 @@ $args = $args ?? [];
                     <select name='{$d}_start' $disabled>" . timeOptions($start_val) . "</select>
                     <p class='mb-2'>End Availability Time (To):</p>
                     <select name='{$d}_end' $disabled>" . timeOptions($end_val) . "</select>
+                    $error
                 </div>
             </div>";
         }
 
         $days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-        
-        // Loop through days of the week to generate availability checkboxes and time selectors
         foreach ($days as $day) {
             dayAvailability($day, $day_availability, $args);
         }
@@ -422,7 +430,7 @@ $args = $args ?? [];
         // Previously selected languages from a failed submission, default to English
         // Use raw submitted languages if available, otherwise default to English
         $selected_languages = isset($args['selected_languages']) && is_array($args['selected_languages']) 
-            ? array_map(fn($l) => preg_replace('/[^a-z_]/', '', $l), $args['selected_languages'])
+            ? array_map(function($l) { return preg_replace('/[^a-z_]/', '', $l); }, $args['selected_languages'])
             : ['english'];
         ?>
 
@@ -602,40 +610,39 @@ $args = $args ?? [];
         <p class="mb-2">Please indicate your speaking competency level in the language you have provided.</p>
         <select name="speaking_competency_other_language">
             <option value="">-- Select competency --</option>
-            <option value="beginner">Beginner</option>
-            <option value="intermediate">Intermediate</option>
-            <option value="advanced">Advanced</option>
-            <option value="fluent">Native/Fluent</option>
+            <option value="beginner" <?php echo old('speaking_competency_other_language') === 'beginner' ? 'selected' : ''; ?>>Beginner</option>
+            <option value="intermediate" <?php echo old('speaking_competency_other_language') === 'intermediate' ? 'selected' : ''; ?>>Intermediate</option>
+            <option value="advanced" <?php echo old('speaking_competency_other_language') === 'advanced' ? 'selected' : ''; ?>>Advanced</option>
+            <option value="fluent" <?php echo old('speaking_competency_other_language') === 'fluent' ? 'selected' : ''; ?>>Native/Fluent</option>
         </select>
 
         <label>Listening Competency:</label>
-        <p class="mb-2">Please indicate your listening competency level in the language you have provided.</p>
         <select name="listening_competency_other_language">
             <option value="">-- Select competency --</option>
-            <option value="beginner">Beginner</option>
-            <option value="intermediate">Intermediate</option>
-            <option value="advanced">Advanced</option>
-            <option value="fluent">Native/Fluent</option>
+            <option value="beginner" <?php echo old('listening_competency_other_language') === 'beginner' ? 'selected' : ''; ?>>Beginner</option>
+            <option value="intermediate" <?php echo old('listening_competency_other_language') === 'intermediate' ? 'selected' : ''; ?>>Intermediate</option>
+            <option value="advanced" <?php echo old('listening_competency_other_language') === 'advanced' ? 'selected' : ''; ?>>Advanced</option>
+            <option value="fluent" <?php echo old('listening_competency_other_language') === 'fluent' ? 'selected' : ''; ?>>Native/Fluent</option>
         </select>
 
         <label>Reading Competency:</label>
         <p class="mb-2">Please indicate your reading competency level in the language you have provided.</p>
         <select name="reading_competency_other_language">
             <option value="">-- Select competency --</option>
-            <option value="beginner">Beginner</option>
-            <option value="intermediate">Intermediate</option>
-            <option value="advanced">Advanced</option>
-            <option value="fluent">Native/Fluent</option>
+            <option value="beginner" <?php echo old('reading_competency_other_language') === 'beginner' ? 'selected' : ''; ?>>Beginner</option>
+            <option value="intermediate" <?php echo old('reading_competency_other_language') === 'intermediate' ? 'selected' : ''; ?>>Intermediate</option>
+            <option value="advanced" <?php echo old('reading_competency_other_language') === 'advanced' ? 'selected' : ''; ?>>Advanced</option>
+            <option value="fluent" <?php echo old('reading_competency_other_language') === 'fluent' ? 'selected' : ''; ?>>Native/Fluent</option>
         </select>
 
         <label>Writing Competency:</label>
         <p class="mb-2">Please indicate your writing competency level in the language you have provided.</p>
         <select name="writing_competency_other_language">
             <option value="">-- Select competency --</option>
-            <option value="beginner">Beginner</option>
-            <option value="intermediate">Intermediate</option>
-            <option value="advanced">Advanced</option>
-            <option value="fluent">Native/Fluent</option>
+            <option value="beginner" <?php echo old('writing_competency_other_language') === 'beginner' ? 'selected' : ''; ?>>Beginner</option>
+            <option value="intermediate" <?php echo old('writing_competency_other_language') === 'intermediate' ? 'selected' : ''; ?>>Intermediate</option>
+            <option value="advanced" <?php echo old('writing_competency_other_language') === 'advanced' ? 'selected' : ''; ?>>Advanced</option>
+            <option value="fluent" <?php echo old('writing_competency_other_language') === 'fluent' ? 'selected' : ''; ?>>Native/Fluent</option>
         </select>
         <?php field_error('other_language_competency'); ?>
 
@@ -677,6 +684,7 @@ $args = $args ?? [];
                 <label for="computer_access_no"> No</label>
             </div>
         </div>
+        <?php field_error('computer_access'); ?>
 
         <div class="median-div"></div>
 
@@ -694,6 +702,7 @@ $args = $args ?? [];
                 <label for="camera_access_no"> No</label>
             </div>
         </div>
+        <?php field_error('camera_access'); ?>
 
         <div class="median-div"></div>
 
@@ -711,6 +720,7 @@ $args = $args ?? [];
                 <label for="transportation_access_no"> No</label>
             </div>
         </div>
+        <?php field_error('transportation_access'); ?>
 
     </fieldset>
 
@@ -781,6 +791,7 @@ $args = $args ?? [];
         <label for="username"><em>* </em>Username</label>
         <input type="text" id="username" name="username" required placeholder="Enter a username"
             value="<?php echo old('username'); ?>">
+        <?php field_error('username'); ?>
 
         <label for="password"><em>* </em>Password</label>
         <p>Your password must be at least 8 characters long, contain at least one number, one uppercase letter, and one lowercase letter.</p>
@@ -801,6 +812,8 @@ $args = $args ?? [];
     </fieldset>
     
     <!-- Consent Notice Section -->
+
+    <?php if (!$isAdminCreating): ?>
     <fieldset class="section-box mb-4">
         <h3>Consent Notice</h3>
         <p class="mb-2">Please review the following before creating your account.</p>
@@ -819,6 +832,7 @@ $args = $args ?? [];
                 <label for="disagree-about">I do not agree.</label>
             </div>
         </div>
+        <?php field_error('about_consent'); ?>
 
         <!--
         This is deprecated as there is no privacy policy for our project in place at the moment. This may change. 
@@ -838,8 +852,67 @@ $args = $args ?? [];
         </div>
         -->
     </fieldset>
+    <?php endif; ?>
+
     <p class="text-center notice"></p>
     <input type="submit" name="registration-form" value="Submit" style="width: 50%; margin: auto;">
     </form>
    </div> 
+   <script>
+    // Save form data to localStorage on input
+    function saveFormData() {
+        var form = document.querySelector('form.signup-form');
+        if (!form) return;
+        var data = {};
+        var inputs = form.querySelectorAll('input:not([type=password]):not([type=submit]):not([type=hidden]), select, textarea');
+        inputs.forEach(function(el) {
+            if (el.type === 'radio' || el.type === 'checkbox') {
+                if (el.checked) {
+                    if (el.type === 'checkbox') {
+                        data[el.name] = el.value;
+                    } else {
+                        data[el.name] = el.value;
+                    }
+                }
+            } else if (el.name) {
+                data[el.name] = el.value;
+            }
+        });
+        localStorage.setItem('regFormData', JSON.stringify(data));
+    }
+
+    // Restore form data from localStorage
+    function restoreFormData() {
+        var saved = localStorage.getItem('regFormData');
+        if (!saved) return;
+        var data = JSON.parse(saved);
+        Object.keys(data).forEach(function(name) {
+            var els = document.querySelectorAll('[name="' + name + '"]');
+            els.forEach(function(el) {
+                if (el.type === 'radio') {
+                    if (el.value === data[name]) el.checked = true;
+                } else if (el.type === 'checkbox') {
+                    if (el.value === data[name]) el.checked = true;
+                } else {
+                    el.value = data[name];
+                }
+            });
+        });
+    }
+
+    // Clear saved data on successful submit
+    document.querySelector('form.signup-form').addEventListener('submit', function() {
+        localStorage.removeItem('regFormData');
+    });
+
+    // Save on any change
+    document.querySelector('form.signup-form').addEventListener('input', saveFormData);
+    document.querySelector('form.signup-form').addEventListener('change', saveFormData);
+
+    // Restore on page load — but only if the form wasn't server-rendered with errors
+    var hasServerErrors = <?php echo !empty($error_messages) ? 'true' : 'false'; ?>;
+    if (!hasServerErrors) {
+        restoreFormData();
+    }
+    </script>
 </main>

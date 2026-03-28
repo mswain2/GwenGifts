@@ -156,7 +156,14 @@
 <?php endif ?>
 
 <?php if (isset($_GET['rscSuccess'])): ?>
-  <div class="absolute left-[40%] top-[15%] z-50 bg-green-800 p-4 text-white rounded-xl text-xl">User role/status updated successfully!</div>
+  <div id="rsc-success-toast" class="absolute left-[40%] top-[15%] z-50 bg-green-800 p-4 text-white rounded-xl text-xl transition-opacity duration-500">User role/status updated successfully!</div>
+  <script>
+    setTimeout(function() {
+      var toast = document.getElementById('rsc-success-toast');
+      toast.style.opacity = '0';
+      setTimeout(function() { toast.remove(); }, 500);
+    }, 3000);
+  </script>
 <?php endif ?>
 
 <h1>View Profile</h1>
@@ -182,7 +189,7 @@
         </div>
         <div class="space-y-2 divide-y divide-gray-300">
           <div class="flex justify-between py-2">
-            <span class="font-medium">Role</span><span><?php echo ucfirst($user->get_type())?></span>
+            <span class="font-medium">Role</span><span><?php echo ucfirst($user->get_type_formatted())?></span>
           </div>
           <div class="flex justify-between py-2">
             <span class="font-medium">Status</span><span><?php echo ucfirst($user->get_status())?></span>
@@ -294,7 +301,7 @@
         </div>
         <div>
           <span class="block text-sm font-medium text-[#1F1F21]">Receive Emails?</span>
-          <?php if ($user->get_email_prefs()):?>
+          <?php if ($user->get_email_prefs() == "true"):?>
             <p class="text-gray-900 font-medium text-xl"> Yes </p>
           <?php else: ?>
             <p class="text-gray-900 font-medium text-xl"> No </p>

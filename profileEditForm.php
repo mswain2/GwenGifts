@@ -1,7 +1,12 @@
 <?php
+    function digitsOnly($phone) {
+        return preg_replace('/\D/', '', $phone);
+    }
+
     require_once('domain/Person.php');
     require_once('database/dbPersons.php');
     require_once('include/output.php');
+
 
     // Required imports for Cleave JS to work
     echo('<script src="https://nosir.github.io/cleave.js/dist/cleave.min.js"></script>');
@@ -72,6 +77,7 @@
         <?php else: ?>
             <div class="error-toast">An error occurred.</div>
         <?php endif ?>
+        
     <?php endif ?>
     <?php if ($isAdmin): ?>
         <?php if (strtolower($id) == 'vmsroot') : ?>
@@ -80,6 +86,13 @@
         <?php elseif (isset($_GET['id']) && $_GET['id'] != $_SESSION['_id']): ?>
             <!-- <a class="button" href="modifyUserRole.php?id=<?php echo htmlspecialchars($_GET['id']) ?>">Modify User Access</a> -->
         <?php endif ?>
+    <?php endif ?>
+    <?php if (!empty($error_messages)): ?>
+        <div class="error-toast">
+            <?php foreach ($error_messages as $msg): ?>
+                <p><?php echo htmlspecialchars($msg); ?></p>
+            <?php endforeach; ?>
+        </div>
     <?php endif ?>
     <div class="sidebar-wrapper">
         <div class="sidebar">
@@ -233,8 +246,10 @@
             <input type="email" id="email" name="email" value="<?php echo hsc($person->get_email()); ?>" required placeholder="Enter your e-mail address">
 
             <label for="phone1"><em>* </em>Phone Number</label>
-            <input type="tel" id="phone1" class="phone" name="phone1" value="<?php echo formatPhoneNumber($person->get_phone1()); ?>" pattern="(\D{0,1})\d{3}(\D{0,2})\d{3}(.{0,1})\d{4}" placeholder="Ex. (555) 555-5555">
-
+            <input type="text" id="phone1" class="phone" name="phone1" 
+                value="<?php echo digitsOnly($person->get_phone1()); ?>"
+                pattern="(\D{0,1})\d{3}(\D{0,2})\d{3}(.{0,1})\d{4}" 
+                placeholder="Ex. 555-555-5555">
             <label for="phone1type"><em>* </em>Phone Type</label>
             <div class="radio-group">
                 <?php $type = $person->get_phone1type(); ?>
@@ -283,9 +298,10 @@
             <input type="text" id="emergency_contact_relation" name="emergency_contact_relation" value="<?php echo hsc($person->get_emergency_contact_relation()); ?>" required placeholder="Ex. Spouse, Mother, Father, Sister, Brother, Friend">
 
             <label for="emergency_contact_phone"><em>* </em>Phone Number</label>
-            <input type="tel" id="emergency_contact_phone" class="phone" name="emergency_contact_phone" value="<?php echo formatPhoneNumber($person->get_emergency_contact_phone()); ?>" pattern="(\D{0,1})\d{3}(\D{0,2})\d{3}(.{0,1})\d{4}" placeholder="Ex. (555) 555-5555">
-
-            <label for="emergency_contact_phone_type"><em>* </em>Phone Type</label>
+            <input type="text" id="emergency_contact_phone" class="phone" name="emergency_contact_phone" 
+                value="<?php echo digitsOnly($person->get_emergency_contact_phone()); ?>"
+                pattern="(\D{0,1})\d{3}(\D{0,2})\d{3}(.{0,1})\d{4}" 
+                placeholder="Ex. 555-555-5555">
             <div class="radio-group">
                 <?php $ec_type = $person->get_emergency_contact_phone_type(); ?>
                 <div class="radio-element">
@@ -572,8 +588,8 @@
         <label>Unlisted Language</label>
         <p class="mb-2">If there is a language you are proficient in that is not listed above, please indicate it here.</p>
         <input type="text" id="other_language" name="other_language" placeholder=""
-            value="<?= htmlspecialchars(ucwords(str_replace('_', ' ', $unlisted ?? ''))) ?>">
-
+        value="<?= htmlspecialchars(ucwords(str_replace('_', ' ', $unlisted ?? '')), ENT_QUOTES, 'UTF-8') ?>"
+        
         <?php competencySelectEdit('speaking_competency_other_language',  'Speaking',  'Unlisted Language', $unlisted_data['speaking']  ?? ''); ?>
         <?php competencySelectEdit('listening_competency_other_language', 'Listening', 'Unlisted Language', $unlisted_data['listening'] ?? ''); ?>
         <?php competencySelectEdit('reading_competency_other_language',   'Reading',   'Unlisted Language', $unlisted_data['reading']   ?? ''); ?>
@@ -657,16 +673,13 @@
     <script>
         // Initialize Cleave.js for primary phone number
         new Cleave('#phone1', {
-            phone: true,
-            phoneRegionCode: 'US',
+            blocks: [3, 3, 4],
             delimiter: '-',
             numericOnly: true,
         });
 
-        // Initialize Cleave.js for emergency contact phone number
         new Cleave('#emergency_contact_phone', {
-            phone: true,
-            phoneRegionCode: 'US',
+            blocks: [3, 3, 4],
             delimiter: '-',
             numericOnly: true,
         });

@@ -118,7 +118,7 @@ require_once('header.php');
                                         <td>' . $person->get_id() . '</td>
                                         <td>' . formatPhoneNumber($person->get_phone1()) . '</a></td>
                                         <td>' . $person->get_zip_code() . '</td>
-                                        <td>' . ucfirst($person->get_type()) . '</td>
+                                        <td>' . ucfirst($person->get_type_formatted()) . '</td>
                                         <td>' . ucfirst($person->get_status()) . '</td>
                                         <td><a href="viewProfile.php?id=' . $person->get_id() . '" class="text-blue-700 underline">Profile</a></td>
                                         <td><a href="modifyUserRole.php?id=' . $person->get_id() . '" class="text-blue-700 underline">Update Status</a></td>

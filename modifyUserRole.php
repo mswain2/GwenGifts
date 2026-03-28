@@ -43,7 +43,7 @@
         require_once('database/dbMessages.php');
         $post = sanitize($_POST);
         $new_role = $post['s_role'];
-        if (!valueConstrainedTo($new_role, ['volunteer', 'participant'])) {
+        if (!valueConstrainedTo($new_role, ['volunteer', 'event_manager', 'board_member', 'admin'])) {
             die();
         }
         if (empty($new_role)){
@@ -114,10 +114,11 @@
                         // Provides drop down of the role types to select and change the role
 			//other than the person's current role type is displayed
             if ($accessLevel == 3) {
-				$roles = array('volunteer' => 'Volunteer', 'participant' => 'Participant');
+				$roles = array('volunteer' => 'Volunteer', 'event_manager' => 'Event Manager', 
+                                'board_member' => 'Board Member', 'admin' => 'Administrator');
                 echo '<label for="role">Change Role</label><select id="role" class="form-select-sm" name="s_role">' ;
                 // echo '<option value="" SELECTED></option>' ;
-                $currentRole = $thePerson->get_type()[0];
+                $currentRole = $thePerson->get_type();
                 foreach ($roles as $role => $typename) {
                     if($role != $currentRole) {
                         echo '<option value="'. $role .'">'. $typename .'</option>';
