@@ -198,7 +198,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $body  = "New volunteer account has been created";
             system_message_all_admins($title, $body);
             if ($isAdminCreating) {
-                header('Location: personSearch.php?registerSuccess');
+                header('Location: viewProfile.php?id=' . $id . '&registerSuccess');
             } else {
                 header('Location: login.php?registerSuccess');
             }
