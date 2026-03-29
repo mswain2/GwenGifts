@@ -6,7 +6,7 @@
         </div>
         <div class="nav-links">
             <div class="nav-item"><a href="index.php">Home</a></div>
-            <div class="nav-item">Events <span>&#9660</span>
+            <div class="nav-item">Events <span class="dropdown-arrow">&#9660</span>
                 <div class="dropdown">
                     <a href="viewMyUpcomingEvents.php" style="text-decoration: none;">
                     <div class="in-nav">
@@ -20,12 +20,12 @@
                         <span>Browse Events</span>
                     </div>
                     </a>
-                    <a href="editHours.php" style="text-decoration: none;">
+                    <!-- <a href="editHours.php" style="text-decoration: none;">
                     <div class="in-nav">
                         <img src="images/clock-regular.svg">
                         <span>Edit Hours</span>
                     </div>
-                    </a>
+                    </a> -->
                 </div>
             </div>
             <!-- <div class="nav-item"> Groups <span>&#9660</span>
