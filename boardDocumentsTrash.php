@@ -39,11 +39,25 @@
 
     $connection = connect();
 
+    
     // Handle restore
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['restore_id'])) {
         $restore_id = (int)$_POST['restore_id'];
         mysqli_query($connection, "UPDATE boarddocuments SET deleted = 0, deleted_at = NULL, deleted_by = NULL WHERE id = $restore_id");
         header('Location: boardDocumentsTrash.php?restored=1');
+        exit();
+    }
+
+    // Handle permanent delete
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['perm_delete_id'])) {
+        $perm_id = (int)$_POST['perm_delete_id'];
+        $path_result = mysqli_query($connection, "SELECT file_path FROM boarddocuments WHERE id = $perm_id AND deleted = 1");
+        $path_row = mysqli_fetch_assoc($path_result);
+        if ($path_row && file_exists($path_row['file_path'])) {
+            unlink($path_row['file_path']);
+        }
+        mysqli_query($connection, "DELETE FROM boarddocuments WHERE id = $perm_id AND deleted = 1");
+        header('Location: boardDocumentsTrash.php?perm_deleted=1');
         exit();
     }
 
@@ -170,6 +184,8 @@
 
     <?php if (isset($_GET['restored'])): ?>
         <div class="happy-toast">Document restored successfully!</div>
+    <?php elseif (isset($_GET['perm_deleted'])): ?>
+        <div class="happy-toast" style="background:#f8d7da;color:#721c24;">Document permanently deleted.</div>
     <?php endif; ?>
 
     <a class="back-btn" href="boardDocuments.php">← Back to Documents</a>
@@ -184,6 +200,7 @@
                     <th>Deleted At</th>
                     <th>Deleted By</th>
                     <th>Restore</th>
+                    <th>Delete</th>
                 </tr>
             </thead>
             <tbody>
@@ -202,6 +219,17 @@
                         <form method="POST" action="boardDocumentsTrash.php">
                             <input type="hidden" name="restore_id" value="<?php echo (int)$row['id']; ?>">
                             <button type="submit" class="restore-btn">Restore</button>
+                        </form>
+                    </td>
+                    <td>
+                        <form method="POST" action="boardDocumentsTrash.php"
+                              onsubmit="return confirm('PERMANENTLY delete this document? This cannot be undone.');">
+                            <input type="hidden" name="perm_delete_id" value="<?php echo (int)$row['id']; ?>">
+                            <button type="submit" class="restore-btn" style="background-color:#cc0000;"
+                                onmouseover="this.style.backgroundColor='#a30000'"
+                                onmouseout="this.style.backgroundColor='#cc0000'">
+                                Delete
+                            </button>
                         </form>
                     </td>
                 </tr>

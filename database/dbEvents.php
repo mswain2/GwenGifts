@@ -63,7 +63,8 @@ function add_event($event) {
                 $event->getLocation() . "," .
                 $event->Access() . '","' . 
                 $event->getCompleted() . "," .
-                #$event->getID() .            
+                #$event->getID() .   
+
                 '");');							
         mysqli_close($con);
         return true;
@@ -195,6 +196,35 @@ function fetch_event_signups($eventID) {
 
     mysqli_close($connection);
     return $signups;
+}
+
+function fetch_all_signup_counts() {
+    $connection = connect();
+    $query = "SELECT eventID, COUNT(*) as cnt FROM dbeventpersons GROUP BY eventID";
+    $result = mysqli_query($connection, $query);
+    $counts = [];
+    if ($result) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            $counts[$row['eventID']] = (int) $row['cnt'];
+        }
+    }
+    mysqli_close($connection);
+    return $counts;
+}
+
+function fetch_user_signups($userID) {
+    $connection = connect();
+    $safe = mysqli_real_escape_string($connection, $userID);
+    $query = "SELECT eventID FROM dbeventpersons WHERE userID = '$safe'";
+    $result = mysqli_query($connection, $query);
+    $eventIDs = [];
+    if ($result) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            $eventIDs[$row['eventID']] = true;
+        }
+    }
+    mysqli_close($connection);
+    return $eventIDs;
 }
 
 /*
@@ -379,7 +409,8 @@ function make_an_event($result_row) {
                     capacity: $result_row['capacity'],
                     location: $result_row['location'],
                     access: $result_row['access'],
-                    completed: $result_row['completed']
+                    completed: $result_row['completed'],
+                    board_event: $result_row['board_event'] ?? 0
                     
                 ); 
     return $theEvent;
@@ -450,8 +481,44 @@ function fetch_events_in_date_range($start_date, $end_date) {
     $connection = connect();
     $start_date = mysqli_real_escape_string($connection, $start_date);
     $end_date = mysqli_real_escape_string($connection, $end_date);
+
+    // SCRUM-16: determine event filter
+    $event_filter = isset($_GET['event_filter']) ? $_GET['event_filter'] : 'public';
+
+    // Determine if user can see board events
+    $show_board = false;
+    if (isset($_SESSION['_id'])) {
+        if ($_SESSION['_id'] === 'vmsroot') {
+            $show_board = true;
+        } else {
+            include_once(dirname(__FILE__).'/../database/dbPersons.php');
+            $calPerson = retrieve_person($_SESSION['_id']);
+            if ($calPerson) {
+                $calType = $calPerson->get_type();
+                $show_board = in_array($calType, ['board_member', 'admin', 'superadmin']);
+            }
+        }
+    }
+
+    // Build filter clause
+    if (!$show_board) {
+        // Non-board users only see public events
+        $filter_clause = "AND board_event = 0";
+    } else {
+        // Board users: apply dropdown filter
+        if ($event_filter === 'board') {
+            $filter_clause = "AND board_event = 1";
+        } elseif ($event_filter === 'public') {
+            $filter_clause = "AND board_event = 0";
+        } else {
+            // 'all' - show everything
+            $filter_clause = "";
+        }
+    }
+
     $query = "select * from dbevents
-              where startDate >= '$start_date' and endDate <= '$end_date'
+              where startDate >= '$start_date' and startDate <= '$end_date'
+              $filter_clause
               order by startTime asc";
     $result = mysqli_query($connection, $query);
     if (!$result) {
@@ -561,6 +628,7 @@ function create_event($event) {
     $startTime = $event["start-time"];    
     $endTime = $event["end-time"];
     $description = $event["description"];
+    $board_event = isset($event['board_event']) ? (int)$event['board_event'] : 0;
     $type = $event['type'];
     if (isset($event["capacity"])) {
         $capacity = $event["capacity"];
@@ -590,13 +658,17 @@ function create_event($event) {
     //$animal = $event["animal"];
     $completed = 'N';
 
+    $recurrence_interval_days = isset($event['recurrence_interval_days'])
+        ? mysqli_real_escape_string($connection, $event['recurrence_interval_days'])
+        : null;
+
     $series_id = isset($event['series_id'])
         ? mysqli_real_escape_string($connection, $event['series_id'])
         : null;
 
     $query = "
-        insert into dbevents (name, abbr_name, startDate, startTime, endTime, endDate, access, description, capacity, completed, location, type, series_id)
-        values ('$name', '$abbr', '$date', '$startTime', '$endTime', '$endDate', '$access', '$description', $capacity, '$completed', '$location', '$type', " .($series_id ? "'$series_id'" : "NULL") . ")
+        insert into dbevents (name, abbr_name, startDate, startTime, endTime, endDate, access, description, capacity, completed, location, type, series_id, recurrence_interval_days, board_event)
+        values ('$name', '$abbr', '$date', '$startTime', '$endTime', '$endDate', '$access', '$description', $capacity, '$completed', '$location', '$type', " .($series_id ? "'$series_id'" : "NULL") . ", " .($recurrence_interval_days ? "'$recurrence_interval_days'" : "0") . ", $board_event)
     ";
     $result = mysqli_query($connection, $query);
     if (!$result) {
@@ -627,6 +699,7 @@ function update_event($eventID, $eventDetails) {
     $connection = connect();
     $id = $eventDetails["id"];
     $name = $eventDetails["name"];
+    $abbr_name = $eventDetails["abbr"];
     #$abbrevName = $eventDetails["abbrev-name"];
     $date = $eventDetails["date"];
     $startTime = $eventDetails["start-time"];
@@ -637,6 +710,7 @@ function update_event($eventID, $eventDetails) {
     #$completed = $eventDetails["completed"];
     #$restricted_signup = $eventDetails["restricted_signup"];
     $location = $eventDetails["location"];
+    $recurrence_interval_days = $eventDetails["recurrence_interval_days"];
     //$services = $eventDetails["service"];
     
     #$completed = $eventDetails["completed"];
@@ -649,11 +723,51 @@ function update_event($eventID, $eventDetails) {
     #    where id='$eventID'
     #";
     $query = "
-        update dbevents set id='$id', name='$name', startDate='$date', endDate='$date', startTime='$startTime', endTime='$endTime', description='$description', location='$location', capacity=$capacity
+        update dbevents set id='$id', name='$name', abbr_name='$abbr_name', startDate='$date', endDate='$date', startTime='$startTime', endTime='$endTime', description='$description', location='$location', capacity=$capacity, recurrence_interval_days='$recurrence_interval_days'
         where id='$eventID'
     ";
     $result = mysqli_query($connection, $query);
     // update_services_for_event($eventID, $services);
+    mysqli_commit($connection);
+    mysqli_close($connection);
+    return $result;
+}
+
+function update_series($series_id, $eventDetails){
+    $connection = connect();
+    $name = $eventDetails["name"];
+    $abbr_name = $eventDetails["abbr"];
+    #$abbrevName = $eventDetails["abbrev-name"];
+    #$date = $eventDetails["date"];
+    $startTime = $eventDetails["start-time"];
+    #$restricted = $eventDetails["restricted"];
+    $endTime = $eventDetails["end-time"];
+    $description = $eventDetails["description"];
+    $capacity = $eventDetails["capacity"];
+    #$completed = $eventDetails["completed"];
+    #$restricted_signup = $eventDetails["restricted_signup"];
+    $location = $eventDetails["location"];
+    $recurrence_interval_days = $eventDetails["recurrence_interval_days"];
+    //$services = $eventDetails["service"];
+    
+    $query = "
+    UPDATE dbevents
+    SET 
+        name='$name',
+        abbr_name='$abbr_name',
+        startTime='$startTime',
+        endTime='$endTime',
+        description='$description',
+        location='$location',
+        capacity=$capacity,
+        recurrence_interval_days='$recurrence_interval_days'
+    WHERE series_id='$series_id'
+    AND (
+        startDate > CURDATE()
+        OR (startDate = CURDATE() AND startTime > CURTIME())
+    )
+    ";
+    $result = mysqli_query($connection, $query);
     mysqli_commit($connection);
     mysqli_close($connection);
     return $result;
@@ -833,6 +947,27 @@ function get_services($eventID) {
 
 function delete_event($id) {
     $query = "delete from dbevents where id='$id'";
+    $connection = connect();
+    $result = mysqli_query($connection, $query);
+    $result = boolval($result);
+    mysqli_close($connection);
+    return $result;
+}
+
+function delete_bulk_events($id, $series_id){
+    $query = "delete from dbevents where series_id='$series_id' and not id='$id' AND (
+            startDate > CURDATE()
+            OR (startDate = CURDATE() AND startTime > CURTIME())
+            )";
+    $connection = connect();
+    $result = mysqli_query($connection, $query);
+    $result = boolval($result);
+    mysqli_close($connection);
+    return $result;
+}
+
+function set_not_recurring($id){
+    $query = "update dbevents set series_id=NULL where id='$id'";
     $connection = connect();
     $result = mysqli_query($connection, $query);
     $result = boolval($result);

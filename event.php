@@ -280,26 +280,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php
         require_once('include/output.php');
         $event_name = $event_info['name'];
+        $event_abbr = $event_info['abbr_name'];
         $event_date = date('l, F j, Y', strtotime($event_info['startDate']));
+        $today = date('l, F j, Y');
+        $now = date('H:i:s');
         $event_startTime = time24hto12h($event_info['startTime']);
         $event_endTime = time24hto12h($event_info['endTime']);
+        $date = new DateTime($event_date);
+        $time = new DateTime($event_startTime);
+        $today = new DateTime($today);
+        $now = new DateTime($now);
+        $event_in_past = false;
+        if ($today > $date){
+            $event_in_past = true;
+        } elseif($today == $date){
+            if ($now > $time){
+                $event_in_past = true;
+            }
+        }
+        
         $event_description = $event_info['description'];
         $event_location = $event_info['location'];
         $event_capacity = $event_info['capacity'];
         //$event_training_level = $event_info['affiliation'];
         $num_signups = $event_num_signups['RowCount'];
+        $recurrence = $event_info['recurrence_interval_days'];
         require_once('include/time.php');
         ?>
 
         <!-- Event Information Table -->
         <h2 class="event-head">
             <?php echo htmlspecialchars_decode($event_name); ?>
-            <?php if (isset($_SESSION['access_level']) && $access_level >= 2): ?>
+            <?php if (isset($_SESSION['access_level']) && $access_level >= 2 && !$event_in_past): ?>
                 <a href="editEvent.php?id=<?= $id ?>" title="Edit Event" class="edit-icon">
                     <i class="fas fa-pencil-alt"></i>
                 </a>
                 <a href="deleteEvent.php?id=<?= $id ?>" title="Delete Event" class="delete-icon"
-                    onclick="return confirm('<?= htmlspecialchars($confirmText, ENT_QUOTES) ?>');">
+                    onclick="showDeleteConfirmation(); return false;">
                     <i class="fas fa-trash"></i>
                 </a>
             <?php endif; ?>
@@ -318,6 +335,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div id="table-wrapper">
             <table>
                 <tr>
+                    <td class="label">Abbreviated Name</td>
+                    <td><?php echo htmlspecialchars_decode($event_abbr);?></td>
+                </tr>
+                <tr>
                     <td class="label">Date</td>
                     <td><?php echo $event_date; ?></td>
                 </tr>
@@ -325,6 +346,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <td class="label">Time</td>
                     <td><?php echo $event_startTime . " - " . $event_endTime; ?></td>
                 </tr>
+                
+                <?php if (isset($event_info['series_id']) && $event_info['series_id'] != NULL): ?>
+                    <tr>
+                        <td class="label">Recurrence</td>
+                        <?php 
+                            $repeats = "Every " . $recurrence . " days";
+                            if ($recurrence == 1){
+                                $repeats = "Daily";
+                            } elseif ($recurrence == 7){
+                                $repeats = "Weekly";
+                            } elseif ($recurrence == 30){
+                                $repeats = "Monthly";
+                            }elseif ($recurrence == -1){
+                                $repeats = "Part of a deleted series";
+                            }
+                        ?>
+                        <td><?php echo $repeats;?></td>
+                    </tr>
+                <?php endif ?>
                 <tr>
                     <td class="label">Location</td>
                     <td>
@@ -335,7 +375,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <tr>
                     <td class="label">Description</td>
                     <td>
-                        <?php echo wordwrap($event_description, 50, "<br />\n"); ?>
+                        <?php echo wordwrap(htmlspecialchars_decode($event_description), 50, "<br />\n"); ?>
                     </td>
                 </tr>
                 <tr>
@@ -431,7 +471,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <a href="viewEventSignUps.php?id=<?php echo $id; ?>" class="button signup">View Event Signups</a>
 
                 <!-- Archive and Unarchive buttons by Thomas -->
-
+                <!--Remove archive stuff - Kenzie
                 <?php if (is_archived($event_info['id'])) : ?>
                     <form method="POST" action="" onsubmit="return confirmAction('unarchive')">
                         <input type="hidden" name="unarchiving" value="1">
@@ -449,7 +489,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </form>
 
                 <?php endif ?>
-
+                -->
                 <!-- end of Thomas's work -->
 
                 <a href="logAttendees.php?id=<?php echo urlencode($id); ?>" class="button signup">Log Event Attendees</a>
@@ -476,17 +516,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <!-- Confirmation Modals -->
         <?php if (isset($_SESSION['access_level']) && $access_level >= 2) : ?>
-            <div id="delete-confirmation-wrapper" class="modal hidden">
-                <div class="modal-content">
-                    <p>Are you sure you want to delete this event?</p>
-                    <p>This action cannot be undone.</p>
-                    <form method="post" action="deleteEvent.php">
-                        <input type="submit" value="Delete Event" class="button danger">
-                        <input type="hidden" name="id" value="<?= $id ?>">
-                    </form>
-                    <button id="delete-cancel" class="button cancel">Cancel</button>
+            <?php if (isset($event_info['series_id']) && $event_info['series_id'] != NULL) : ?>
+                <div id="delete-confirmation-wrapper" class="modal hidden">
+                    <div class="modal-content">
+                        <p>This event is part of a repeating series.</p>
+                        <p>What would you like to delete?</p>
+
+                        <form method="get" action="deleteEvent.php">
+                            <input type="hidden" name="id" value="<?= $id ?>">
+
+                            <button type="submit" name="confirm" value="single" class="button danger">
+                                Delete ONLY this event
+                            </button>
+
+                            <button type="submit" name="confirm" value="series" class="button danger">
+                                Delete ENTIRE series
+                            </button>
+                        </form>
+
+                        <button id="delete-cancel" class="button cancel">Cancel</button>
+                    </div>
                 </div>
-            </div>
+            <?php else : ?>
+                <div id="delete-confirmation-wrapper" class="modal hidden">
+                    <div class="modal-content">
+                        <p>Are you sure you want to delete this event?</p>
+
+                        <form method="get" action="deleteEvent.php">
+                            <input type="hidden" name="id" value="<?= $id ?>">
+                            <button type="submit" name="confirm" value="single" class="button danger">
+                                Delete this event
+                            </button>
+                        </form>
+
+                        <button id="delete-cancel" class="button cancel">Cancel</button>
+                    </div>
+                </div>
+            <?php endif ?>
 
             <div id="complete-confirmation-wrapper" class="modal hidden">
                 <div class="modal-content">
@@ -527,7 +593,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             function showDeleteConfirmation() {
                 document.getElementById('delete-confirmation-wrapper').classList.remove('hidden');
             }
-
+            
             function showCancelConfirmation() {
                 document.getElementById('cancel-confirmation-wrapper').classList.remove('hidden');
             }
