@@ -101,7 +101,8 @@ $result = mysqli_query($connection, $query);
         h2 { font-weight: normal; font-size: 30px; margin-bottom: 20px; }
 
         .add-btn {
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
             background-color: #6b8caf;
             color: white;
             padding: 10px 24px;
@@ -109,7 +110,6 @@ $result = mysqli_query($connection, $query);
             text-decoration: none;
             font-weight: 700;
             font-size: 16px;
-            margin-bottom: 30px;
             transition: background 0.2s ease;
         }
         .add-btn:hover { background-color: #57789a; }
@@ -121,14 +121,15 @@ $result = mysqli_query($connection, $query);
             flex-wrap: wrap;
         }
         .trash-btn {
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
             background-color: #f0f0f0;
             color: #333;
             padding: 10px 24px;
             border-radius: 50px;
             text-decoration: none;
             font-weight: 700;
-            font-size: 15px;
+            font-size: 16px;
             transition: background 0.2s ease;
         }
         .trash-btn:hover { background-color: #e0e0e0; }
@@ -231,6 +232,8 @@ $result = mysqli_query($connection, $query);
         <div class="happy-toast">Document uploaded successfully!</div>
     <?php elseif (isset($_GET['deleted'])): ?>
         <div class="happy-toast">Document moved to trash.</div>
+    <?php elseif (isset($_GET['edited'])): ?>
+        <div class="happy-toast">Document updated successfully!</div>
     <?php elseif (isset($_GET['error'])): ?>
         <div class="error-toast">An error occurred. Please try again.</div>
     <?php endif; ?>
@@ -277,7 +280,7 @@ $result = mysqli_query($connection, $query);
                     <th>Uploaded At</th>
                     <th>Download</th>
                     <?php if ($is_admin): ?><th>Remove</th><?php endif; ?>
-                </tr>
+                    <?php if ($can_upload): ?><th>Edit</th><?php endif; ?>                </tr>
             </thead>
             <tbody>
                 <?php while ($row = mysqli_fetch_assoc($result)): ?>
@@ -301,6 +304,13 @@ $result = mysqli_query($connection, $query);
                         </form>
                     </td>
                     <?php endif; ?>
+                    <?php if ($can_upload): ?>
+                    <td>
+                        <a href="editBoardDocument.php?id=<?php echo (int)$row['id']; ?>"
+                           style="color:#6b8caf;font-weight:700;text-decoration:none;">Edit</a>
+                    </td>
+                    <?php endif; ?>
+                </tr>
                 </tr>
                 <?php endwhile; ?>
             </tbody>

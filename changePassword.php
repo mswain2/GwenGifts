@@ -87,7 +87,7 @@
             <?php elseif (isset($error3)): ?>
                 <p class="error-toast">Your new password must contain at least 8 characters, one uppercase letter, one lowercase letter, and one number.</p>    
             <?php endif ?>
-            <form id="password-change" method="post">
+            <form id="password-change" method="post" onsubmit="return validateForm()">
                 <?php if (!$forced): ?>
                     <label for="password">Current Password</label>
                     <input type="password" id="password" name="password" placeholder="Enter old password" required>
@@ -98,13 +98,41 @@
                 <input type="password" id="new-password" name="new-password" placeholder="Enter new password" required>
                  <p id="password-error" class="error hidden">Password needs to be at least 8 characters long, contain at least one number, one uppercase letter, and one lowercase letter!</p>
                 <label for="reenter-new-password">New Password</label>
-                <input type="password" id="new-password-reenter" placeholder="Re-enter new password" required>
+                <input type="password" id="new-password-reenter" name="new-password-reenter" placeholder="Re-enter new password" required>
                 <p id="password-match-error" class="error hidden">Passwords must match!</p>
+
                 <input type="submit" id="submit" name="submit" value="Change Password">
                 <?php if (!$forced): ?>
                     <a class="button cancel" onclick="history.back();">Cancel</a>
                 <?php endif ?>
             </form>
         </main>
+        <script>
+            function validateForm() {
+            var newPass = document.getElementById('new-password').value;
+            var reenter = document.getElementById('new-password-reenter').value;
+            var matchError = document.getElementById('password-match-error');
+            var passError = document.getElementById('password-error');
+            var valid = true;
+
+            // Check password requirements
+            var passRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+            if (!passRegex.test(newPass)) {
+                passError.classList.remove('hidden');
+                valid = false;
+            } else {
+                passError.classList.add('hidden');
+            }
+
+            // Check passwords match
+            if (newPass !== reenter) {
+                matchError.classList.remove('hidden');
+                valid = false;
+            } else {
+                matchError.classList.add('hidden');
+            }
+
+            return valid;
+        }
     </body>
 </html>

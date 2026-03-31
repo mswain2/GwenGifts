@@ -88,27 +88,22 @@ $nextWeek = strtotime(date('Y-m-d', $dayEpoch) . ' +7 days');
 
                             $backgroundCol = 'var(--calendar-event-color)'; // default color
 
-                           if(isset($_SESSION['access_level'])) { 
-    
-                                // This logic is for LOGGED-IN users
-                                if (is_archived($info['id'])) { // archived event
-                                    if ($_SESSION['access_level'] < 2) {
-                                        continue; // users cannot see archived events
-                                    }
+                           if (isset($_SESSION['access_level']) && isset($_SESSION['_id'])) {
+                                if (is_archived($info['id'])) {
+                                    if ($_SESSION['access_level'] < 2) continue;
                                     $backgroundCol = '#b0b0b0';
-
-                                } elseif (check_if_signed_up($info['id'], $_SESSION['_id'])) {// user is signed-up for event
+                                } elseif (!empty($info['board_event']) && $info['board_event'] == 1) {
+                                    $backgroundCol = '#1a3a6b';
+                                    if (check_if_signed_up($info['id'], $_SESSION['_id'])) {
+                                        $backgroundCol = '#4CAF50';
+                                    }
+                                } elseif (check_if_signed_up($info['id'], $_SESSION['_id'])) {
                                     $backgroundCol = '#4CAF50';
                                 }
-                                
                                 $eventsStr .= '<a class="calendar-event" style="background-color: ' . $backgroundCol . '" href="event.php?id=' . $info['id'] . '&user_id=' . $_SESSION['_id'] . '">' . htmlspecialchars_decode($info['abbr_name']) . '</a>';
-
                             } else {
-                                
-                                // This logic is for GUEST users (not logged in)
-                                $eventsStr .= '<a class="calendar-event" style="background-color: ' . $backgroundCol . '" href="event.php?id=' . $info['id'] . '&user_id=guest' . '">' . htmlspecialchars_decode($info['abbr_name']) . '</a>';
+                                $eventsStr .= '<a class="calendar-event" style="background-color: ' . $backgroundCol . '" href="event.php?id=' . $info['id'] . '&user_id=guest">' . htmlspecialchars_decode($info['abbr_name']) . '</a>';
                             }
-
                         }
                     }
                     echo '<td class="calendar-day' . $extraClasses . '" ' . $extraAttributes . ' data-date="' . date('Y-m-d', $date) . '">

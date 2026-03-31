@@ -62,7 +62,16 @@
                 $upcomingEvents[] = $event;
             }
         }
-
+        // Filter by specific date if provided (from calendar "click for more")
+        if (isset($_GET['date']) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $_GET['date'])) {
+            $filterDate = $_GET['date'];
+            $upcomingEvents = array_filter($upcomingEvents, function($event) use ($filterDate) {
+                return $event->getStartDate() === $filterDate;
+            });
+            $boardEvents = array_filter($boardEvents, function($event) use ($filterDate) {
+                return $event->getStartDate() === $filterDate;
+            });
+        }
         // Collect unique locations (case-insensitive)
         $locationMap = [];
         foreach (array_merge($upcomingEvents, $boardEvents, $archivedEvents) as $evt) {

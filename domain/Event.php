@@ -16,9 +16,10 @@ class Event {
     private $location;
     private $completed;
     private $access;
+    private $board_event;
 
 
-    function __construct($id, $name, $abbr, $type, $startDate, $startTime, $endTime, $endDate, $description, $capacity, $location, $access, $completed) {
+    function __construct($id, $name, $abbr, $type, $startDate, $startTime, $endTime, $endDate, $description, $capacity, $location, $access, $completed, $board_event = 0) {
         $this->id = $id;
         $this->name = $name;
         $this->abbr = $abbr;
@@ -32,7 +33,8 @@ class Event {
         $this->location = $location;
         $this->access = $access;
         $this->completed = $completed;
-        
+        $this->board_event = (int)$board_event;
+
     }
 
     function getID() {
@@ -87,4 +89,11 @@ class Event {
         return $this->access;
     }
 
+    function isBoardEvent() { 
+        return $this->board_event == 1; 
+    }
+
+    function getBoardEvent() { 
+        return $this->board_event; 
+        }
 }

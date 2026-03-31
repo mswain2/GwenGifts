@@ -64,6 +64,23 @@
         $calendarEndEpoch = strtotime($calendarEnd);
         $weeks = 6;
     }
+
+    // SCRUM-16: get user type for board filter dropdown
+    require_once('database/dbPersons.php');
+    require_once('domain/Person.php');
+    $calUserType = 'other';
+    if (isset($_SESSION['_id'])) {
+        if ($_SESSION['_id'] === 'vmsroot') {
+            $calUserType = 'board';
+        } else {
+            $calPerson = retrieve_person($_SESSION['_id']);
+            if ($calPerson) {
+                $t = $calPerson->get_type();
+                if (in_array($t, ['board_member','admin','superadmin'])) $calUserType = 'board';
+            }
+        }
+    }
+    $currentFilter = isset($_GET['event_filter']) ? $_GET['event_filter'] : 'public';
 ?>
 <!-- ── HTML DOCUMENT START ── -->
 <!DOCTYPE html>
@@ -186,7 +203,7 @@
                     <div class="filter-menu"><img class="filter-menu-icon" src="./images/menu.png" style="filter: invert(1);"></div>
                     <div class="calendar-filter" style="height: 3rem;">
                         <!-- Each icon triggers a JS handler to swap the calendar display mode -->
-                        <img id="list-view-button" class="filter-button" src="images/list-solid.svg" alt="List view">
+                        
                         <img id="calendar-view-button" class="filter-button" src="images/view-calendar.png" alt="Calendar view">
                         <img id="calendar-weekly-view-button" class="filter-button" src="images/new-event.png" alt="Calendar view: Weekly">
                         <img id="calendar-day-view-button" class="filter-button" src="images/day-sunny-svgrepo-com.svg" alt="Calendar view: Day">
@@ -198,7 +215,16 @@
                     <img id="month-view-button" class="filter-button" class="hidden" src="images/month-view.png" alt="month view">
                 </div> -->
             </div>
-
+            <?php if ($calUserType === 'board'): ?>
+            <div style="padding: 0 10rem 0.5rem 10rem;">
+                <select id="event-filter-select" style="padding:6px 14px;border-radius:50px;border:1px solid #e0e0e0;font-family:inherit;font-size:14px;background:#f8f8f8;">
+                    <option value="public"  <?php echo $currentFilter==='public' ?'selected':''; ?>>Public Events</option>
+                    <option value="board"   <?php echo $currentFilter==='board'  ?'selected':''; ?>>Board Events</option>
+                    <option value="all"     <?php echo $currentFilter==='all'    ?'selected':''; ?>>All Events</option>
+                </select>
+                <button id="apply-filter-btn" style="padding:6px 18px;border-radius:50px;border:none;background:#6b8caf;color:white;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;">Apply</button>
+            </div>
+            <?php endif; ?>
             <!-- <input type="date" id="month-jumper" value="<?php echo date('Y-m-d', $month); ?>" min="2023-01-01"> -->
             <!-- ── SUCCESS TOAST MESSAGES ──
                  Show a green confirmation banner when the user is redirected here

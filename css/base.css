@@ -657,7 +657,7 @@ h1.calendar-header a {
 }
 
 .calendar-filter {
-    width: 153%;
+    width: 128%;
     position: absolute;
     top: 0.0rem;
     left: -1.54rem;
@@ -693,46 +693,24 @@ img.filter-button {
     filter: invert(1);
     position: absolute;
     cursor: pointer;
-    top:0.1rem;
-    width:48px;
-    margin-left:32px;
+    top: 0.1rem;
+    width: 48px;
+    margin-left: 32px;
     margin-top: auto;
     transition: all 0.2s ease-in-out;
 }
 
 /* TODO: needs to include responsive design for mobile */
-#list-view-button {
-    left: 1.5rem;
-}
-
-#calendar-view-button {
-    left: 4.5rem;
-}
-
-#calendar-weekly-view-button {
-    left: 7.4rem;
-}
-
-#calendar-day-view-button {
-    left: 10.5rem;
-}
+#calendar-view-button { left: 1.5rem; }
+#calendar-weekly-view-button { left: 4.4rem; }
+#calendar-day-view-button { left: 7.5rem; }
 
 /* animations */
-.filter-wrapper input:checked ~ .calendar-filter #list-view-button {
-    opacity: 1;
-    transition-delay: .45s;
-}
-.filter-wrapper input:checked ~ .calendar-filter #calendar-view-button {
-    opacity: 1;
-    transition-delay: .45s;
-}
-.filter-wrapper input:checked ~ .calendar-filter #calendar-weekly-view-button {
-    opacity: 1;
-    transition-delay: .45s;
-}
+.filter-wrapper input:checked ~ .calendar-filter #calendar-view-button,
+.filter-wrapper input:checked ~ .calendar-filter #calendar-weekly-view-button,
 .filter-wrapper input:checked ~ .calendar-filter #calendar-day-view-button {
     opacity: 1;
-    transition-delay: .45s;
+    transition-delay: .2s;
 }
 
 #previous-month-button, #next-month-button {
@@ -2021,4 +1999,10 @@ main.user-role {
 
 .actions .btn-send:hover {
     background-color: var(--accent-color);
+}
+
+.modal-content {
+    background-color: white;
+    border-radius: 10px;
+    padding: 10px;
 }

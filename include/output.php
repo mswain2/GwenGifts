@@ -4,7 +4,7 @@
         if (is_array($input)) {
             $arr = [];
             foreach ($input as $key => $value) {
-                $arr[$key] = htmlspecialchars($value ?? '');
+                $arr[$key] = htmlspecialchars($value ?? '', ENT_QUOTES, 'UTF-8');
             }
             return $arr;
         }

@@ -63,14 +63,30 @@ function add_reply_to_reply($discussion, $replyID, $reply_body, $author_id, $par
     $reply_body = mysqli_real_escape_string($con, $reply_body);
     $author_id = mysqli_real_escape_string($con, $author_id);
     $parent_reply_id = mysqli_real_escape_string($con, $parent_reply_id);
+    $category = mysqli_real_escape_string($con, $discussion['category'] ?? 'general');
     $created_at = date("Y-m-d-H:i");
 
-    $query = "INSERT INTO discussion_replies (user_reply_id, author_id, discussion_title, reply_body, parent_reply_id, created_at) 
-              VALUES ('$replyID', '$author_id', '$discussion_title', '$reply_body', '$parent_reply_id', '$created_at')";
+    $query = "INSERT INTO discussion_replies (user_reply_id, author_id, discussion_title, reply_body, parent_reply_id, created_at, category) 
+              VALUES ('$replyID', '$author_id', '$discussion_title', '$reply_body', '$parent_reply_id', '$created_at', '$category')";
 
     $result = mysqli_query($con, $query);
     mysqli_close($con);
     
+    return $result;
+}
+
+function update_reply($replyID, $newBody, $edited_by) {
+    $con = connect();
+    $replyID = mysqli_real_escape_string($con, $replyID);
+    $newBody = mysqli_real_escape_string($con, $newBody);
+    $edited_by = mysqli_real_escape_string($con, $edited_by);
+    $edited_at = date("Y-m-d-H:i");
+
+    $query = "UPDATE discussion_replies SET reply_body='$newBody', edited_by='$edited_by', edited_at='$edited_at'
+              WHERE reply_id='$replyID'";
+
+    $result = mysqli_query($con, $query);
+    mysqli_close($con);
     return $result;
 }
 

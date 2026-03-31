@@ -6,6 +6,7 @@ session_start();
 $loggedIn = false;
 $accessLevel = 0;
 $userID = null;
+$userType = 'volunteer';
 if (isset($_SESSION['_id'])) {
     $loggedIn = true;
     $accessLevel = $_SESSION['access_level'];
@@ -20,13 +21,23 @@ include_once "domain/DiscussionReply.php";
 include_once "database/dbDiscussionReplies.php";
 include_once "database/dbMessages.php";
 
+// Get user type
+if (isset($_SESSION['_id'])) {
+    if ($_SESSION['_id'] === 'vmsroot') {
+        $userType = 'superadmin';
+    } else {
+        $person = retrieve_person($_SESSION['_id']);
+        if ($person) $userType = $person->get_type();
+    }
+}
+
 // Check for required GET parameters
 if (!isset($_GET['author']) || !isset($_GET['title'])) {
     die("Error: Missing author or title.");
 }
 
 $authorID = htmlspecialchars(trim($_GET['author']));
-$title = htmlspecialchars(trim($_GET['title']));
+$title = trim($_GET['title']);
 $category = isset($_GET['category']) ? $_GET['category'] : null;
 
 // Fetch discussion and author info
@@ -35,7 +46,7 @@ if (!$discussion) {
     die("Error: Discussion not found.");
 }
 
-if ($discussion['category'] === 'board' && $accessLevel < 2) {
+if ($discussion['category'] === 'board' && !in_array($userType, ['board_member','admin', 'superadmin'])) {
     header('Location: index.php');
     die();
 }
@@ -87,15 +98,21 @@ foreach ($replies as $reply) {
 }
 
 // Recursive function to display replies
-function displayReplies($parentId, $repliesByParent, $level = 0, $accessLevel = 0, $discussionTitle = '', $category = '') {
+function displayReplies($parentId, $repliesByParent, $level = 0, $accessLevel = 0, $discussionTitle = '', $category = '', $userID = '', $userType = 'volunteer') {
     if (!isset($repliesByParent[$parentId])) return;
 
     foreach ($repliesByParent[$parentId] as $reply) {
         ?>
         <div class="reply" style="margin-left: <?php echo ($level * 40); ?>px; position: relative; border-left: <?php echo $level > 0 ? '2px solid #ccc' : 'none'; ?>; padding-left: 15px;">
-            <?php if ($accessLevel > 2): ?>
+            <?php if (in_array($userType, ['admin', 'superadmin']) || $userID === $reply['user_reply_id']): ?>
                 <a href="deleteReply.php?reply_id=<?php echo htmlspecialchars($reply['reply_id']); ?>&title=<?php echo urlencode($discussionTitle); ?>&category=<?php echo urlencode($category); ?>" onclick="return confirm('Are you sure you want to delete this reply?');">
                     <img src="images/trash.svg" alt="Delete" style="width: 20px; height: 20px; cursor: pointer; position: absolute; top: 10px; right: 10px;">
+                </a>
+            <?php endif; ?>
+            
+            <?php if (in_array($userType, ['admin', 'superadmin']) || $userID === $reply['user_reply_id']): ?>
+                <a href="editReply.php?reply_id=<?php echo htmlspecialchars($reply['reply_id']); ?>&title=<?php echo urlencode($discussionTitle); ?>&category=<?php echo urlencode($category); ?>">
+                    <i class="fas fa-pencil-alt" style="cursor: pointer; position: absolute; top: 10px; right: 35px; color: var(--main-color);"></i>
                 </a>
             <?php endif; ?>
 
@@ -107,6 +124,11 @@ function displayReplies($parentId, $repliesByParent, $level = 0, $accessLevel = 
 
             <div class="reply-author"><?php echo htmlspecialchars($reply['user_reply_id']); ?></div>
             <div class="reply-body"><?php echo nl2br(htmlspecialchars($reply['reply_body'])); ?></div>
+            <?php if (!empty($reply['edited_at'])): ?>
+                <div style="font-size:12px; color:#999; margin-top:5px;">
+                    edited by <?php echo htmlspecialchars($reply['edited_by']); ?> at <?php echo htmlspecialchars($reply['edited_at']); ?>
+                </div>
+            <?php endif; ?>
 
             <?php if (isset($_SESSION['_id'])): ?>
                 <button class="small-reply-btn" style="width: 10%;" onclick="toggleReplyBox('<?php echo $reply['reply_id']; ?>')">Reply</button>
@@ -121,7 +143,7 @@ function displayReplies($parentId, $repliesByParent, $level = 0, $accessLevel = 
         </div>
 
         <?php
-        displayReplies($reply['reply_id'], $repliesByParent, $level + 1, $accessLevel, $discussionTitle);
+        displayReplies($reply['reply_id'], $repliesByParent, $level + 1, $accessLevel, $discussionTitle, $category, $userID, $userType);
     }
 }
 function get_username_by_reply_id($reply_id) {
@@ -244,6 +266,15 @@ function get_username_by_reply_id($reply_id) {
         
         <div class="title"><?php echo htmlspecialchars($discussion['title']); ?></div>
         <div class="body"><?php echo nl2br(htmlspecialchars($discussion['body'])); ?></div>
+        <?php if (!empty($discussion['edited_at'])): ?>
+            <div style="font-size:12px; color:#999; margin-top:5px;">
+                edited by <?php echo htmlspecialchars($discussion['edited_by']); ?> at <?php echo htmlspecialchars($discussion['edited_at']); ?>
+            </div>
+        <?php endif; ?>
+
+        <?php if (in_array($userType, ['admin', 'superadmin']) || $userID === $discussion['author_id']): ?>
+            <a href="editDiscussion.php?title=<?php echo urlencode($discussion['title']); ?>&category=<?php echo urlencode($category); ?>" class="back-btn">Edit Discussion</a>
+        <?php endif; ?>
 
         <div class="reply-section">
             <?php if ($loggedIn): ?>
@@ -261,7 +292,7 @@ function get_username_by_reply_id($reply_id) {
 
         <div class="replies">
             <h3>Replies</h3>
-            <<?php displayReplies('root', $repliesByParent, 0, $accessLevel, $discussion['title'], $category); ?>
+            <?php displayReplies('root', $repliesByParent, 0, $accessLevel, $discussion['title'], $category, $userID, $userType); ?>
         </div>
 
         <?php $backUrl = ($category === 'board') ? 'viewBoardDiscussions.php' : 'viewDiscussions.php'; ?>
