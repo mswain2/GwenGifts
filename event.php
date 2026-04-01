@@ -3,19 +3,25 @@
 session_cache_expire(30);
 session_start();
 
-$type = strtolower($_SESSION['type'] ?? 'guest');
-
-if (($_SESSION['_id'] ?? '') === 'vmsroot') {
-    $type = 'admin';
+// check RBAC
+if (isset($_SESSION['access_level']) && $_SESSION['access_level'] >= 2) {
+    $isEventManager = true;
+} else {
+    $isEventManager = false;    
 }
 
-$isAdmin = ($type === 'admin');
+if (isset($_SESSION['access_level']) && $_SESSION['access_level'] >= 1) {
+    $isVolunteer = true;
+} else {
+    header('Location: index.php');
+    die();  
+}
 
 // Ensure user is logged in
-if (!isset($_SESSION['access_level']) || $_SESSION['access_level'] < 1) {
-    //header('Location: login.php');
-    //die();
-}
+// if (!isset($_SESSION['access_level']) || $_SESSION['access_level'] < 1) {
+//     header('Location: login.php');
+//     die();
+// }
 
 require_once('include/input-validation.php');
 $args = sanitize($_GET);
@@ -75,7 +81,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $args = sanitize($_POST);
     $get = sanitize($_GET);
     if (isset($_POST['attach-post-media-submit'])) {
-        if ($access_level < 2) {
+        if ($_SESSION['access_level'] < 2) {
             echo 'forbidden';
             die();
         }
@@ -89,7 +95,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             echo "dude, args missing";
             die();
         }
-        $type = 'post';
+        // $type = 'post';
         $format = $args['format'];
         $url = $args['url'];
         if ($format == 'video') {
@@ -127,7 +133,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             echo "dude, args missing";
             die();
         }
-        $type = 'post';
+        // $type = 'post';
         $format = $args['format'];
         $url = $args['url'];
         if ($format == 'video') {
@@ -216,7 +222,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     ?>
     <title>Gwyneth's Gift | <?php echo $event_info['name'] ?></title>
     <link rel="stylesheet" href="event.css" type="text/css" />
-    <?php if (isset($_SESSION['access_level']) && $access_level >= 2) : ?>
+    <?php if ($isEventManager) : ?>
         <script src="js/event.js"></script>
     <?php endif ?>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -311,7 +317,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <!-- Event Information Table -->
         <h2 class="event-head">
             <?php echo htmlspecialchars_decode($event_name); ?>
-            <?php if (isset($_SESSION['access_level']) && $access_level >= 2 && !$event_in_past): ?>
+            <?php if ($isEventManager && !$event_in_past): ?>
                 <a href="editEvent.php?id=<?= $id ?>" title="Edit Event" class="edit-icon">
                     <i class="fas fa-pencil-alt"></i>
                 </a>
@@ -405,7 +411,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 - <?= htmlspecialchars($material['description']) ?>
                             <?php endif; ?>
 
-                            <?php if ($isAdmin): ?>
+                            <?php if ($isEventManager): ?>
                                 <a href="deleteTrainingMaterial.php?id=<?= urlencode($material['id']) ?>&eventID=<?= urlencode($id) ?>"
                                     onclick="return confirm('Delete this Training Document?');"
                                     style="color: red; margin-left: 10px;">
@@ -417,8 +423,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </ul>
             <?php endif; ?>
 
-            <?php if ($isAdmin): ?>
+            <?php if ($isEventManager): ?>
                 <p>
+                    <?php var_dump($_SESSION['access_level'], $_SESSION['type']); ?>
                     <a href="addTrainingMaterial.php?eventID=<?= urlencode($id) ?>" class="button signup">
                         Add Training Document
                     </a>
@@ -466,7 +473,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <input type="hidden" name="type" value="<?php echo htmlspecialchars($event_info['type']); ?>">
                 <button type="submit" class="button primary">Sign Up!</button>
             </form>
-            <?php if (isset($_SESSION['access_level']) && $access_level >= 2) : ?>
+            <?php if ($isEventManager) : ?>
 
                 <a href="viewEventSignUps.php?id=<?php echo $id; ?>" class="button signup">View Event Signups</a>
 
@@ -515,7 +522,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>-->
 
         <!-- Confirmation Modals -->
-        <?php if (isset($_SESSION['access_level']) && $access_level >= 2) : ?>
+        <?php if ($isEventManager) : ?>
             <?php if (isset($event_info['series_id']) && $event_info['series_id'] != NULL) : ?>
                 <div id="delete-confirmation-wrapper" class="modal hidden">
                     <div class="modal-content">
@@ -569,7 +576,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php endif ?>
 
 
-        <?php if (isset($_SESSION['access_level']) && $access_level < 2) : ?>
+        <?php if ($isVolunteer) : ?>
             <div id="cancel-confirmation-wrapper" class="modal hidden">
                 <div class="modal-content">
                     <p>Are you sure you want to cancel your sign-up for this event?</p>

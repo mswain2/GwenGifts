@@ -101,7 +101,21 @@ class Person {
 		$this->experience = $experience;
 		$this->about_consent = $about_consent;
 
-        #$this->access_level = ($id == 'vmsroot') ? 3 : 1;
+		if ($this->type == 'volunteer') {
+			$this->access_level = 1;
+		}
+		else if ($this->type == 'event_manager') {
+			$this->access_level = 2;
+		}
+		else if ($this->type == 'board_member') {
+			$this->access_level = 3;
+		}
+		else if ($this->type == 'admin') {
+			$this->access_level = 4;
+		}
+		else {
+			$this->access_level = 0;
+		}
 
     }
 
@@ -285,8 +299,7 @@ class Person {
 	}
 
 	function get_access_level() {
-		$access = ($this->id == 'vmsroot') ? 3 : 1;
-		return $access;
+		return $this->access_level;
 	}
 
 }

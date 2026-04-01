@@ -1,1 +1,0 @@
-UPDATE `dbpersons` SET `type` = 'superadmin' WHERE `dbpersons`.`id` = 'vmsroot'
