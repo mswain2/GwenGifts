@@ -8,21 +8,30 @@ session_start();
 
 date_default_timezone_set("America/New_York");
 
-$type = strtolower($_SESSION['type'] ?? 'guest');
-
-if (($_SESSION['_id'] ?? '') === 'vmsroot') {
-    $type = 'admin';
+//check RBAC
+if (isset($_SESSION['access_level']) && $_SESSION['access_level'] >= 2) {
+    $isEventManager = true;
+} else {
+    $isEventManager = false;
+    header('Location: index.php');
+    die();    
 }
+
+// $type = strtolower($_SESSION['type'] ?? 'guest');
+
+// if (($_SESSION['_id'] ?? '') === 'vmsroot') {
+//     $type = 'admin';
+// }
 
 // Only admins can upload Training Documents
-if ($type !== 'admin') {
-    if (isset($_SESSION['change-password'])) {
-        header('Location: changePassword.php');
-    } else {
-        header('Location: login.php');
-    }
-    die();
-}
+// if ($type !== 'admin') {
+//     if (isset($_SESSION['change-password'])) {
+//         header('Location: changePassword.php');
+//     } else {
+//         header('Location: login.php');
+//     }
+//     die();
+// }
 
 require_once('database/dbTrainingMaterials.php');
 
