@@ -8,22 +8,20 @@ session_start();
 
 date_default_timezone_set("America/New_York");
 
-$type = strtolower($_SESSION['type'] ?? 'guest');
-
-if (($_SESSION['_id'] ?? '') === 'vmsroot') {
-    $type = 'admin';
+// check RBAC
+if (isset($_SESSION['access_level']) && $_SESSION['access_level'] >= 1) {
+    $isVolunteer = true;
+} else {
+    header('Location: index.php');
+    die();  
 }
 
-if (!in_array($type, ['admin', 'volunteer'], true)) {
-    if (isset($_SESSION['change-password'])) {
-        header('Location: changePassword.php');
-    } else {
-        header('Location: login.php');
-    }
-    die();
+// check RBAC
+if (isset($_SESSION['access_level']) && $_SESSION['access_level'] == 4) {
+    $isAdmin = true;
+} else {
+    $isAdmin = false;  
 }
-
-$isAdmin = ($type === 'admin');
 
 require_once('database/dbTrainingMaterials.php');
 require_once('database/dbPersons.php');
