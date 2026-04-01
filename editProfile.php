@@ -7,14 +7,17 @@
     error_reporting(E_ALL);
 
     // check if the logged in user is editing their own profile
-    $editingSelf = isset($_SESSION['_id']) && $_SESSION['_id'] == $_GET['id'];
+    // No id parameter means the user is editing themselves (dashboard/nav links omit ?id=)
+    $requestId = $_GET['id'] ?? $_POST['id'] ?? null;
+    $editingSelf = isset($_SESSION['_id']) && ($requestId === null || $_SESSION['_id'] == $requestId);
+    $isAdmin = isset($_SESSION['access_level']) && $_SESSION['access_level'] == 4;
 
-    // check RBAC
-    if (isset($_SESSION['access_level']) && ($_SESSION['access_level'] == 4 || $editingSelf)) {
+    // check RBAC — only admins or the user themselves can edit
+    if ($isAdmin || $editingSelf) {
         $canEditProfile = true;
     } else {
         header('Location: index.php');
-        die();  
+        die();
     }
 
     require_once('include/input-validation.php');
@@ -29,16 +32,11 @@
         $ignoreList = array('password');
         $args = sanitize($_POST, $ignoreList);
 
-        $editingSelf = true;
         $errors = false;
-        if ($canEditProfile && isset($_POST['id'])) {
-            $id = $_POST['id'];
-            $editingSelf = $id == $_SESSION['_id'];
+        if ($isAdmin && isset($_POST['id'])) {
             $id = $args['id'];
-            // Check to see if user is a lower-level manager here
         } else {
             $id = $_SESSION['_id'];
-            
         }
 
         // echo "<p>The form was submitted:</p>";
@@ -269,7 +267,7 @@ $day_availability = isset($args['day_availability']) ? (array)$args['day_availab
                     add_languages($id, $language_data);
                 }
 
-                if ($editingSelf) {
+                if ($canEditProfile) {
                     header('Location: viewProfile.php?editSuccess');
                 } else {
                     header('Location: viewProfile.php?editSuccess&id=' . $id);
@@ -285,7 +283,7 @@ $day_availability = isset($args['day_availability']) ? (array)$args['day_availab
             $notes
         );
         if ($result) {
-            if ($editingSelf) {
+            if ($canEditProfile) {
                 header('Location: viewProfile.php?editSuccess');
             } else {
                 header('Location: viewProfile.php?editSuccess&id='. $id);
@@ -309,7 +307,6 @@ $day_availability = isset($args['day_availability']) ? (array)$args['day_availab
     <h1>Edit Profile</h1>
     <?php
         require_once('header.php');
-        $isAdmin = $_SESSION['access_level'] >= 2;
         require_once('profileEditForm.php');
     ?>
     
