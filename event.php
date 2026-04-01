@@ -61,6 +61,7 @@ $confirmText = $isRecurring
 $event_num_signups = fetch_num_signups($id);
 $trainingMaterials = get_training_materials_by_event($id);
 
+
 include_once('database/dbPersons.php');
 if (isset($_SESSION['access_level'])) {
     $access_level = $_SESSION['access_level'];
@@ -288,6 +289,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $event_name = $event_info['name'];
         $event_abbr = $event_info['abbr_name'];
         $event_date = date('l, F j, Y', strtotime($event_info['startDate']));
+        $event_timezone = $event_info['timezone'];
+
         $today = date('l, F j, Y');
         $now = date('H:i:s');
         $event_startTime = time24hto12h($event_info['startTime']);
@@ -351,6 +354,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <tr>
                     <td class="label">Time</td>
                     <td><?php echo $event_startTime . " - " . $event_endTime; ?></td>
+                </tr>
+
+                <tr>
+                    <td class="label">Timezone</td>
+                    <td><?php echo $event_timezone; ?></td>
                 </tr>
                 
                 <?php if (isset($event_info['series_id']) && $event_info['series_id'] != NULL): ?>
