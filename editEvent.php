@@ -17,7 +17,6 @@
         $loggedIn = true;
         $userID = $_SESSION['_id'];
     } else {
-        $isEventManager = false;
         header('Location: index.php');
         die();    
     }

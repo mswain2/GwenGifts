@@ -5,9 +5,16 @@
     session_start();
     ini_set("display_errors",1);
     error_reporting(E_ALL);
-    if (!isset($_SESSION['_id'])) {
-        header('Location: login.php');
-        die();
+
+    // check if the logged in user is editing their own profile
+    $editingSelf = isset($_SESSION['_id']) && $_SESSION['_id'] == $_GET['id'];
+
+    // check RBAC
+    if (isset($_SESSION['access_level']) && ($_SESSION['access_level'] == 4 || $editingSelf)) {
+        $canEditProfile = true;
+    } else {
+        header('Location: index.php');
+        die();  
     }
 
     require_once('include/input-validation.php');
@@ -24,7 +31,7 @@
 
         $editingSelf = true;
         $errors = false;
-        if ($_SESSION['access_level'] >= 2 && isset($_POST['id'])) {
+        if ($canEditProfile && isset($_POST['id'])) {
             $id = $_POST['id'];
             $editingSelf = $id == $_SESSION['_id'];
             $id = $args['id'];

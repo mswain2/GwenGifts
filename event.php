@@ -13,7 +13,8 @@ if (isset($_SESSION['access_level']) && $_SESSION['access_level'] >= 2) {
 if (isset($_SESSION['access_level']) && $_SESSION['access_level'] >= 1) {
     $isVolunteer = true;
 } else {
-    $isVolunteer = false;    
+    header('Location: index.php');
+    die();  
 }
 
 // Ensure user is logged in

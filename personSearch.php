@@ -10,7 +10,8 @@
     if (isset($_SESSION['access_level']) && $_SESSION['access_level'] >= 2) {
         $canSearchUsers = true;
     } else {
-        $canSearchUsers = true;
+        header('Location: index.php');
+        die();
     }
 
     // set userID
@@ -19,11 +20,6 @@
     //     $userID = $_SESSION['_id'];
     // }
 
-    // only event_managers (2), board_members (3), and admin (4) can access
-    if (!$canSearchUsers) {
-        header('Location: index.php');
-        die();
-    }
 ?>
 <!DOCTYPE html>
 <html lang="en">
