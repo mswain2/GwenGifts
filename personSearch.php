@@ -6,17 +6,21 @@
     session_cache_expire(30);
     session_start();
 
-    $loggedIn = false;
-    $accessLevel = 0;
-    $userID = null;
-    if (isset($_SESSION['_id'])) {
-        $loggedIn = true;
-        // 0 = not logged in, 1 = standard user, 2 = manager (Admin), 3 super admin (TBI)
-        $accessLevel = $_SESSION['access_level'];
-        $userID = $_SESSION['_id'];
+    // set RBAC
+    if (isset($_SESSION['access_level']) && $_SESSION['access_level'] >= 2) {
+        $canSearchUsers = true;
+    } else {
+        $canSearchUsers = true;
     }
-    // admin-only access
-    if ($accessLevel < 2) {
+
+    // set userID
+    // if (isset($_SESSION['_id'])) {
+    //     $loggedIn = true;
+    //     $userID = $_SESSION['_id'];
+    // }
+
+    // only event_managers (2), board_members (3), and admin (4) can access
+    if (!$canSearchUsers) {
         header('Location: index.php');
         die();
     }
