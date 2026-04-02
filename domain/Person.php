@@ -54,6 +54,7 @@ class Person {
 	private $experience;
 	private $about_consent;
 	private $access_level;
+	private $profile_pic;
 
 	function __construct(
 		$id, $start_date, $first_name, $last_name, $street_address, $city, $state,
@@ -287,6 +288,14 @@ class Person {
 	function get_access_level() {
 		$access = ($this->id == 'vmsroot') ? 3 : 1;
 		return $access;
+	}
+
+	function get_profile_pic() {
+		return $this->profile_pic ?? 'images/usaicon.png';
+	}
+
+	function set_profile_pic($path) {
+		$this->profile_pic = $path;
 	}
 
 }

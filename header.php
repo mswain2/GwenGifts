@@ -59,6 +59,14 @@ if (date("H:i:s") > "18:19:59") {
 <header>
 
     <?php
+    $_pfp = 'images/usaicon.png';
+    if (isset($_SESSION['_id'])) {
+        require_once(dirname(__FILE__) . '/database/dbPersons.php');
+        $_pfp = get_profile_pic($_SESSION['_id']);
+    }
+    $_pfp_escaped = htmlspecialchars($_pfp, ENT_QUOTES, 'UTF-8');
+    
+
     //Log-in security
     //If they aren't logged in, display our log-in form.
     $showing_login = false;
@@ -84,7 +92,7 @@ if (date("H:i:s") > "18:19:59") {
             <div class="nav-links">
                 <div class="nav-item">
                     <div class="icon">
-                        <img src="images/usaicon.png" alt="User Icon" class="icon-img in-nav-img">
+                        <img src="' . $_pfp_escaped . '" alt="User Icon" class="icon-img in-nav-img" style="object-fit:cover; border-radius:50%;">
                         <div class="dropdown">
                             <a href="signup.php" class="dropdown-link"><div>Create Account</div></a>
                             <a href="login.php" class="dropdown-link"><div>Log in</div></a>
@@ -252,6 +260,12 @@ if (date("H:i:s") > "18:19:59") {
 	//
 	// SUPER ADMIN ONLY HEADER
         if ($_SESSION['access_level'] >= 2) {
+            $_pfp = 'images/usaicon.png';
+            if (isset($_SESSION['_id'])) {
+                require_once(dirname(__FILE__) . '/database/dbPersons.php');
+                $_pfp = get_profile_pic($_SESSION['_id']);
+            }
+            $_pfp_escaped = htmlspecialchars($_pfp, ENT_QUOTES, 'UTF-8');
 		echo('<div class="navbar">
         <!-- Left Section: Logo & Nav Links -->
         <div class="left-section">
@@ -337,10 +351,11 @@ if (date("H:i:s") > "18:19:59") {
         </svg>
 </div>
 </a>-->
+            <div class="date-box"></div>
             <div class="nav-links">
                 <div class="nav-item">
                     <div class="icon">
-                        <img src="images/usaicon.png" alt="User Icon" class="icon-img in-nav-img">
+                        <img src="' . $_pfp_escaped . '" alt="User Icon" class="icon-img in-nav-img" style="width: 49px; height: 49px; object-fit:cover; border-radius:50%;">
                         <div class="dropdown">
                             <a href="changePassword.php" class="dropdown-link"><div>Change Password</div></a>
                             <a href="logout.php" class="dropdown-link"><div>Log Out</div></a>
@@ -354,6 +369,14 @@ if (date("H:i:s") > "18:19:59") {
 
         // VOLUNTEER ONLY HEADER
         if ($_SESSION['access_level'] <= 1) {
+            
+            $_pfp = 'images/usaicon.png';
+            if (isset($_SESSION['_id'])) {
+                require_once(dirname(__FILE__) . '/database/dbPersons.php');
+                $_pfp = get_profile_pic($_SESSION['_id']);
+            }
+            $_pfp_escaped = htmlspecialchars($_pfp, ENT_QUOTES, 'UTF-8');
+
 		echo('<div class="navbar">
         <!-- Left Section: Logo & Nav Links -->
         <div class="left-section">
@@ -410,7 +433,7 @@ if (date("H:i:s") > "18:19:59") {
             <div class="nav-links">
                 <div class="nav-item" style="outline:none;">
                     <div class="icon">
-                        <img src="images/usaicon.png" alt="User Icon">
+                        <img src="' . $_pfp_escaped . '" alt="User Icon" class="icon-img in-nav-img" style="object-fit:cover; border-radius:50%;">
                         <div class="dropdown">
                             <a href="viewProfile.php" style="text-decoration: none;"><div>View Profile</div></a>
                             <a href="editProfile.php" style="text-decoration: none;"><div>Edit Profile</div></a>
