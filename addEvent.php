@@ -223,7 +223,7 @@
 
                 <div class="event-sect">
                 <label for="name">* Description </label>
-                <input type="text" id="description" name="description" required placeholder="Enter description">
+                <textarea id="description" name="description" placeholder="Enter description" required></textarea>                
                 
                 <label for="name">Location </label>
                 <input type="text" id="location" name="location" placeholder="Enter location">

@@ -464,7 +464,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             } else if ($media['format'] == 'picture') {
                                 echo '<span>' . $media['description'] . '</span>';
                                 if ($isEventManager) {
-                                    echo ' <a href="deleteEventMedia.php?eid=' . $id . '&mid=' . $media['id'] . '">Remove</a>';
+                                    echo ' <a style="color: red;" href="deleteEventMedia.php?eid=' . $id . '&mid=' . $media['id'] . '">Remove</a>';
                                 }
                                 echo '<br><a href="' . $media['url'] . '"><img style="max-width: 30vw" src="' . $media['url'] . '" alt="' . $media['description'] . '"></a>';
                             } else {
