@@ -7,14 +7,14 @@ session_start();
 if (isset($_SESSION['access_level']) && $_SESSION['access_level'] >= 2) {
     $isEventManager = true;
 } else {
-    $isEventManager = false;    
+    $isEventManager = false;
 }
 
 if (isset($_SESSION['access_level']) && $_SESSION['access_level'] >= 1) {
     $isVolunteer = true;
 } else {
     header('Location: index.php');
-    die();  
+    die();
 }
 
 // Ensure user is logged in
@@ -297,14 +297,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $today = new DateTime($today);
         $now = new DateTime($now);
         $event_in_past = false;
-        if ($today > $date){
+        if ($today > $date) {
             $event_in_past = true;
-        } elseif($today == $date){
-            if ($now > $time){
+        } elseif ($today == $date) {
+            if ($now > $time) {
                 $event_in_past = true;
             }
         }
-        
+
         $event_description = $event_info['description'];
         $event_location = $event_info['location'];
         $event_capacity = $event_info['capacity'];
@@ -342,7 +342,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <table>
                 <tr>
                     <td class="label">Abbreviated Name</td>
-                    <td><?php echo htmlspecialchars_decode($event_abbr);?></td>
+                    <td><?php echo htmlspecialchars_decode($event_abbr); ?></td>
                 </tr>
                 <tr>
                     <td class="label">Date</td>
@@ -352,23 +352,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <td class="label">Time</td>
                     <td><?php echo $event_startTime . " - " . $event_endTime; ?></td>
                 </tr>
-                
+
                 <?php if (isset($event_info['series_id']) && $event_info['series_id'] != NULL): ?>
                     <tr>
                         <td class="label">Recurrence</td>
-                        <?php 
-                            $repeats = "Every " . $recurrence . " days";
-                            if ($recurrence == 1){
-                                $repeats = "Daily";
-                            } elseif ($recurrence == 7){
-                                $repeats = "Weekly";
-                            } elseif ($recurrence == 30){
-                                $repeats = "Monthly";
-                            }elseif ($recurrence == -1){
-                                $repeats = "Part of a deleted series";
-                            }
+                        <?php
+                        $repeats = "Every " . $recurrence . " days";
+                        if ($recurrence == 1) {
+                            $repeats = "Daily";
+                        } elseif ($recurrence == 7) {
+                            $repeats = "Weekly";
+                        } elseif ($recurrence == 30) {
+                            $repeats = "Monthly";
+                        } elseif ($recurrence == -1) {
+                            $repeats = "Part of a deleted series";
+                        }
                         ?>
-                        <td><?php echo $repeats;?></td>
+                        <td><?php echo $repeats; ?></td>
                     </tr>
                 <?php endif ?>
                 <tr>
@@ -425,7 +425,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <?php if ($isEventManager): ?>
                 <p>
-                    <?php var_dump($_SESSION['access_level'], $_SESSION['type']); ?>
                     <a href="addTrainingMaterial.php?eventID=<?= urlencode($id) ?>" class="button signup">
                         Add Training Document
                     </a>
@@ -474,9 +473,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <button type="submit" class="button primary">Sign Up!</button>
             </form>
             <?php if ($isEventManager) : ?>
-                
                 <a href="eventRoster.php?id=<?php echo urlencode($id); ?>" class="button signup">Generate Event Roster</a>
-
                 <a href="viewEventSignUps.php?id=<?php echo $id; ?>" class="button signup">View Event Signups</a>
 
                 <!-- Archive and Unarchive buttons by Thomas -->
@@ -602,7 +599,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             function showDeleteConfirmation() {
                 document.getElementById('delete-confirmation-wrapper').classList.remove('hidden');
             }
-            
+
             function showCancelConfirmation() {
                 document.getElementById('cancel-confirmation-wrapper').classList.remove('hidden');
             }
