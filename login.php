@@ -188,6 +188,10 @@
         <button class="login">Login</button>
       </form>
 
+      <div class="flex justify-center mt-8">
+          <a href="returningVolunteer.php" class="text-[#22654D] text-sm hover:underline">Returning Volunteer?</a>
+      </div>
+
       <!-- Divider -->
       <div class="flex items-center my-6 w-full">
         <div class="flex-grow border-t border-gray-300"></div>
