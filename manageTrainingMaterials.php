@@ -12,7 +12,7 @@ require_once('database/dbTrainingMaterials.php');
 require_once('database/dbEvents.php');
 
 $args = sanitize($_GET);
-$eventID = isset($args['eventID']) ? intval($args['eventID']) : 0;
+$eventID = isset($args['eventID']) ? (int)$_GET['eventID'] : 0;
 $search = isset($args['search']) ? trim((string)$args['search']) : '';
 
 if ($eventID <= 0) {
@@ -156,7 +156,12 @@ $materials = get_training_materials_by_event($eventID, $search);
                     <table class="general">
                         <thead>
                             <tr>
-                                <th><input type="checkbox" onclick="toggleAll(this)"></th>
+                                <th>
+                                    <label style="display: flex; align-items: center; gap: .5rem; font-weight: 700; cursor: pointer;">
+                                        <input type="checkbox" onclick="toggleAll(this)">
+                                        <span>Select All</span>
+                                    </label>
+                                </th>
                                 <th>Title</th>
                                 <th>Description</th>
                                 <th>File</th>

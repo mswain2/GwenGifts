@@ -428,8 +428,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <a href="addTrainingMaterial.php?eventID=<?= urlencode($id) ?>" class="button signup">
                         Add Training Document
                     </a>
-                    <a href="manageTrainingMaterials.php?eventID=<?= urlencode($id) ?>" class="button cancel">
-                        Bulk Delete Training Documents
+                    <a href="manageTrainingMaterials.php?eventID=<?= urlencode((string)$id) ?>" class="button cancel">
+                        Delete Training Documents
                     </a>
                 </p>
             <?php endif; ?>

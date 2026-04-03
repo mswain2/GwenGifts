@@ -10,6 +10,7 @@ if (!isset($_SESSION['access_level']) || $_SESSION['access_level'] < 2) {
 require_once('include/input-validation.php');
 require_once('include/eventRosterHelpers.php');
 require_once('database/dbinfo.php');
+require_once('database/dbLog.php');
 
 function log_roster_export_action($message)
 {
@@ -66,13 +67,15 @@ foreach ($all_rows as $row) {
 }
 
 $actor = isset($_SESSION['_id']) ? $_SESSION['_id'] : 'unknown';
-log_roster_export_action(
-    $actor . ' exported event roster for event #' . $id .
-        ' (' . $event_info['name'] . ')' .
-        ' as ' . strtoupper($format) .
-        ' with attendance=' . $filters['attendance'] .
-        ' and training=' . $filters['training']
-);
+
+$message = $actor .
+    ' exported event roster for event #' . $id .
+    ' (' . $event_info['name'] . ')' .
+    ' as ' . strtoupper($format) .
+    ' with attendance=' . $filters['attendance'] .
+    ' and training=' . $filters['training'];
+
+add_log_entry($message);
 
 $filenameBase = 'event-roster-' . $id . '-' . date('Ymd-His');
 

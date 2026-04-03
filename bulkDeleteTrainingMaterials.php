@@ -9,7 +9,7 @@ if (!isset($_SESSION['access_level']) || $_SESSION['access_level'] < 2) {
 
 require_once('database/dbTrainingMaterials.php');
 
-$eventID = isset($_POST['eventID']) ? intval($_POST['eventID']) : 0;
+$eventID = isset($_POST['eventID']) ? (int)$_POST['eventID'] : 0;
 $selected = isset($_POST['selected_materials']) && is_array($_POST['selected_materials'])
     ? $_POST['selected_materials']
     : array();
