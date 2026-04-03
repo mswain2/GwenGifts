@@ -8,7 +8,6 @@ $userID = null;
 
 if (isset($_SESSION['_id'])) {
     $loggedIn = true;
-    // 0 = not logged in, 1 = standard user, 2 = manager/admin, 3 = super admin
     $accessLevel = $_SESSION['access_level'];
     $userID = $_SESSION['_id'];
 }
@@ -105,7 +104,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
-// Get event id from URL
 if (isset($_GET['id'])) {
     $event_id = intval($_GET['id']);
 } elseif (isset($_GET['event_id'])) {
