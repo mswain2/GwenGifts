@@ -39,6 +39,7 @@ if (isset($args["update"])) {
 
 include_once('database/dbEvents.php');
 require_once('database/dbTrainingMaterials.php');
+require_once('database/dbEventMedia.php');
 
 // We need to check for a bad ID here before we query the db
 // otherwise we may be vulnerable to SQL injection(!)
@@ -60,6 +61,8 @@ $confirmText = $isRecurring
 // Get number of signups to display on event page
 $event_num_signups = fetch_num_signups($id);
 $trainingMaterials = get_training_materials_by_event($id);
+$event_media = get_event_media($id);
+
 
 include_once('database/dbPersons.php');
 if (isset($_SESSION['access_level'])) {
@@ -236,6 +239,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php if (isset($_GET['createSuccess'])): ?>
             <div class="happy-toast">Event created successfully!</div>
         <?php endif ?>
+        <?php if (isset($_GET['removeSuccess'])): ?>
+            <div class="happy-toast">Event Media removed successfully!</div>
+        <?php endif ?>
         <?php if (isset($_GET['editSuccess'])): ?>
             <div class="happy-toast">Event details updated successfully!</div>
         <?php endif ?>
@@ -288,6 +294,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $event_name = $event_info['name'];
         $event_abbr = $event_info['abbr_name'];
         $event_date = date('l, F j, Y', strtotime($event_info['startDate']));
+        $event_timezone = $event_info['timezone'];
+
         $today = date('l, F j, Y');
         $now = date('H:i:s');
         $event_startTime = time24hto12h($event_info['startTime']);
@@ -351,6 +359,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <tr>
                     <td class="label">Time</td>
                     <td><?php echo $event_startTime . " - " . $event_endTime; ?></td>
+                </tr>
+
+                <tr>
+                    <td class="label">Timezone</td>
+                    <td><?php echo $event_timezone; ?></td>
                 </tr>
                 
                 <?php if (isset($event_info['series_id']) && $event_info['series_id'] != NULL): ?>
@@ -425,12 +438,54 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <?php if ($isEventManager): ?>
                 <p>
-                    <?php var_dump($_SESSION['access_level'], $_SESSION['type']); ?>
+                    <!--<?php var_dump($_SESSION['access_level'], $_SESSION['type']); ?>-->
                     <a href="addTrainingMaterial.php?eventID=<?= urlencode($id) ?>" class="button signup">
                         Add Training Document
                     </a>
                 </p>
             <?php endif; ?>
+        </section>
+
+        <section class="event-media">
+            <h2>Event Media</h2>
+                
+            <?php if (empty($event_media)): ?>
+                <p>No event media has been uploaded for this event yet.</p>
+            <?php else: ?>
+                <ul>
+                    <?php foreach ($event_media as $media): ?>
+                        <li>
+                           <?php 
+                            if ($media['format'] == 'link') {
+                                echo '<a href="' . $media['url'] . '">' . $media['description'] . '</a>';
+                                if ($isEventManager) {
+                                    echo ' <a href="deleteEventMedia.php?eid=' . $id . '&mid=' . $media['id'] . '">Remove</a>';
+                                }
+                            } else if ($media['format'] == 'picture') {
+                                echo '<span>' . $media['description'] . '</span>';
+                                if ($isEventManager) {
+                                    echo ' <a style="color: red;" href="deleteEventMedia.php?eid=' . $id . '&mid=' . $media['id'] . '">Remove</a>';
+                                }
+                                echo '<br><a href="' . $media['url'] . '"><img style="max-width: 30vw" src="' . $media['url'] . '" alt="' . $media['description'] . '"></a>';
+                            } else {
+                                echo '<span>' . $media['description'] . '</span>';
+                                if ($isEventManager) {
+                                    echo ' <a href="deleteEventMedia.php?eid=' . $id . '&mid=' . $media['id'] . '">Remove</a>';
+                                }
+                                echo '<br><iframe width="560" height="315" src="' . $media['url'] . '" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>';
+                            }
+                            
+                            ?>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
+            <?php endif; ?>
+
+                <p>
+                    <a href="addEventMedia.php?eventID=<?= urlencode($id) ?>" class="button signup">
+                        Add Event Media
+                    </a>
+                </p>
         </section>
 
         <!-- Action Buttons -->
