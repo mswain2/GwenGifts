@@ -651,6 +651,7 @@ function create_event($event) {
         */
     $access = 'Public';
     $description = $event["description"];
+    $timezone = $event["timezone"];
     //$branch = $event["branch"];
     //$location = $event["location"];
     //$services = $event["service"];
@@ -667,8 +668,8 @@ function create_event($event) {
         : null;
 
     $query = "
-        insert into dbevents (name, abbr_name, startDate, startTime, endTime, endDate, access, description, capacity, completed, location, type, series_id, recurrence_interval_days, board_event)
-        values ('$name', '$abbr', '$date', '$startTime', '$endTime', '$endDate', '$access', '$description', $capacity, '$completed', '$location', '$type', " .($series_id ? "'$series_id'" : "NULL") . ", " .($recurrence_interval_days ? "'$recurrence_interval_days'" : "0") . ", $board_event)
+        insert into dbevents (name, abbr_name, startDate, startTime, endTime, endDate, timezone, access, description, capacity, completed, location, type, series_id, recurrence_interval_days, board_event)
+        values ('$name', '$abbr', '$date', '$startTime', '$endTime', '$endDate', '$timezone', '$access', '$description', $capacity, '$completed', '$location', '$type', " .($series_id ? "'$series_id'" : "NULL") . ", " .($recurrence_interval_days ? "'$recurrence_interval_days'" : "0") . ", $board_event)
     ";
     $result = mysqli_query($connection, $query);
     if (!$result) {
