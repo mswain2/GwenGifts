@@ -474,6 +474,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <button type="submit" class="button primary">Sign Up!</button>
             </form>
             <?php if ($isEventManager) : ?>
+                
+                <a href="eventRoster.php?id=<?php echo urlencode($id); ?>" class="button signup">Generate Event Roster</a>
 
                 <a href="viewEventSignUps.php?id=<?php echo $id; ?>" class="button signup">View Event Signups</a>
 
