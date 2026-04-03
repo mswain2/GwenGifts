@@ -765,7 +765,8 @@ CREATE TABLE `dbpersons` (
   `transportation_access` enum('yes','no') DEFAULT NULL,
   `skills` text DEFAULT NULL,
   `experience` text DEFAULT NULL,
-  `about_consent` enum('yes','no') DEFAULT NULL
+  `about_consent` enum('yes','no') DEFAULT NULL,
+  `force_password_change` tinyint(1) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --

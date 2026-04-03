@@ -39,7 +39,7 @@ function add_person($person) {
             password, affiliation, branch, emergency_contact_last_name,
             gender, t_shirt_size,
             computer_access, camera_access, transportation_access,
-            skills, experience, about_consent
+            skills, experience, about_consent, force_password_change
         ) VALUES ("' .
             $person->get_id() . '","' .
             $person->get_start_date() . '","' .
@@ -74,7 +74,8 @@ function add_person($person) {
             $person->get_transportation_access() . '","' .
             $person->get_skills() . '","' .
             $person->get_experience() . '","' .
-            $person->get_about_consent() . '");';
+            $person->get_about_consent() . '","' .
+            $person->get_force_password_change() . '");';
 
         if (mysqli_query($con, $insert_query)) {
             mysqli_close($con);
@@ -167,6 +168,28 @@ function reset_password($id, $newPass) {
     $con=connect();
     $query = 'UPDATE dbpersons SET password = "' . $newPass . '", force_password_change="1" WHERE id = "' . $id . '"';
     $result = mysqli_query($con,$query);
+    mysqli_close($con);
+    return $result;
+}
+
+function clear_force_password_change($id) {
+    $con = connect();
+    $query = 'UPDATE dbpersons SET force_password_change = 0 WHERE id = "' . $id . '"';
+    $result = mysqli_query($con, $query);
+    mysqli_close($con);
+    return $result;
+}
+
+function update_person_id($oldId, $newId) {
+    $con = connect();
+    $check = "SELECT id FROM dbpersons WHERE id = '" . $newId . "'";
+    $result = mysqli_query($con, $check);
+    if (mysqli_num_rows($result) > 0) {
+        mysqli_close($con);
+        return false;
+    }
+    $query = 'UPDATE dbpersons SET id = "' . $newId . '" WHERE id = "' . $oldId . '"';
+    $result = mysqli_query($con, $query);
     mysqli_close($con);
     return $result;
 }
@@ -638,7 +661,8 @@ function make_a_person($result_row) {
     @$result_row['transportation_access'],
     @$result_row['skills'],
     @$result_row['experience'],
-    @$result_row['about_consent']
+    @$result_row['about_consent'],
+    @$result_row['force_password_change']
     );
 
 
