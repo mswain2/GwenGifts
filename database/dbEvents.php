@@ -707,6 +707,7 @@ function update_event($eventID, $eventDetails) {
     #$restricted = $eventDetails["restricted"];
     $endTime = $eventDetails["end-time"];
     $description = $eventDetails["description"];
+    $timezone = $eventDetails["timezone"];
     $capacity = $eventDetails["capacity"];
     #$completed = $eventDetails["completed"];
     #$restricted_signup = $eventDetails["restricted_signup"];
@@ -724,7 +725,7 @@ function update_event($eventID, $eventDetails) {
     #    where id='$eventID'
     #";
     $query = "
-        update dbevents set id='$id', name='$name', abbr_name='$abbr_name', startDate='$date', endDate='$date', startTime='$startTime', endTime='$endTime', description='$description', location='$location', capacity=$capacity, recurrence_interval_days='$recurrence_interval_days'
+        update dbevents set id='$id', name='$name', abbr_name='$abbr_name', startDate='$date', endDate='$date', timezone='$timezone', startTime='$startTime', endTime='$endTime', description='$description', location='$location', capacity=$capacity, recurrence_interval_days='$recurrence_interval_days'
         where id='$eventID'
     ";
     $result = mysqli_query($connection, $query);
@@ -743,6 +744,7 @@ function update_series($series_id, $eventDetails){
     $startTime = $eventDetails["start-time"];
     #$restricted = $eventDetails["restricted"];
     $endTime = $eventDetails["end-time"];
+    $timezone = $eventDetails["timezone"];
     $description = $eventDetails["description"];
     $capacity = $eventDetails["capacity"];
     #$completed = $eventDetails["completed"];
@@ -758,6 +760,7 @@ function update_series($series_id, $eventDetails){
         abbr_name='$abbr_name',
         startTime='$startTime',
         endTime='$endTime',
+        timezone='$timezone',
         description='$description',
         location='$location',
         capacity=$capacity,

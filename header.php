@@ -232,6 +232,8 @@ if (date("H:i:s") > "18:19:59") {
         $permission_array['editdiscussion.php'] = 1;
         $permission_array['editreply.php'] = 1;
         $permission_array['addeventmedia.php'] = 1;
+        $permission_array['vieweventcomments.php'] = 1;
+        $permission_array['addeventcomment.php'] = 1;
         // LOWERCASE
 
 

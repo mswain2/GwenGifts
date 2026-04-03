@@ -222,6 +222,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <?php
     require_once('universal.inc');
+    require_once('database/dbEvents.php');
     ?>
     <title>Gwyneth's Gift | <?php echo $event_info['name'] ?></title>
     <link rel="stylesheet" href="event.css" type="text/css" />
@@ -241,6 +242,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php endif ?>
         <?php if (isset($_GET['removeSuccess'])): ?>
             <div class="happy-toast">Event Media removed successfully!</div>
+        <?php endif ?>
+        <?php if (isset($_GET['attachSuccess'])): ?>
+            <div class="happy-toast">Event Media added successfully!</div>
         <?php endif ?>
         <?php if (isset($_GET['editSuccess'])): ?>
             <div class="happy-toast">Event details updated successfully!</div>
@@ -459,18 +463,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             if ($media['format'] == 'link') {
                                 echo '<a href="' . $media['url'] . '">' . $media['description'] . '</a>';
                                 if ($isEventManager) {
-                                    echo ' <a href="deleteEventMedia.php?eid=' . $id . '&mid=' . $media['id'] . '">Remove</a>';
+                                    echo ' <a style="color: red;" href="deleteEventMedia.php?eid=' . $id . '&mid=' . $media['id'] . '" onclick="return confirm(\'Delete this media link?\');">Remove</a>';
                                 }
                             } else if ($media['format'] == 'picture') {
                                 echo '<span>' . $media['description'] . '</span>';
                                 if ($isEventManager) {
-                                    echo ' <a style="color: red;" href="deleteEventMedia.php?eid=' . $id . '&mid=' . $media['id'] . '">Remove</a>';
+                                    echo ' <a style="color: red;" href="deleteEventMedia.php?eid=' . $id . '&mid=' . $media['id'] . '" onclick="return confirm(\'Delete this media photo?\');">Remove</a>';
                                 }
                                 echo '<br><a href="' . $media['url'] . '"><img style="max-width: 30vw" src="' . $media['url'] . '" alt="' . $media['description'] . '"></a>';
                             } else {
                                 echo '<span>' . $media['description'] . '</span>';
                                 if ($isEventManager) {
-                                    echo ' <a href="deleteEventMedia.php?eid=' . $id . '&mid=' . $media['id'] . '">Remove</a>';
+                                    echo ' <a href="deleteEventMedia.php?eid=' . $id . '&mid=' . $media['id'] . '" onclick="return confirm(\'Delete this media video?\');">Remove</a>';
                                 }
                                 echo '<br><iframe width="560" height="315" src="' . $media['url'] . '" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>';
                             }
@@ -486,6 +490,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         Add Event Media
                     </a>
                 </p>
+        </section>
+
+        <section>
+            <?php if (check_if_signed_up($id, $user->get_id()) || $isEventManager): ?>
+                <h2>Event Comments</h2>
+                <p>
+                    <a href="viewEventComments.php?eventID=<?= urlencode($id) ?>" class="button signup">
+                        View Event Comments
+                    </a>
+                </p>
+            <?php endif ?>
         </section>
 
         <!-- Action Buttons -->
