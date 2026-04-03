@@ -42,6 +42,7 @@
       }
       // is provided password correct?
       else if (password_verify($password, $user->get_password())) {
+        //set SESSION vars
         $_SESSION['logged_in'] = true;
         $_SESSION['access_level'] = $user->get_access_level();
         $_SESSION['f_name'] = $user->get_first_name();
@@ -50,15 +51,19 @@
         $_SESSION['_id'] = $user->get_id();
         
         //hard code root privileges
-        if ($user->get_id() == 'vmsroot') {
-          $_SESSION['access_level'] = 3;
-          $_SESSION['locked'] = false;
-          header('Location: index.php');
-        }
-        else {
+        // if ($user->get_id() == 'vmsroot') {
+        //   $_SESSION['access_level'] = 4;
+        //   $_SESSION['locked'] = false;
+        //   header('Location: index.php');
+        // }
+        // else {
+        //   header('Location: index.php');
+        //   die();
+        // }
+
+          // send to dashboard
           header('Location: index.php');
           die();
-        }
 
         /*
         if ($changePassword) {

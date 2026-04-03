@@ -8,10 +8,11 @@
     $accessLevel = 0;
     $userID = null;
     $isAdmin = false;
-    if (!isset($_SESSION['access_level']) || $_SESSION['access_level'] < 1) {
-        header('Location: login.php');
+    if (!isset($_SESSION['access_level']) || $_SESSION['access_level'] < 2) {
+        header('Location: index.php');
         die();
     }
+
     if (isset($_SESSION['_id'])) {
         $loggedIn = true;
         // 0 = not logged in, 1 = standard user, 2 = manager (Admin), 3 super admin (TBI)
@@ -19,9 +20,10 @@
         $isAdmin = $accessLevel >= 2;
         $userID = $_SESSION['_id'];
     } else {
-        header('Location: login.php');
+        header('Location: index.php');
         die();
     }
+
     if ($isAdmin && isset($_GET['id'])) {
         require_once('include/input-validation.php');
         $args = sanitize($_GET);
@@ -29,6 +31,7 @@
     } else {
         $id = $userID;
     }
+
     require_once('database/dbPersons.php');
     //if (isset($_GET['removePic'])) {
      // if ($_GET['removePic'] === 'true') {
@@ -37,7 +40,7 @@
     //}
 
    $user = retrieve_person($id);
-  $verified_ids = get_verified_ids($user->get_id());
+   $verified_ids = get_verified_ids($user->get_id());
 
    if ($isAdmin && $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['new_hours'])) {
     require_once('database/dbPersons.php'); // already required, so you can just remove the duplicate
