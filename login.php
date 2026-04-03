@@ -50,30 +50,16 @@
         $_SESSION['type'] = strtolower($user->get_type());
         $_SESSION['_id'] = $user->get_id();
         
-        //hard code root privileges
-        // if ($user->get_id() == 'vmsroot') {
-        //   $_SESSION['access_level'] = 4;
-        //   $_SESSION['locked'] = false;
-        //   header('Location: index.php');
-        // }
-        // else {
-        //   header('Location: index.php');
-        //   die();
-        // }
-
-          // send to dashboard
-          header('Location: index.php');
-          die();
-
-        /*
-        if ($changePassword) {
-           $_SESSION['access_level'] = 0;
-           $_SESSION['change-password'] = true;
-           header('Location: changePassword.php');
-           die();
+        // Check if user must complete returning volunteer setup
+        if ($user->get_force_password_change()) {
+            $_SESSION['access_level'] = 0;
+            $_SESSION['change-password'] = true;
+            header('Location: returningVolunteerForm.php');
+            die();
         }
-        */
 
+        // send to dashboard
+        header('Location: index.php');
         die();
       }
       else {
@@ -187,6 +173,10 @@
         </div>
         <button class="login">Login</button>
       </form>
+
+      <div class="flex justify-center mt-8">
+          <a href="returningVolunteer.php" class="text-[#22654D] text-sm hover:underline">Returning Volunteer?</a>
+      </div>
 
       <!-- Divider -->
       <div class="flex items-center my-6 w-full">
