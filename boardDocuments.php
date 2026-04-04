@@ -221,7 +221,7 @@ if ($is_admin) {
             background: white;
             border-radius: 12px;
             padding: 30px;
-            max-width: 50px;
+            max-width: 500px;
             width: 90%;
             max-height: 80vh;
             overflow-y: auto;

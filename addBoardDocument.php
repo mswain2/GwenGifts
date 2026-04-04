@@ -38,20 +38,18 @@
     }
 
     $clearance_options_map = [
-        'event_manager' => ['public', 'volunteer', 'manager'],
-        'board_member'  => ['public', 'volunteer', 'board_member'],
-        'admin'         => ['public', 'volunteer', 'manager', 'board_member', 'admin'],
-        'superadmin'    => ['public', 'volunteer', 'manager', 'board_member', 'admin', 'superadmin'],
+        'event_manager' => ['volunteer', 'event_manager'],
+        'board_member'  => ['volunteer', 'board_member'],
+        'admin'         => ['volunteer', 'event_manager', 'board_member', 'admin'],
+        'superadmin'    => ['volunteer', 'event_manager', 'board_member', 'admin'],
     ];
-    $available_clearances = $clearance_options_map[$user_type] ?? ['public'];
+    $available_clearances = $clearance_options_map[$user_type] ?? ['volunteer'];
 
     $clearance_labels = [
-        'public'       => 'Public — Everyone can access',
         'volunteer'    => 'Volunteer — Volunteers and above',
-        'manager'      => 'Manager — Event Managers and above',
+        'event_manager'=> 'Event Manager — Event Managers and above',
         'board_member' => 'Board Member — Board Members, Admins, Super Admins',
         'admin'        => 'Admin — Admins and Super Admins only',
-        'superadmin'   => 'Super Admin — Super Admins only',
     ];
 
     $error = null;
