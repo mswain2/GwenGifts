@@ -10,12 +10,22 @@ $userID = null;
 if (isset($_SESSION['_id'])) {
     $loggedIn = true;
     $accessLevel = $_SESSION['access_level'];
+    $userType = 'volunteer';
     $userID = $_SESSION['_id'];
 }
 
 include_once "database/dbDiscussions.php";
 include_once "domain/Discussion.php";
 include_once "database/dbPersons.php";
+
+if (isset($_SESSION['_id'])) {
+    if ($_SESSION['_id'] === 'vmsroot') {
+        $userType = 'superadmin';
+    } else {
+        $person = retrieve_person($_SESSION['_id']);
+        if ($person) $userType = $person->get_type();
+    }
+}
 
 $discussions = get_all_discussions();
 ?>
@@ -38,6 +48,11 @@ require_once('header.php');
     <main>
 
       <div class="main-content-box w-[90%] p-8">
+
+        <div class="top-bar">
+            <a href="createDiscussion.php" class="blue-button">+ New Discussion</a>
+        </div>
+
         <?php if (isset($error)) echo "<p style='color: red;'>$error</p>"; ?>
 
         <div class="top-bar">
@@ -53,7 +68,7 @@ require_once('header.php');
         <table>
             <thead>
                 <tr>
-                    <?php if ($accessLevel > 2): ?>
+                    <?php if (in_array($userType, ['admin', 'superadmin'])): ?>
                         <th><input type="checkbox" id="selectAll"></th>
                     <?php endif; ?>
                     <th>Author</th>
@@ -70,7 +85,7 @@ require_once('header.php');
                         $entryValue = htmlspecialchars($discussion['author_id']) . '|' . htmlspecialchars($discussion['title']) . '|general';
                     ?>
                         <tr>
-                            <?php if ($accessLevel > 2): ?>
+                            <?php if (in_array($userType, ['admin', 'superadmin'])): ?>
                                 <td>
                                     <input type="checkbox" class="rowCheckbox" name="selected_discussions[]" value="<?php echo $entryValue; ?>">
                                 </td>
@@ -82,7 +97,11 @@ require_once('header.php');
                             <td>
                                 <a href="discussionContent.php?author=<?php echo urlencode($person->get_id()); ?>&title=<?php echo urlencode($discussion['title']); ?>&category=general" class="blue-button">View</a>
 
-                                <?php if ($accessLevel > 2): ?>
+                                <?php if (in_array($userType, ['admin', 'superadmin']) || $userID === $discussion['author_id']): ?>
+                                    <a href="editDiscussion.php?title=<?php echo urlencode($discussion['title']); ?>&category=general" class="blue-button">Edit</a>
+                                <?php endif; ?>
+
+                                <?php if (in_array($userType, ['admin', 'superadmin']) || $userID === $discussion['author_id']): ?>
                                     <form action="deleteDiscussion.php" method="POST" style="display:inline;">
                                         <input type="hidden" name="author_id" value="<?php echo htmlspecialchars($person->get_id()); ?>">
                                         <input type="hidden" name="title" value="<?php echo htmlspecialchars($discussion['title']); ?>">
@@ -100,25 +119,20 @@ require_once('header.php');
         </table>
 
         <br>
-        <?php
-            if ($accessLevel > 2):
-            ?>
-                <div class="text-center">
-                    <a href="createDiscussion.php" class="blue-button">Create Discussion</a>
-                </div>
-            <?php
-            endif;
-        ?>
+
+   
+
+
 
 	</div>
     <div class="text-center mt-6">
         <a href="index.php" class="return-button">Return to Dashboard</a>
     </div>
+    <div class="text-center mt-6">
+        <a href="discussionMain.php" class="return-button">Back to Discussions Management</a>
+    </div>
     <div class="info-section">
         <div class="blue-div"></div>
-        <p class="info-text">
-            Use this tool to filter and search for volunteers or participants by their role, event involvement, and status. Mailing list support is built in.
-        </p>
     </div>
 
     </main>

@@ -1,0 +1,7 @@
+ALTER TABLE dbdiscussions ADD COLUMN edited_by VARCHAR(256) DEFAULT NULL;
+
+ALTER TABLE dbdiscussions ADD COLUMN edited_at VARCHAR(16) DEFAULT NULL;
+
+ALTER TABLE discussion_replies ADD COLUMN edited_by VARCHAR(256) DEFAULT NULL;
+
+ALTER TABLE discussion_replies ADD COLUMN edited_at VARCHAR(16) DEFAULT NULL;

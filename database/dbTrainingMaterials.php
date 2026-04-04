@@ -1,7 +1,8 @@
 <?php
 require_once('dbinfo.php');
 
-function add_training_material($eventID, $title, $description, $fileName, $filePath, $fileType, $uploadedBy) {
+function add_training_material($eventID, $title, $description, $fileName, $filePath, $fileType, $uploadedBy)
+{
     $con = connect();
 
     $eventID = mysqli_real_escape_string($con, $eventID);
@@ -24,16 +25,28 @@ function add_training_material($eventID, $title, $description, $fileName, $fileP
     return $result;
 }
 
-function get_training_materials_by_event($eventID) {
+function get_training_materials_by_event($eventID, $search_name = '')
+{
     $con = connect();
     $eventID = mysqli_real_escape_string($con, $eventID);
 
     $query = "
         SELECT *
         FROM dbtraining_materials
-        WHERE eventID = '$eventID' AND is_active = 1
-        ORDER BY uploaded_at DESC
+        WHERE eventID = '$eventID'
+          AND is_active = 1
     ";
+
+    if ($search_name !== '') {
+        $safe_name = mysqli_real_escape_string($con, $search_name);
+        $query .= " AND (
+            title LIKE '%$safe_name%'
+            OR description LIKE '%$safe_name%'
+            OR file_name LIKE '%$safe_name%'
+        )";
+    }
+
+    $query .= " ORDER BY uploaded_at DESC";
 
     $result = mysqli_query($con, $query);
     $materials = [];
@@ -46,7 +59,8 @@ function get_training_materials_by_event($eventID) {
     return $materials;
 }
 
-function get_training_materials_by_user($userID) {
+function get_training_materials_by_user($userID, $search_name = '')
+{
     $con = connect();
     $userID = mysqli_real_escape_string($con, $userID);
 
@@ -57,8 +71,19 @@ function get_training_materials_by_user($userID) {
         JOIN dbevents e ON e.id = tm.eventID
         WHERE ep.userID = '$userID'
           AND tm.is_active = 1
-        ORDER BY e.startDate ASC, tm.uploaded_at DESC
     ";
+
+    if ($search_name !== '') {
+        $safe_name = mysqli_real_escape_string($con, $search_name);
+        $query .= " AND (
+            tm.title LIKE '%$safe_name%'
+            OR tm.description LIKE '%$safe_name%'
+            OR tm.file_name LIKE '%$safe_name%'
+            OR e.name LIKE '%$safe_name%'
+        )";
+    }
+
+    $query .= " ORDER BY e.startDate ASC, tm.uploaded_at DESC";
 
     $result = mysqli_query($con, $query);
     $materials = [];
@@ -71,7 +96,42 @@ function get_training_materials_by_user($userID) {
     return $materials;
 }
 
-function delete_training_material($id) {
+function get_all_training_materials($search_name = '')
+{
+    $con = connect();
+
+    $query = "
+        SELECT tm.*, e.name AS event_name, e.startDate AS event_date
+        FROM dbtraining_materials tm
+        JOIN dbevents e ON e.id = tm.eventID
+        WHERE tm.is_active = 1
+    ";
+
+    if ($search_name !== '') {
+        $safe_name = mysqli_real_escape_string($con, $search_name);
+        $query .= " AND (
+            tm.title LIKE '%$safe_name%'
+            OR tm.description LIKE '%$safe_name%'
+            OR tm.file_name LIKE '%$safe_name%'
+            OR e.name LIKE '%$safe_name%'
+        )";
+    }
+
+    $query .= " ORDER BY e.startDate ASC, tm.uploaded_at DESC";
+
+    $result = mysqli_query($con, $query);
+    $materials = [];
+
+    while ($row = mysqli_fetch_assoc($result)) {
+        $materials[] = $row;
+    }
+
+    mysqli_close($con);
+    return $materials;
+}
+
+function delete_training_material($id)
+{
     $con = connect();
     $id = mysqli_real_escape_string($con, $id);
 
@@ -89,4 +149,3 @@ function delete_training_material($id) {
     mysqli_close($con);
     return $result;
 }
-?>

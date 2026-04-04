@@ -51,4 +51,30 @@ function logAllNotPresent($eventId, $comments): bool
 {
 
 }
+
+function get_attendance_statuses_for_event($eventId): array
+{
+    $connection = connect();
+    $safe_event = mysqli_real_escape_string($connection, (string)$eventId);
+
+    $query = "
+        SELECT userId, attended
+        FROM dbattendance
+        WHERE eventId = '$safe_event'
+    ";
+
+    $result = mysqli_query($connection, $query);
+    $statuses = [];
+
+    if ($result) {
+        while ($row = mysqli_fetch_assoc($result)) {
+            $statuses[$row['userId']] = ((string)$row['attended'] === '1')
+                ? 'Present'
+                : 'Absent';
+        }
+    }
+
+    mysqli_close($connection);
+    return $statuses;
+}
 ?>

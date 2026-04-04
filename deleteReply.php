@@ -6,14 +6,30 @@ include_once "database/dbDiscussionReplies.php";
 include_once "database/dbDiscussions.php";
 
 // Ensure the user is authorized
-if (!isset($_SESSION['_id']) || $_SESSION['access_level'] < 3) {
+include_once 'database/dbPersons.php';
+$userType = 'volunteer';
+if (isset($_SESSION['_id'])) {
+    if ($_SESSION['_id'] === 'vmsroot') {
+        $userType = 'superadmin';
+    } else {
+        $person = retrieve_person($_SESSION['_id']);
+        if ($person) $userType = $person->get_type();
+    }
+}
+if (!isset($_SESSION['_id'])) {
     die("Unauthorized access.");
 }
-
+$userID = $_SESSION['_id'];
 // Check if the reply_id and title are passed in the URL
 $replyID = $_GET['reply_id'] ?? null; // Fetch reply_id from the URL query string
 $discussionTitle = $_GET['title'] ?? null; // Fetch title from the URL query string
 $category = $_GET['category'] ?? null;
+
+$replyToDelete = $replyID ? get_reply_by_id($replyID) : null;
+
+if (!in_array($userType, ['admin', 'superadmin']) && (!$replyToDelete || $userID !== $replyToDelete['user_reply_id'])) {
+    die("Unauthorized access.");
+}
 
 if ($replyID && $discussionTitle) {
     // Call the function to remove the reply

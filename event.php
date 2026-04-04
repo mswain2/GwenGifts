@@ -3,11 +3,25 @@
 session_cache_expire(30);
 session_start();
 
-// Ensure user is logged in
-if (!isset($_SESSION['access_level']) || $_SESSION['access_level'] < 1) {
-    //header('Location: login.php');
-    //die();
+// check RBAC
+if (isset($_SESSION['access_level']) && $_SESSION['access_level'] >= 2) {
+    $isEventManager = true;
+} else {
+    $isEventManager = false;    
 }
+
+if (isset($_SESSION['access_level']) && $_SESSION['access_level'] >= 1) {
+    $isVolunteer = true;
+} else {
+    header('Location: index.php');
+    die();  
+}
+
+// Ensure user is logged in
+// if (!isset($_SESSION['access_level']) || $_SESSION['access_level'] < 1) {
+//     header('Location: login.php');
+//     die();
+// }
 
 require_once('include/input-validation.php');
 $args = sanitize($_GET);
@@ -25,6 +39,7 @@ if (isset($args["update"])) {
 
 include_once('database/dbEvents.php');
 require_once('database/dbTrainingMaterials.php');
+require_once('database/dbEventMedia.php');
 
 // We need to check for a bad ID here before we query the db
 // otherwise we may be vulnerable to SQL injection(!)
@@ -46,6 +61,8 @@ $confirmText = $isRecurring
 // Get number of signups to display on event page
 $event_num_signups = fetch_num_signups($id);
 $trainingMaterials = get_training_materials_by_event($id);
+$event_media = get_event_media($id);
+
 
 include_once('database/dbPersons.php');
 if (isset($_SESSION['access_level'])) {
@@ -67,7 +84,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $args = sanitize($_POST);
     $get = sanitize($_GET);
     if (isset($_POST['attach-post-media-submit'])) {
-        if ($access_level < 2) {
+        if ($_SESSION['access_level'] < 2) {
             echo 'forbidden';
             die();
         }
@@ -81,7 +98,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             echo "dude, args missing";
             die();
         }
-        $type = 'post';
+        // $type = 'post';
         $format = $args['format'];
         $url = $args['url'];
         if ($format == 'video') {
@@ -119,7 +136,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             echo "dude, args missing";
             die();
         }
-        $type = 'post';
+        // $type = 'post';
         $format = $args['format'];
         $url = $args['url'];
         if ($format == 'video') {
@@ -205,10 +222,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <?php
     require_once('universal.inc');
+    require_once('database/dbEvents.php');
     ?>
     <title>Gwyneth's Gift | <?php echo $event_info['name'] ?></title>
     <link rel="stylesheet" href="event.css" type="text/css" />
-    <?php if (isset($_SESSION['access_level']) && $access_level >= 2) : ?>
+    <?php if ($isEventManager) : ?>
         <script src="js/event.js"></script>
     <?php endif ?>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -222,6 +240,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php if (isset($_GET['createSuccess'])): ?>
             <div class="happy-toast">Event created successfully!</div>
         <?php endif ?>
+        <?php if (isset($_GET['removeSuccess'])): ?>
+            <div class="happy-toast">Event Media removed successfully!</div>
+        <?php endif ?>
+        <?php if (isset($_GET['attachSuccess'])): ?>
+            <div class="happy-toast">Event Media added successfully!</div>
+        <?php endif ?>
         <?php if (isset($_GET['editSuccess'])): ?>
             <div class="happy-toast">Event details updated successfully!</div>
         <?php endif ?>
@@ -232,10 +256,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="happy-toast">Attendance information updated successfully!</div>
         <?php endif ?>
         <?php if (isset($_GET['trainingUploadSuccess'])): ?>
-            <div class="happy-toast">Training material uploaded successfully!</div>
+            <div class="happy-toast">Training Document uploaded successfully!</div>
         <?php endif ?>
         <?php if (isset($_GET['trainingDeleteSuccess'])): ?>
-            <div class="happy-toast">Training material removed successfully!</div>
+            <div class="happy-toast">Training Document removed successfully!</div>
         <?php endif ?>
 
         <!-- Facebook share button -->
@@ -272,26 +296,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php
         require_once('include/output.php');
         $event_name = $event_info['name'];
+        $event_abbr = $event_info['abbr_name'];
         $event_date = date('l, F j, Y', strtotime($event_info['startDate']));
+        $event_timezone = $event_info['timezone'];
+
+        $today = date('l, F j, Y');
+        $now = date('H:i:s');
         $event_startTime = time24hto12h($event_info['startTime']);
         $event_endTime = time24hto12h($event_info['endTime']);
+        $date = new DateTime($event_date);
+        $time = new DateTime($event_startTime);
+        $today = new DateTime($today);
+        $now = new DateTime($now);
+        $event_in_past = false;
+        if ($today > $date){
+            $event_in_past = true;
+        } elseif($today == $date){
+            if ($now > $time){
+                $event_in_past = true;
+            }
+        }
+        
         $event_description = $event_info['description'];
         $event_location = $event_info['location'];
         $event_capacity = $event_info['capacity'];
         //$event_training_level = $event_info['affiliation'];
         $num_signups = $event_num_signups['RowCount'];
+        $recurrence = $event_info['recurrence_interval_days'];
         require_once('include/time.php');
         ?>
 
         <!-- Event Information Table -->
         <h2 class="event-head">
             <?php echo htmlspecialchars_decode($event_name); ?>
-            <?php if (isset($_SESSION['access_level']) && $access_level >= 2): ?>
+            <?php if ($isEventManager && !$event_in_past): ?>
                 <a href="editEvent.php?id=<?= $id ?>" title="Edit Event" class="edit-icon">
                     <i class="fas fa-pencil-alt"></i>
                 </a>
                 <a href="deleteEvent.php?id=<?= $id ?>" title="Delete Event" class="delete-icon"
-                    onclick="return confirm('<?= htmlspecialchars($confirmText, ENT_QUOTES) ?>');">
+                    onclick="showDeleteConfirmation(); return false;">
                     <i class="fas fa-trash"></i>
                 </a>
             <?php endif; ?>
@@ -310,6 +353,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div id="table-wrapper">
             <table>
                 <tr>
+                    <td class="label">Abbreviated Name</td>
+                    <td><?php echo htmlspecialchars_decode($event_abbr);?></td>
+                </tr>
+                <tr>
                     <td class="label">Date</td>
                     <td><?php echo $event_date; ?></td>
                 </tr>
@@ -317,6 +364,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <td class="label">Time</td>
                     <td><?php echo $event_startTime . " - " . $event_endTime; ?></td>
                 </tr>
+
+                <tr>
+                    <td class="label">Timezone</td>
+                    <td><?php echo $event_timezone; ?></td>
+                </tr>
+                
+                <?php if (isset($event_info['series_id']) && $event_info['series_id'] != NULL): ?>
+                    <tr>
+                        <td class="label">Recurrence</td>
+                        <?php 
+                            $repeats = "Every " . $recurrence . " days";
+                            if ($recurrence == 1){
+                                $repeats = "Daily";
+                            } elseif ($recurrence == 7){
+                                $repeats = "Weekly";
+                            } elseif ($recurrence == 30){
+                                $repeats = "Monthly";
+                            }elseif ($recurrence == -1){
+                                $repeats = "Part of a deleted series";
+                            }
+                        ?>
+                        <td><?php echo $repeats;?></td>
+                    </tr>
+                <?php endif ?>
                 <tr>
                     <td class="label">Location</td>
                     <td>
@@ -327,7 +398,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <tr>
                     <td class="label">Description</td>
                     <td>
-                        <?php echo wordwrap($event_description, 50, "<br />\n"); ?>
+                        <?php echo wordwrap(htmlspecialchars_decode($event_description), 50, "<br />\n"); ?>
                     </td>
                 </tr>
                 <tr>
@@ -357,9 +428,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 - <?= htmlspecialchars($material['description']) ?>
                             <?php endif; ?>
 
-                            <?php if (isset($_SESSION['access_level']) && $access_level >= 2): ?>
+                            <?php if ($isEventManager): ?>
                                 <a href="deleteTrainingMaterial.php?id=<?= urlencode($material['id']) ?>&eventID=<?= urlencode($id) ?>"
-                                    onclick="return confirm('Delete this training material?');"
+                                    onclick="return confirm('Delete this Training Document?');"
                                     style="color: red; margin-left: 10px;">
                                     Remove
                                 </a>
@@ -369,13 +440,67 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </ul>
             <?php endif; ?>
 
-            <?php if (isset($_SESSION['access_level']) && $access_level >= 2): ?>
+            <?php if ($isEventManager): ?>
                 <p>
+                    <!--<?php var_dump($_SESSION['access_level'], $_SESSION['type']); ?>-->
                     <a href="addTrainingMaterial.php?eventID=<?= urlencode($id) ?>" class="button signup">
-                        Add Training Material
+                        Add Training Document
                     </a>
                 </p>
             <?php endif; ?>
+        </section>
+
+        <section class="event-media">
+            <h2>Event Media</h2>
+                
+            <?php if (empty($event_media)): ?>
+                <p>No event media has been uploaded for this event yet.</p>
+            <?php else: ?>
+                <ul>
+                    <?php foreach ($event_media as $media): ?>
+                        <li>
+                           <?php 
+                            if ($media['format'] == 'link') {
+                                echo '<a href="' . $media['url'] . '">' . $media['description'] . '</a>';
+                                if ($isEventManager) {
+                                    echo ' <a style="color: red;" href="deleteEventMedia.php?eid=' . $id . '&mid=' . $media['id'] . '" onclick="return confirm(\'Delete this media link?\');">Remove</a>';
+                                }
+                            } else if ($media['format'] == 'picture') {
+                                echo '<span>' . $media['description'] . '</span>';
+                                if ($isEventManager) {
+                                    echo ' <a style="color: red;" href="deleteEventMedia.php?eid=' . $id . '&mid=' . $media['id'] . '" onclick="return confirm(\'Delete this media photo?\');">Remove</a>';
+                                }
+                                echo '<br><a href="' . $media['url'] . '"><img style="max-width: 30vw" src="' . $media['url'] . '" alt="' . $media['description'] . '"></a>';
+                            } else {
+                                echo '<span>' . $media['description'] . '</span>';
+                                if ($isEventManager) {
+                                    echo ' <a href="deleteEventMedia.php?eid=' . $id . '&mid=' . $media['id'] . '" onclick="return confirm(\'Delete this media video?\');">Remove</a>';
+                                }
+                                echo '<br><iframe width="560" height="315" src="' . $media['url'] . '" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>';
+                            }
+                            
+                            ?>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
+            <?php endif; ?>
+
+                <p>
+                    <a href="addEventMedia.php?eventID=<?= urlencode($id) ?>" class="button signup">
+                        Add Event Media
+                    </a>
+                </p>
+        </section>
+
+        <section>
+            <?php if (check_if_signed_up($id, $user->get_id()) || $isEventManager): ?>
+                <h2>Event Comments</h2>
+                <p>
+                    <a href="viewEventComments.php?eventID=<?= urlencode($id) ?>" class="button signup">
+                        View Event Comments
+                    </a>
+                </p>
+            <?php endif ?>
         </section>
 
         <!-- Action Buttons -->
@@ -418,12 +543,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <input type="hidden" name="type" value="<?php echo htmlspecialchars($event_info['type']); ?>">
                 <button type="submit" class="button primary">Sign Up!</button>
             </form>
-            <?php if (isset($_SESSION['access_level']) && $access_level >= 2) : ?>
+            <?php if ($isEventManager) : ?>
 
                 <a href="viewEventSignUps.php?id=<?php echo $id; ?>" class="button signup">View Event Signups</a>
 
                 <!-- Archive and Unarchive buttons by Thomas -->
-
+                <!--Remove archive stuff - Kenzie
                 <?php if (is_archived($event_info['id'])) : ?>
                     <form method="POST" action="" onsubmit="return confirmAction('unarchive')">
                         <input type="hidden" name="unarchiving" value="1">
@@ -441,7 +566,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </form>
 
                 <?php endif ?>
-
+                -->
                 <!-- end of Thomas's work -->
 
                 <a href="logAttendees.php?id=<?php echo urlencode($id); ?>" class="button signup">Log Event Attendees</a>
@@ -467,18 +592,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>-->
 
         <!-- Confirmation Modals -->
-        <?php if (isset($_SESSION['access_level']) && $access_level >= 2) : ?>
-            <div id="delete-confirmation-wrapper" class="modal hidden">
-                <div class="modal-content">
-                    <p>Are you sure you want to delete this event?</p>
-                    <p>This action cannot be undone.</p>
-                    <form method="post" action="deleteEvent.php">
-                        <input type="submit" value="Delete Event" class="button danger">
-                        <input type="hidden" name="id" value="<?= $id ?>">
-                    </form>
-                    <button id="delete-cancel" class="button cancel">Cancel</button>
+        <?php if ($isEventManager) : ?>
+            <?php if (isset($event_info['series_id']) && $event_info['series_id'] != NULL) : ?>
+                <div id="delete-confirmation-wrapper" class="modal hidden">
+                    <div class="modal-content">
+                        <p>This event is part of a repeating series.</p>
+                        <p>What would you like to delete?</p>
+
+                        <form method="get" action="deleteEvent.php">
+                            <input type="hidden" name="id" value="<?= $id ?>">
+
+                            <button type="submit" name="confirm" value="single" class="button danger">
+                                Delete ONLY this event
+                            </button>
+
+                            <button type="submit" name="confirm" value="series" class="button danger">
+                                Delete ENTIRE series
+                            </button>
+                        </form>
+
+                        <button id="delete-cancel" class="button cancel">Cancel</button>
+                    </div>
                 </div>
-            </div>
+            <?php else : ?>
+                <div id="delete-confirmation-wrapper" class="modal hidden">
+                    <div class="modal-content">
+                        <p>Are you sure you want to delete this event?</p>
+
+                        <form method="get" action="deleteEvent.php">
+                            <input type="hidden" name="id" value="<?= $id ?>">
+                            <button type="submit" name="confirm" value="single" class="button danger">
+                                Delete this event
+                            </button>
+                        </form>
+
+                        <button id="delete-cancel" class="button cancel">Cancel</button>
+                    </div>
+                </div>
+            <?php endif ?>
 
             <div id="complete-confirmation-wrapper" class="modal hidden">
                 <div class="modal-content">
@@ -495,7 +646,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php endif ?>
 
 
-        <?php if (isset($_SESSION['access_level']) && $access_level < 2) : ?>
+        <?php if ($isVolunteer) : ?>
             <div id="cancel-confirmation-wrapper" class="modal hidden">
                 <div class="modal-content">
                     <p>Are you sure you want to cancel your sign-up for this event?</p>
@@ -519,7 +670,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             function showDeleteConfirmation() {
                 document.getElementById('delete-confirmation-wrapper').classList.remove('hidden');
             }
-
+            
             function showCancelConfirmation() {
                 document.getElementById('cancel-confirmation-wrapper').classList.remove('hidden');
             }

@@ -1,0 +1,33 @@
+-- Update type field for all persons in dbpersons
+
+UPDATE `dbpersons` SET `type` = 'volunteer' WHERE `id` = 'acarmich@mail.umw.edu';
+UPDATE `dbpersons` SET `type` = 'volunteer' WHERE `id` = 'ameyer3';
+UPDATE `dbpersons` SET `type` = 'volunteer' WHERE `id` = 'armyuser';
+UPDATE `dbpersons` SET `type` = 'event_manager' WHERE `id` = 'blueydingo123';
+UPDATE `dbpersons` SET `type` = 'volunteer' WHERE `id` = 'BobVolunteer';
+UPDATE `dbpersons` SET `type` = 'volunteer' WHERE `id` = 'Britorsk';
+UPDATE `dbpersons` SET `type` = 'volunteer' WHERE `id` = 'deletethis123';
+UPDATE `dbpersons` SET `type` = 'volunteer' WHERE `id` = 'exampleuser';
+UPDATE `dbpersons` SET `type` = 'volunteer' WHERE `id` = 'fakename';
+UPDATE `dbpersons` SET `type` = 'volunteer' WHERE `id` = 'firstName';
+UPDATE `dbpersons` SET `type` = 'volunteer' WHERE `id` = 'gabriel';
+UPDATE `dbpersons` SET `type` = 'volunteer' WHERE `id` = 'japper';
+UPDATE `dbpersons` SET `type` = 'volunteer' WHERE `id` = 'Jlipinsk';
+UPDATE `dbpersons` SET `type` = 'volunteer' WHERE `id` = 'johnDoe123';
+UPDATE `dbpersons` SET `type` = 'volunteer' WHERE `id` = 'lukeg';
+UPDATE `dbpersons` SET `type` = 'volunteer' WHERE `id` = 'maddiev';
+UPDATE `dbpersons` SET `type` = 'volunteer' WHERE `id` = 'michael_smith';
+UPDATE `dbpersons` SET `type` = 'volunteer' WHERE `id` = 'michellevb';
+UPDATE `dbpersons` SET `type` = 'volunteer' WHERE `id` = 'navyspouse';
+UPDATE `dbpersons` SET `type` = 'volunteer' WHERE `id` = 'olivia';
+UPDATE `dbpersons` SET `type` = 'volunteer' WHERE `id` = 'test_acc';
+UPDATE `dbpersons` SET `type` = 'volunteer' WHERE `id` = 'test_person';
+UPDATE `dbpersons` SET `type` = 'volunteer' WHERE `id` = 'test_persona';
+UPDATE `dbpersons` SET `type` = 'volunteer' WHERE `id` = 'tester4';
+UPDATE `dbpersons` SET `type` = 'volunteer' WHERE `id` = 'testing123';
+UPDATE `dbpersons` SET `type` = 'volunteer' WHERE `id` = 'testytesty';
+UPDATE `dbpersons` SET `type` = 'volunteer' WHERE `id` = 'toaster';
+UPDATE `dbpersons` SET `type` = 'board_member' WHERE `id` = 'turkeybird123';
+UPDATE `dbpersons` SET `type` = 'admin' WHERE `id` = 'vmsroot';
+UPDATE `dbpersons` SET `type` = 'volunteer' WHERE `id` = 'Volunteer25';
+UPDATE `dbpersons` SET `type` = 'volunteer' WHERE `id` = 'Welp';

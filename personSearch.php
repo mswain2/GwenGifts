@@ -6,20 +6,20 @@
     session_cache_expire(30);
     session_start();
 
-    $loggedIn = false;
-    $accessLevel = 0;
-    $userID = null;
-    if (isset($_SESSION['_id'])) {
-        $loggedIn = true;
-        // 0 = not logged in, 1 = standard user, 2 = manager (Admin), 3 super admin (TBI)
-        $accessLevel = $_SESSION['access_level'];
-        $userID = $_SESSION['_id'];
-    }
-    // admin-only access
-    if ($accessLevel < 2) {
+    // set RBAC
+    if (isset($_SESSION['access_level']) && $_SESSION['access_level'] >= 2) {
+        $canSearchUsers = true;
+    } else {
         header('Location: index.php');
         die();
     }
+
+    // set userID
+    // if (isset($_SESSION['_id'])) {
+    //     $loggedIn = true;
+    //     $userID = $_SESSION['_id'];
+    // }
+
 ?>
 <!DOCTYPE html>
 <html lang="en">

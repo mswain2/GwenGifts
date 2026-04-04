@@ -36,6 +36,7 @@
             $newPassword = $_POST['new-password'];
             $hash = password_hash($newPassword, PASSWORD_BCRYPT);
             change_password($userID, $hash);
+            clear_force_password_change($userID);
             if ($userID == 'vmsroot') {
                 $_SESSION['access_level'] = 3;
             } else {

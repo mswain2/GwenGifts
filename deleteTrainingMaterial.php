@@ -2,9 +2,15 @@
 session_cache_expire(30);
 session_start();
 
-if (!isset($_SESSION['access_level']) || $_SESSION['access_level'] < 2) {
-    header('Location: login.php');
-    die();
+// check RBAC
+if (isset($_SESSION['access_level']) && $_SESSION['access_level'] >= 2) {
+    $isEventManager = true;
+    $loggedIn = true;
+    $userID = $_SESSION['_id'];
+} else {
+    $isEventManager = false;
+    header('Location: index.php');
+    die();    
 }
 
 require_once('database/dbTrainingMaterials.php');
@@ -25,6 +31,6 @@ if ($ok) {
     header("Location: event.php?id=$eventID&trainingDeleteSuccess=1");
     exit();
 } else {
-    die('Failed to delete training material.');
+    die('Failed to delete training document.');
 }
 ?>

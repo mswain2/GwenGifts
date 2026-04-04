@@ -12,10 +12,9 @@
     echo('<script src="https://nosir.github.io/cleave.js/dist/cleave.min.js"></script>');
     echo('<script src="https://nosir.github.io/cleave.js/dist/cleave-phone.i18n.js"></script>');
     $args = sanitize($_GET);
-    if ($_SESSION['access_level'] >= 2 && isset($args['id'])) {
+    if ($isAdmin && isset($args['id'])) {
         $id = $args['id'];
         $editingSelf = $id == $_SESSION['_id'];
-        // Check to see if user is a lower-level manager here
     } else {
         $editingSelf = true;
         $id = $_SESSION['_id'];

@@ -7,15 +7,15 @@
     session_start();
     ini_set("display_errors",1);
     error_reporting(E_ALL);
-    $loggedIn = false;
-    $accessLevel = 0;
-    $userID = null;
-    if (isset($_SESSION['_id'])) {
-        $loggedIn = true;
-        // 0 = not logged in, 1 = standard user, 2 = manager (Admin), 3 super admin (TBI)
-        $accessLevel = $_SESSION['access_level'];
-        $userID = $_SESSION['_id'];
+
+    // check RBAC
+    if (isset($_SESSION['access_level']) && ($_SESSION['access_level'] == 4)) {
+        $canModifyRole = true;
+    } else {
+        header('Location: index.php');
+        die();  
     }
+
     require_once('include/input-validation.php');
     
     $get = sanitize($_GET);
@@ -29,11 +29,6 @@
         die();
     }
     
-    // Is user authorized to view this page?
-    if ($accessLevel < 2) {
-        header('Location: index.php');
-        die();
-    }
     // Was an ID supplied?
     if ($_SERVER["REQUEST_METHOD"] == "GET" && !isset($_GET['id'])) {
         header('Location: index.php');
@@ -48,7 +43,7 @@
         }
         if (empty($new_role)){
             // echo "No new role selected";
-        }else if ($accessLevel >= 3) {
+        } else if ($canModifyRole) {
             update_type($id, $new_role);
             $typeChange = true;
             // echo "<meta http-equiv='refresh' content='0'>";
@@ -112,7 +107,7 @@
         <?php require_once('header.php') ?>
         <h1>Modify Archive Status and Role</h1>
         <main class="user-role">
-            <?php if ($accessLevel == 3): ?>
+            <?php if ($canModifyRole): ?>
                 <h2>Modify <?php echo $thePerson->get_first_name() . " " . $thePerson->get_last_name(); ?>'s Archive Status and Role</h2>
             <?php else: ?>
                 <h2>Modify <?php echo $thePerson->get_first_name() . " " . $thePerson->get_last_name(); ?>'s Status</h2>
@@ -124,7 +119,7 @@
                     <?php
                         // Provides drop down of the role types to select and change the role
 			//other than the person's current role type is displayed
-            if ($accessLevel == 3) {
+            if ($canModifyRole) {
 				$roles = array('volunteer' => 'Volunteer', 'event_manager' => 'Event Manager', 
                                 'board_member' => 'Board Member', 'admin' => 'Administrator');
                 echo '<label for="role">Change Role</label><select id="role" class="form-select-sm" name="s_role">' ;

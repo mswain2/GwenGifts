@@ -53,6 +53,7 @@ class Person {
 	private $skills;
 	private $experience;
 	private $about_consent;
+	private $force_password_change;
 	private $access_level;
 	private $profile_pic;
 	private $cpr_training_completion;
@@ -67,7 +68,8 @@ class Person {
 		$emergency_contact_first_name, $contact_num, $emergency_contact_relation,
 		$contact_method, $type, $status, $notes, $password, $affiliation, $branch, $archived,
 		$emergency_contact_last_name, $gender, $t_shirt_size, $computer_access, $camera_access, 
-		$transportation_access, $skills, $experience, $about_consent
+		$transportation_access, $skills, $experience, $about_consent,
+		$force_password_change = 0
 	) {
         $this->id = $id;
 		$this->start_date = $start_date;
@@ -105,8 +107,23 @@ class Person {
 		$this->skills = $skills;
 		$this->experience = $experience;
 		$this->about_consent = $about_consent;
+		$this->force_password_change = $force_password_change;
 
-        #$this->access_level = ($id == 'vmsroot') ? 3 : 1;
+		if ($this->type == 'volunteer') {
+			$this->access_level = 1;
+		}
+		else if ($this->type == 'event_manager') {
+			$this->access_level = 2;
+		}
+		else if ($this->type == 'board_member') {
+			$this->access_level = 3;
+		}
+		else if ($this->type == 'admin') {
+			$this->access_level = 4;
+		}
+		else {
+			$this->access_level = 0;
+		}
 
     }
 
@@ -289,9 +306,12 @@ class Person {
 		return $this->about_consent; 
 	}
 
+	function get_force_password_change() {
+		return $this->force_password_change;
+	}
+
 	function get_access_level() {
-		$access = ($this->id == 'vmsroot') ? 3 : 1;
-		return $access;
+		return $this->access_level;
 	}
 
 	function get_profile_pic() {
