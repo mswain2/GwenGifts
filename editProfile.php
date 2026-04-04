@@ -148,6 +148,8 @@
         $experience = $args['experience'] ?? '';
         $email_prefs = isset($args['email_prefs']) ? 'true' : 'false';
         $notes = $args['notes'] ?? $person->get_notes();
+        $has_disability = $args['has_disability'] ?? 'no';
+        $disability_specifications = ($has_disability === 'yes') ? ($args['disability_specifications'] ?? '') : '';
 
         
 
@@ -264,6 +266,7 @@ $day_availability = isset($args['day_availability']) ? (array)$args['day_availab
                     }
                 }
             }
+
             $result = update_person_full(
                 $id, $first_name, $last_name, $gender, $t_shirt_size, $birthday,
                 $street_address, $city, $state, $zip_code,
@@ -276,6 +279,14 @@ $day_availability = isset($args['day_availability']) ? (array)$args['day_availab
             
             
             if ($result) {
+                // Save disability fields separately
+                $con = connect();
+                $safe_id = mysqli_real_escape_string($con, $id);
+                $safe_has = mysqli_real_escape_string($con, $has_disability);
+                $safe_spec = mysqli_real_escape_string($con, $disability_specifications);
+                mysqli_query($con, "UPDATE dbpersons SET has_disability='$safe_has', disability_specifications='$safe_spec' WHERE id='$safe_id'");
+                mysqli_close($con);
+
                 // Handle availabilities — delete old, insert new
                 $con = connect();
                 $safe_id = mysqli_real_escape_string($con, $id);

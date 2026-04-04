@@ -55,6 +55,10 @@ class Person {
 	private $about_consent;
 	private $access_level;
 	private $profile_pic;
+	private $cpr_training_completion;
+	private $aed_training_completion;
+	private $has_disability;
+	private $disability_specifications;
 
 	function __construct(
 		$id, $start_date, $first_name, $last_name, $street_address, $city, $state,
@@ -296,6 +300,54 @@ class Person {
 
 	function set_profile_pic($path) {
 		$this->profile_pic = $path;
+	}
+
+	function get_cpr_training_completion() {
+		return $this->cpr_training_completion ?? 'no';
+	}
+
+	function get_cpr_training_completion_formatted() {
+		if ($this->cpr_training_completion == 'yes') {
+			return "Yes";
+		} else {
+			return "No";
+		}
+	}
+
+	function get_aed_training_completion() {
+		return $this->aed_training_completion ?? 'no';
+	}
+
+	function get_aed_training_completion_formatted() {
+		if ($this->aed_training_completion == 'yes') {
+			return "Yes";
+		} else {
+			return "No";
+		}
+	}
+
+	function set_cpr_training_completion($val) {
+		$this->cpr_training_completion = $val;
+	}
+
+	function set_aed_training_completion($val) {
+		$this->aed_training_completion = $val;
+	}
+
+	function get_has_disability() {
+		return $this->has_disability ?? 'no';
+	}
+
+	function set_has_disability($val) {
+		$this->has_disability = $val;
+	}
+
+	function get_disability_specifications() {
+		return $this->disability_specifications ?? '';
+	}
+
+	function set_disability_specifications($val) {
+		$this->disability_specifications = $val;
 	}
 
 }

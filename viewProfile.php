@@ -197,6 +197,12 @@
           <div class="flex justify-between py-2">
             <span class="font-medium">Age</span><span><?php echo get_age($user->get_birthday()) ?></span>
           </div>
+          <div class="flex justify-between py-2">
+            <span class="font-medium">CPR Certified</span><span><?php echo $user->get_cpr_training_completion_formatted() ?></span>
+          </div>
+          <div class="flex justify-between py-2">
+            <span class="font-medium">AED Certified</span><span><?php echo $user->get_aed_training_completion_formatted() ?></span>
+          </div>
         </div>
       </div>
       <div class="mt-6 space-y-2">
@@ -204,7 +210,7 @@
           <button onclick="window.location.href='editProfile.php<?php if ($id != $userID) echo '?id=' . $id ?>';" class="text-lg font-medium w-full px-4 py-2 bg-[#2f4159] text-[#FFFFFF] rounded-md hover:bg-[#f5c16e] hover:text-[#FFFFFF] cursor-pointer">Edit Profile</button>
         <?php endif ?>
         <?php if (in_array($loggedInUser->get_type(), ['admin', 'superadmin']) && !$viewingOwnProfile): ?>
-          <button onclick="window.location.href='modifyUserRole.php<?php if ($id != $userID) echo '?id=' . $id ?>';" class="text-lg font-medium w-full px-4 py-2 bg-[#2f4159] text-[#FFFFFF] rounded-md hover:bg-[#f5c16e] hover:text-[#FFFFFF] cursor-pointer">Modify Role / Status</button>
+          <button onclick="window.location.href='modifyUserRole.php<?php if ($id != $userID) echo '?id=' . $id ?>';" class="text-lg font-medium w-full px-4 py-2 bg-[#2f4159] text-[#FFFFFF] rounded-md hover:bg-[#f5c16e] hover:text-[#FFFFFF] cursor-pointer">Modify Role / Status / Qualifications</button>
         <?php endif ?>
         <!--
         <a href="modifyUserRole.php?id=' . $person->get_id() . '" class="text-blue-700 underline">Update Status</a>
@@ -445,6 +451,24 @@
               <p class="text-gray-900 font-medium text-xl"> Unknown </p>
             <?php endif ?>
             </div>
+
+            <h2 class="text-xl font-semibold mb-4 border-b border-gray-300 pb-2">Disability Information</h2>
+          <div>
+            <span class="block text-sm font-medium text-[#1F1F21]">Has one or more disabilities?</span>
+            <?php if ($user->get_has_disability() == "yes"):?>
+              <p class="text-gray-900 font-medium text-xl"> Yes </p>
+            <?php elseif ($user->get_has_disability() == "no"): ?>
+              <p class="text-gray-900 font-medium text-xl"> No </p>
+            <?php else: ?>
+              <p class="text-gray-900 font-medium text-xl"> Unknown </p>
+            <?php endif ?>
+        
+            <?php if ($user->get_has_disability() == "yes"):?>
+              <span class="block text-sm font-medium text-[#1F1F21]">Specifications?</span>
+              <p class="text-gray-900 font-medium text-xl"><?php echo $user->get_disability_specifications() ?></p>
+            <?php endif ?>
+          </div>
+          
       </div>
 
       <!-- Account Security Section -->

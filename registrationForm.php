@@ -722,6 +722,39 @@ function old($key, $default = '') {
         </div>
         <?php field_error('transportation_access'); ?>
 
+        <div class="median-div"></div>
+
+        <label for="has_disability"><em>* </em>Disability</label>
+        <p class="mb-2">Do you have one or more disabilities that may affect your volunteering?</p>
+        <div class="radio-group">
+            <div class="radio-element">
+                <input type="radio" id="has_disability_yes" name="has_disability" value="yes"
+                    <?php echo old('has_disability') === 'yes' ? 'checked' : ''; ?> required>
+                <label for="has_disability_yes"> Yes</label>
+            </div>
+            <div class="radio-element">
+                <input type="radio" id="has_disability_no" name="has_disability" value="no"
+                    <?php echo (old('has_disability') === 'no' || old('has_disability') === '') ? 'checked' : ''; ?> required>
+                <label for="has_disability_no"> No</label>
+            </div>
+        </div>
+
+        <div id="disability_spec_section" style="display:<?php echo old('has_disability') === 'yes' ? 'block' : 'none'; ?>">
+            <label for="disability_specifications">Disability Specifications</label>
+            <p class="mb-2">Please briefly describe your disability or any accommodations you may need.</p>
+            <textarea id="disability_specifications" name="disability_specifications"
+                placeholder="Ex. Wheelchair user, hearing impaired, etc."><?php echo old('disability_specifications'); ?></textarea>
+        </div>
+
+        <script>
+        document.querySelectorAll('input[name="has_disability"]').forEach(function(radio) {
+            radio.addEventListener('change', function() {
+                document.getElementById('disability_spec_section').style.display =
+                    this.value === 'yes' ? 'block' : 'none';
+            });
+        });
+        </script>
+        <?php field_error('has_disability'); ?>
     </fieldset>
 
 

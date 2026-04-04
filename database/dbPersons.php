@@ -642,6 +642,11 @@ function make_a_person($result_row) {
     );
     $thePerson->set_profile_pic(@$result_row['profile_pic'] ?: 'images/usaicon.png');
 
+    $thePerson->set_cpr_training_completion(@$result_row['cpr_training_completion'] ?: 'no');
+    $thePerson->set_aed_training_completion(@$result_row['aed_training_completion'] ?: 'no');
+
+    $thePerson->set_has_disability(@$result_row['has_disability'] ?: 'no');
+    $thePerson->set_disability_specifications(@$result_row['disability_specifications'] ?? '');
 
     return $thePerson;
 }

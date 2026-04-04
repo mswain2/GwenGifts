@@ -676,9 +676,44 @@
                 <input type="radio" id="transportation_access_no" name="transportation_access" value="no" <?php if ($person->get_transportation_access() == 'no') echo 'checked'; ?> required><label for="transportation_access_no"> No</label>
             </div>
         </div>
+        
+        <hr style="border:none; border-top: 1px solid var(--inactive-font-color); margin: 0.5rem 2rem;">
+
+        <div>
+            <label for="has_disability"><em>* </em>Disability</label>
+            <p class="mb-2">Do you have one or more disabilities that may affect your volunteering?</p>
+            <div class="radio-group">
+                <div class="radio-element">
+                    <input type="radio" id="has_disability_yes" name="has_disability" value="yes" 
+                        <?php if ($person->get_has_disability() == 'yes') echo 'checked'; ?> required>
+                    <label for="has_disability_yes"> Yes</label>
+                </div>
+                <div class="radio-element">
+                    <input type="radio" id="has_disability_no" name="has_disability" value="no" 
+                        <?php if ($person->get_has_disability() != 'yes') echo 'checked'; ?> required>
+                    <label for="has_disability_no"> No</label>
+                </div>
+            </div>
+        
+
+        <div id="disability_spec_section" style="display:<?php echo $person->get_has_disability() == 'yes' ? 'block' : 'none'; ?>">
+            <label for="disability_specifications">Disability Specifications</label>
+            <p class="mb-2">Please briefly describe your disability or any accommodations you may need.</p>
+            <textarea id="disability_specifications" name="disability_specifications" 
+                placeholder="Ex. Wheelchair user, hearing impaired, etc."><?php echo hsc($person->get_disability_specifications()); ?></textarea>
+        </div>
+
+        <script>
+        document.querySelectorAll('input[name="has_disability"]').forEach(function(radio) {
+            radio.addEventListener('change', function() {
+                document.getElementById('disability_spec_section').style.display = 
+                    this.value === 'yes' ? 'block' : 'none';
+            });
+        });
+        </script>
+        </div>
 
     </fieldset>
-
 
     <input type="hidden" name="id" value="<?php echo $id; ?>">
     <input type="submit" name="profile-edit-form" value="Update Profile">
