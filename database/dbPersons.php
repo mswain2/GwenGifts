@@ -1645,6 +1645,24 @@ function get_total_vol_hours($dateFrom, $dateTo) {
         return $result;
     }
 
+    function cleanup_unused_profile_pics() {
+        $con = connect();
+        $result = mysqli_query($con, "SELECT profile_pic FROM dbpersons WHERE profile_pic LIKE 'images/profile_pics/%'");
+        $used = [];
+        while ($row = mysqli_fetch_assoc($result)) {
+            $used[] = basename($row['profile_pic']);
+        }
+        mysqli_close($con);
+
+        $files = scandir('images/profile_pics/');
+        foreach ($files as $file) {
+            if ($file === '.' || $file === '..') continue;
+            if (!in_array($file, $used)) {
+                unlink('images/profile_pics/' . $file);
+            }
+        }
+    }
+
     
 
     /*

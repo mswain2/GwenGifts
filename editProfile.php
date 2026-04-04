@@ -262,6 +262,7 @@ $day_availability = isset($args['day_availability']) ? (array)$args['day_availab
                         }
 
                         update_profile_pic($id, $uploadPath);
+                        cleanup_unused_profile_pics();
                     }
                 }
             }
