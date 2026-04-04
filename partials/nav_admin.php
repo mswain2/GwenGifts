@@ -84,7 +84,7 @@
         <div class="nav-links">
             <div class="nav-item">
                 <div class="icon">
-                    <img src="images/usaicon.png" alt="User Icon" class="icon-img in-nav-img">
+                    <img src="<?= $_pfp_escaped ?>" alt="User Icon" class="icon-img in-nav-img" style="width:49px; height:49px; min-width:49px; min-height:49px; max-width:49px; max-height:49px; object-fit:cover; border-radius:50%;">
                     <div class="dropdown">
                         <a href="viewProfile.php" style="text-decoration: none;"><div>View Profile</div></a>
                         <a href="editProfile.php" style="text-decoration: none;"><div>Edit Profile</div></a>
