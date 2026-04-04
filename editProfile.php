@@ -228,38 +228,37 @@ $day_availability = isset($args['day_availability']) ? (array)$args['day_availab
                     }
 
                     if (move_uploaded_file($file['tmp_name'], $uploadPath)) {
-                        // Resize to 49x49
-                        $img = null;
-                        $mime = $file['type'];
-                        if ($mime === 'image/jpeg') {
-                            $img = imagecreatefromjpeg($uploadPath);
-                        } elseif ($mime === 'image/png') {
-                            $img = imagecreatefrompng($uploadPath);
-                        } elseif ($mime === 'image/gif') {
-                            $img = imagecreatefromgif($uploadPath);
-                        }
-
-                        if ($img) {
-                            $resized = imagecreatetruecolor(49, 49);
-                            // Preserve transparency for PNG/GIF
-                            imagealphablending($resized, false);
-                            imagesavealpha($resized, true);
-                            $transparent = imagecolorallocatealpha($resized, 0, 0, 0, 127);
-                            imagefilledrectangle($resized, 0, 0, 49, 49, $transparent);
-
-                            imagecopyresampled($resized, $img, 0, 0, 0, 0, 49, 49, imagesx($img), imagesy($img));
-
-                            // Save resized version over the original
+                        // Resize to 49x49 only if GD is available
+                        if (extension_loaded('gd')) {
+                            $img = null;
+                            $mime = $file['type'];
                             if ($mime === 'image/jpeg') {
-                                imagejpeg($resized, $uploadPath, 95);
+                                $img = imagecreatefromjpeg($uploadPath);
                             } elseif ($mime === 'image/png') {
-                                imagepng($resized, $uploadPath);
+                                $img = imagecreatefrompng($uploadPath);
                             } elseif ($mime === 'image/gif') {
-                                imagegif($resized, $uploadPath);
+                                $img = imagecreatefromgif($uploadPath);
                             }
 
-                            imagedestroy($img);
-                            imagedestroy($resized);
+                            if ($img) {
+                                $resized = imagecreatetruecolor(49, 49);
+                                imagealphablending($resized, false);
+                                imagesavealpha($resized, true);
+                                $transparent = imagecolorallocatealpha($resized, 0, 0, 0, 127);
+                                imagefilledrectangle($resized, 0, 0, 49, 49, $transparent);
+                                imagecopyresampled($resized, $img, 0, 0, 0, 0, 49, 49, imagesx($img), imagesy($img));
+
+                                if ($mime === 'image/jpeg') {
+                                    imagejpeg($resized, $uploadPath, 95);
+                                } elseif ($mime === 'image/png') {
+                                    imagepng($resized, $uploadPath);
+                                } elseif ($mime === 'image/gif') {
+                                    imagegif($resized, $uploadPath);
+                                }
+
+                                imagedestroy($img);
+                                imagedestroy($resized);
+                            }
                         }
 
                         update_profile_pic($id, $uploadPath);
