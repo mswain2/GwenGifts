@@ -60,6 +60,17 @@
             // echo "<meta http-equiv='refresh' content='0'>";
         }
 
+        // Qualifications
+        $cpr = $post['cpr_training'] ?? 'no';
+        $aed = $post['aed_training'] ?? 'no';
+        if (valueConstrainedTo($cpr, ['yes', 'no']) && valueConstrainedTo($aed, ['yes', 'no'])) {
+            $con = connect();
+            $safe_id = mysqli_real_escape_string($con, $id);
+            mysqli_query($con, "UPDATE dbpersons SET cpr_training_completion='$cpr', aed_training_completion='$aed' WHERE id='$safe_id'");
+            mysqli_close($con);
+            $qualChange = true;
+        }
+
         $currentStatus = $thePerson->get_status();
             
         if (isset($_POST['user_access_modified'])) { // Check if the form was submitted
@@ -72,7 +83,7 @@
                 system_message_all_admins($archive_title, $archive_message);
             }
         }
-        if (isset($notesChange) || isset($statusChange) || isset($typeChange)) {
+        if (isset($notesChange) || isset($statusChange) || isset($typeChange) || isset($qualChange)) {
             header('Location: viewProfile.php?rscSuccess&id=' . $_GET['id']);
             die();
         }
@@ -139,6 +150,28 @@
                 }
 		    ?>
 		</div>
+
+        <label>Change Qualifications</label>
+        <div class="form-row">
+            <label for="cpr_training">CPR Training</label>
+            <div>
+                <?php $cpr = $thePerson->get_cpr_training_completion(); ?>
+                <input type="radio" name="cpr_training" id="cpr_yes" value="yes" <?php if ($cpr === 'yes') echo 'checked'; ?>>
+                <label for="cpr_yes" class="checkbox-label">Completed</label>
+                <input type="radio" name="cpr_training" id="cpr_no" value="no" <?php if ($cpr !== 'yes') echo 'checked'; ?>>
+                <label for="cpr_no" class="checkbox-label">Not Completed</label>
+            </div>
+        </div>
+        <div class="form-row">
+            <label for="aed_training">AED Training</label>
+            <div>
+                <?php $aed = $thePerson->get_aed_training_completion(); ?>
+                <input type="radio" name="aed_training" id="aed_yes" value="yes" <?php if ($aed === 'yes') echo 'checked'; ?>>
+                <label for="aed_yes" class="checkbox-label">Completed</label>
+                <input type="radio" name="aed_training" id="aed_no" value="no" <?php if ($aed !== 'yes') echo 'checked'; ?>>
+                <label for="aed_no" class="checkbox-label">Not Completed</label>
+            </div>
+        </div>
 	
 
                 <input type="hidden" name="id" value="<?php echo $id; ?>">
