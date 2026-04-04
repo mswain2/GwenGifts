@@ -8,6 +8,12 @@ session_start();
 
 date_default_timezone_set("America/New_York");
 
+if (isset($_SESSION['access_level']) && $_SESSION['access_level'] >= 2) {
+    $isEventManager = true;
+} else {
+    $isEventManager = false; 
+}
+
 require_once('include/input-validation.php');
 require_once('database/dbEvents.php');
 $args = sanitize($_GET);
@@ -17,7 +23,7 @@ $active = $user->get_status() == 'Active';
 $event_id = $args['id'];
 $event_info = fetch_event_by_id($event_id);
 
-if (isset($user) && $active && check_if_signed_up($event_id, $user->get_id())){
+if (isset($user) && $active && check_if_signed_up($event_id, $user->get_id()) || $isEventManager){
     $signed_up = true;
 } else {
     $signed_up = false;
