@@ -197,21 +197,21 @@
                            value="<?php echo htmlspecialchars($formData['abbr'] ?? ''); ?>">
                 </div>
 
-                <div class="event-sect">
+                <div class="event-sect" style="overflow: visible;">
                     <div class="event-datetime">
                         <div class="event-time">
-                            <div class="event-date">
+                            <div class="event-date" style="padding-left: 3rem;">
                                 <label for="date">* Date</label>
                                 <input type="date" id="date" name="date"
                                        min="<?php echo date('Y-m-d'); ?>" required
                                        value="<?php echo htmlspecialchars($formData['date'] ?? ''); ?>">
                             </div>
-                            <div class="event-date">
+                            <div class="event-date" style="flex-wrap: wrap; gap: 1rem;">
                                 <label for="start-time">* Start Time</label>
                                 <input type="time" id="start-time" name="start-time" required
                                        value="<?php echo htmlspecialchars($formData['start-time'] ?? ''); ?>">
                             </div>
-                            <div class="event-date">
+                            <div class="event-date" style="flex-wrap: wrap; gap: 1rem;">
                                 <label for="end-time">* End Time</label>
                                 <input type="time" id="end-time" name="end-time" required
                                        value="<?php echo htmlspecialchars($formData['end-time'] ?? ''); ?>">
