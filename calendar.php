@@ -197,7 +197,7 @@
                  Hamburger menu with icon buttons to switch between different calendar views:
                  List view, Monthly grid, Weekly view, and Daily view.
                  The checkbox acts as a CSS toggle to show/hide the menu. -->
-            <div class="filter-wrapper">
+            <div class="filter-wrapper" style="margin-top: 8px;">
                 <div class="filter-menu-wrapper">
                     <input type="checkbox" /> <!-- Checkbox toggle: when checked, the filter menu is visible -->
                     <div class="filter-menu"><img class="filter-menu-icon" src="./images/menu.png" style="filter: invert(1);"></div>
@@ -216,7 +216,7 @@
                 </div> -->
             </div>
             <?php if ($calUserType === 'board'): ?>
-            <div style="padding: 0 10rem 0.5rem 10rem;">
+            <div style="padding: 0.5rem 10rem 0.5rem 10rem; justify-content:center; align-items:center; gap:8px; margin-top: 8px;">
                 <select id="event-filter-select" style="padding:6px 14px;border-radius:50px;border:1px solid #e0e0e0;font-family:inherit;font-size:14px;background:#f8f8f8;">
                     <option value="public"  <?php echo $currentFilter==='public' ?'selected':''; ?>>Public Events</option>
                     <option value="board"   <?php echo $currentFilter==='board'  ?'selected':''; ?>>Board Events</option>

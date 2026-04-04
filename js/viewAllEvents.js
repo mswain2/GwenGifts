@@ -382,8 +382,8 @@ document.addEventListener('DOMContentLoaded', function () {
     for (var k = 0; k < filterControls.length; k++) {
         if (filterControls[k]) {
             (function (el) {
-                el.addEventListener('input',  function () { applyFilters(); });
-                el.addEventListener('change', function () { applyFilters(); });
+                el.addEventListener('input',  function () { applyFilters(); saveFilters(); });
+                el.addEventListener('change', function () { applyFilters(); saveFilters(); });
             })(filterControls[k]);
         }
     }
@@ -392,6 +392,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (tabSelect) {
         tabSelect.addEventListener('change', function () {
             switchTab(tabSelect.value);
+            saveFilters();
         });
     }
 
@@ -400,6 +401,7 @@ document.addEventListener('DOMContentLoaded', function () {
         sortSelect.addEventListener('change', function () {
             applySort();
             applyFilters();
+            saveFilters();
         });
     }
 
@@ -415,6 +417,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (tabSelect) tabSelect.value = 'upcoming';
             currentPage = 1;
             switchTab('upcoming');
+            saveFilters();
         });
     }
 
@@ -511,6 +514,39 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    // SCRUM-133: Save filters to sessionStorage
+    function saveFilters() {
+        try {
+            sessionStorage.setItem('vae_tab',      tabSelect      ? tabSelect.value      : 'upcoming');
+            sessionStorage.setItem('vae_location', locationSelect ? locationSelect.value : '');
+            sessionStorage.setItem('vae_time',     timeSelect     ? timeSelect.value     : '');
+            sessionStorage.setItem('vae_sort',     sortSelect     ? sortSelect.value     : 'date-asc');
+            sessionStorage.setItem('vae_search',   searchInput    ? searchInput.value    : '');
+        } catch(e) {}
+    }
+
+    // SCRUM-133: Restore saved filters from sessionStorage
+    try {
+        var savedTab      = sessionStorage.getItem('vae_tab');
+        var savedLocation = sessionStorage.getItem('vae_location');
+        var savedTime     = sessionStorage.getItem('vae_time');
+        var savedSort     = sessionStorage.getItem('vae_sort');
+        var savedSearch   = sessionStorage.getItem('vae_search');
+
+        if (savedTab      && tabSelect)      tabSelect.value      = savedTab;
+        if (savedLocation && locationSelect) locationSelect.value = savedLocation;
+        if (savedTime     && timeSelect)     timeSelect.value     = savedTime;
+        if (savedSort     && sortSelect)     sortSelect.value     = savedSort;
+        if (savedSearch   && searchInput)    searchInput.value    = savedSearch;
+    } catch(e) {}
+
+    // SCRUM-133: Restore tab on load
+    if (tabSelect && tabSelect.value) {
+        switchTab(tabSelect.value);
+    } else {
+        switchTab('upcoming');
+    }
+    
     // ---- Initial run ----
     setView(activeView);
 });

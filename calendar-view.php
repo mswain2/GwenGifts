@@ -95,7 +95,7 @@ if (date('m', strtotime($calendarEnd . ' +1 day')) != $monthEpoch) {
 
                                 if (isset($events[$e])) {
                                     $dayEvents = $events[$e];
-                                    $maxEvents = 3;
+                                    $maxEvents = 2;
                                     $eventCount = count($dayEvents);
                                     $displayEvents = array_slice($dayEvents, 0, $maxEvents);
                                     foreach ($displayEvents as $info) {

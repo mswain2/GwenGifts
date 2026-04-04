@@ -32,12 +32,12 @@ if (isset($_SESSION['_id'])) {
 }
 
 $clearance_map = [
-    'participant'   => ['public'],
-    'volunteer'     => ['public', 'volunteer'],
-    'event_manager' => ['public', 'volunteer', 'manager'],
-    'board_member'  => ['public', 'volunteer', 'board_member'],
-    'admin'         => ['public', 'volunteer', 'manager', 'board_member', 'admin'],
-    'superadmin'    => ['public', 'volunteer', 'manager', 'board_member', 'admin', 'superadmin'],
+    'participant'   => [],
+    'volunteer'     => ['volunteer'],
+    'event_manager' => ['volunteer', 'event_manager'],
+    'board_member'  => ['volunteer', 'board_member'],
+    'admin'         => ['volunteer', 'event_manager', 'board_member', 'admin'],
+    'superadmin'    => ['volunteer', 'event_manager', 'board_member', 'admin', 'superadmin'],
 ];
 $allowed_clearances = $clearance_map[$user_type] ?? ['public'];
 $is_admin   = in_array($user_type, ['admin', 'superadmin']);
@@ -48,14 +48,25 @@ $filter_clearance = isset($_GET['filter_clearance']) ? trim($_GET['filter_cleara
 $filter_sort      = isset($_GET['filter_sort'])      ? trim($_GET['filter_sort'])      : 'date_desc';
 
 $clearance_labels = [
-    'public'       => 'Public',
-    'volunteer'    => 'Volunteer',
-    'manager'      => 'Manager',
-    'board_member' => 'Board Member',
-    'admin'        => 'Admin',
-    'superadmin'   => 'Super Admin',
+    'volunteer'     => 'Volunteer',
+    'event_manager' => 'Event Manager',
+    'board_member'  => 'Board Member',
+    'admin'         => 'Admin',
+    'superadmin'    => 'Super Admin',
 ];
     $connection = connect();
+
+// SCRUM-125: Handle bulk soft delete
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['bulk_delete_ids']) && $is_admin) {
+    $ids = array_map('intval', (array)$_POST['bulk_delete_ids']);
+    if (!empty($ids)) {
+        $id_list = implode(',', $ids);
+        $safe_user = mysqli_real_escape_string($connection, $_SESSION['_id']);
+        mysqli_query($connection, "UPDATE boarddocuments SET deleted = 1, deleted_at = NOW(), deleted_by = '$safe_user' WHERE id IN ($id_list) AND deleted = 0");
+    }
+    header('Location: boardDocuments.php?bulk_deleted=1');
+    exit();
+}
 
     $escaped_clearances = array_map(fn($c) => "'" . mysqli_real_escape_string($connection, $c) . "'", $allowed_clearances);
 $clearance_in = implode(',', $escaped_clearances);
@@ -73,13 +84,20 @@ $order = match($filter_sort) {
     'date_asc'   => 'ORDER BY uploaded_at ASC',
     'name_asc'   => 'ORDER BY doc_name ASC',
     'name_desc'  => 'ORDER BY doc_name DESC',
-    'clearance'  => 'ORDER BY FIELD(clearance_level,"public","volunteer","manager","board_member","admin","superadmin")',
+    'clearance'  => 'ORDER BY FIELD(clearance_level,"volunteer","event_manager","board_member","admin","superadmin")',
     default      => 'ORDER BY uploaded_at DESC',
 };
 $query = "SELECT * FROM boarddocuments $where $order";
 $result = mysqli_query($connection, $query);
     $result = mysqli_query($connection, $query);
+$all_docs_result = null;
+if ($is_admin) {
+    $all_docs_result = mysqli_query($connection, "SELECT id, doc_name FROM boarddocuments WHERE deleted = 0 ORDER BY doc_name ASC");
+}
 ?>
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -171,6 +189,57 @@ $result = mysqli_query($connection, $query);
             font-weight: 700;
             font-size: 14px;
         }
+        .bulk-btn {
+            display: 8px 20px;
+            align-items: left;
+            background-color: #cc0000;
+            color: white;
+            padding: 10px 24px;
+            border-radius: 50px;
+            border: none;
+            font-family: Quicksand, sans-serif;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            width: auto;
+            margin: 0;
+        }
+        .bulk-btn:hover { background-color: #a30000; color: white; }
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-box {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 50px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+        .modal-box h3 { font-size: 20px; margin-bottom: 16px; font-weight: 700; }
+        .modal-doc-list { list-style: none; margin-bottom: 20px; }
+        .modal-doc-list li { padding: 8px 4px; border-bottom: 1px solid #e0e0e0; display: flex; align-items: center; gap: 10px; }
+        .modal-doc-list li:last-child { border-bottom: none; }
+        .modal-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+        .modal-delete-btn { background-color: #cc0000; color: white; border: none; padding: 10px 24px; border-radius: 50px; font-family: Quicksand, sans-serif; font-weight: 700; font-size: 15px; cursor: pointer; }
+        .modal-delete-btn:hover { background-color: #a30000; }
+        .modal-cancel-btn { background-color: #f0f0f0; color: #333; border: none; padding: 10px 24px; border-radius: 50px; font-family: Quicksand, sans-serif; font-weight: 700; font-size: 15px; cursor: pointer; }
+        .modal-cancel-btn:hover { background-color: #e0e0e0; }
+        .bottom-bar { margin-top: 30px; display: flex; gap: 12px; flex-wrap: wrap; }
+        .return-btn { display: inline-flex; align-items: center; background-color: var(--secondary-accent-color); color: white; padding: 10px 24px; border-radius: 50px; text-decoration: none; font-weight: 700; font-size: 16px; transition: background 0.2s ease; }
+        .return-btn:hover { background-color: #e8849a; color: white; }
+
         .clearance-badge { display: inline-block; padding: 3px 10px; border-radius: 50px; font-size: 12px; font-weight: 700; }
         .clearance-badge.public       { background-color: #e8f5e9; color: #2e7d32; }
         .clearance-badge.volunteer    { background-color: #e3f2fd; color: #1565c0; }
@@ -236,13 +305,18 @@ $result = mysqli_query($connection, $query);
         <div class="happy-toast">Document updated successfully!</div>
     <?php elseif (isset($_GET['error'])): ?>
         <div class="error-toast">An error occurred. Please try again.</div>
-    <?php endif; ?>
-
-    <div class="top-bar">
+    <?php elseif (isset($_GET['bulk_deleted'])): ?>
+        <div class="happy-toast">Selected documents moved to trash.</div>
+    <?php endif; ?>    
+        <div class="top-bar">
+        <?php if ($is_admin): ?>
+            
+        <?php endif; ?>
         <?php if ($can_upload): ?>
             <a class="add-btn" href="addBoardDocument.php">+ Add Document</a>
         <?php endif; ?>
         <?php if ($is_admin): ?>
+            <button class="bulk-btn" onclick="document.getElementById('bulk-delete-modal').classList.add('active')">🗑 Delete Documents</button>
             <a class="trash-btn" href="boardDocumentsTrash.php">🗑 View Trash</a>
         <?php endif; ?>
     </div>
@@ -318,7 +392,41 @@ $result = mysqli_query($connection, $query);
     <?php else: ?>
         <p class="empty-msg">No documents have been uploaded yet.</p>
     <?php endif; ?>
+    <div class="bottom-bar">
+    <a class="return-btn" href="index.php">← Return to Dashboard</a>
 </div>
-
+</div>
+    <?php if ($is_admin && $all_docs_result): ?>
+    <div class="modal-overlay" id="bulk-delete-modal">
+        <div class="modal-box">
+            <h3>🗑 Bulk Delete Documents</h3>
+            <p style="color:#828282;font-size:14px;margin-bottom:16px;">Select documents to move to trash. This can be undone from the trash bin.</p>
+            <form method="POST" action="boardDocuments.php" onsubmit="return confirmBulkDelete();">
+                <ul class="modal-doc-list">
+                    <?php while ($doc = mysqli_fetch_assoc($all_docs_result)): ?>
+                    <li>
+                        <input type="checkbox" name="bulk_delete_ids[]" value="<?php echo (int)$doc['id']; ?>" id="doc_<?php echo (int)$doc['id']; ?>">
+                        <label for="doc_<?php echo (int)$doc['id']; ?>"><?php echo htmlspecialchars($doc['doc_name']); ?></label>
+                    </li>
+                    <?php endwhile; ?>
+                </ul>
+                <div class="modal-actions">
+                    <button type="submit" class="modal-delete-btn">Delete All Selected</button>
+                    <button type="button" class="modal-cancel-btn" onclick="document.getElementById('bulk-delete-modal').classList.remove('active')">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script>
+    function confirmBulkDelete() {
+        var checked = document.querySelectorAll('#bulk-delete-modal input[type="checkbox"]:checked');
+        if (checked.length === 0) { alert('Please select at least one document.'); return false; }
+        return confirm('Move ' + checked.length + ' document(s) to trash?');
+    }
+    document.getElementById('bulk-delete-modal').addEventListener('click', function(e) {
+        if (e.target === this) this.classList.remove('active');
+    });
+    </script>
+    <?php endif; ?>
 </body>
 </html>

@@ -613,6 +613,7 @@ h1.calendar-header a {
     height:50px;
     width:182px;
     left: 3rem;
+    top: 8px;
 }
 
 .filter-wrapper input {

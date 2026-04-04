@@ -18,8 +18,10 @@ $(function() {
         }
         
     });
-    $('.calendar-day:not(.other-month)').click(function() {
-        document.location = 'date.php?date=' + $(this).data('date');
+    $(document).on('click', '.calendar-day:not(.other-month)', function(e) {
+        if (!$(e.target).closest('a').length) {
+            document.location = 'viewAllEvents.php?date=' + $(this).data('date');
+        }
     });
 
 
