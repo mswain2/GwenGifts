@@ -177,7 +177,7 @@
 
             <div style="display:flex; align-items:center; gap:1.5rem; margin-bottom:1rem;">
                 <img id="pfp-preview" src="<?php echo htmlspecialchars($person->get_profile_pic(), ENT_QUOTES, 'UTF-8'); ?>" 
-                    alt="Profile Picture" style="width:49px; height:49px; object-fit:cover; border-radius:50%;">
+                    alt="Profile Picture" style="width:49px; height:49px; min-width:49px; min-height:49px; max-width:49px; max-height:49px; object-fit:cover; border-radius:50%;">
                 <div>
                     <input type="file" id="pfp-upload" name="profile_pic_file" accept="image/*">
                     <p class="mb-2"><small>Accepted formats: JPG, PNG, GIF. Max size: 2MB.</small></p>
