@@ -207,7 +207,63 @@ $day_availability = isset($args['day_availability']) ? (array)$args['day_availab
                     $error_messages[] = $day . ': start time must be before end time.';
                 }
             }
+
+            
         if (!$errors) {
+            // Handle profile picture upload
+            if (isset($_FILES['profile_pic_file']) && $_FILES['profile_pic_file']['error'] === UPLOAD_ERR_OK) {
+                $file = $_FILES['profile_pic_file'];
+                $allowed = ['image/jpeg', 'image/png', 'image/gif'];
+                $maxSize = 2 * 1024 * 1024; // 2MB
+
+                if (in_array($file['type'], $allowed) && $file['size'] <= $maxSize) {
+                    $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
+                    $filename = 'pfp_' . preg_replace('/[^a-z0-9]/', '', strtolower($id)) . '_' . time() . '.' . $ext;
+                    $uploadPath = 'images/profile_pics/' . $filename;
+
+                    if (!is_dir('images/profile_pics')) {
+                        mkdir('images/profile_pics', 0755, true);
+                    }
+
+                    if (move_uploaded_file($file['tmp_name'], $uploadPath)) {
+                        // Resize to 49x49
+                        $img = null;
+                        $mime = $file['type'];
+                        if ($mime === 'image/jpeg') {
+                            $img = imagecreatefromjpeg($uploadPath);
+                        } elseif ($mime === 'image/png') {
+                            $img = imagecreatefrompng($uploadPath);
+                        } elseif ($mime === 'image/gif') {
+                            $img = imagecreatefromgif($uploadPath);
+                        }
+
+                        if ($img) {
+                            $resized = imagecreatetruecolor(49, 49);
+                            // Preserve transparency for PNG/GIF
+                            imagealphablending($resized, false);
+                            imagesavealpha($resized, true);
+                            $transparent = imagecolorallocatealpha($resized, 0, 0, 0, 127);
+                            imagefilledrectangle($resized, 0, 0, 49, 49, $transparent);
+
+                            imagecopyresampled($resized, $img, 0, 0, 0, 0, 49, 49, imagesx($img), imagesy($img));
+
+                            // Save resized version over the original
+                            if ($mime === 'image/jpeg') {
+                                imagejpeg($resized, $uploadPath, 95);
+                            } elseif ($mime === 'image/png') {
+                                imagepng($resized, $uploadPath);
+                            } elseif ($mime === 'image/gif') {
+                                imagegif($resized, $uploadPath);
+                            }
+
+                            imagedestroy($img);
+                            imagedestroy($resized);
+                        }
+
+                        update_profile_pic($id, $uploadPath);
+                    }
+                }
+            }
             $result = update_person_full(
                 $id, $first_name, $last_name, $gender, $t_shirt_size, $birthday,
                 $street_address, $city, $state, $zip_code,

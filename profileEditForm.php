@@ -105,6 +105,11 @@
                 </a>
             </div>
             <div class="sidebar-item">
+                <a href="#profile-picture">
+                    <img src="images/usaicon.png"> Profile Picture
+                </a>
+            </div>
+            <div class="sidebar-item">
                 <a href="#personal-info">
                     <img src="images/view-profile.svg"> Personal Information
                 </a>
@@ -148,7 +153,7 @@
     </div>
     <div class="main-content-box">
 
-    <form class="signup-form" method="post">
+    <form class="signup-form" method="post" enctype="multipart/form-data">
 	<div class="text-center">
           <h2 class="mb-8">Directions</h2>
             <div class="info-box" style="padding-left: 0rem;">
@@ -163,6 +168,21 @@
 
             <label>Password</label>
                 <a class="button-signup" href='changePassword.php' style="color: var(--button-font-color); font-weight: bold; width: 28%;">Change Password</a>
+        </fieldset>
+
+        <fieldset class="section-box" id="profile-picture">
+            <h3 class="mt-2">Profile Picture</h3>
+            <p class="mb-2">Upload a profile picture to personalize your account.</p>
+            <div class="blue-div"></div>
+
+            <div style="display:flex; align-items:center; gap:1.5rem; margin-bottom:1rem;">
+                <img id="pfp-preview" src="<?php echo htmlspecialchars($person->get_profile_pic(), ENT_QUOTES, 'UTF-8'); ?>" 
+                    alt="Profile Picture" style="width:49px; height:49px; object-fit:cover; border-radius:50%;">
+                <div>
+                    <input type="file" id="pfp-upload" name="profile_pic_file" accept="image/*">
+                    <p class="mb-2"><small>Accepted formats: JPG, PNG, GIF. Max size: 2MB.</small></p>
+                </div>
+            </div>
         </fieldset>
 
         <fieldset class="section-box" id="personal-info">
@@ -682,6 +702,20 @@
             blocks: [3, 3, 4],
             delimiter: '-',
             numericOnly: true,
+        });
+    </script>
+
+    <script>
+        // Live preview
+        document.getElementById('pfp-upload').addEventListener('change', function() {
+            var file = this.files[0];
+            if (file) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('pfp-preview').src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
         });
     </script>
 </main>
