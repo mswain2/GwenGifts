@@ -10,15 +10,16 @@
         die();    
     }
     require_once('include/input-validation.php');
-    require_once('database/dbEventMedia.php');
+    require_once('database/dbEventComments.php');
     $args = sanitize($_GET);
-    $required = ['eid', 'mid'];
+    $required = ['eid', 'cid'];
     if (!wereRequiredFieldsSubmitted($args, $required)) {
         echo 'bad args';
         die();
     }
     $eid = $args['eid'];
-    $mid = $args['mid'];
-    delete_event_media($mid);
-    header('Location: event.php?id=' . $eid . '&removeSuccess');
+    $cid = $args['cid'];
+    delete_event_comment($cid);
+    header('Location: viewEventComments.php?eventID=' . $eid . '&deleteSuccess');
+    die();
 ?>
