@@ -5,10 +5,12 @@ ini_set("display_errors", 1);
 error_reporting(E_ALL);
 date_default_timezone_set("America/New_York");
 
-// Ensure admin authentication
-if (!isset($_SESSION['access_level']) || $_SESSION['access_level'] < 2) {
-    header('Location: login.php');
-    die();
+// check RBAC
+if (isset($_SESSION['access_level']) && $_SESSION['access_level'] >= 2) {
+    $isEventManager = true;
+} else {
+    header('Location: index.php');
+    die();  
 }
 
 // Get current fiscal year
@@ -23,38 +25,43 @@ $fiscalYearEnd = $fiscalYearStart + 1;
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Gwyneth's Gift | Generate Reports</title>
+    <title>Gwyneth's Gift | Generate Report</title>
     <!--<script src="js/data-filters.js" defer></script>-->
-    <link href="css/base.css" rel="stylesheet">
-    <?php require_once('header.php'); ?>
+    <link href="css/normal_tw.css" rel="stylesheet">
+    <?php
+    $tailwind_mode = true;
+    require_once('header.php');
+    ?>
 </head>
+
 <body>
     <?php require_once('database/dbEvents.php');?>
     <?php require_once('database/dbPersons.php');?>
 
     <!-- Hero Section with Title -->
-        <div class="center-header">
-            <h1 style="color:white;">Generate Attendance Report</h1>
-        </div>
-                <!-- Info Section -->
-        <section class="section-box">
-            <p style="margin-top: 1rem;text-align:center;">
-                Use this tool to generate monthly or annual reports on volunteer activity. Reports are available in Excel or CSV format.
-            </p>
-        </section>
+    <h1 style="color:white;">Generate Report</h1>
 
     <main>
         <?php $events = get_all_events_sorted_by_date_not_archived();?>
 
-        <div class="main-content-box">
+        <div class="main-content-box w-[80%] p-8">
+            
+            <!-- Fiscal Year Label -->
             <!--<div class="text-center">
                 <p style="font-size: 18px; color: #c2c2c2ff; margin-top: 0.5rem; margin-bottom: 0.5rem;">Fiscal Year: <?= $fiscalYearStart ?> - <?= $fiscalYearEnd ?></p>
             </div>-->
 
+            <!-- Form Title -->
+            <div class="text-center mb-8">
+                <h2>Generate Report</h2>
+                <p class="sub-text">Use this tool to generate monthly or annual reports on volunteer activity. Reports are available in CSV or PDF format.</p>
+            </div>
+
+            <!-- Form -->
             <form method="POST" action="processReport.php">
                 <!-- Event ID -->
                 <div style="margin-bottom: 1.5rem;">
-                    <label for="eventID" style="font-weight: 600;">Select Event</label>
+                    <label for="eventID" style="font-weight: 600;">Select Report Type</label>
                     <select name="eventID" id="eventID">
                         <?php foreach ($events as $event) {
                             $eventID = $event->getID();
@@ -109,17 +116,17 @@ $fiscalYearEnd = $fiscalYearStart + 1;
                     </select>
                 </div>
 
-                <div style="text-align: center; margin-top: 2rem;">
-                    <input type="hidden" value="<?php echo $_SESSION['_id']; ?>" name="admin" id="admin">
-                    <input type="hidden" value="<?php echo date("d-M-Y H:i:s e") ?>" name="time" id="time">
-                    <input type="submit" value="Generate Report" class="button generate-btn">
+                <!-- Submit -->
+                <div class="text-center pt-4">
+                    <input type="submit" value="Search" class="submit-button">
                 </div>
-            </form>
 
-        <!-- Return Button -->
+            </form>
         </div>
-        <div style="text-align: center; margin-top: 2rem;">
-            <a href="index.php" class="button cancel" style="width: 60%;">Return to Dashboard</a>
+
+        <!-- Return to Dashboard -->
+        <div class="text-center mt-6">
+            <a href="index.php" class="return-button">Return to Dashboard</a>
         </div>
 
     </main>
@@ -132,6 +139,7 @@ $fiscalYearEnd = $fiscalYearStart + 1;
         }
         document.addEventListener("DOMContentLoaded", toggleDateFields);
     </script>
+
 </body>
 </html>
 

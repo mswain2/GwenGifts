@@ -90,7 +90,7 @@ require_once('header.php');
           <img class="button-icon h-10 w-10 left-5" src="images/pencil-solid-full.svg" alt="Pencil Icon">
         </button>
 
-        <button onclick="window.location.href='generateEventReport.php';">
+        <button onclick="window.location.href='generateReport.php';">
           <div class="button-left-gray"></div>
           <div>Generate Event Report</div>
           <img class="button-icon h-12 w-12 left-4" src="images/create-report.svg" alt="Plus Icon">

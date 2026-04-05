@@ -104,7 +104,7 @@
         </div>
 
         <!-- Generate Report -->
-        <div class="content-box-test" onclick="window.location.href='generateEventReport.php'">
+        <div class="content-box-test" onclick="window.location.href='generateReport.php'">
             <div class="icon-overlay">
                 <img style="border-radius: 5px;" src="images/create-report.svg" alt="Report Icon">
             </div>
