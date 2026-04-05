@@ -60,6 +60,14 @@ if (date("H:i:s") > "18:19:59") {
 <header>
 
     <?php
+    $_pfp = 'images/usaicon.png';
+    if (isset($_SESSION['_id'])) {
+        require_once(dirname(__FILE__) . '/database/dbPersons.php');
+        $_pfp = get_profile_pic($_SESSION['_id']);
+    }
+    $_pfp_escaped = htmlspecialchars($_pfp, ENT_QUOTES, 'UTF-8');
+    
+
     //Log-in security
     //If they aren't logged in, display our log-in form.
     $showing_login = false;
@@ -85,7 +93,7 @@ if (date("H:i:s") > "18:19:59") {
             <div class="nav-links">
                 <div class="nav-item">
                     <div class="icon">
-                        <img src="images/usaicon.png" alt="User Icon" class="icon-img in-nav-img">
+                        <img src="' . $_pfp_escaped . '" alt="User Icon" class="icon-img in-nav-img" style="width:49px; height:49px; min-width:49px; min-height:49px; max-width:49px; max-height:49px; object-fit:cover; border-radius:50%;">
                         <div class="dropdown">
                             <a href="VolunteerRegister.php" class="dropdown-link"><div>Create Account</div></a>
                             <a href="login.php" class="dropdown-link"><div>Log in</div></a>
@@ -235,6 +243,10 @@ if (date("H:i:s") > "18:19:59") {
         $permission_array['exporteventroster.php'] = 2;
         $permission_array['managetrainingmaterials.php'] = 2;
         $permission_array['bulkdeletetrainingmaterials.php'] = 2;
+        $permission_array['returningvolunteerform.php'] = 0;
+        $permission_array['addeventmedia.php'] = 1;
+        $permission_array['vieweventcomments.php'] = 1;
+        $permission_array['addeventcomment.php'] = 1;
         // LOWERCASE
 
 
@@ -256,14 +268,21 @@ if (date("H:i:s") > "18:19:59") {
         $venues = array("portland" => "RMH Portland"); // Is this used anywhere? Do we need it? -Blue
 
         //they're logged in and session variables are set.
-
+        $_pfp = 'images/usaicon.png';
+        if (isset($_SESSION['_id'])) {
+            require_once(dirname(__FILE__) . '/database/dbPersons.php');
+            $_pfp = get_profile_pic($_SESSION['_id']);
+        }
+        $_pfp_escaped = htmlspecialchars($_pfp, ENT_QUOTES, 'UTF-8');	
+      
         // load header according to user role/type
         $type = $_SESSION['type'];
         if ($type === 'admin' || $type === "superadmin") {
             require 'partials/nav_admin.php';
         } else if ($type === 'board_member') {
             require 'partials/nav_admin.php';
-        } else if ($type === 'event_manager.php') {
+        }
+        else if ($type === 'event_manager') {
             require 'partials/nav_admin.php';
         } else {
             require 'partials/nav_volunteer.php';
