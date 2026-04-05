@@ -192,7 +192,7 @@ if (date("H:i:s") > "18:19:59") {
         $permission_array['creatediscussion.php'] = 1;
         $permission_array['checkedinvolunteers.php'] = 2;
         $permission_array['deletediscussion.php'] = 2;
-        $permission_array['generatereport.php'] = 2; //adding this to the generate report page
+        $permission_array['generateeventreport.php'] = 2; //adding this to the generate report page
         $permission_array['generateemaillist.php'] = 2; //adding this to the generate report page
         $permission_array['clockoutbulk.php'] = 2;
         $permission_array['clockOut.php'] = 2;

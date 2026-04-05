@@ -26,7 +26,7 @@
                     <a href="editHours.php" style="text-decoration: none;">
                     <div class="in-nav">
                         <img src="images/clock-regular.svg">
-                        <span>Change Event Hours</span>
+                        <span>Manage Volunteer Hours</span>
                     </div>
                     </a>
                     <!-- <a href="viewPendingApps.php" style="text-decoration: none;">
