@@ -19,6 +19,7 @@ if ($id <= 0) {
 }
 
 $event_info = fetch_event_by_id($id);
+$event_name_display = html_entity_decode($event_info['name'], ENT_QUOTES | ENT_HTML5, 'UTF-8');
 if (!$event_info) {
     echo 'Invalid event ID.';
     die();
@@ -109,8 +110,7 @@ foreach ($all_rows as $row) {
     <h1>Event Roster</h1>
 
     <main class="general">
-        <h2><?php echo htmlspecialchars($event_info['name']); ?></h2>
-
+        <h2><?php echo htmlspecialchars($event_name_display); ?></h2>
         <p><?php echo count($all_rows); ?> approved sign-up(s) are on this roster.</p>
         <p>Showing <?php echo count($filtered_rows); ?> row(s) with the current filters.</p>
 

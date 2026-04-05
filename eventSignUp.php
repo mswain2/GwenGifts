@@ -45,18 +45,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $is_recurring_event = !empty($event_info['series_id']);
 
     $skills = isset($args['skills']) ? trim($args['skills']) : '';
-    $disabilities = isset($args['disabilities']) ? trim($args['disabilities']) : '';
-    $materials = isset($args['materials']) ? trim($args['materials']) : '';
-
+    
     $notes = '';
-    if ($is_recurring_event) {
-        $notesParts = array(
-            'Skills: ' . ($skills !== '' ? $skills : 'None'),
-            'Disabilities: ' . ($disabilities !== '' ? $disabilities : 'None'),
-            'Materials: ' . ($materials !== '' ? $materials : 'None')
-        );
-        $notes = implode(' | ', $notesParts);
-    }
 
     if ($event_type === "Retreat") {
         require_once('database/dbApplications.php');
@@ -125,7 +115,6 @@ if (!$event_info) {
 
 $event_name = $event_info['name'];
 $event_type = isset($event_info['type']) ? $event_info['type'] : '';
-$is_recurring_event = !empty($event_info['series_id']);
 
 $account_name = isset($_SESSION['_id']) ? $_SESSION['_id'] : '';
 ?>
@@ -165,17 +154,6 @@ $account_name = isset($_SESSION['_id']) ? $_SESSION['_id'] : '';
                 <?php echo ($accessLevel >= 2) ? '' : 'readonly'; ?>
                 value="<?php echo htmlspecialchars($account_name); ?>"
                 placeholder="Enter account name">
-
-            <?php if ($is_recurring_event): ?>
-                <label for="skills">Do You Have Any Skills To Share?</label>
-                <input type="text" id="skills" name="skills" placeholder="Enter skills. Ex. crochet, tap dancer">
-
-                <label for="disabilities">Do You Have Any Disabilities We Should Be Aware Of?</label>
-                <input type="text" id="disabilities" name="disabilities" placeholder="Enter disabilities">
-
-                <label for="materials">Are You Bringing Any Materials (e.g. snacks, craft supplies)?</label>
-                <input type="text" id="materials" name="materials" placeholder="Enter materials. Ex. felt, pipe cleaners">
-            <?php endif; ?>
 
             <input type="hidden" name="type" value="<?php echo htmlspecialchars($event_type); ?>">
             <input type="hidden" name="role" value="p">

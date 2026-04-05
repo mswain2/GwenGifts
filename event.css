@@ -77,8 +77,9 @@ table th { word-break: break-word; }
 }
 
 /* Action buttons */
-.action-buttons { margin: 1rem 0rem; display: flex; flex-direction: row; align-items: stretch; justify-content: space-evenly;}
-.action-buttons .button { margin: 0.35rem; border-radius: 13px; cursor: pointer; width: 10rem; height: 3.75rem;}
+.action-buttons { margin: 1rem 0; display: flex; flex-wrap: wrap; justify-content: center; align-items: stretch; gap: 0.75rem;}
+.action-buttons form { margin: 0; display: flex;}
+.action-buttons .button { margin: 0; border-radius: 13px; cursor: pointer; width: 11rem; min-height: 3.75rem; height: auto; padding: 0.85rem 1rem; white-space: normal; word-break: break-word; text-align: center; line-height: 1.2; display: flex; align-items: center; justify-content: center;}
 .button.cancel { background-color: var(--cancel-button-background-color); color: var(--button-font-color); }
 .button.signup  { background-color: var(--main-color) !important; color: var(--button-font-color); }
 .button.signup:hover { background-color: var(--accent-color) !important; }

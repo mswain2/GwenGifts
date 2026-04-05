@@ -51,6 +51,7 @@ if ($id <= 0) {
 }
 
 $event_info = fetch_event_by_id($id);
+$event_name_display = html_entity_decode($event_info['name'], ENT_QUOTES | ENT_HTML5, 'UTF-8');
 if (!$event_info) {
     echo 'Invalid event ID.';
     die();
@@ -70,7 +71,7 @@ $actor = isset($_SESSION['_id']) ? $_SESSION['_id'] : 'unknown';
 
 $message = $actor .
     ' exported event roster for event #' . $id .
-    ' (' . $event_info['name'] . ')' .
+    ' (' . $event_name_display . ')' .
     ' as ' . strtoupper($format) .
     ' with attendance=' . $filters['attendance'] .
     ' and training=' . $filters['training'];
@@ -86,7 +87,7 @@ if ($format === 'csv') {
     $output = fopen('php://output', 'w');
 
     fputcsv($output, array("GWYNETH'S GIFT CONFIDENTIAL EXPORT"));
-    fputcsv($output, array('Event', $event_info['name']));
+    fputcsv($output, array('Event', $event_name_display));
     fputcsv($output, array('Attendance Filter', $filters['attendance']));
     fputcsv($output, array('Training Filter', $filters['training']));
     fputcsv($output, array('Exported At', date('Y-m-d H:i:s')));
@@ -191,7 +192,7 @@ if ($format !== 'pdf') {
         </div>
 
         <h1>Event Roster Export</h1>
-        <p><strong>Event:</strong> <?php echo htmlspecialchars($event_info['name']); ?></p>
+        <p><strong>Event:</strong> <?php echo htmlspecialchars($event_name_display); ?></p>
         <p><strong>Attendance Filter:</strong> <?php echo htmlspecialchars($filters['attendance']); ?></p>
         <p><strong>Training Filter:</strong> <?php echo htmlspecialchars($filters['training']); ?></p>
         <p><strong>Exported At:</strong> <?php echo htmlspecialchars(date('Y-m-d H:i:s')); ?></p>

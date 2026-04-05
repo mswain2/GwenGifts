@@ -425,10 +425,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <?php if ($isEventManager): ?>
                 <p>
-                    <a href="addTrainingMaterial.php?eventID=<?= urlencode($id) ?>" class="button signup">
+                    <a href="addTrainingMaterial.php?eventID=<?= urlencode($id) ?>" class="button signup" style="display: block; width: 100%; text-align: center;">
                         Add Training Document
                     </a>
-                    <a href="manageTrainingMaterials.php?eventID=<?= urlencode((string)$id) ?>" class="button cancel">
+                </p>
+                <p>
+                    <a href="manageTrainingMaterials.php?eventID=<?= urlencode((string)$id) ?>" class="button cancel" style="display: block; width: 100%; text-align: center;">
                         Delete Training Documents
                     </a>
                 </p>
@@ -509,8 +511,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <?php endif ?>
 
-            <a href="calendar.php?month=<?= substr($event_info['startDate'], 0, 7) ?>" class="button cancel">Back to Calendar</a>
-
+            <a href="calendar.php?month=<?= substr($event_info['startDate'], 0, 7) ?>" class="button cancel">Return to Calendar</a>
         </div>
 
         <!-- Share Event on Facebook Button -->
