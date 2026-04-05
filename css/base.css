@@ -945,6 +945,56 @@ form.signup-form a {
 form.signup-form a:hover {
     color: var(--accent-color);
 }
+/* Report Page */
+.report-field-row {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+.report-field-row > .report-field-half {
+    flex: 1;
+}
+.report-divider {
+    border: none;
+    border-top: 1px solid var(--light-border);
+    margin: 1.5rem 0 1rem;
+}
+.report-section-heading {
+    color: var(--main-color);
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+.report-description {
+    background-color: #f0f4f8;
+    border-left: 4px solid var(--main-color);
+    border-radius: 4px;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1.25rem;
+    font-size: 0.9rem;
+    color: #444;
+    line-height: 1.5;
+}
+.report-description strong {
+    color: var(--main-color);
+}
+/* Filter show/hide animation */
+[data-reports] {
+    transition: opacity 0.25s ease, max-height 0.3s ease;
+    overflow: hidden;
+}
+[data-reports].filter-hidden {
+    opacity: 0;
+    max-height: 0;
+    margin: 0;
+    padding: 0;
+    pointer-events: none;
+}
+[data-reports].filter-visible {
+    opacity: 1;
+    max-height: 200px;
+}
+
 /* end normal_tw conversion ~Blue*/
 
 .sidebar-wrapper {
