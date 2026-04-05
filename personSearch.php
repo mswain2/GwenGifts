@@ -41,9 +41,10 @@ require_once('header.php');
 <main>
     <div class="main-content-box w-[80%] p-8">
 
+        
         <div class="text-center mb-8">
-            <h2>Find Users</h2>
-            <p class="sub-text">Use the filters below to search for users and create mailing lists.</p>
+            <h2>Find a User</h2>
+            <p class="sub-text">Use the filters below to search and create mailing lists.</p>
         </div>
 
         <form id="person-search" class="space-y-6" method="get">
