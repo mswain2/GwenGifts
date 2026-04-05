@@ -197,34 +197,29 @@
                  Hamburger menu with icon buttons to switch between different calendar views:
                  List view, Monthly grid, Weekly view, and Daily view.
                  The checkbox acts as a CSS toggle to show/hide the menu. -->
-            <div class="filter-wrapper">
-                <div class="filter-menu-wrapper">
-                    <input type="checkbox" /> <!-- Checkbox toggle: when checked, the filter menu is visible -->
-                    <div class="filter-menu"><img class="filter-menu-icon" src="./images/menu.png" style="filter: invert(1);"></div>
-                    <div class="calendar-filter" style="height: 3rem;">
-                        <!-- Each icon triggers a JS handler to swap the calendar display mode -->
-                        
-                        <img id="calendar-view-button" class="filter-button" src="images/view-calendar.png" alt="Calendar view">
-                        <img id="calendar-weekly-view-button" class="filter-button" src="images/new-event.png" alt="Calendar view: Weekly">
-                        <img id="calendar-day-view-button" class="filter-button" src="images/day-sunny-svgrepo-com.svg" alt="Calendar view: Day">
+           <div style="position:relative; margin-top:8px;">
+                <div class="filter-wrapper" style="position: absolute; left: 1rem; top: 0;">
+                    <div class="filter-menu-wrapper">
+                        <input type="checkbox" />
+                        <div class="filter-menu"><img class="filter-menu-icon" src="./images/menu.png" style="filter: invert(1);"></div>
+                        <div class="calendar-filter" style="height: 3rem;">
+                            <img id="calendar-view-button" class="filter-button" src="images/view-calendar.png" alt="Calendar view">
+                            <img id="calendar-weekly-view-button" class="filter-button" src="images/new-event.png" alt="Calendar view: Weekly">
+                            <img id="calendar-day-view-button" class="filter-button" src="images/day-sunny-svgrepo-com.svg" alt="Calendar view: Day">
+                        </div>
                     </div>
                 </div>
-                <!-- <div class="time-filter" class="hidden">  will later be used for week<->month --
-                    <img id="day-view-button" class="filter-button" class="hidden" src="images/day-view.png" alt="Day view">
-                    <img id="week-view-button" class="filter-button" class="hidden" src="images/week-view.png" alt="week view">
-                    <img id="month-view-button" class="filter-button" class="hidden" src="images/month-view.png" alt="month view">
-                </div> -->
-            </div>
-            <?php if ($calUserType === 'board'): ?>
-            <div style="padding: 0 10rem 0.5rem 10rem;">
-                <select id="event-filter-select" style="padding:6px 14px;border-radius:50px;border:1px solid #e0e0e0;font-family:inherit;font-size:14px;background:#f8f8f8;">
+                <?php if ($calUserType === 'board'): ?>
+                <div style="display:flex; justify-content:center; align-items:center; gap:8px; padding: 6px 0;">
+                <select id="event-filter-select" style="padding:6px 140px;border-radius:50px;border:1px solid #e0e0e0;font-family:inherit;font-size:14px;background:#f8f8f8;width:auto;">
                     <option value="public"  <?php echo $currentFilter==='public' ?'selected':''; ?>>Public Events</option>
                     <option value="board"   <?php echo $currentFilter==='board'  ?'selected':''; ?>>Board Events</option>
                     <option value="all"     <?php echo $currentFilter==='all'    ?'selected':''; ?>>All Events</option>
                 </select>
-                <button id="apply-filter-btn" style="padding:6px 18px;border-radius:50px;border:none;background:#6b8caf;color:white;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;">Apply</button>
+                    <button id="apply-filter-btn" style="padding:6px 18px;border-radius:50px;border:none;background:#6b8caf;color:white;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;width:auto;margin:0;height:36px;line-height:1;">Apply</button>      
+                </div>
+                <?php endif; ?>
             </div>
-            <?php endif; ?>
             <!-- <input type="date" id="month-jumper" value="<?php echo date('Y-m-d', $month); ?>" min="2023-01-01"> -->
             <!-- ── SUCCESS TOAST MESSAGES ──
                  Show a green confirmation banner when the user is redirected here

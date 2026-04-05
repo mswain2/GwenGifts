@@ -279,7 +279,7 @@ if (date("H:i:s") > "18:19:59") {
         else if ($type === 'board_member') {
             require 'partials/nav_admin.php';
         }
-        else if ($type === 'event_manager.php') {
+        else if ($type === 'event_manager') {
             require 'partials/nav_admin.php';
         }
         else {
