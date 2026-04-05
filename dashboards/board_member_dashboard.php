@@ -152,7 +152,7 @@
         </div>
 
         <!-- Generate Email List -->
-        <div class="content-box-test" onclick="window.location.href='generateEmailList.php'">
+        <div class="content-box-test" onclick="window.location.href='personSearch.php'">
             <div class="icon-overlay">
                 <img style="border-radius: 5px;" src="images/send.png" alt="Email List Icon">
             </div>
