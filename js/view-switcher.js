@@ -14,7 +14,7 @@ $(document).ready(function () {
     let urlMonth = new URLSearchParams(window.location.search).get('month');
     let attrMonth = $('#calendar').data('current-month');
     let paramToUse = urlMonth || attrMonth;
-    let currentMonth = normalizeMonthParam(paramToUse) || new Date().toISOString().slice(0,10);
+    let currentMonth = normalizeMonthParam(paramToUse) || new Date().toLocaleDateString('en-CA');
 
     // SCRUM-16: get current event filter (default: public)
     let currentFilter = new URLSearchParams(window.location.search).get('event_filter') || 'public';
