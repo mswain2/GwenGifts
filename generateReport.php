@@ -26,7 +26,7 @@ $fiscalYearEnd = $fiscalYearStart + 1;
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Gwyneth's Gift | Generate Report</title>
-    <!--<script src="js/data-filters.js" defer></script>-->
+    <script src="js/report-filters.js" defer></script>
     <link href="css/normal_tw.css" rel="stylesheet">
     <?php
     $tailwind_mode = true;
@@ -45,80 +45,124 @@ $fiscalYearEnd = $fiscalYearStart + 1;
         <?php $events = get_all_events_sorted_by_date_not_archived();?>
 
         <div class="main-content-box w-[80%] p-8">
-            
-            <!-- Fiscal Year Label -->
-            <!--<div class="text-center">
-                <p style="font-size: 18px; color: #c2c2c2ff; margin-top: 0.5rem; margin-bottom: 0.5rem;">Fiscal Year: <?= $fiscalYearStart ?> - <?= $fiscalYearEnd ?></p>
-            </div>-->
 
             <!-- Form Title -->
             <div class="text-center mb-8">
                 <h2>Generate Report</h2>
-                <p class="sub-text">Use this tool to generate monthly or annual reports on volunteer activity. Reports are available in CSV or PDF format.</p>
+                <p class="sub-text">Generate reports on volunteer activity, filtered by date, event, or volunteer. Reports are available in CSV or PDF format.</p>
             </div>
 
             <!-- Form -->
-            <form method="POST" action="processReport.php">
-                <!-- Event ID -->
-                <div style="margin-bottom: 1.5rem;">
-                    <label for="eventID" style="font-weight: 600;">Select Report Type</label>
-                    <select name="eventID" id="eventID">
-                        <?php foreach ($events as $event) {
-                            $eventID = $event->getID();
-                            $eventName = $event->getName();
-                            echo "<option value='$eventID'>$eventName (ID: $eventID)</option>";
-                        }
-                        ?>
+            <form method="POST" action="processReport.php" id="report-form">
+
+                <!-- Report Type -->
+                <div class="report-field">
+                    <label for="type">Report Type</label>
+                    <select id="type" name="type">
+                        <option value="" disabled selected>-- Select a report type --</option>
+                        <option value="volunteer_hours">Volunteer Hours</option>
+                        <option value="volunteer_participation">Volunteer Participation</option>
+                        <option value="volunteer_growth">Volunteer Growth</option>
+                        <option value="top_volunteers">Top Volunteers</option>
                     </select>
                 </div>
 
-                <!-- Month (conditionally hidden)
-                <div id="monthField">
-                    <label for="month" class="font-semibold">Select Month:</label>
-                    <select name="month" id="month">
-                        <?php
-                        $months = [
-                            '10' => 'October', '11' => 'November', '12' => 'December', '01' => 'January',
-                            '02' => 'February', '03' => 'March', '04' => 'April', '05' => 'May',
-                            '06' => 'June', '07' => 'July', '08' => 'August', '09' => 'September'
-                        ];
-                        foreach ($months as $num => $name) {
-                            echo "<option value='$num'>$name</option>";
-                        }
-                        ?>
-                    </select>
-                </div> -->
+                <!-- Metric Definitions (shown per report type) -->
+                <div id="report-description" class="report-description" style="display:none;"></div>
 
-                <!-- Content Select -->
+                <!-- Dynamic Filter Fields -->
+                <div id="dynamic-filters" style="display:none;">
 
-                    <h4 style="margin-top: 1rem; margin-bottom: 0.5rem; font-weight: 600;">Field Selector</h4>
-                    <p style="font-size: 16px; color: #c2c2c2ff; margin-top: 0.5rem; margin-bottom: 0.5rem;">If any fields are selected, the report will include all users who signed up and whether they attended.</p>
-                    <div id="field-picker">
-                            <div class="checkbox-grouping">
-                                <label class="checkbox-label">
-                                    <input type="checkbox" value="user" name="user" id="user" checked> Username</label>
-                                <label class="checkbox-label">
-                                    <input type="checkbox" value="name" name="name" id="name" checked> Full Name</label>
-                                <label class="checkbox-label">
-                                    <input type="checkbox" value="branch" name="branch" id="branch"> Branch</label>
-                                <label class="checkbox-label">
-                                    <input type="checkbox" value="affiliation" name="affiliation" id="affiliation"> Affiliation</label>
+                    <hr class="report-divider">
+                    <h3 class="report-section-heading">Filters</h3>
+
+                    <!-- Time Period -->
+                    <div class="report-field" data-reports="volunteer_hours volunteer_participation volunteer_growth top_volunteers">
+                        <label for="time_period">Time Period</label>
+                        <select id="time_period" name="time_period">
+                            <option value="weekly">Weekly</option>
+                            <option value="monthly" selected>Monthly</option>
+                            <option value="yearly">Yearly</option>
+                        </select>
+                    </div>
+
+                    <!-- Date Range -->
+                    <div class="report-field-row" data-reports="volunteer_hours volunteer_participation volunteer_growth top_volunteers">
+                        <div class="report-field report-field-half">
+                            <label for="date_from">Start Date</label>
+                            <input type="date" id="date_from" name="date_from" value="<?= $fiscalYearStart ?>-10-01">
+                        </div>
+                        <div class="report-field report-field-half">
+                            <label for="date_to">End Date</label>
+                            <input type="date" id="date_to" name="date_to" value="<?= date('Y-m-d') ?>">
                         </div>
                     </div>
-                </section>
+
+                    <!-- User Status -->
+                    <div class="report-field" data-reports="volunteer_hours volunteer_participation volunteer_growth top_volunteers">
+                        <label for="user_status">Volunteer Status</label>
+                        <select id="user_status" name="user_status">
+                            <option value="all">All</option>
+                            <option value="Active" selected>Active</option>
+                            <option value="Inactive">Inactive</option>
+                        </select>
+                    </div>
+
+                    <!-- Event -->
+                    <div class="report-field" data-reports="volunteer_hours volunteer_participation top_volunteers">
+                        <label for="event_id">Event</label>
+                        <select id="event_id" name="event_id">
+                            <option value="all">All Events</option>
+                            <?php foreach ($events as $event) {
+                                $eid = $event->getID();
+                                $ename = htmlspecialchars($event->getName());
+                                echo "<option value='$eid'>$ename</option>";
+                            } ?>
+                        </select>
+                    </div>
+
+                    <!-- Volunteer -->
+                    <div class="report-field" data-reports="volunteer_hours volunteer_participation">
+                        <label for="volunteer">Volunteer</label>
+                        <select id="volunteer" name="volunteer">
+                            <option value="all">All Volunteers</option>
+                            <?php
+                            $volunteers = getall_volunteer_names();
+                            if ($volunteers) {
+                                foreach ($volunteers as $name) {
+                                    $safe = htmlspecialchars($name);
+                                    echo "<option value='$safe'>$safe</option>";
+                                }
+                            }
+                            ?>
+                        </select>
+                    </div>
+
+                    <!-- Top N Limit -->
+                    <div class="report-field" data-reports="top_volunteers">
+                        <label for="top_n">Show Top</label>
+                        <select id="top_n" name="top_n">
+                            <option value="5">5</option>
+                            <option value="10" selected>10</option>
+                            <option value="20">20</option>
+                            <option value="50">50</option>
+                        </select>
+                    </div>
+
+                </div>
 
                 <!-- Format -->
-                <div style="margin-bottom: 1.5rem; margin-top: 1.5rem;">
-                    <label for="format" style="font-weight: 600;">File Format</label>
-                    <select name="format" id="format">
-                        <option value="excel">Excel (.xls)</option>
+                <div id="format-section" class="report-field" style="display:none; margin-top: 1.5rem;">
+                    <label for="format">Export Format</label>
+                    <select name="format" id="report-format">
                         <option value="csv">CSV (.csv)</option>
+                        <option value="pdf">PDF (.pdf)</option>
                     </select>
                 </div>
 
                 <!-- Submit -->
-                <div class="text-center pt-4">
-                    <input type="submit" value="Search" class="submit-button">
+                <div id="submit-section" class="text-center pt-4" style="display:none;">
+                    <input type="submit" value="Generate Report" class="submit-button">
                 </div>
 
             </form>
@@ -131,14 +175,6 @@ $fiscalYearEnd = $fiscalYearStart + 1;
 
     </main>
 
-    <script>
-        function toggleDateFields() {
-            const eventID = document.getElementById("eventID").value;
-            // const monthField = document.getElementById("monthField");
-            // monthField.style.display = reportType === "annually" ? "none" : "block";
-        }
-        document.addEventListener("DOMContentLoaded", toggleDateFields);
-    </script>
 
 </body>
 </html>
