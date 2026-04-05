@@ -52,6 +52,7 @@
             $args['startTime'] = $startTime;
             $args['endTime']   = $endTime;
             $args['type'] = "Normal";
+            $timezone  = $args['timezone'] ?? 'America/New_York';
 
             //1. Start of use case #8 recurring, etc
             $isRecurring = isset($_POST['recurring']) ? 1 : 0;
@@ -198,9 +199,31 @@
                     </div>
                 </div>
                 </div>
+
+                <div class="event-sect">
+                    <label for="timezone">* Time Zone</label>
+                    <select id="timezone" name="timezone">
+                        <?php
+                        $timezones = [
+                            'America/New_York'   => 'Eastern Time (ET)',
+                            'America/Chicago'    => 'Central Time (CT)',
+                            'America/Denver'     => 'Mountain Time (MT)',
+                            'America/Los_Angeles'=> 'Pacific Time (PT)',
+                            'America/Anchorage'  => 'Alaska Time (AKT)',
+                            'Pacific/Honolulu'   => 'Hawaii Time (HT)',
+                        ];
+                        $selectedTz = $formData['timezone'] ?? 'America/New_York';
+                        foreach ($timezones as $tz => $label) {
+                            $sel = ($tz === $selectedTz) ? 'selected' : '';
+                            echo "<option value=\"$tz\" $sel>$label</option>";
+                        }
+                        ?>
+                    </select>
+                </div>
+
                 <div class="event-sect">
                 <label for="name">* Description </label>
-                <input type="text" id="description" name="description" required placeholder="Enter description">
+                <textarea id="description" name="description" placeholder="Enter description" required></textarea>                
                 
                 <label for="name">Location </label>
                 <input type="text" id="location" name="location" placeholder="Enter location">

@@ -135,3 +135,54 @@ html, body { background-color: var(--page-background-color); color: var(--page-f
 .edit-icon:hover, .delete-icon:hover {
   color: var(--accent-color);
 }
+
+.event_comment {
+  background-color: #eef;
+  border-radius: 5px;
+  padding: 20px;
+  margin-bottom: 10px;
+}
+
+.comment {
+  display: flex;
+  justify-content: space-between;
+}
+
+.event_comment p {
+  font-weight: bold;;
+  margin-bottom: 10px;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 1rem 0;
+    flex-wrap: wrap;
+}
+
+.pagination .button,
+.pagination .page-link {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background-color: var(--main-color);
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.pagination .button:hover,
+.pagination .page-link:hover {
+    background-color: var(--accent-color);
+}
+
+.pagination .current-page {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background-color: var(--shadow-and-border-color);
+    color: var(--page-font-color);
+    border-radius: 4px;
+    font-weight: bold;
+}

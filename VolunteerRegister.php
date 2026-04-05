@@ -92,6 +92,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $transportation_access = $args['transportation_access'] ?? null;
     if (empty($transportation_access)) { $errors = true; $error_messages['transportation_access'] = 'Please select an option.'; }
 
+    $has_disability = $args['has_disability'] ?? 'no';
+    if (!valueConstrainedTo($has_disability, ['yes', 'no'])) {
+        $errors = true; $error_messages['has_disability'] = 'Please select an option.';
+    }
+    $disability_specifications = ($has_disability === 'yes') ? ($args['disability_specifications'] ?? '') : '';
+
     $skills     = $args['skills']     ?? null;
     $experience = $args['experience'] ?? null;
 
@@ -194,6 +200,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         } else {
             if (!empty($language_data)) add_languages($id, $language_data);
             if (!empty($day_availability)) add_availabilities($id, $day_availability, $args);
+
+            // Save disability fields
+            $con = connect();
+            $safe_id = mysqli_real_escape_string($con, $id);
+            $safe_has = mysqli_real_escape_string($con, $has_disability);
+            $safe_spec = mysqli_real_escape_string($con, $disability_specifications);
+            mysqli_query($con, "UPDATE dbpersons SET has_disability='$safe_has', disability_specifications='$safe_spec' WHERE id='$safe_id'");
+            mysqli_close($con);
+
             $title = $id . " has been added as a volunteer";
             $body  = "New volunteer account has been created";
             system_message_all_admins($title, $body);

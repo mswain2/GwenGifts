@@ -53,7 +53,13 @@ class Person {
 	private $skills;
 	private $experience;
 	private $about_consent;
+	private $force_password_change;
 	private $access_level;
+	private $profile_pic;
+	private $cpr_training_completion;
+	private $aed_training_completion;
+	private $has_disability;
+	private $disability_specifications;
 
 	function __construct(
 		$id, $start_date, $first_name, $last_name, $street_address, $city, $state,
@@ -62,7 +68,8 @@ class Person {
 		$emergency_contact_first_name, $contact_num, $emergency_contact_relation,
 		$contact_method, $type, $status, $notes, $password, $affiliation, $branch, $archived,
 		$emergency_contact_last_name, $gender, $t_shirt_size, $computer_access, $camera_access, 
-		$transportation_access, $skills, $experience, $about_consent
+		$transportation_access, $skills, $experience, $about_consent,
+		$force_password_change = 0
 	) {
         $this->id = $id;
 		$this->start_date = $start_date;
@@ -100,6 +107,7 @@ class Person {
 		$this->skills = $skills;
 		$this->experience = $experience;
 		$this->about_consent = $about_consent;
+		$this->force_password_change = $force_password_change;
 
 		if ($this->type == 'volunteer') {
 			$this->access_level = 1;
@@ -298,8 +306,68 @@ class Person {
 		return $this->about_consent; 
 	}
 
+	function get_force_password_change() {
+		return $this->force_password_change;
+	}
+
 	function get_access_level() {
 		return $this->access_level;
+	}
+
+	function get_profile_pic() {
+		return $this->profile_pic ?? 'images/usaicon.png';
+	}
+
+	function set_profile_pic($path) {
+		$this->profile_pic = $path;
+	}
+
+	function get_cpr_training_completion() {
+		return $this->cpr_training_completion ?? 'no';
+	}
+
+	function get_cpr_training_completion_formatted() {
+		if ($this->cpr_training_completion == 'yes') {
+			return "Yes";
+		} else {
+			return "No";
+		}
+	}
+
+	function get_aed_training_completion() {
+		return $this->aed_training_completion ?? 'no';
+	}
+
+	function get_aed_training_completion_formatted() {
+		if ($this->aed_training_completion == 'yes') {
+			return "Yes";
+		} else {
+			return "No";
+		}
+	}
+
+	function set_cpr_training_completion($val) {
+		$this->cpr_training_completion = $val;
+	}
+
+	function set_aed_training_completion($val) {
+		$this->aed_training_completion = $val;
+	}
+
+	function get_has_disability() {
+		return $this->has_disability ?? 'no';
+	}
+
+	function set_has_disability($val) {
+		$this->has_disability = $val;
+	}
+
+	function get_disability_specifications() {
+		return $this->disability_specifications ?? '';
+	}
+
+	function set_disability_specifications($val) {
+		$this->disability_specifications = $val;
 	}
 
 }
