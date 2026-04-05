@@ -41,7 +41,6 @@ require_once('header.php');
 <main>
     <div class="main-content-box w-[80%] p-8">
 
-        
         <div class="text-center mb-8">
             <h2>Find a User</h2>
             <p class="sub-text">Use the filters below to search and create mailing lists.</p>
