@@ -98,7 +98,7 @@ require_once('header.php');
 
         <div class="text-center mt-6">
           <a href="index.php" class="return-button">Return to Dashboard</a>
-  A      </div>
+        </div>
 
      </div>
 
