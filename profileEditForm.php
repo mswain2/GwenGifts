@@ -104,6 +104,11 @@
                 </a>
             </div>
             <div class="sidebar-item">
+                <a href="#profile-picture">
+                    <img src="images/usaicon.png"> Profile Picture
+                </a>
+            </div>
+            <div class="sidebar-item">
                 <a href="#personal-info">
                     <img src="images/view-profile.svg"> Personal Information
                 </a>
@@ -147,7 +152,7 @@
     </div>
     <div class="main-content-box">
 
-    <form class="signup-form" method="post">
+    <form class="signup-form" method="post" enctype="multipart/form-data">
 	<div class="text-center">
           <h2 class="mb-8">Directions</h2>
             <div class="info-box" style="padding-left: 0rem;">
@@ -162,6 +167,21 @@
 
             <label>Password</label>
                 <a class="button-signup" href='changePassword.php' style="color: var(--button-font-color); font-weight: bold; width: 28%;">Change Password</a>
+        </fieldset>
+
+        <fieldset class="section-box" id="profile-picture">
+            <h3 class="mt-2">Profile Picture</h3>
+            <p class="mb-2">Upload a profile picture to personalize your account.</p>
+            <div class="blue-div"></div>
+
+            <div style="display:flex; align-items:center; gap:1.5rem; margin-bottom:1rem;">
+                <img id="pfp-preview" src="<?php echo htmlspecialchars($person->get_profile_pic(), ENT_QUOTES, 'UTF-8'); ?>" 
+                    alt="Profile Picture" style="width:49px; height:49px; min-width:49px; min-height:49px; max-width:49px; max-height:49px; object-fit:cover; border-radius:50%;">
+                <div>
+                    <input type="file" id="pfp-upload" name="profile_pic_file" accept="image/*">
+                    <p class="mb-2"><small>Accepted formats: JPG, PNG, GIF. Max size: 2MB.</small></p>
+                </div>
+            </div>
         </fieldset>
 
         <fieldset class="section-box" id="personal-info">
@@ -655,9 +675,44 @@
                 <input type="radio" id="transportation_access_no" name="transportation_access" value="no" <?php if ($person->get_transportation_access() == 'no') echo 'checked'; ?> required><label for="transportation_access_no"> No</label>
             </div>
         </div>
+        
+        <hr style="border:none; border-top: 1px solid var(--inactive-font-color); margin: 0.5rem 2rem;">
+
+        <div>
+            <label for="has_disability"><em>* </em>Disability</label>
+            <p class="mb-2">Do you have one or more disabilities that may affect your volunteering?</p>
+            <div class="radio-group">
+                <div class="radio-element">
+                    <input type="radio" id="has_disability_yes" name="has_disability" value="yes" 
+                        <?php if ($person->get_has_disability() == 'yes') echo 'checked'; ?> required>
+                    <label for="has_disability_yes"> Yes</label>
+                </div>
+                <div class="radio-element">
+                    <input type="radio" id="has_disability_no" name="has_disability" value="no" 
+                        <?php if ($person->get_has_disability() != 'yes') echo 'checked'; ?> required>
+                    <label for="has_disability_no"> No</label>
+                </div>
+            </div>
+        
+
+        <div id="disability_spec_section" style="display:<?php echo $person->get_has_disability() == 'yes' ? 'block' : 'none'; ?>">
+            <label for="disability_specifications">Disability Specifications</label>
+            <p class="mb-2">Please briefly describe your disability or any accommodations you may need.</p>
+            <textarea id="disability_specifications" name="disability_specifications" 
+                placeholder="Ex. Wheelchair user, hearing impaired, etc."><?php echo hsc($person->get_disability_specifications()); ?></textarea>
+        </div>
+
+        <script>
+        document.querySelectorAll('input[name="has_disability"]').forEach(function(radio) {
+            radio.addEventListener('change', function() {
+                document.getElementById('disability_spec_section').style.display = 
+                    this.value === 'yes' ? 'block' : 'none';
+            });
+        });
+        </script>
+        </div>
 
     </fieldset>
-
 
     <input type="hidden" name="id" value="<?php echo $id; ?>">
     <input type="submit" name="profile-edit-form" value="Update Profile">
@@ -681,6 +736,20 @@
             blocks: [3, 3, 4],
             delimiter: '-',
             numericOnly: true,
+        });
+    </script>
+
+    <script>
+        // Live preview
+        document.getElementById('pfp-upload').addEventListener('change', function() {
+            var file = this.files[0];
+            if (file) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('pfp-preview').src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
         });
     </script>
 </main>

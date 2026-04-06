@@ -1,172 +1,169 @@
 <?php
-    // Make session information accessible, allowing us to associate
-    // data with the logged-in user.
-    session_cache_expire(30);
-    session_start();
+session_cache_expire(30);
+session_start();
 
-    $loggedIn = false;
-    $accessLevel = 0;
-    $userID = null;
+$loggedIn = false;
+$accessLevel = 0;
+$userID = null;
 
-    if (isset($_SESSION['_id'])) {
-        $loggedIn = true;
-        // 0 = not logged in, 1 = standard user, 2 = manager (Admin), 3 super admin (TBI)
-        $accessLevel = $_SESSION['access_level'];
-        $userID = $_SESSION['_id'];
-    } 
+if (isset($_SESSION['_id'])) {
+    $loggedIn = true;
+    $accessLevel = $_SESSION['access_level'];
+    $userID = $_SESSION['_id'];
+}
 
-    if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        require_once('include/input-validation.php');
-        require_once('database/dbEvents.php');
-        require_once('database/dbPersons.php');
-        $args = sanitize($_POST, null);
+require_once('database/dbEvents.php');
 
-        $required = array("event-name", "account-name");
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    require_once('include/input-validation.php');
 
-        if (!wereRequiredFieldsSubmitted($args, $required)) {
-            echo 'bad form data';
-            die();
-        }
+    $args = sanitize($_POST, null);
+    $required = array("event-name", "account-name", "event_id");
 
-        $name = htmlspecialchars_decode($args['event-name']);
-        $account_name = htmlspecialchars_decode($args['account-name']);
-        $event_id = isset($args['event_id']) ? intval($args['event_id']) : 0;
-        $role = isset($args['role']) ? $args['role'] : '';
-        $skills = isset($args['skills']) ? $args['skills'] : '';
-        $restrictions = isset($args['restrictions']) ? $args['restrictions'] : '';
-        $disabilities = isset($args['disabilities']) ? $args['disabilities'] : '';
-        $materials = isset($args['materials']) ? $args['materials'] : '';
-
-        $notes = "Skills: $skills | Dietary restrictions: $restrictions | Disabilities: $disabilities | Materials: $materials";
-
-        // Route based on event type: Retreat uses applications, Normal uses direct signup
-        $type = isset($args['type']) ? $args['type'] : '';
-        if ($type === "Retreat") {
-            // For Retreat events: create an application (insert into dbapplications with status='Pending')
-            require_once('database/dbApplications.php');
-            $event_id = isset($_GET['id']) ? intval($_GET['id']) : (isset($_GET['event_id']) ? intval($_GET['event_id']) : 0);
-            $app_data = [
-                'user_id' => $account_name,
-                'event_id' => $event_id,
-                'status' => 'Pending',
-                'flagged' => 0,
-                'notes' => $notes
-            ];
-            $app_id = create_app($app_data);
-            if (!$app_id) {
-                header('Location: requestFailed.php');
-                die();
-            }
-
-            require_once('database/dbMessages.php');
-            send_system_message(
-                $userID,
-                "Your request to sign up for $name has been sent to an admin.",
-                "Your request to sign up for $name will be reviewed by an admin shortly. You will get another notification when you are approved or denied."
-            );
-
-            header('Location: signupPending.php');
-            die();
-        } 
-        else {
-            $id = sign_up_for_event($event_id, $account_name, $role, $notes);
-            if (!$id) {
-                header('Location: eventFailure.php');
-                exit();
-            }
-
-            require_once('database/dbMessages.php');
-            send_system_message(
-                $userID,
-                "You are now signed up for $name!",
-                "Thank you for signing up for $name!"
-            );
-
-            header('Location: signupSuccess.php');
-            die();
-        }
+    if (!wereRequiredFieldsSubmitted($args, $required)) {
+        echo 'bad form data';
+        die();
     }
 
-    // Connect to database
-    include_once('database/dbinfo.php'); 
-    $con = connect();  
+    $name = htmlspecialchars_decode($args['event-name']);
+    $account_name = htmlspecialchars_decode($args['account-name']);
+    $event_id = isset($args['event_id']) ? intval($args['event_id']) : 0;
+    $role = isset($args['role']) ? $args['role'] : 'p';
 
-    // Get event info from GET parameters (accept either `id` or `event_id`)
-    if (isset($_GET['id'])) {
-        $event_id = intval($_GET['id']);
-    } elseif (isset($_GET['event_id'])) {
-        $event_id = intval($_GET['event_id']);
-    } else {
-        $event_id = 0;
-    }
-    $event_name = isset($_GET['event_name']) ? htmlspecialchars($_GET['event_name']) : '';
-    $type = isset($_GET['type']) ? htmlspecialchars($_GET['type']) : '';
-
-    if ($event_id === 0){
+    if ($event_id === 0) {
         header('Location: requestFailed.php');
-                die();
+        die();
     }
 
-    // Retrieve user info from session
-    $username = isset($_SESSION['username']) ? $_SESSION['username'] : '';
-    $account_name = isset($_SESSION['_id']) ? $_SESSION['_id'] : '';
+    $event_info = fetch_event_by_id($event_id);
+    if (!$event_info) {
+        header('Location: requestFailed.php');
+        die();
+    }
+
+    $event_type = isset($event_info['type']) ? $event_info['type'] : '';
+    $is_recurring_event = !empty($event_info['series_id']);
+
+    $skills = isset($args['skills']) ? trim($args['skills']) : '';
+    
+    $notes = '';
+
+    if ($event_type === "Retreat") {
+        require_once('database/dbApplications.php');
+        require_once('database/dbMessages.php');
+
+        $app_data = array(
+            'user_id' => $account_name,
+            'event_id' => $event_id,
+            'status' => 'Pending',
+            'flagged' => 0,
+            'notes' => $notes
+        );
+
+        $app_id = create_app($app_data);
+        if (!$app_id) {
+            header('Location: requestFailed.php');
+            die();
+        }
+
+        send_system_message(
+            $userID,
+            "Your request to sign up for $name has been sent to an admin.",
+            "Your request to sign up for $name will be reviewed by an admin shortly. You will get another notification when you are approved or denied."
+        );
+
+        header('Location: signupPending.php');
+        die();
+    } else {
+        require_once('database/dbMessages.php');
+
+        $id = sign_up_for_event($event_id, $account_name, $role, $notes);
+        if (!$id) {
+            header('Location: eventFailure.php');
+            exit();
+        }
+
+        send_system_message(
+            $userID,
+            "You are now signed up for $name!",
+            "Thank you for signing up for $name!"
+        );
+
+        header('Location: signupSuccess.php');
+        die();
+    }
+}
+
+if (isset($_GET['id'])) {
+    $event_id = intval($_GET['id']);
+} elseif (isset($_GET['event_id'])) {
+    $event_id = intval($_GET['event_id']);
+} else {
+    $event_id = 0;
+}
+
+if ($event_id === 0) {
+    header('Location: requestFailed.php');
+    die();
+}
+
+$event_info = fetch_event_by_id($event_id);
+if (!$event_info) {
+    header('Location: requestFailed.php');
+    die();
+}
+
+$event_name = $event_info['name'];
+$event_type = isset($event_info['type']) ? $event_info['type'] : '';
+
+$account_name = isset($_SESSION['_id']) ? $_SESSION['_id'] : '';
 ?>
 <!DOCTYPE html>
 <html>
-    <head>
-        <?php require_once('universal.inc') ?>
-        <title>Gwyneth's Gift | Sign-Up for Event</title>
-    </head>
-    <body>
-        <?php require_once('header.php') ?>
-        <h1>Sign-Up for Event</h1>
-        <main class="date">
-            <h2>Sign-Up for Event Form</h2>
 
-            <form id="new-event-form" method="post">
-                <!-- ✅ Hidden event ID -->
-                <input type="hidden" name="event_id" value="<?php echo $event_id; ?>">
+<head>
+    <?php require_once('universal.inc') ?>
+    <title>Gwyneth's Gift | Sign-Up for Event</title>
+</head>
 
-                <label for="event-name">* Event Name </label>
-                    <input type="text" id="event-name" name="event-name" required 
-                    value="<?php echo htmlspecialchars_decode($event_name, ENT_QUOTES); ?>"
-                    placeholder="Event name" readonly>
+<body>
+    <?php require_once('header.php') ?>
+    <h1>Sign-Up for Event</h1>
 
-                <!-- Autofill and make the account name readonly -->               
-                <label for="account-name">* Your Account Name </label>
-                <input type="text" id="account-name" name="account-name" 
-                    <?php echo ($accessLevel >= 2) ? '' : 'readonly'; ?> 
-                    value="<?php echo htmlspecialchars($account_name); ?>" 
-                    placeholder="Enter account name">
+    <main class="date">
+        <h2>Sign-Up for Event Form</h2>
 
-                <label for="skills"> Do You Have Any Skills To Share? </label>
-                <input type="text" id="skills" name="skills" placeholder="Enter skills. Ex. crochet, tap dancer">
+        <form id="new-event-form" method="post">
+            <input type="hidden" name="event_id" value="<?php echo $event_id; ?>">
 
-                <label for="disabilities"> Do You Have Any Disabilities We Should Be Aware Of? </label>
-                <input type="text" id="disabilities" name="disabilities" placeholder="Enter disabilities">
+            <label for="event-name">* Event Name </label>
+            <input
+                type="text"
+                id="event-name"
+                name="event-name"
+                required
+                value="<?php echo htmlspecialchars_decode($event_name, ENT_QUOTES); ?>"
+                placeholder="Event name"
+                readonly>
 
-                <label for="materials"> Are You Bringing Any Materials (e.g. snacks, craft supplies)? </label>
-                <input type="text" id="materials" name="materials" placeholder="Enter materials. Ex. felt, pipe cleaners">
+            <label for="account-name">* Your Account Name </label>
+            <input
+                type="text"
+                id="account-name"
+                name="account-name"
+                <?php echo ($accessLevel >= 2) ? '' : 'readonly'; ?>
+                value="<?php echo htmlspecialchars($account_name); ?>"
+                placeholder="Enter account name">
 
-                <!--<fieldset>
-                    <label for="role">* Are you a volunteer or a participant? </label>
-                    <div class="radio-group">
-                        <input type="radio" id="v" name="role" value="v" required>
-                        <label for="v">Volunteer</label>
-                        <input type="radio" id="p" name="role" value="p" required>
-                        <label for="p">Participant</label>
-                    </div>
-                </fieldset>-->
+            <input type="hidden" name="type" value="<?php echo htmlspecialchars($event_type); ?>">
+            <input type="hidden" name="role" value="p">
 
-                <!-- 🔹 Preserve type flag across POST -->
-                <input type="hidden" name="type" value="<?php echo $type; ?>">
-                <input type="hidden" name="role" value="p">
+            <br />
+            <input type="submit" value="Sign up for Event">
+        </form>
 
-                <br/>
-                <input type="submit" value="Sign up for Event">
-            </form>
+        <a class="button cancel" href="event.php?id=<?php echo urlencode((string)$event_id); ?>" style="margin-top: -.5rem">Return to Event</a>
+    </main>
+</body>
 
-            <a class="button cancel" href="index.php" style="margin-top: -.5rem">Return to Dashboard</a>
-        </main>
-    </body>
 </html>

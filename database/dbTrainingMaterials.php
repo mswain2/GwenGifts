@@ -28,8 +28,7 @@ function add_training_material($eventID, $title, $description, $fileName, $fileP
 function get_training_materials_by_event($eventID, $search_name = '')
 {
     $con = connect();
-    $eventID = mysqli_real_escape_string($con, $eventID);
-
+    $eventID = (int)$eventID;
     $query = "
         SELECT *
         FROM dbtraining_materials

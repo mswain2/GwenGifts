@@ -26,37 +26,59 @@ include_once('dbinfo.php');
  * message - text
  * venue - 'portland' or 'bangor
  */
-function create_dbLog() {
-    $con=connect();
-    mysqli_query($con,"DROP TABLE IF EXISTS dbLog");
-    //NOTE: primary key set to id.  id is text in the form: yy-mm-dd-ss-se,  ss=shift start,  se=shift end
-    $result = mysqli_query($con,"CREATE TABLE dbLog (id INT(3) NOT NULL AUTO_INCREMENT,time TEXT, message TEXT, PRIMARY KEY(id))");
-    if (!$result)
+function create_dbLog()
+{
+    $con = connect();
+
+    $result = mysqli_query($con, "
+        CREATE TABLE IF NOT EXISTS dbLog (
+            id INT NOT NULL AUTO_INCREMENT,
+            time BIGINT NOT NULL,
+            message TEXT NOT NULL,
+            venue VARCHAR(50) NOT NULL DEFAULT '',
+            PRIMARY KEY (id)
+        )
+    ");
+
+    if (!$result) {
         echo mysqli_error($con);
+    }
+
     mysqli_close($con);
 }
 
 /**
  * adds a new log entry, using the current time for the timestamp
  */
-function add_log_entry($message) {
-    $time = time();
-    $con=connect();
-    $query = "INSERT INTO dbLog (time, message, venue) VALUES (\"" . $time . "\",\"" . $message . "\",\"" . $_SESSION['venue'] ."\")";
-    $result = mysqli_query($con,$query);
+function add_log_entry($message)
+{
+    $time = date('Y-m-d H:i:s');
+    $con = connect();
+
+    $safe_message = mysqli_real_escape_string($con, $message);
+    $venue = isset($_SESSION['venue']) ? $_SESSION['venue'] : '';
+    $safe_venue = mysqli_real_escape_string($con, $venue);
+
+    $query = "INSERT INTO dbLog (time, message, venue)
+              VALUES ('$time', '$safe_message', '$safe_venue')";
+
+    $result = mysqli_query($con, $query);
+
     if (!$result) {
         echo mysqli_error($con);
     }
+
     mysqli_close($con);
 }
 
 /**
  * deletes a log entry
  */
-function delete_log_entry($id) {
-    $con=connect();
-    $query = "DELETE FROM dbLog WHERE id=\"" . $id . "\" AND venue=\"" .$_SESSION["venue"]."\"";
-    $result = mysqli_query($con,$query);
+function delete_log_entry($id)
+{
+    $con = connect();
+    $query = "DELETE FROM dbLog WHERE id=\"" . $id . "\" AND venue=\"" . $_SESSION["venue"] . "\"";
+    $result = mysqli_query($con, $query);
     if (!$result)
         echo mysqli_error($con);
     mysqli_close($con);
@@ -66,11 +88,12 @@ function delete_log_entry($id) {
  * deletes log entries with ids specified in array $ids
  * @param array of log ids
  */
-function delete_log_entries($ids) {
-    $con=connect();
+function delete_log_entries($ids)
+{
+    $con = connect();
     for ($i = 0; $i < count($ids); ++$i) {
-        $query = "DELETE FROM dbLog WHERE id=\"" . $ids[$i] . "\" AND venue=\"" .$_SESSION["venue"]."\"";
-        $result = mysqli_query($con,$query);
+        $query = "DELETE FROM dbLog WHERE id=\"" . $ids[$i] . "\" AND venue=\"" . $_SESSION["venue"] . "\"";
+        $result = mysqli_query($con, $query);
         if (!$result)
             echo mysqli_error($con);
     }
@@ -81,10 +104,11 @@ function delete_log_entries($ids) {
  * returns all entries in the log, sorted by timestamp
  * @return array of id, time, and text
  */
-function get_full_log() {
-    $con=connect();
-    $query = "SELECT * FROM dbLog WHERE venue=\"" .$_SESSION['venue']."\" ORDER BY time DESC";
-    $result = mysqli_query($con,$query);
+function get_full_log()
+{
+    $con = connect();
+    $query = "SELECT * FROM dbLog WHERE venue=\"" . $_SESSION['venue'] . "\" ORDER BY time DESC";
+    $result = mysqli_query($con, $query);
     mysqli_close($con);
     $log = [];
     if (!$result) {
@@ -104,7 +128,8 @@ function get_full_log() {
  * returns the last $num log entries
  * @return array of log entries
  */
-function get_last_log_entries($num) {
+function get_last_log_entries($num)
+{
     $log = array();
     $l = get_full_log();
     if ($num > count($l))
@@ -114,5 +139,3 @@ function get_last_log_entries($num) {
     }
     return $log;
 }
-
-?>

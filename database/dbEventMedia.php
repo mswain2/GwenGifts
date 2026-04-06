@@ -2,27 +2,19 @@
 
 require_once('database/dbinfo.php');
 include_once(dirname(__FILE__).'/../domain/Event.php');
-// include_once(dirname(__FILE__).'/../domain/Animal.php');
 date_default_timezone_set("America/New_York");
 
 
-function add_eventmedia($eventmedia) {
+function add_event_media($eid, $url, $format, $description, $uploaded_by) {
     $con = connect();
-    $query = "SELECT * FROM dbeventmedia WHERE id = '" . $eventmedia->getID() . "'";
-    $result = mysqli_query($con, $query);
+    $query = $query = "
+        insert into dbeventmedia (eventID, url, format, description, uploaded_by)
+        values ('$eid', '$url', '$format', '$description', '$uploaded_by')
+    ";
 
-    //if there's no entry for this id, add it
-    if ($result === false || mysqli_num_rows($result) == 0) {
-        mysqli_query($con, 'INSERT INTO dbeventmedia VALUES("' .
-            $eventmedia->getID() . '","' .
-            $eventmedia->getEventID() . '","' .
-            $eventmedia->getFileName() . '","' .
-            $eventmedia->getType() . '","' .
-            $eventmedia->getFileFormat() . '","' .
-            $eventmedia->getDescription() . '","' .
-            $eventmedia->getTimeCreated() . '");');
-        mysqli_close($con);
-        return true;
+    $result = mysqli_query($con, $query);
+    if (!$result) {
+        return null;
     }
 
     mysqli_close($con);
@@ -30,15 +22,29 @@ function add_eventmedia($eventmedia) {
 }
 
 
-function get_eventmedia($eventID) {
+function get_event_media($eventID) {
+    $connection = connect();
+
     $query = "select * from dbeventmedia
               where eventID='$eventID'
-              order by prioritylevel time_created";
-    $connection = connect();
+              order by uploaded_at";
+
     $result = mysqli_query($connection, $query);
-    if (!$result) {
-        mysqli_close($connection);
-        return null;
+    $event_media = array();
+    while($result_row = mysqli_fetch_assoc($result)){
+        $event_media[] = $result_row;
     }
+    mysqli_close($connection);
+    return $event_media;
 }
 
+function delete_event_media($mediaID) {
+     $query = "delete from dbeventmedia where id='$mediaID'";
+     $connection = connect();
+     $result = mysqli_query($connection, $query);
+     mysqli_close($connection);
+     if ($result) {
+         return true;
+     }
+     return false;
+ }

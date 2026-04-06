@@ -7,14 +7,14 @@ session_start();
 if (isset($_SESSION['access_level']) && $_SESSION['access_level'] >= 2) {
     $isEventManager = true;
 } else {
-    $isEventManager = false;    
+    $isEventManager = false;
 }
 
 if (isset($_SESSION['access_level']) && $_SESSION['access_level'] >= 1) {
     $isVolunteer = true;
 } else {
     header('Location: index.php');
-    die();  
+    die();
 }
 
 // Ensure user is logged in
@@ -39,6 +39,7 @@ if (isset($args["update"])) {
 
 include_once('database/dbEvents.php');
 require_once('database/dbTrainingMaterials.php');
+require_once('database/dbEventMedia.php');
 
 // We need to check for a bad ID here before we query the db
 // otherwise we may be vulnerable to SQL injection(!)
@@ -60,6 +61,8 @@ $confirmText = $isRecurring
 // Get number of signups to display on event page
 $event_num_signups = fetch_num_signups($id);
 $trainingMaterials = get_training_materials_by_event($id);
+$event_media = get_event_media($id);
+
 
 include_once('database/dbPersons.php');
 if (isset($_SESSION['access_level'])) {
@@ -219,6 +222,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <?php
     require_once('universal.inc');
+    require_once('database/dbEvents.php');
     ?>
     <title>Gwyneth's Gift | <?php echo $event_info['name'] ?></title>
     <link rel="stylesheet" href="event.css" type="text/css" />
@@ -235,6 +239,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <!-- Success notifications -->
         <?php if (isset($_GET['createSuccess'])): ?>
             <div class="happy-toast">Event created successfully!</div>
+        <?php endif ?>
+        <?php if (isset($_GET['removeSuccess'])): ?>
+            <div class="happy-toast">Event Media removed successfully!</div>
+        <?php endif ?>
+        <?php if (isset($_GET['attachSuccess'])): ?>
+            <div class="happy-toast">Event Media added successfully!</div>
         <?php endif ?>
         <?php if (isset($_GET['editSuccess'])): ?>
             <div class="happy-toast">Event details updated successfully!</div>
@@ -288,6 +298,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $event_name = $event_info['name'];
         $event_abbr = $event_info['abbr_name'];
         $event_date = date('l, F j, Y', strtotime($event_info['startDate']));
+        $event_timezone = $event_info['timezone'];
+
         $today = date('l, F j, Y');
         $now = date('H:i:s');
         $event_startTime = time24hto12h($event_info['startTime']);
@@ -297,14 +309,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $today = new DateTime($today);
         $now = new DateTime($now);
         $event_in_past = false;
-        if ($today > $date){
+        if ($today > $date) {
             $event_in_past = true;
-        } elseif($today == $date){
-            if ($now > $time){
+        } elseif ($today == $date) {
+            if ($now > $time) {
                 $event_in_past = true;
             }
         }
-        
+
         $event_description = $event_info['description'];
         $event_location = $event_info['location'];
         $event_capacity = $event_info['capacity'];
@@ -342,7 +354,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <table>
                 <tr>
                     <td class="label">Abbreviated Name</td>
-                    <td><?php echo htmlspecialchars_decode($event_abbr);?></td>
+                    <td><?php echo htmlspecialchars_decode($event_abbr); ?></td>
                 </tr>
                 <tr>
                     <td class="label">Date</td>
@@ -352,23 +364,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <td class="label">Time</td>
                     <td><?php echo $event_startTime . " - " . $event_endTime; ?></td>
                 </tr>
+
+                <tr>
+                    <td class="label">Timezone</td>
+                    <td><?php echo $event_timezone; ?></td>
+                </tr>
                 
                 <?php if (isset($event_info['series_id']) && $event_info['series_id'] != NULL): ?>
                     <tr>
                         <td class="label">Recurrence</td>
-                        <?php 
-                            $repeats = "Every " . $recurrence . " days";
-                            if ($recurrence == 1){
-                                $repeats = "Daily";
-                            } elseif ($recurrence == 7){
-                                $repeats = "Weekly";
-                            } elseif ($recurrence == 30){
-                                $repeats = "Monthly";
-                            }elseif ($recurrence == -1){
-                                $repeats = "Part of a deleted series";
-                            }
+                        <?php
+                        $repeats = "Every " . $recurrence . " days";
+                        if ($recurrence == 1) {
+                            $repeats = "Daily";
+                        } elseif ($recurrence == 7) {
+                            $repeats = "Weekly";
+                        } elseif ($recurrence == 30) {
+                            $repeats = "Monthly";
+                        } elseif ($recurrence == -1) {
+                            $repeats = "Part of a deleted series";
+                        }
                         ?>
-                        <td><?php echo $repeats;?></td>
+                        <td><?php echo $repeats; ?></td>
                     </tr>
                 <?php endif ?>
                 <tr>
@@ -425,12 +442,69 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <?php if ($isEventManager): ?>
                 <p>
-                    <?php var_dump($_SESSION['access_level'], $_SESSION['type']); ?>
-                    <a href="addTrainingMaterial.php?eventID=<?= urlencode($id) ?>" class="button signup">
+                    <a href="addTrainingMaterial.php?eventID=<?= urlencode($id) ?>" class="button signup" style="display: block; width: 100%; text-align: center;">
                         Add Training Document
                     </a>
                 </p>
+                <p>
+                    <a href="manageTrainingMaterials.php?eventID=<?= urlencode((string)$id) ?>" class="button cancel" style="display: block; width: 100%; text-align: center;">
+                        Delete Training Documents
+                    </a>
+                </p>
             <?php endif; ?>
+        </section>
+
+        <section class="event-media">
+            <h2>Event Media</h2>
+                
+            <?php if (empty($event_media)): ?>
+                <p>No event media has been uploaded for this event yet.</p>
+            <?php else: ?>
+                <ul>
+                    <?php foreach ($event_media as $media): ?>
+                        <li>
+                           <?php 
+                            if ($media['format'] == 'link') {
+                                echo '<a href="' . $media['url'] . '">' . $media['description'] . '</a>';
+                                if ($isEventManager) {
+                                    echo ' <a style="color: red;" href="deleteEventMedia.php?eid=' . $id . '&mid=' . $media['id'] . '" onclick="return confirm(\'Delete this media link?\');">Remove</a>';
+                                }
+                            } else if ($media['format'] == 'picture') {
+                                echo '<span>' . $media['description'] . '</span>';
+                                if ($isEventManager) {
+                                    echo ' <a style="color: red;" href="deleteEventMedia.php?eid=' . $id . '&mid=' . $media['id'] . '" onclick="return confirm(\'Delete this media photo?\');">Remove</a>';
+                                }
+                                echo '<br><a href="' . $media['url'] . '"><img style="max-width: 30vw" src="' . $media['url'] . '" alt="' . $media['description'] . '"></a>';
+                            } else {
+                                echo '<span>' . $media['description'] . '</span>';
+                                if ($isEventManager) {
+                                    echo ' <a href="deleteEventMedia.php?eid=' . $id . '&mid=' . $media['id'] . '" onclick="return confirm(\'Delete this media video?\');">Remove</a>';
+                                }
+                                echo '<br><iframe width="560" height="315" src="' . $media['url'] . '" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>';
+                            }
+                            
+                            ?>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
+            <?php endif; ?>
+
+                <p>
+                    <a href="addEventMedia.php?eventID=<?= urlencode($id) ?>" class="button signup">
+                        Add Event Media
+                    </a>
+                </p>
+        </section>
+
+        <section>
+            <?php if (check_if_signed_up($id, $user->get_id()) || $isEventManager): ?>
+                <h2>Event Comments</h2>
+                <p>
+                    <a href="viewEventComments.php?eventID=<?= urlencode($id) ?>" class="button signup">
+                        View Event Comments
+                    </a>
+                </p>
+            <?php endif ?>
         </section>
 
         <!-- Action Buttons -->
@@ -474,7 +548,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <button type="submit" class="button primary">Sign Up!</button>
             </form>
             <?php if ($isEventManager) : ?>
-
+                <a href="eventRoster.php?id=<?php echo urlencode($id); ?>" class="button signup">Generate Event Roster</a>
                 <a href="viewEventSignUps.php?id=<?php echo $id; ?>" class="button signup">View Event Signups</a>
 
                 <!-- Archive and Unarchive buttons by Thomas -->
@@ -507,8 +581,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <?php endif ?>
 
-            <a href="calendar.php?month=<?= substr($event_info['startDate'], 0, 7) ?>" class="button cancel">Back to Calendar</a>
-
+            <a href="calendar.php?month=<?= substr($event_info['startDate'], 0, 7) ?>" class="button cancel">Return to Calendar</a>
         </div>
 
         <!-- Share Event on Facebook Button -->
@@ -600,7 +673,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             function showDeleteConfirmation() {
                 document.getElementById('delete-confirmation-wrapper').classList.remove('hidden');
             }
-            
+
             function showCancelConfirmation() {
                 document.getElementById('cancel-confirmation-wrapper').classList.remove('hidden');
             }
