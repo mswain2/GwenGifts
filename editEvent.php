@@ -29,7 +29,7 @@
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $args = sanitize($_POST, null);
         $required = array(
-            "id", "name", "abbr", "date", "start-time", "end-time", "description"
+            "id", "name", "abbr", "date", "start-time", "end-time", "timezone", "description"
         );
 
         
@@ -262,6 +262,27 @@
                         </div>
                     </div>
                 </div>
+                </div>
+
+                <div class="event-sect">
+                    <label for="timezone">* Time Zone</label>
+                    <select id="timezone" name="timezone">
+                        <?php
+                        $timezones = [
+                            'America/New_York'   => 'Eastern Time (ET)',
+                            'America/Chicago'    => 'Central Time (CT)',
+                            'America/Denver'     => 'Mountain Time (MT)',
+                            'America/Los_Angeles'=> 'Pacific Time (PT)',
+                            'America/Anchorage'  => 'Alaska Time (AKT)',
+                            'Pacific/Honolulu'   => 'Hawaii Time (HT)',
+                        ];
+                        $selectedTz = $event['timezone'] ?? 'America/New_York';
+                        foreach ($timezones as $tz => $label) {
+                            $sel = ($tz === $selectedTz) ? 'selected' : '';
+                            echo "<option value=\"$tz\" $sel>$label</option>";
+                        }
+                        ?>
+                    </select>
                 </div>
 
                 <div class="event-sect">

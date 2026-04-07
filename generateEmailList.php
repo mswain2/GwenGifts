@@ -93,12 +93,12 @@ require_once('header.php');
                     /* fetch persons who match the give role and status criteria */
                     if ($role  == '' && $status == '') { // if looking for all people, or by event / group, start with everyone, then filter
                         // name, id, phone, zip, type, status
-                        $persons_active = find_users('', '', '', '', $role, 'Active');
-                        $persons_inactive = find_users('', '', '', '', $role, 'Inactive');
+                        $persons_active = find_users('', '', '', '', $type, 'Active', '');
+                        $persons_inactive = find_users('', '', '', '', $type, 'Inactive', '');
                         $persons = array_merge($persons_active, $persons_inactive);
 
                     } else {
-                        $persons = find_users('', '', '', '', $role, $status);
+                        $persons = find_users('', '', '', '', $type, $status, '');
                         $filteredPersons = array_merge($persons, $filteredPersons);
                     }
 
@@ -197,7 +197,7 @@ require_once('header.php');
                 <select id="event" name="event">
                     <option value="">Any</option>
                     <?php foreach ($filteredEvents as $event) {
-                        echo '<option value="' . $event->get_id() . '">' . htmlspecialchars($event->get_name()) . ' - ' . (new DateTime($event->getStartDate()))->format('M d, Y') . '</option>';
+                        echo '<option value="' . $event->getID() . '">' . htmlspecialchars($event->getName()) . ' - ' . (new DateTime($event->getStartDate()))->format('M d, Y') . '</option>';
                     } ?>
                 </select>
             </div>

@@ -153,6 +153,8 @@
         $experience = $args['experience'] ?? '';
         $email_prefs = isset($args['email_prefs']) ? 'true' : 'false';
         $notes = $args['notes'] ?? $person->get_notes();
+        $has_disability = $args['has_disability'] ?? 'no';
+        $disability_specifications = ($has_disability === 'yes') ? ($args['disability_specifications'] ?? '') : '';
 
         
 
@@ -212,7 +214,64 @@ $day_availability = isset($args['day_availability']) ? (array)$args['day_availab
                     $error_messages[] = $day . ': start time must be before end time.';
                 }
             }
+
+            
         if (!$errors) {
+            // Handle profile picture upload
+            if (isset($_FILES['profile_pic_file']) && $_FILES['profile_pic_file']['error'] === UPLOAD_ERR_OK) {
+                $file = $_FILES['profile_pic_file'];
+                $allowed = ['image/jpeg', 'image/png', 'image/gif'];
+                $maxSize = 2 * 1024 * 1024; // 2MB
+
+                if (in_array($file['type'], $allowed) && $file['size'] <= $maxSize) {
+                    $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
+                    $filename = 'pfp_' . preg_replace('/[^a-z0-9]/', '', strtolower($id)) . '_' . time() . '.' . $ext;
+                    $uploadPath = 'images/profile_pics/' . $filename;
+
+                    if (!is_dir('images/profile_pics')) {
+                        mkdir('images/profile_pics', 0755, true);
+                    }
+
+                    if (move_uploaded_file($file['tmp_name'], $uploadPath)) {
+                        // Resize to 49x49 only if GD is available
+                        if (extension_loaded('gd')) {
+                            $img = null;
+                            $mime = $file['type'];
+                            if ($mime === 'image/jpeg') {
+                                $img = imagecreatefromjpeg($uploadPath);
+                            } elseif ($mime === 'image/png') {
+                                $img = imagecreatefrompng($uploadPath);
+                            } elseif ($mime === 'image/gif') {
+                                $img = imagecreatefromgif($uploadPath);
+                            }
+
+                            if ($img) {
+                                $resized = imagecreatetruecolor(49, 49);
+                                imagealphablending($resized, false);
+                                imagesavealpha($resized, true);
+                                $transparent = imagecolorallocatealpha($resized, 0, 0, 0, 127);
+                                imagefilledrectangle($resized, 0, 0, 49, 49, $transparent);
+                                imagecopyresampled($resized, $img, 0, 0, 0, 0, 49, 49, imagesx($img), imagesy($img));
+
+                                if ($mime === 'image/jpeg') {
+                                    imagejpeg($resized, $uploadPath, 95);
+                                } elseif ($mime === 'image/png') {
+                                    imagepng($resized, $uploadPath);
+                                } elseif ($mime === 'image/gif') {
+                                    imagegif($resized, $uploadPath);
+                                }
+
+                                imagedestroy($img);
+                                imagedestroy($resized);
+                            }
+                        }
+
+                        update_profile_pic($id, $uploadPath);
+                        cleanup_unused_profile_pics();
+                    }
+                }
+            }
+
             $result = update_person_full(
                 $id, $first_name, $last_name, $gender, $t_shirt_size, $birthday,
                 $street_address, $city, $state, $zip_code,
@@ -225,6 +284,14 @@ $day_availability = isset($args['day_availability']) ? (array)$args['day_availab
             
             
             if ($result) {
+                // Save disability fields separately
+                $con = connect();
+                $safe_id = mysqli_real_escape_string($con, $id);
+                $safe_has = mysqli_real_escape_string($con, $has_disability);
+                $safe_spec = mysqli_real_escape_string($con, $disability_specifications);
+                mysqli_query($con, "UPDATE dbpersons SET has_disability='$safe_has', disability_specifications='$safe_spec' WHERE id='$safe_id'");
+                mysqli_close($con);
+
                 // Handle availabilities — delete old, insert new
                 $con = connect();
                 $safe_id = mysqli_real_escape_string($con, $id);

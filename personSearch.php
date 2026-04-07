@@ -49,7 +49,7 @@ require_once('header.php');
         <form id="person-search" class="space-y-6" method="get">
 
         <?php
-            $type = 'volunteer'; // search for volunteer roles by default
+            $type = ''; // search for all roles by default
             $status = 'Active'; // search for active users by default
 
             if (isset($_GET['name']) || isset($_GET['id']) || isset($_GET['phone']) || isset($_GET['zip']) || isset($_GET['type']) || isset($_GET['status']) || isset($_GET['email'])) {
@@ -66,15 +66,14 @@ require_once('header.php');
                 $id = $args['id'];
                 $phone = preg_replace("/[^0-9]/", "", $args['phone']);
                 $zip = $args['zip'];
-                $type = $args['type'];
+                $type = ($args['type'] === 'all' || $args['type'] === 'none' || $args['type'] === '') ? '' : $args['type'];
                 $status = $args['status'];
                 // $photo_release = $args['photo_release'];
                 $email = $args['email'];
 
                 if (!($name || $id || $phone || $zip || $type || $status || $email)) {
                     echo '<div class="error-block">At least one search criterion is required.</div>';
-                } else if (!valueConstrainedTo($type, ['admin', 'participant', 'superadmin', 'volunteer', 'event_manager', 'board_member', ''])) {
-                    echo '<div class="error-block">The system did not understand your request.</div>';
+                } else if (!valueConstrainedTo($args['type'], ['admin', 'participant', 'superadmin', 'volunteer', 'event_manager', 'board_member', 'all', 'none', ''])) {                    echo '<div class="error-block">The system did not understand your request.</div>';
                 } else if (!valueConstrainedTo($status, ['Active', 'Inactive', 'All', ''])) {
                     echo '<div class="error-block">The system did not understand your request.</div>';
                 // } else if (!valueConstrainedTo($photo_release, ['Restricted', 'Not Restricted', ''])) {
@@ -155,7 +154,7 @@ require_once('header.php');
             <div>
                 <label for="type">Role</label>
                 <select id="type" name="type">
-                    <option value="all" <?= isset($type) && $type === 'all' ? 'selected' : '' ?>>All</option>
+                    <option value="all" <?= !isset($type) || $type === 'all' || $type === '' ? 'selected' : '' ?>>All</option>
                     <option value="none" <?= isset($type) && $type === 'none' ? 'selected' : '' ?>>None</option>
                     <option value="volunteer" <?= isset($type) && $type === 'volunteer' ? 'selected' : '' ?>>Volunteer</option>
                     <option value="event_manager" <?= isset($type) && $type === 'event_manager' ? 'selected' : '' ?>>Event Manager</option>

@@ -51,49 +51,54 @@ require_once('header.php');
       <div class="button-section">
 
         <button onclick="window.location.href='addEvent.php';">
-	  <div class="button-left-gray"></div>
-	  <div>Create Event</div>
-	  <img class="button-icon h-12 w-12 left-4" src="images/plus-solid.svg" alt="Calendar Icon">
+          <div class="button-left-gray"></div>
+          <div>Create Event</div>
+          <img class="button-icon h-12 w-12 left-4" src="images/plus-solid.svg" alt="Plus Icon">
         </button>
 
         <button onclick="window.location.href='viewAllEvents.php';">
-	  <div class="button-left-gray"></div>
-	  <div>View Events</div>
-	  <img class="button-icon left-4" src="images/new-event.svg" alt="Calendar Icon">
+          <div class="button-left-gray"></div>
+          <div>Browse Events</div>
+          <img class="button-icon h-10 w-10 left-5" src="images/list-solid.svg" alt="List Icon">
         </button>
 
         <button onclick="window.location.href='editHours.php';">
-	  <div class="button-left-gray"></div>
-	  <div>Change Event Hours</div>
-	  <img class="button-icon h-10 w-10 left-5" src="images/list-solid.svg" alt="Calendar Icon">
+          <div class="button-left-gray"></div>
+          <div>Manage Volunteer Hours</div>
+          <img class="button-icon h-10 w-10 left-5" src="images/clock-regular.svg" alt="Clock Icon">
         </button>
 
-        <button onclick="window.location.href='viewPendingApps.php';">
-	  <div class="button-left-gray"></div>
-	  <div>Pending Applications <?php 
-                        require_once('database/dbEvents.php');
-                        require_once('database/dbPersons.php');
-                        require_once('database/dbApplications.php');
-                        $pendingapps = all_pending_names();
-                        
-                        if (sizeof($pendingapps) > 0) {
-                            echo '(' . sizeof($pendingapps) . ')';
-                        }   
-                    ?></div>
+        <!-- <button onclick="window.location.href='viewPendingApps.php';">
+          <div class="button-left-gray"></div>
+          <div>Pending Applications <?php 
+                              require_once('database/dbEvents.php');
+                              require_once('database/dbPersons.php');
+                              require_once('database/dbApplications.php');
+                              $pendingapps = all_pending_names();
+                              
+                              if (sizeof($pendingapps) > 0) {
+                                  echo '(' . sizeof($pendingapps) . ')';
+                              }   
+                          ?></div>
 
-	  <img class="button-icon h-10 w-10 left-5" src="images/clock-regular.svg" alt="Calendar Icon">
-        </button>
+          <img class="button-icon h-10 w-10 left-5" src="images/clock-regular.svg" alt="Calendar Icon">
+        </button> -->
 
         <button onclick="window.location.href='adminViewingEvents.php';">
-	  <div class="button-left-gray"></div>
-	  <div>Edit Event</div>
-	  <img class="button-icon h-10 w-10 left-5" src="images/users-solid.svg" alt="Calendar Icon">
+          <div class="button-left-gray"></div>
+          <div>Edit Event</div>
+          <img class="button-icon h-10 w-10 left-5" src="images/pencil-solid-full.svg" alt="Pencil Icon">
         </button>
 
-	<div class="text-center mt-6">
-        	<a href="index.php" class="return-button">Return to Dashboard</a>
-	</div>
+        <button onclick="window.location.href='generateReport.php';">
+          <div class="button-left-gray"></div>
+          <div>Generate Event Report</div>
+          <img class="button-icon h-12 w-12 left-4" src="images/create-report.svg" alt="Plus Icon">
+        </button>
 
+        <div class="text-center mt-6">
+          <a href="index.php" class="return-button">Return to Dashboard</a>
+        </div>
 
      </div>
 
@@ -102,7 +107,7 @@ require_once('header.php');
         <h1>Event Management</h1>
         <div class="div-blue"></div>
         <p>
-          Welcome to the event/training management hub. Use the controls on the left to manage events, ...content, access, and view important analytics and logs. Everything you need to control and configure your platform is just a click away.
+          Welcome to the event/training management hub. Use the buttons to manage events, content, access, and view important analytics and logs. Everything you need to control and configure your platform is just a click away.
         </p>
       </div>
 

@@ -124,23 +124,6 @@ function rosterShirtSize($user_info): string
     return $size !== '' ? $size : 'N/A';
 }
 
-function formatRosterNotes($notes): string
-{
-    $notes = trim((string)$notes);
-
-    if ($notes === '') {
-        return 'N/A';
-    }
-
-    $formatted_notes = htmlspecialchars($notes);
-    $formatted_notes = str_replace('|', '<br>', $formatted_notes);
-    $formatted_notes = preg_replace('/Dietary restrictions:\s*<br>/', 'Dietary restrictions: None<br>', $formatted_notes);
-    $formatted_notes = preg_replace('/Skills:\s*<br>/', 'Skills: None<br>', $formatted_notes);
-    $formatted_notes = preg_replace('/Disabilities:\s*<br>/', 'Disabilities: None<br>', $formatted_notes);
-    $formatted_notes = preg_replace('/Materials:\s*<br>/', 'Materials: None<br>', $formatted_notes);
-
-    return $formatted_notes;
-}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -399,7 +382,6 @@ function formatRosterNotes($notes): string
                             <th>Training Status</th>
                             <th>Shirt Size</th>
                             <th>User ID</th>
-                            <th>Notes</th>
                             <th>Pending</th>
                             <?php if ($access_level >= 2): ?>
                                 <th>Actions</th>
@@ -444,7 +426,6 @@ function formatRosterNotes($notes): string
                                         <?php echo htmlspecialchars($signup['userID']); ?>
                                     </a>
                                 </td>
-                                <td><?php echo formatRosterNotes($notes); ?></td>
                                 <td>
                                     <?php
                                     if ($pending == '0') {
@@ -510,7 +491,6 @@ function formatRosterNotes($notes): string
                                         <?php echo htmlspecialchars($signup['username']); ?>
                                     </a>
                                 </td>
-                                <td><?php echo formatRosterNotes($notes); ?></td>
                                 <td>
                                     <?php
                                     if ($pending == '0') {

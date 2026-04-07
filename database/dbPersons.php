@@ -664,7 +664,13 @@ function make_a_person($result_row) {
     @$result_row['about_consent'],
     @$result_row['force_password_change']
     );
+    $thePerson->set_profile_pic(@$result_row['profile_pic'] ?: 'images/usaicon.png');
 
+    $thePerson->set_cpr_training_completion(@$result_row['cpr_training_completion'] ?: 'no');
+    $thePerson->set_aed_training_completion(@$result_row['aed_training_completion'] ?: 'no');
+
+    $thePerson->set_has_disability(@$result_row['has_disability'] ?: 'no');
+    $thePerson->set_disability_specifications(@$result_row['disability_specifications'] ?? '');
 
     return $thePerson;
 }
@@ -1594,6 +1600,32 @@ function get_total_vol_hours($dateFrom, $dateTo) {
         mysqli_close($con);
         return $availabilities;
     }
+    
+    function set_profile_pic($id, $path) {
+        $con = connect();
+        $id   = mysqli_real_escape_string($con, $id);
+        $path = mysqli_real_escape_string($con, $path);
+        $query = "UPDATE dbpersons SET profile_pic = '$path' WHERE id = '$id'";
+        $result = mysqli_query($con, $query);
+        mysqli_close($con);
+        return $result;
+    }
+
+    function get_profile_pic($id) {
+        $con = connect();
+        $id = mysqli_real_escape_string($con, $id);
+        $query = "SELECT profile_pic FROM dbpersons WHERE id = '$id'";
+
+        $result = mysqli_query($con, $query);
+        if (!$result || mysqli_num_rows($result) === 0) {
+            mysqli_close($con);
+            return 'images/usaicon.png';
+        }
+
+        $row = mysqli_fetch_assoc($result);
+        mysqli_close($con);
+        return !empty($row['profile_pic']) ? $row['profile_pic'] : 'images/usaicon.png';
+    }
 
     function update_person_full(
         $id, $first_name, $last_name, $gender, $t_shirt_size, $birthday,
@@ -1636,6 +1668,26 @@ function get_total_vol_hours($dateFrom, $dateTo) {
         mysqli_close($con);
         return $result;
     }
+
+    function cleanup_unused_profile_pics() {
+        $con = connect();
+        $result = mysqli_query($con, "SELECT profile_pic FROM dbpersons WHERE profile_pic LIKE 'images/profile_pics/%'");
+        $used = [];
+        while ($row = mysqli_fetch_assoc($result)) {
+            $used[] = basename($row['profile_pic']);
+        }
+        mysqli_close($con);
+
+        $files = scandir('images/profile_pics/');
+        foreach ($files as $file) {
+            if ($file === '.' || $file === '..') continue;
+            if (!in_array($file, $used)) {
+                unlink('images/profile_pics/' . $file);
+            }
+        }
+    }
+
+    
 
     /*
     function get_tot_vol_hours($type,$stats,$dateFrom,$dateTo,$lastFrom,$lastTo){
