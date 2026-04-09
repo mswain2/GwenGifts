@@ -28,12 +28,12 @@ $fiscalYearEnd = $fiscalYearStart + 1;
     <title>Gwyneth's Gift | Generate Report</title>
     <script src="js/report-filters.js" defer></script>
     <link href="css/normal_tw.css" rel="stylesheet">
-    <?php
-    $tailwind_mode = true;
-    require_once('header.php');
-    ?>
-</head>
+<?php
+$tailwind_mode = true;
+require_once('header.php');
+?>
 
+</head>
 <body>
     <?php require_once('database/dbEvents.php');?>
     <?php require_once('database/dbPersons.php');?>
@@ -49,7 +49,7 @@ $fiscalYearEnd = $fiscalYearStart + 1;
             <!-- Form Title -->
             <div class="text-center mb-8">
                 <h2>Generate Report</h2>
-                <p class="sub-text">Generate reports on volunteer activity, filtered by date, event, or volunteer. Reports are available in CSV or PDF format.</p>
+                <p class="sub-text">Generate reports on volunteer activity filtered by date, event, or volunteer. Reports are available in CSV or PDF format.</p>
             </div>
 
             <!-- Form -->
@@ -110,32 +110,38 @@ $fiscalYearEnd = $fiscalYearStart + 1;
 
                     <!-- Event -->
                     <div class="report-field" data-reports="volunteer_hours volunteer_participation top_volunteers">
-                        <label for="event_id">Event</label>
-                        <select id="event_id" name="event_id">
-                            <option value="all">All Events</option>
-                            <?php foreach ($events as $event) {
-                                $eid = $event->getID();
-                                $ename = htmlspecialchars($event->getName());
-                                echo "<option value='$eid'>$ename</option>";
-                            } ?>
-                        </select>
+                        <label for="event_id_search">Event</label>
+                        <div class="autocomplete-wrap">
+                            <input type="text" id="event_id_search" placeholder="All Events" autocomplete="off">
+                            <input type="hidden" id="event_id" name="event_id" value="all">
+                            <div class="autocomplete-list" id="event_id_list">
+                                <?php foreach ($events as $event) {
+                                    $eid = htmlspecialchars($event->getID());
+                                    $ename = htmlspecialchars($event->getName());
+                                    echo "<div class='autocomplete-item' data-value='$eid'>$ename</div>";
+                                } ?>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Volunteer -->
                     <div class="report-field" data-reports="volunteer_hours volunteer_participation">
-                        <label for="volunteer">Volunteer</label>
-                        <select id="volunteer" name="volunteer">
-                            <option value="all">All Volunteers</option>
-                            <?php
-                            $volunteers = getall_volunteer_names();
-                            if ($volunteers) {
-                                foreach ($volunteers as $name) {
-                                    $safe = htmlspecialchars($name);
-                                    echo "<option value='$safe'>$safe</option>";
+                        <label for="volunteer_search">Volunteer</label>
+                        <div class="autocomplete-wrap">
+                            <input type="text" id="volunteer_search" placeholder="All Volunteers" autocomplete="off">
+                            <input type="hidden" id="volunteer" name="volunteer" value="all">
+                            <div class="autocomplete-list" id="volunteer_list">
+                                <?php
+                                $volunteers = getall_volunteer_names();
+                                if ($volunteers) {
+                                    foreach ($volunteers as $name) {
+                                        $safe = htmlspecialchars($name);
+                                        echo "<div class='autocomplete-item' data-value='$safe'>$safe</div>";
+                                    }
                                 }
-                            }
-                            ?>
-                        </select>
+                                ?>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Top N Limit -->
@@ -169,7 +175,7 @@ $fiscalYearEnd = $fiscalYearStart + 1;
         </div>
 
         <!-- Return to Dashboard -->
-        <div class="text-center mt-6">
+        <div class="text-center mb-8">
             <a href="index.php" class="return-button">Return to Dashboard</a>
         </div>
 

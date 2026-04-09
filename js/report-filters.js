@@ -47,3 +47,70 @@ function updateFilters() {
 
 document.getElementById('type').addEventListener('change', updateFilters);
 document.addEventListener('DOMContentLoaded', updateFilters);
+
+// Autocomplete for Event and Volunteer fields
+function initAutocomplete(searchId, hiddenId, listId, allValue, allPlaceholder) {
+    const searchInput = document.getElementById(searchId);
+    const hiddenInput = document.getElementById(hiddenId);
+    const list = document.getElementById(listId);
+    if (!searchInput || !list) return;
+
+    const items = list.querySelectorAll('.autocomplete-item');
+
+    searchInput.addEventListener('focus', function () {
+        filterItems('');
+        list.style.display = 'block';
+    });
+
+    searchInput.addEventListener('input', function () {
+        const query = this.value.toLowerCase();
+        hiddenInput.value = allValue;
+        filterItems(query);
+        list.style.display = 'block';
+    });
+
+    function filterItems(query) {
+        let hasVisible = false;
+        items.forEach(item => {
+            const text = item.textContent.toLowerCase();
+            if (!query || text.includes(query)) {
+                item.style.display = 'block';
+                hasVisible = true;
+            } else {
+                item.style.display = 'none';
+            }
+        });
+        list.style.display = hasVisible ? 'block' : 'none';
+    }
+
+    items.forEach(item => {
+        item.addEventListener('mousedown', function (e) {
+            e.preventDefault();
+            searchInput.value = this.textContent;
+            hiddenInput.value = this.getAttribute('data-value');
+            list.style.display = 'none';
+        });
+    });
+
+    searchInput.addEventListener('blur', function () {
+        list.style.display = 'none';
+        if (!searchInput.value.trim()) {
+            hiddenInput.value = allValue;
+        }
+    });
+
+    // Allow clearing to reset to "all"
+    searchInput.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+            searchInput.value = '';
+            hiddenInput.value = allValue;
+            list.style.display = 'none';
+            searchInput.blur();
+        }
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    initAutocomplete('event_id_search', 'event_id', 'event_id_list', 'all', 'All Events');
+    initAutocomplete('volunteer_search', 'volunteer', 'volunteer_list', 'all', 'All Volunteers');
+});
