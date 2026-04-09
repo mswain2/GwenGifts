@@ -257,9 +257,9 @@ if (date("H:i:s") > "18:19:59") {
 
         // If user must complete returning volunteer setup, only allow the form and logout
         if (isset($_SESSION['change-password']) && $_SESSION['change-password']) {
-            $allowed_pages = ['returningvolunteerform.php', 'changepassword.php', 'logout.php'];
+            $allowed_pages = ['returningvolunteerform.php', 'logout.php'];
             if (!in_array($current_page, $allowed_pages)) {
-                header('Location: returningVolunteerForm.php');
+                echo "<script type=\"text/javascript\">window.location = \"returningVolunteerForm.php\";</script>";
                 die();
             }
         }
