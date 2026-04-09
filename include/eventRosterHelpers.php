@@ -145,6 +145,7 @@ function build_event_roster_rows($eventID)
             'full_name' => $fullName !== '' ? $fullName : 'Unknown',
             'attendance_status' => $attendanceStatuses[$userID] ?? 'Absent',
             'email' => event_roster_mask_email($email),
+            'raw_email' => trim((string)$email),
             'phone' => event_roster_mask_phone($phone),
             'training_status' => event_roster_training_label($trainingStatuses[$userID] ?? 'Incomplete'),
             'shirt_size' => event_roster_shirt_size($user_info)

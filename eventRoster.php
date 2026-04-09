@@ -19,11 +19,12 @@ if ($id <= 0) {
 }
 
 $event_info = fetch_event_by_id($id);
-$event_name_display = html_entity_decode($event_info['name'], ENT_QUOTES | ENT_HTML5, 'UTF-8');
 if (!$event_info) {
     echo 'Invalid event ID.';
     die();
 }
+
+$event_name_display = html_entity_decode($event_info['name'], ENT_QUOTES | ENT_HTML5, 'UTF-8');
 
 $filters = normalize_event_roster_filters($args);
 $all_rows = build_event_roster_rows($id);
@@ -34,6 +35,26 @@ foreach ($all_rows as $row) {
         $filtered_rows[] = $row;
     }
 }
+
+$mailingList = '';
+$notFirstEmail = false;
+
+foreach ($filtered_rows as $row) {
+    $rawEmail = trim((string)($row['raw_email'] ?? ''));
+
+    if ($rawEmail === '' || strpos($rawEmail, '@') === false) {
+        continue;
+    }
+
+    if ($notFirstEmail) {
+        $mailingList .= ', ';
+    } else {
+        $notFirstEmail = true;
+    }
+
+    $mailingList .= $rawEmail;
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -77,6 +98,28 @@ foreach ($all_rows as $row) {
             border-collapse: collapse;
             background: #fff;
             border: 1px solid #c8d1db;
+        }
+
+        .mailing-list-block {
+            margin: 1rem 0 1.5rem 0;
+            padding: 1rem;
+            background: #f6f8fb;
+            border: 1px solid #c8d1db;
+            border-radius: 8px;
+        }
+
+        .mailing-list-block label {
+            display: block;
+            font-weight: 700;
+            color: #243b5a;
+            margin-bottom: 0.5rem;
+        }
+
+        .mailing-list-text {
+            margin: 0;
+            color: #333;
+            line-height: 1.5;
+            word-break: break-word;
         }
 
         table.general thead th {
@@ -191,6 +234,13 @@ foreach ($all_rows as $row) {
                     </tbody>
                 </table>
             </div>
+            <?php if ($mailingList !== ''): ?>
+                <div class="mailing-list-block">
+                    <label>Event Email List:</label>
+                    <p class="mailing-list-text"><?php echo htmlspecialchars($mailingList); ?></p>
+                </div>
+        <?php endif; ?>
+
         <?php endif; ?>
 
         <div class="actions">
