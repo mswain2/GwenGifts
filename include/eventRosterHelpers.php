@@ -105,6 +105,18 @@ function event_roster_matches_filters($row, $filters)
     return true;
 }
 
+function event_roster_training_from_person($user_info)
+{
+    if (!$user_info) {
+        return 'Not Done';
+    }
+
+    $cpr = strtolower(trim((string)$user_info->get_cpr_training_completion()));
+    $aed = strtolower(trim((string)$user_info->get_aed_training_completion()));
+
+    return ($cpr === 'yes' || $aed === 'yes') ? 'Completed' : 'Not Done';
+}
+
 function build_event_roster_rows($eventID)
 {
     $signups = fetch_event_signups($eventID);
@@ -117,7 +129,6 @@ function build_event_roster_rows($eventID)
         }
     }
 
-    $trainingStatuses = get_training_statuses_for_users($userIds);
     $rows = array();
 
     foreach ($signups as $signup) {
@@ -147,7 +158,7 @@ function build_event_roster_rows($eventID)
             'email' => event_roster_mask_email($email),
             'raw_email' => trim((string)$email),
             'phone' => event_roster_mask_phone($phone),
-            'training_status' => event_roster_training_label($trainingStatuses[$userID] ?? 'Incomplete'),
+            'training_status' => event_roster_training_from_person($user_info),
             'shirt_size' => event_roster_shirt_size($user_info)
         );
     }
