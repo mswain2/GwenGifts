@@ -138,6 +138,14 @@ foreach ($filtered_rows as $row) {
             text-align: left;
         }
 
+        .training-breakdown {
+            line-height: 1.45;
+        }
+
+        .training-breakdown div+div {
+            margin-top: 0.2rem;
+        }
+
         .actions {
             display: flex;
             gap: .75rem;
@@ -210,7 +218,7 @@ foreach ($filtered_rows as $row) {
                             <th>Attendance</th>
                             <th>Email</th>
                             <th>Phone</th>
-                            <th>Training Status</th>
+                            <th>Training</th>
                             <th>Shirt Size</th>
                             <th>User ID</th>
                         </tr>
@@ -222,7 +230,10 @@ foreach ($filtered_rows as $row) {
                                 <td><?php echo htmlspecialchars($row['attendance_status']); ?></td>
                                 <td><?php echo htmlspecialchars($row['email']); ?></td>
                                 <td><?php echo htmlspecialchars($row['phone']); ?></td>
-                                <td><?php echo htmlspecialchars($row['training_status']); ?></td>
+                                <td class="training-breakdown">
+                                    <div>CPR: <?php echo htmlspecialchars($row['cpr_training_status'] ?? 'Not Done'); ?></div>
+                                    <div>AED: <?php echo htmlspecialchars($row['aed_training_status'] ?? 'Not Done'); ?></div>
+                                </td>
                                 <td><?php echo htmlspecialchars($row['shirt_size']); ?></td>
                                 <td>
                                     <a href="viewProfile.php?id=<?php echo urlencode($row['user_id']); ?>">
@@ -239,7 +250,7 @@ foreach ($filtered_rows as $row) {
                     <label>Event Email List:</label>
                     <p class="mailing-list-text"><?php echo htmlspecialchars($mailingList); ?></p>
                 </div>
-        <?php endif; ?>
+            <?php endif; ?>
 
         <?php endif; ?>
 

@@ -101,16 +101,24 @@ function rosterShirtSize($user_info): string
     return $size !== '' ? $size : 'N/A';
 }
 
-function trainingStatusFromPerson($user_info): string
+function qualificationStatusLabel($value): string
+{
+    return strtolower(trim((string)$value)) === 'yes' ? 'Completed' : 'Not Done';
+}
+
+function trainingDetailsFromPerson($user_info): array
 {
     if (!$user_info) {
-        return 'Not Done';
+        return array(
+            'cpr' => 'Not Done',
+            'aed' => 'Not Done'
+        );
     }
 
-    $cpr = strtolower(trim((string)$user_info->get_cpr_training_completion()));
-    $aed = strtolower(trim((string)$user_info->get_aed_training_completion()));
-
-    return ($cpr === 'yes' || $aed === 'yes') ? 'Completed' : 'Not Done';
+    return array(
+        'cpr' => qualificationStatusLabel($user_info->get_cpr_training_completion()),
+        'aed' => qualificationStatusLabel($user_info->get_aed_training_completion())
+    );
 }
 
 ?>
@@ -121,7 +129,7 @@ function trainingStatusFromPerson($user_info): string
     <?php require_once('universal.inc'); ?>
     <title>Gwyneth's Gift | View Event Sign-Ups</title>
     <link rel="stylesheet" href="css/messages.css" />
-    
+
 
     <style>
         main.general {
@@ -193,6 +201,14 @@ function trainingStatusFromPerson($user_info): string
             background-color: #fafafa;
         }
 
+        .training-breakdown {
+            line-height: 1.45;
+        }
+
+        .training-breakdown div+div {
+            margin-top: 0.2rem;
+        }
+
         .phone-col {
             white-space: nowrap;
             min-width: 170px;
@@ -230,7 +246,7 @@ function trainingStatusFromPerson($user_info): string
                             <th>Attendance</th>
                             <th>Email</th>
                             <th class="phone-col">Phone</th>
-                            <th>Training Status</th>
+                            <th>Training</th>
                             <th>Shirt Size</th>
                             <th>User ID</th>
                             <?php if ($access_level >= 2): ?>
@@ -253,7 +269,7 @@ function trainingStatusFromPerson($user_info): string
                             $attendance_status = $attendance_statuses[$signup['userID']] ?? 'Absent';
                             $masked_email = maskEmailForRoster($email);
                             $masked_phone = maskPhoneForRoster($phone);
-                            $training_status = trainingStatusFromPerson($user_info);
+                            $training_details = trainingDetailsFromPerson($user_info);
                             $shirt_size = rosterShirtSize($user_info);
                             ?>
                             <tr>
@@ -261,7 +277,10 @@ function trainingStatusFromPerson($user_info): string
                                 <td><?php echo htmlspecialchars($attendance_status); ?></td>
                                 <td><?php echo htmlspecialchars($masked_email); ?></td>
                                 <td><?php echo htmlspecialchars($masked_phone); ?></td>
-                                <td><?php echo htmlspecialchars($training_status); ?></td>
+                                <td class="training-breakdown">
+                                    <div>CPR: <?php echo htmlspecialchars($training_details['cpr']); ?></div>
+                                    <div>AED: <?php echo htmlspecialchars($training_details['aed']); ?></div>
+                                </td>
                                 <td><?php echo htmlspecialchars($shirt_size); ?></td>
                                 <td>
                                     <a href="viewProfile.php?id=<?php echo urlencode($signup['userID']); ?>">

@@ -120,19 +120,22 @@ if ($format === 'csv') {
         'Email',
         'Phone',
         'Attendance',
-        'Training Status',
+        'Training',
         'Shirt Size',
         'User ID'
     ));
 
     // roster rows
     foreach ($filtered_rows as $row) {
+        $trainingExport = 'CPR: ' . ($row['cpr_training_status'] ?? 'Not Done')
+            . ' | AED: ' . ($row['aed_training_status'] ?? 'Not Done');
+
         fputcsv($output, array(
             $row['full_name'],
             $row['email'],
             $row['phone'],
             $row['attendance_status'],
-            $row['training_status'],
+            $trainingExport,
             $row['shirt_size'],
             $row['user_id']
         ));
@@ -227,7 +230,7 @@ if ($format !== 'pdf') {
                     <th>Attendance</th>
                     <th>Email</th>
                     <th>Phone</th>
-                    <th>Training Status</th>
+                    <th>Training</th>
                     <th>Shirt Size</th>
                     <th>User ID</th>
                 </tr>
@@ -239,7 +242,10 @@ if ($format !== 'pdf') {
                         <td><?php echo htmlspecialchars($row['attendance_status']); ?></td>
                         <td><?php echo htmlspecialchars($row['email']); ?></td>
                         <td><?php echo htmlspecialchars($row['phone']); ?></td>
-                        <td><?php echo htmlspecialchars($row['training_status']); ?></td>
+                        <td>
+                            <?php echo htmlspecialchars('CPR: ' . ($row['cpr_training_status'] ?? 'Not Done')); ?><br>
+                            <?php echo htmlspecialchars('AED: ' . ($row['aed_training_status'] ?? 'Not Done')); ?>
+                        </td>
                         <td><?php echo htmlspecialchars($row['shirt_size']); ?></td>
                         <td><?php echo htmlspecialchars($row['user_id']); ?></td>
                     </tr>
