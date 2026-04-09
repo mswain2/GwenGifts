@@ -81,34 +81,57 @@ add_log_entry($message);
 $filenameBase = 'event-roster-' . $id . '-' . date('Ymd-His');
 
 if ($format === 'csv') {
+
     header('Content-Type: text/csv; charset=utf-8');
     header('Content-Disposition: attachment; filename="' . $filenameBase . '.csv"');
 
+    echo "\xEF\xBB\xBF";
+
     $output = fopen('php://output', 'w');
 
-    fputcsv($output, array("GWYNETH'S GIFT CONFIDENTIAL EXPORT"));
-    fputcsv($output, array('Event', $event_name_display));
-    fputcsv($output, array('Attendance Filter', $filters['attendance']));
-    fputcsv($output, array('Training Filter', $filters['training']));
-    fputcsv($output, array('Exported At', date('Y-m-d H:i:s')));
-    fputcsv($output, array());
+    $attendanceLabel = ucfirst($filters['attendance']);
+    $trainingLabel = ($filters['training'] === 'not_done') ? 'Not Done' : ucfirst($filters['training']);
+    $exportedAt = date('m/d/Y g:i A');
+    $totalResults = count($filtered_rows);
+
+    // compact metadata section
+    fputcsv($output, array(
+        'Event Name',
+        'Attendance Filter',
+        'Training Filter',
+        'Exported At',
+        'Total Results'
+    ));
 
     fputcsv($output, array(
+        $event_name_display,
+        $attendanceLabel,
+        $trainingLabel,
+        $exportedAt,
+        $totalResults
+    ));
+
+    // spacer row
+    fputcsv($output, array());
+
+    // roster table headers
+    fputcsv($output, array(
         'Volunteer Name',
-        'Attendance',
         'Email',
         'Phone',
+        'Attendance',
         'Training Status',
         'Shirt Size',
         'User ID'
     ));
 
+    // roster rows
     foreach ($filtered_rows as $row) {
         fputcsv($output, array(
             $row['full_name'],
-            $row['attendance_status'],
             $row['email'],
             $row['phone'],
+            $row['attendance_status'],
             $row['training_status'],
             $row['shirt_size'],
             $row['user_id']
