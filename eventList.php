@@ -42,7 +42,7 @@ $isManager = in_array($userType, ['event_manager', 'board_member', 'admin', 'sup
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $isManager) {
 
     if (isset($_POST['manual_hours_action'])) {
-        $username = $_POST['manual_hours_username'] ?? ''; // <-- read from hidden field
+        $username = $_POST['manual_hours_username'] ?? ''; 
         $hours = intval($_POST['manual_hours'] ?? 0);
         $minutes = intval($_POST['manual_minutes'] ?? 0);
         $total = $hours + ($minutes / 60);
