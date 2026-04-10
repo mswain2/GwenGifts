@@ -8,7 +8,7 @@
     $accessLevel = 0;
     $userID = null;
     $isAdmin = false;
-    if (!isset($_SESSION['access_level']) || $_SESSION['access_level'] < 2) {
+    if (!isset($_SESSION['access_level']) || $_SESSION['access_level'] < 1) {
         header('Location: index.php');
         die();
     }
@@ -20,6 +20,12 @@
         $isAdmin = $accessLevel >= 2;
         $userID = $_SESSION['_id'];
     } else {
+        header('Location: index.php');
+        die();
+    }
+
+    // Volunteers can only view their own profile, not others'
+    if (!$isAdmin && isset($_GET['id']) && strtolower($_GET['id']) !== strtolower($userID)) {
         header('Location: index.php');
         die();
     }

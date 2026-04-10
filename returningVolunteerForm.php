@@ -107,7 +107,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $id = strtolower(trim($args['username'] ?? ''));
     if (empty($id)) {
         $errors = true; $error_messages['username'] = 'Username is required.';
-    } else if (retrieve_person($id)) {
+    } else if ($id !== $userID && retrieve_person($id)) {
         $errors = true; $error_messages['username'] = 'That username is already taken.';
     }
 

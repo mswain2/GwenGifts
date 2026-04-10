@@ -69,7 +69,7 @@ class Person {
 		$contact_method, $type, $status, $notes, $password, $affiliation, $branch, $archived,
 		$emergency_contact_last_name, $gender, $t_shirt_size, $computer_access, $camera_access, 
 		$transportation_access, $skills, $experience, $about_consent,
-		$force_password_change = 0
+		$force_password_change
 	) {
         $this->id = $id;
 		$this->start_date = $start_date;
