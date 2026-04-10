@@ -541,12 +541,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <?php endif ?>
             <?php endif*/ ?>
 
+            <?php if (!check_if_signed_up($id, $user->get_id())): ?>
             <form action="eventSignUp.php" method="get">
                 <input type="hidden" name="event_name" value="<?php echo htmlspecialchars($event_info['name']); ?>">
                 <input type="hidden" name="event_id" value="<?php echo htmlspecialchars($event_info['id']); ?>">
                 <input type="hidden" name="type" value="<?php echo htmlspecialchars($event_info['type']); ?>">
                 <button type="submit" class="button primary">Sign Up!</button>
             </form>
+            <?php endif; ?>
             <?php if ($isEventManager) : ?>
                 <a href="eventRoster.php?id=<?php echo urlencode($id); ?>" class="button signup">Generate Event Roster</a>
                 <a href="viewEventSignUps.php?id=<?php echo $id; ?>" class="button signup">View Event Signups</a>
