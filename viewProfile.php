@@ -212,6 +212,9 @@
           <div class="flex justify-between py-2">
             <span class="font-medium">AED Certified</span><span><?php echo $user->get_aed_training_completion_formatted() ?></span>
           </div>
+          <div class="flex justify-between py-2">
+            <span class="font-medium">Hours Volunteered</span><span><?php echo $user->get_total_hours_volunteered() ?></span>
+          </div>
         </div>
       </div>
       <div class="mt-6 space-y-2">

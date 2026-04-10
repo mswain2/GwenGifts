@@ -60,6 +60,7 @@ class Person {
 	private $aed_training_completion;
 	private $has_disability;
 	private $disability_specifications;
+	private $total_hours_volunteered;
 
 	function __construct(
 		$id, $start_date, $first_name, $last_name, $street_address, $city, $state,
@@ -368,6 +369,14 @@ class Person {
 
 	function set_disability_specifications($val) {
 		$this->disability_specifications = $val;
+	}
+
+	function get_total_hours_volunteered() {
+		return number_format(floatval($this->total_hours_volunteered ?? 0), 2);
+	}
+
+	function set_total_hours_volunteered($hours) {
+		$this->total_hours_volunteered = $hours;
 	}
 
 }
