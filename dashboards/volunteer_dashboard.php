@@ -93,15 +93,18 @@
             <button class="arrow-button">→</button>
         </div> -->
 
-        <!-- Suggestions -->
-        <div class="content-box-test" onclick="window.location.href='createSuggestion.php'">
+        <!-- Suggestions - Deprecated -->
+         <!--
+        <div class="content-box-test" onclick="window.location.href='viewSuggestions.php'">
             <div class="icon-overlay">
-                <img style="border-radius: 5px;" src="images/clipboard-regular.svg" alt="Suggestions Icon">
+                <img style="border-radius: 5px;" src="images/clipboard-regular.svg" alt="Discussions Icon">
             </div>
+
             <div class="large-text-sub">Suggestions</div>
-            <div class="graph-text">Suggest opportunities for charity events.</div>
+            <div class="graph-text">View user submitted suggestions.</div>
             <button class="arrow-button">→</button>
         </div>
+        -->
 
         <!-- Inbox -->
         <div class="content-box-test" onclick="window.location.href='inbox.php'">
