@@ -1,165 +1,571 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
 session_cache_expire(30);
 session_start();
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+date_default_timezone_set('America/New_York');
 
 if (!isset($_SESSION['access_level']) || $_SESSION['access_level'] < 2) {
     header('Location: login.php');
     die();
 }
 
-require_once('database/dbPersons.php');
-require_once('database/dbEvents.php');
+require_once('database/dbinfo.php');
 
-// 👉 Add month completeness check function
-// function is_month_complete($dateFrom) {
-//     $lastDayOfMonth = date("Y-m-t", strtotime($dateFrom));
-//     $today = date("Y-m-d");
-//     return $today > $lastDayOfMonth;
-// }
+// --- Input ---
+$type        = $_POST['type']        ?? '';
+$timePeriod  = $_POST['time_period'] ?? 'monthly';
+$dateFrom    = $_POST['date_from']   ?? '';
+$dateTo      = $_POST['date_to']     ?? '';
+$userStatus  = $_POST['user_status'] ?? 'all';
+$eventId     = $_POST['event_id']    ?? 'all';
+$volunteer   = $_POST['volunteer']   ?? 'all';
+$topN        = intval($_POST['top_n'] ?? 10);
+$format      = $_POST['format']      ?? 'csv';
 
-// Get user input
-$eventID = $_POST['eventID'] ?? '';
-
-// $reportType = $_POST['reportType'] ?? 'monthly';
-// $month = $_POST['month'] ?? '';
-$format = $_POST['format'] ?? 'csv';
-
-// $currentMonth = date("m");
-// $currentYear = date("Y");
-// $fiscalYearStart = ($currentMonth >= 10) ? $currentYear : $currentYear - 1;
-// $fiscalYearEnd = $fiscalYearStart + 1;
-
-// // Define Fiscal Year Months
-// $fiscalMonths = [
-//     "10" => "October $fiscalYearStart", "11" => "November $fiscalYearStart", "12" => "December $fiscalYearStart",
-//     "01" => "January $fiscalYearEnd", "02" => "February $fiscalYearEnd", "03" => "March $fiscalYearEnd",
-//     "04" => "April $fiscalYearEnd", "05" => "May $fiscalYearEnd", "06" => "June $fiscalYearEnd",
-//     "07" => "July $fiscalYearEnd", "08" => "August $fiscalYearEnd", "09" => "September $fiscalYearEnd"
-// ];
-
-// // Define Quarters
-// $quarters = [
-//     "Quarter 1" => ["10", "11", "12"],
-//     "Quarter 2" => ["01", "02", "03"],
-//     "Quarter 3" => ["04", "05", "06"],
-//     "Quarter 4" => ["07", "08", "09"]
-// ];
-
-// // Update new volunteer status before fetching report data
-// update_new_volunteer_status();
-
-// Fetch Data
-$reportData = [];
-$event = retrieve_event($eventID);
-$eventName = $event->getName();
-$num_attended = fetch_num_attendees($eventID);
-$num_attended = $num_attended['RowCount'];
-$capacity = $event->getCapacity();
-
-$reportData[$eventID] = [
-    // capacity, total attendance, total no shows
-    "capacity" => $capacity,
-    "attended" => $num_attended,
-    "no_shows" => $capacity-$num_attended
+// Save filters to session for persistence
+$_SESSION['report_filters'] = [
+    'type'        => $type,
+    'time_period' => $timePeriod,
+    'date_from'   => $dateFrom,
+    'date_to'     => $dateTo,
+    'user_status' => $userStatus,
+    'event_id'    => $eventId,
+    'volunteer'   => $volunteer,
+    'top_n'       => strval($topN),
+    'format'      => $format,
 ];
 
-// if ($reportType === "monthly" && isset($fiscalMonths[$month])) {
-//     $monthName = $fiscalMonths[$month];
-//     $dateFrom = ($month >= 10) ? "$fiscalYearStart-$month-01" : "$fiscalYearEnd-$month-01";
+$validTypes   = ['volunteer_hours', 'volunteer_participation', 'volunteer_growth', 'top_volunteers'];
+$validPeriods = ['weekly', 'monthly', 'yearly'];
+$validFormats = ['csv', 'pdf'];
 
-//     // ✅ Check if month is complete
-//     if (!is_month_complete($dateFrom)) {
-//         echo "<script>alert('The selected month is not yet complete. Please try again later.'); window.history.back();</script>";
-//         exit();
-//     }
+if (!in_array($type, $validTypes) || !in_array($timePeriod, $validPeriods) || !in_array($format, $validFormats)) {
+    die('Invalid report parameters.');
+}
 
-//     $dateTo = date("Y-m-t", strtotime($dateFrom));
+$con = connect();
+if (!$con) die('Database connection failed.');
 
-//     $reportData[$monthName] = [
-//         "total_volunteers" => get_total_volunteers_count($dateTo),
-//         "new_volunteers" => get_new_volunteers_count($dateFrom, $dateTo),
-//         "new_dog_walkers" => get_new_dog_walkers_count($dateFrom, $dateTo),
-//         "group_volunteers" => get_group_volunteers_count($dateFrom, $dateTo),
-//         "community_service_volunteers" => get_community_service_volunteers_count($dateFrom, $dateTo),
-//         "total_volunteer_hours" => get_total_vol_hours($dateFrom, $dateTo)
-//     ];
-// } else {
-//     // Fetch for Full Fiscal Year (Annual Report)
-//     foreach ($fiscalMonths as $monthNum => $monthName) {
-//         $dateFrom = ($monthNum >= 10) ? "$fiscalYearStart-$monthNum-01" : "$fiscalYearEnd-$monthNum-01";
-//         $dateTo = date("Y-m-t", strtotime($dateFrom));
+// --- Period SQL expressions ---
+function period_expr($col, $timePeriod) {
+    switch ($timePeriod) {
+        case 'weekly':
+            // Returns the Monday of the week as a date string
+            return "DATE_FORMAT(DATE_SUB($col, INTERVAL WEEKDAY($col) DAY), '%Y-%m-%d')";
+        case 'monthly':
+            return "DATE_FORMAT($col, '%Y-%m')";
+        case 'yearly':
+            return "YEAR($col)";
+    }
+}
 
-//         $reportData[$monthName] = [
-//             "total_volunteers" => get_total_volunteers_count($dateTo),
-//             "new_volunteers" => get_new_volunteers_count($dateFrom, $dateTo),
-//             "new_dog_walkers" => get_new_dog_walkers_count($dateFrom, $dateTo),
-//             "group_volunteers" => get_group_volunteers_count($dateFrom, $dateTo),
-//             "community_service_volunteers" => get_community_service_volunteers_count($dateFrom, $dateTo),
-//             "total_volunteer_hours" => get_total_vol_hours($dateFrom, $dateTo)
-//         ];
-//     }
-// }
+function period_label($raw, $timePeriod) {
+    switch ($timePeriod) {
+        case 'weekly':
+            // raw = "2026-03-09" (Monday)
+            $mon = new DateTime($raw);
+            $sun = clone $mon;
+            $sun->modify('+6 days');
+            return $mon->format('M j') . ' – ' . $sun->format('M j, Y');
+        case 'monthly':
+            // raw = "2026-04"
+            $d = DateTime::createFromFormat('Y-m', $raw);
+            return $d ? $d->format('F Y') : $raw;
+        case 'yearly':
+            return "Year " . $raw;
+    }
+    return $raw;
+}
 
-// CSV EXPORT
+// --- Build report data ---
+$title = '';
+$headers = [];
+$rows = [];
+
+switch ($type) {
+
+    // =====================================================
+    // VOLUNTEER HOURS
+    // =====================================================
+    case 'volunteer_hours':
+        $title = 'Volunteer Hours Report';
+        $headers = ['Period', 'Volunteer', 'Hours'];
+        $periodExpr = period_expr('ph.start_time', $timePeriod);
+
+        $sql = "SELECT {$periodExpr} AS period,
+                       CONCAT(p.first_name, ' ', p.last_name) AS volunteer_name,
+                       SUM(TIMESTAMPDIFF(SECOND, ph.start_time, ph.end_time)) / 3600.0 AS total_hours
+                FROM dbpersonhours ph
+                JOIN dbpersons p ON ph.personID = p.id
+                WHERE ph.end_time IS NOT NULL
+                  AND DATE(ph.start_time) >= ?
+                  AND DATE(ph.start_time) <= ?";
+        $params = [$dateFrom, $dateTo];
+        $paramTypes = 'ss';
+
+        if ($userStatus !== 'all') {
+            $sql .= " AND p.status = ?";
+            $params[] = $userStatus;
+            $paramTypes .= 's';
+        }
+        if ($eventId !== 'all') {
+            $sql .= " AND ph.eventID = ?";
+            $params[] = $eventId;
+            $paramTypes .= 's';
+        }
+        if ($volunteer !== 'all') {
+            $sql .= " AND CONCAT(p.first_name, ' ', p.last_name) = ?";
+            $params[] = $volunteer;
+            $paramTypes .= 's';
+        }
+
+        $sql .= " GROUP BY period, ph.personID
+                   ORDER BY period ASC, total_hours DESC";
+
+        $stmt = mysqli_prepare($con, $sql);
+        mysqli_stmt_bind_param($stmt, $paramTypes, ...$params);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+
+        $rawRows = [];
+        while ($row = mysqli_fetch_assoc($result)) {
+            $rawRows[] = $row;
+        }
+        mysqli_stmt_close($stmt);
+
+        // Build rows with subtotals per period and grand total
+        $lastPeriod = null;
+        $periodHours = 0;
+        $grandTotal = 0;
+
+        foreach ($rawRows as $i => $row) {
+            $label = period_label($row['period'], $timePeriod);
+            $hours = round($row['total_hours'], 2);
+
+            // If period changed, insert subtotal for previous period
+            if ($lastPeriod !== null && $row['period'] !== $lastPeriod) {
+                $rows[] = ['Subtotal', '', round($periodHours, 2)];
+                $rows[] = ['', '', ''];  // blank separator row
+                $periodHours = 0;
+            }
+
+            $rows[] = [$label, $row['volunteer_name'], $hours];
+            $periodHours += $hours;
+            $grandTotal += $hours;
+            $lastPeriod = $row['period'];
+        }
+
+        // Final period subtotal
+        if ($lastPeriod !== null) {
+            $rows[] = ['Subtotal', '', round($periodHours, 2)];
+        }
+
+        // Total
+        if (!empty($rawRows)) {
+            $rows[] = ['', '', ''];
+            $rows[] = ['Total', '', round($grandTotal, 2)];
+        }
+        break;
+
+    // =====================================================
+    // VOLUNTEER PARTICIPATION
+    // =====================================================
+    case 'volunteer_participation':
+        $title = 'Volunteer Participation Report';
+        $headers = ['Period', 'Event', 'Signups', 'Attended', 'No Shows', 'Attendance Rate'];
+        $periodExpr = period_expr('e.startDate', $timePeriod);
+
+        $sql = "SELECT {$periodExpr} AS period,
+                       e.name AS event_name,
+                       COUNT(ep.userID) AS signups,
+                       SUM(CASE WHEN ep.attended = 1 THEN 1 ELSE 0 END) AS attended,
+                       SUM(CASE WHEN ep.attended = 0 THEN 1 ELSE 0 END) AS no_shows
+                FROM dbeventpersons ep
+                JOIN dbevents e ON ep.eventID = e.id
+                JOIN dbpersons p ON ep.userID = p.id
+                WHERE e.startDate >= ?
+                  AND e.startDate <= ?";
+        $params = [$dateFrom, $dateTo];
+        $paramTypes = 'ss';
+
+        if ($userStatus !== 'all') {
+            $sql .= " AND p.status = ?";
+            $params[] = $userStatus;
+            $paramTypes .= 's';
+        }
+        if ($eventId !== 'all') {
+            $sql .= " AND e.id = ?";
+            $params[] = $eventId;
+            $paramTypes .= 's';
+        }
+        if ($volunteer !== 'all') {
+            $sql .= " AND CONCAT(p.first_name, ' ', p.last_name) = ?";
+            $params[] = $volunteer;
+            $paramTypes .= 's';
+        }
+
+        $sql .= " GROUP BY period, e.id
+                   ORDER BY period ASC, event_name ASC";
+
+        $stmt = mysqli_prepare($con, $sql);
+        mysqli_stmt_bind_param($stmt, $paramTypes, ...$params);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+
+        while ($row = mysqli_fetch_assoc($result)) {
+            $signups = intval($row['signups']);
+            $attended = intval($row['attended']);
+            $noShows = intval($row['no_shows']);
+            $rate = $signups > 0 ? round(($attended / $signups) * 100, 1) . '%' : 'N/A';
+            $rows[] = [
+                period_label($row['period'], $timePeriod),
+                $row['event_name'],
+                $signups,
+                $attended,
+                $noShows,
+                $rate
+            ];
+        }
+        mysqli_stmt_close($stmt);
+        break;
+
+    // =====================================================
+    // VOLUNTEER GROWTH
+    // =====================================================
+    case 'volunteer_growth':
+        $title = 'Volunteer Growth Report';
+        $headers = ['Period', 'New Volunteers', 'Total Active', 'Total Inactive'];
+        $periodExpr = period_expr('p.start_date', $timePeriod);
+
+        // Get all periods with new volunteer counts
+        $sql = "SELECT {$periodExpr} AS period,
+                       COUNT(*) AS new_volunteers
+                FROM dbpersons p
+                WHERE p.id != 'vmsroot'
+                  AND p.start_date >= ?
+                  AND p.start_date <= ?";
+        $params = [$dateFrom, $dateTo];
+        $paramTypes = 'ss';
+
+        if ($userStatus !== 'all') {
+            $sql .= " AND p.status = ?";
+            $params[] = $userStatus;
+            $paramTypes .= 's';
+        }
+
+        $sql .= " GROUP BY period ORDER BY period ASC";
+
+        $stmt = mysqli_prepare($con, $sql);
+        mysqli_stmt_bind_param($stmt, $paramTypes, ...$params);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+
+        $periods = [];
+        while ($row = mysqli_fetch_assoc($result)) {
+            $periods[$row['period']] = intval($row['new_volunteers']);
+        }
+        mysqli_stmt_close($stmt);
+
+        // For each period, get cumulative active and inactive counts as of the period end
+        foreach ($periods as $period => $newCount) {
+            // Determine end date of period
+            switch ($timePeriod) {
+                case 'weekly':
+                    // period = "2026-03-09" (Monday of the week)
+                    $dt = new DateTime($period);
+                    $dt->modify('+6 days'); // Sunday
+                    $periodEnd = $dt->format('Y-m-d');
+                    break;
+                case 'monthly':
+                    $periodEnd = date('Y-m-t', strtotime($period . '-01'));
+                    break;
+                case 'yearly':
+                    $periodEnd = $period . '-12-31';
+                    break;
+            }
+
+            // Active count as of period end
+            $stmt2 = mysqli_prepare($con,
+                "SELECT COUNT(*) AS cnt FROM dbpersons
+                 WHERE id != 'vmsroot' AND start_date <= ? AND status = 'Active' AND archived = 0");
+            mysqli_stmt_bind_param($stmt2, 's', $periodEnd);
+            mysqli_stmt_execute($stmt2);
+            $r = mysqli_stmt_get_result($stmt2);
+            $active = intval(mysqli_fetch_assoc($r)['cnt']);
+            mysqli_stmt_close($stmt2);
+
+            // Inactive count as of period end
+            $stmt3 = mysqli_prepare($con,
+                "SELECT COUNT(*) AS cnt FROM dbpersons
+                 WHERE id != 'vmsroot' AND start_date <= ? AND status = 'Inactive'");
+            mysqli_stmt_bind_param($stmt3, 's', $periodEnd);
+            mysqli_stmt_execute($stmt3);
+            $r = mysqli_stmt_get_result($stmt3);
+            $inactive = intval(mysqli_fetch_assoc($r)['cnt']);
+            mysqli_stmt_close($stmt3);
+
+            $rows[] = [
+                period_label($period, $timePeriod),
+                $newCount,
+                $active,
+                $inactive
+            ];
+        }
+        break;
+
+    // =====================================================
+    // TOP VOLUNTEERS
+    // =====================================================
+    case 'top_volunteers':
+        $title = "Top $topN Volunteers Report";
+        $headers = ['Rank', 'Volunteer', 'Total Hours', 'Events Attended'];
+
+        $sql = "SELECT CONCAT(p.first_name, ' ', p.last_name) AS volunteer_name,
+                       SUM(TIMESTAMPDIFF(SECOND, ph.start_time, ph.end_time)) / 3600.0 AS total_hours,
+                       COUNT(DISTINCT ph.eventID) AS events_attended
+                FROM dbpersonhours ph
+                JOIN dbpersons p ON ph.personID = p.id
+                WHERE ph.end_time IS NOT NULL
+                  AND DATE(ph.start_time) >= ?
+                  AND DATE(ph.start_time) <= ?";
+        $params = [$dateFrom, $dateTo];
+        $paramTypes = 'ss';
+
+        if ($userStatus !== 'all') {
+            $sql .= " AND p.status = ?";
+            $params[] = $userStatus;
+            $paramTypes .= 's';
+        }
+        if ($eventId !== 'all') {
+            $sql .= " AND ph.eventID = ?";
+            $params[] = $eventId;
+            $paramTypes .= 's';
+        }
+
+        $sql .= " GROUP BY ph.personID
+                   ORDER BY total_hours DESC
+                   LIMIT ?";
+        $params[] = $topN;
+        $paramTypes .= 'i';
+
+        $stmt = mysqli_prepare($con, $sql);
+        mysqli_stmt_bind_param($stmt, $paramTypes, ...$params);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+
+        $rank = 1;
+        while ($row = mysqli_fetch_assoc($result)) {
+            $rows[] = [
+                $rank++,
+                $row['volunteer_name'],
+                round($row['total_hours'], 2),
+                intval($row['events_attended'])
+            ];
+        }
+        mysqli_stmt_close($stmt);
+        break;
+}
+
+mysqli_close($con);
+
+// --- Resolve event name for display ---
+$eventName = '';
+if ($eventId !== 'all') {
+    require_once('database/dbEvents.php');
+    $eventObj = retrieve_event($eventId);
+    $eventName = $eventObj ? $eventObj->getName() : "Event #$eventId";
+}
+
+// --- Subtitle with filter info ---
+$subtitle = ucfirst(str_replace('_', ' ', $timePeriod)) . " | $dateFrom to $dateTo";
+$subtitle .= " | Status: " . ($userStatus !== 'all' ? $userStatus : 'All');
+$subtitle .= " | Event: " . ($eventId !== 'all' ? $eventName : 'All Events');
+$subtitle .= " | Volunteer: " . ($volunteer !== 'all' ? $volunteer : 'All Volunteers');
+
+// =====================================================
+// CSV OUTPUT
+// =====================================================
 if ($format === 'csv') {
+    $filename = $type . '_' . date('Y-m-d') . '.csv';
     header("Content-Type: text/csv");
-    header("Content-Disposition: attachment; filename=attendance_report_{$eventID}_{$eventName}.csv");
+    header("Content-Disposition: attachment; filename=\"$filename\"");
     header("Pragma: no-cache");
     header("Expires: 0");
 
     $output = fopen('php://output', 'w');
-    fputcsv($output, ["Attendance Report - Event " . $eventID . ": {$eventName}"]);
+    fputcsv($output, [$title]);
+    fputcsv($output, [$subtitle]);
+    fputcsv($output, []);
+    fputcsv($output, $headers);
 
-    // Column Headers
-    fputcsv($output, ["ID", "Capacity", "Attended", "No Shows"]);
-
-    // Data
-    foreach ($reportData as $eventID => $data) {
-        fputcsv($output, [
-            $eventID,
-            $data["capacity"],
-            $data["attended"],
-            $data["no_shows"]
-        ]);
+    foreach ($rows as $row) {
+        fputcsv($output, $row);
     }
+
+    if (empty($rows)) {
+        fputcsv($output, ['No data found for the selected filters.']);
+    }
+
     fclose($output);
     exit();
 }
 
-// EXCEL EXPORT
-header("Content-Type: application/vnd.ms-excel");
-header("Content-Disposition: attachment; filename=attendance_report_{$eventID}_{$eventName}.xls");
-header("Pragma: no-cache");
-header("Expires: 0");
-
-echo "<html><head><meta charset='UTF-8'></head><body>";
-echo "<table border='1' style='border-collapse: collapse; font-family: Arial, sans-serif; text-align: center;'>";
-
-// Report Title
-echo "<tr><th colspan='4' style='font-size: 18px; background-color: #004488; color: white; padding: 10px;'>Attendance Report - " . $eventID . ": {$eventName}</th></tr>";
-
-// Column Headers
-echo "<tr>
-        <th style='background-color: #88CCEE; padding: 5px;'>Event ID</th>
-        <th style='background-color: #AA4499; padding: 5px;'>Capacity</th>
-        <th style='background-color: #DDCC77; padding: 5px;'>Attended</th>
-        <th style='background-color: #88CCEE; padding: 5px;'>No Shows</th>
-      </tr>";
-
-// Data Rows
-foreach ($reportData as $eventID => $data) {
-    echo "<tr>
-            <td style='background-color: #EAEAEA; padding: 5px; text-align: center;'>$eventID</td>
-            <td style='padding: 5px;'>{$data["capacity"]}</td>
-            <td style='padding: 5px;'>{$data["attended"]}</td>
-            <td style='padding: 5px;'>{$data["no_shows"]}</td>
-          </tr>";
-}
-
-echo "</table>";
-echo "</body></html>";
-exit();
+// =====================================================
+// PDF OUTPUT (styled HTML for print/save as PDF)
+// =====================================================
 ?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title><?= htmlspecialchars($title) ?></title>
+    <style>
+        @media print {
+            .no-print { display: none !important; }
+            body { margin: 0; }
+            a[href]:after { content: none !important; }
+        }
+        body {
+            font-family: 'Nunito', 'Segoe UI', sans-serif;
+            color: #2f4159;
+            max-width: 960px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 0.25rem;
+        }
+        .subtitle {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+        }
+        .timestamp {
+            color: #999;
+            font-size: 0.8rem;
+            margin-bottom: 1rem;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+        thead th {
+            background-color: #2f4159;
+            color: #fff;
+            padding: 0.6rem 0.75rem;
+            text-align: left;
+            font-weight: 600;
+        }
+        tbody td {
+            padding: 0.5rem 0.75rem;
+            border-bottom: 1px solid #e0e0e0;
+            text-align: left;
+        }
+        tbody tr:nth-child(even) {
+            background-color: #f7f9fb;
+        }
+        .period-group td {
+            background-color: #eef2f7;
+            font-weight: 600;
+        }
+        tr.subtotal-row td {
+            font-weight: 600;
+            border-top: 2px solid #2f4159;
+            background-color: #eef2f7;
+        }
+        tr.grand-total-row td {
+            font-weight: 700;
+            border-top: 3px double #2f4159;
+            background-color: #d9e2ec;
+            font-size: 0.95rem;
+        }
+        tr.blank-row td {
+            border: none;
+            padding: 0.15rem;
+        }
+        .empty-msg {
+            text-align: center;
+            padding: 2rem;
+            color: #888;
+        }
+        .actions {
+            margin-top: 1.5rem;
+            display: flex;
+            gap: 1rem;
+        }
+        .actions button, .actions a {
+            padding: 0.5rem 1.5rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            text-decoration: none;
+            border: none;
+        }
+        .btn-print {
+            background-color: #2f4159;
+            color: #fff;
+            transition: background-color 0.2s ease;
+        }
+        .btn-print:hover {
+            background-color: #f5c16e;
+            color: #fff;
+        }
+        .btn-back {
+            background-color: #f6a4b5;
+            color: #fff;
+            transition: background-color 0.2s ease;
+        }
+        .btn-back:hover {
+            background-color: #f5c16e;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+
+<h1><?= htmlspecialchars($title) ?></h1>
+<div class="subtitle"><?= htmlspecialchars($subtitle) ?></div>
+<div class="timestamp">Generated <?= date('F j, Y \a\t g:i A') ?></div>
+
+<?php if (empty($rows)): ?>
+    <div class="empty-msg">No data found for the selected filters.</div>
+<?php else: ?>
+    <table>
+        <thead>
+            <tr>
+                <?php foreach ($headers as $h): ?>
+                    <th><?= htmlspecialchars($h) ?></th>
+                <?php endforeach; ?>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach ($rows as $row):
+                // Detect row type
+                $isBlank = ($row[0] === '' && $row[1] === '' && $row[2] === '');
+                $isSubtotal = ($row[0] === 'Subtotal');
+                $isGrandTotal = ($row[0] === 'Total');
+                $rowClass = '';
+                if ($isBlank) $rowClass = 'blank-row';
+                elseif ($isSubtotal) $rowClass = 'subtotal-row';
+                elseif ($isGrandTotal) $rowClass = 'grand-total-row';
+            ?>
+                <tr class="<?= $rowClass ?>">
+                    <?php foreach ($row as $cell): ?>
+                        <td><?= htmlspecialchars($cell) ?></td>
+                    <?php endforeach; ?>
+                </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+<?php endif; ?>
+
+<div class="actions no-print">
+    <button class="btn-print" onclick="window.print()">Print / Save as PDF</button>
+    <a href="generateReport.php" class="btn-back">Back to Reports</a>
+</div>
+
+</body>
+</html>
