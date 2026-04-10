@@ -335,7 +335,7 @@ function rosterShirtSize($user_info): string
     <?php endif; ?>
 
     <main class="general">
-        <h2><?php echo htmlspecialchars($event_info['name']); ?></h2>
+        <h2><?php echo $event_info['name']; ?></h2>
 
         <?php if (isset($remove_success)): ?>
             <p class="success"><?php echo htmlspecialchars($remove_success); ?></p>

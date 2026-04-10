@@ -121,6 +121,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         header('Location: event.php?id=' . $eid . '&attachSuccess');
         die();
     }
+    if (isset($_POST['signup-submit'])) {
+        if (!$active) {
+            echo 'forbidden';
+            die();
+        }
+        $account_name = $_SESSION['_id'];
+        $event_type = isset($event_info['type']) ? $event_info['type'] : '';
+        $event_name = htmlspecialchars_decode($event_info['name']);
+
+        if ($event_type === 'Retreat') {
+            require_once('database/dbApplications.php');
+            require_once('database/dbMessages.php');
+            $app_data = array(
+                'user_id' => $account_name,
+                'event_id' => $id,
+                'status' => 'Pending',
+                'flagged' => 0,
+                'notes' => ''
+            );
+            $app_id = create_app($app_data);
+            if (!$app_id) {
+                header('Location: requestFailed.php');
+                die();
+            }
+            send_system_message($account_name, "Your request to sign up for $event_name has been sent to an admin.", "Your request to sign up for $event_name will be reviewed by an admin shortly. You will get another notification when you are approved or denied.");
+            header('Location: signupPending.php');
+            die();
+        } else {
+            require_once('database/dbMessages.php');
+            $signup_id = sign_up_for_event($id, $account_name, 'p', '');
+            if (!$signup_id) {
+                header('Location: eventFailure.php');
+                die();
+            }
+            send_system_message($account_name, "You are now signed up for $event_name!", "Thank you for signing up for $event_name!");
+            header('Location: signupSuccess.php');
+            die();
+        }
+    }
     if (isset($_POST['attach-training-media-submit'])) {
         if ($access_level < 2) {
             echo 'forbidden';
@@ -542,10 +581,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php endif*/ ?>
 
             <?php if (!check_if_signed_up($id, $user->get_id())): ?>
-            <form action="eventSignUp.php" method="get">
-                <input type="hidden" name="event_name" value="<?php echo htmlspecialchars($event_info['name']); ?>">
-                <input type="hidden" name="event_id" value="<?php echo htmlspecialchars($event_info['id']); ?>">
-                <input type="hidden" name="type" value="<?php echo htmlspecialchars($event_info['type']); ?>">
+            <form action="event.php?id=<?php echo urlencode($id); ?>" method="post">
+                <input type="hidden" name="signup-submit" value="1">
                 <button type="submit" class="button primary">Sign Up!</button>
             </form>
             <?php endif; ?>

@@ -6,6 +6,7 @@
     define('VMS_NON_INCLUDE', 1);
 ?>
 
+        <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <script src="lib/jquery-1.9.1.js"></script>
         <link rel="stylesheet" href="css/base.css" type="text/css" />
