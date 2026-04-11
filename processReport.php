@@ -44,6 +44,12 @@ if (!in_array($type, $validTypes) || !in_array($timePeriod, $validPeriods) || !i
     die('Invalid report parameters.');
 }
 
+if ($dateFrom && $dateTo && $dateFrom >= $dateTo) {
+    $_SESSION['report_error'] = 'Start date must be before end date.';
+    header('Location: generateReport.php');
+    exit();
+}
+
 $con = connect();
 if (!$con) die('Database connection failed.');
 

@@ -48,6 +48,46 @@ function updateFilters() {
 document.getElementById('type').addEventListener('change', updateFilters);
 document.addEventListener('DOMContentLoaded', updateFilters);
 
+// Validate that start date is before end date
+document.addEventListener('DOMContentLoaded', function () {
+    const dateFrom = document.getElementById('date_from');
+    const dateTo = document.getElementById('date_to');
+    if (!dateFrom || !dateTo) return;
+
+    function updateDateMin() {
+        if (dateFrom.value) {
+            // End date must be at least one day after start date
+            const next = new Date(dateFrom.value);
+            next.setDate(next.getDate() + 1);
+            const yyyy = next.getFullYear();
+            const mm = String(next.getMonth() + 1).padStart(2, '0');
+            const dd = String(next.getDate()).padStart(2, '0');
+            dateTo.min = yyyy + '-' + mm + '-' + dd;
+        } else {
+            dateTo.removeAttribute('min');
+        }
+        dateTo.setCustomValidity('');
+    }
+
+    dateFrom.addEventListener('input', updateDateMin);
+    dateTo.addEventListener('input', function () {
+        dateTo.setCustomValidity('');
+    });
+
+    updateDateMin();
+
+    // On submit, if end date is invalid, scroll to it and show the browser tooltip
+    const form = document.getElementById('report-form');
+    if (form) {
+        form.addEventListener('submit', function (e) {
+            if (dateFrom.value && dateTo.value && dateTo.validity && !dateTo.validity.valid) {
+                e.preventDefault();
+                dateTo.reportValidity();
+            }
+        });
+    }
+});
+
 // Autocomplete for Event and Volunteer fields
 function initAutocomplete(searchId, hiddenId, listId, allValue, allPlaceholder) {
     const searchInput = document.getElementById(searchId);
