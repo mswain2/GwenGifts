@@ -1,9 +1,9 @@
 <?php
 session_cache_expire(30);
 session_start();
-ini_set("display_errors", 1);
+ini_set('display_errors', 1);
 error_reporting(E_ALL);
-date_default_timezone_set("America/New_York");
+date_default_timezone_set('America/New_York');
 
 // check RBAC
 if (isset($_SESSION['access_level']) && $_SESSION['access_level'] >= 2) {
@@ -42,14 +42,14 @@ require_once('header.php');
 
 </head>
 <body>
-    <?php require_once('database/dbEvents.php');?>
-    <?php require_once('database/dbPersons.php');?>
+    <?php require_once('database/dbEvents.php'); ?>
+    <?php require_once('database/dbPersons.php'); ?>
 
     <!-- Hero Section with Title -->
     <h1 style="color:white;">Generate Report</h1>
 
     <main>
-        <?php $events = get_all_events_sorted_by_date_not_archived();?>
+        <?php $events = get_all_events_sorted_by_date_not_archived(); ?>
 
         <div class="main-content-box w-[80%] p-8">
 
@@ -74,7 +74,7 @@ require_once('header.php');
                     </select>
                 </div>
 
-                <!-- Metric Definitions (shown per report type) -->
+                <!-- Report Definitions (shown per report type) -->
                 <div id="report-description" class="report-description" style="display:none;"></div>
 
                 <!-- Dynamic Filter Fields -->
@@ -175,7 +175,7 @@ require_once('header.php');
                 <!-- Format -->
                 <div id="format-section" class="report-field" style="display:none; margin-top: 1.5rem;">
                     <label for="format">Export Format</label>
-                    <select name="format" id="report-format">
+                    <select name="format" id="format">
                         <option value="csv" <?= old('format', 'csv') === 'csv' ? 'selected' : '' ?>>CSV (.csv)</option>
                         <option value="pdf" <?= old('format', 'csv') === 'pdf' ? 'selected' : '' ?>>PDF (.pdf)</option>
                     </select>
@@ -195,7 +195,6 @@ require_once('header.php');
         </div>
 
     </main>
-
 
 </body>
 </html>

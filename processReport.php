@@ -5,9 +5,11 @@ ini_set('display_errors', 1);
 error_reporting(E_ALL);
 date_default_timezone_set('America/New_York');
 
-if (!isset($_SESSION['access_level']) || $_SESSION['access_level'] < 2) {
-    header('Location: login.php');
-    die();
+if (isset($_SESSION['access_level']) && $_SESSION['access_level'] >= 2) {
+    $isEventManager = true;
+} else {
+    header('Location: index.php');
+    die();  
 }
 
 require_once('database/dbinfo.php');
@@ -36,12 +38,26 @@ $_SESSION['report_filters'] = [
     'format'      => $format,
 ];
 
+// check valid report type, valid time period, and valid report format
 $validTypes   = ['volunteer_hours', 'volunteer_participation', 'volunteer_growth', 'top_volunteers'];
 $validPeriods = ['weekly', 'monthly', 'yearly'];
 $validFormats = ['csv', 'pdf'];
 
-if (!in_array($type, $validTypes) || !in_array($timePeriod, $validPeriods) || !in_array($format, $validFormats)) {
-    die('Invalid report parameters.');
+if (!in_array($type, $validTypes)) {
+    $_SESSION['report_error'] = 'Invalid report type given.';
+    header('Location: generateReport.php');
+    exit();
+}
+
+if (!in_array($timePeriod, $validPeriods)) {
+    $_SESSION['report_error'] = 'Invalid time period for report given.';
+    header('Location: generateReport.php');
+    exit();
+}
+if (!in_array($format, $validFormats)) {
+    $_SESSION['report_error'] = 'Invalid report format.';
+    header('Location: generateReport.php');
+    exit();
 }
 
 if ($dateFrom && $dateTo && $dateFrom >= $dateTo) {
@@ -51,35 +67,35 @@ if ($dateFrom && $dateTo && $dateFrom >= $dateTo) {
 }
 
 $con = connect();
-if (!$con) die('Database connection failed.');
+if (!$con) {
+    die('Database connection failed.');
+}
 
-// --- Period SQL expressions ---
+// --- Time Period SQL expressions ---
 function period_expr($col, $timePeriod) {
-    switch ($timePeriod) {
-        case 'weekly':
-            // Returns the Monday of the week as a date string
-            return "DATE_FORMAT(DATE_SUB($col, INTERVAL WEEKDAY($col) DAY), '%Y-%m-%d')";
-        case 'monthly':
-            return "DATE_FORMAT($col, '%Y-%m')";
-        case 'yearly':
-            return "YEAR($col)";
+    if ($timePeriod === 'weekly') {
+        // Returns the Monday of the week as a date string
+        return "DATE_FORMAT(DATE_SUB($col, INTERVAL WEEKDAY($col) DAY), '%Y-%m-%d')";
+    } elseif ($timePeriod === 'monthly') {
+        return "DATE_FORMAT($col, '%Y-%m')";
+    } elseif ($timePeriod === 'yearly') {
+        return "YEAR($col)";
     }
 }
 
 function period_label($raw, $timePeriod) {
-    switch ($timePeriod) {
-        case 'weekly':
-            // raw = "2026-03-09" (Monday)
-            $mon = new DateTime($raw);
-            $sun = clone $mon;
-            $sun->modify('+6 days');
-            return $mon->format('M j') . ' – ' . $sun->format('M j, Y');
-        case 'monthly':
-            // raw = "2026-04"
-            $d = DateTime::createFromFormat('Y-m', $raw);
-            return $d ? $d->format('F Y') : $raw;
-        case 'yearly':
-            return "Year " . $raw;
+    if ($timePeriod === 'weekly') {
+        // raw = "2026-03-09" (Monday)
+        $mon = new DateTime($raw);
+        $sun = clone $mon;
+        $sun->modify('+6 days');
+        return $mon->format('M j') . ' – ' . $sun->format('M j, Y');
+    } elseif ($timePeriod === 'monthly') {
+        // raw = "2026-04"
+        $d = DateTime::createFromFormat('Y-m', $raw);
+        return $d ? $d->format('F Y') : $raw;
+    } elseif ($timePeriod === 'yearly') {
+        return "Year " . $raw;
     }
     return $raw;
 }
@@ -89,288 +105,278 @@ $title = '';
 $headers = [];
 $rows = [];
 
-switch ($type) {
+// =====================================================
+// VOLUNTEER HOURS
+// =====================================================
+if ($type === 'volunteer_hours') {
+    $title = 'Volunteer Hours Report';
+    $headers = ['Period', 'Volunteer', 'Hours'];
+    $periodExpr = period_expr('ph.start_time', $timePeriod);
 
-    // =====================================================
-    // VOLUNTEER HOURS
-    // =====================================================
-    case 'volunteer_hours':
-        $title = 'Volunteer Hours Report';
-        $headers = ['Period', 'Volunteer', 'Hours'];
-        $periodExpr = period_expr('ph.start_time', $timePeriod);
+    $sql = "SELECT {$periodExpr} AS period,
+                   CONCAT(p.first_name, ' ', p.last_name) AS volunteer_name,
+                   SUM(TIMESTAMPDIFF(SECOND, ph.start_time, ph.end_time)) / 3600.0 AS total_hours
+            FROM dbpersonhours ph
+            JOIN dbpersons p ON ph.personID = p.id
+            WHERE ph.end_time IS NOT NULL
+              AND DATE(ph.start_time) >= ?
+              AND DATE(ph.start_time) <= ?";
+    $params = [$dateFrom, $dateTo];
+    $paramTypes = 'ss';
 
-        $sql = "SELECT {$periodExpr} AS period,
-                       CONCAT(p.first_name, ' ', p.last_name) AS volunteer_name,
-                       SUM(TIMESTAMPDIFF(SECOND, ph.start_time, ph.end_time)) / 3600.0 AS total_hours
-                FROM dbpersonhours ph
-                JOIN dbpersons p ON ph.personID = p.id
-                WHERE ph.end_time IS NOT NULL
-                  AND DATE(ph.start_time) >= ?
-                  AND DATE(ph.start_time) <= ?";
-        $params = [$dateFrom, $dateTo];
-        $paramTypes = 'ss';
+    if ($userStatus !== 'all') {
+        $sql .= " AND p.status = ?";
+        $params[] = $userStatus;
+        $paramTypes .= 's';
+    }
+    if ($eventId !== 'all') {
+        $sql .= " AND ph.eventID = ?";
+        $params[] = $eventId;
+        $paramTypes .= 's';
+    }
+    if ($volunteer !== 'all') {
+        $sql .= " AND CONCAT(p.first_name, ' ', p.last_name) = ?";
+        $params[] = $volunteer;
+        $paramTypes .= 's';
+    }
 
-        if ($userStatus !== 'all') {
-            $sql .= " AND p.status = ?";
-            $params[] = $userStatus;
-            $paramTypes .= 's';
-        }
-        if ($eventId !== 'all') {
-            $sql .= " AND ph.eventID = ?";
-            $params[] = $eventId;
-            $paramTypes .= 's';
-        }
-        if ($volunteer !== 'all') {
-            $sql .= " AND CONCAT(p.first_name, ' ', p.last_name) = ?";
-            $params[] = $volunteer;
-            $paramTypes .= 's';
-        }
+    $sql .= " GROUP BY period, ph.personID
+               ORDER BY period ASC, total_hours DESC";
 
-        $sql .= " GROUP BY period, ph.personID
-                   ORDER BY period ASC, total_hours DESC";
+    $stmt = mysqli_prepare($con, $sql);
+    mysqli_stmt_bind_param($stmt, $paramTypes, ...$params);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
 
-        $stmt = mysqli_prepare($con, $sql);
-        mysqli_stmt_bind_param($stmt, $paramTypes, ...$params);
-        mysqli_stmt_execute($stmt);
-        $result = mysqli_stmt_get_result($stmt);
+    $rawRows = [];
+    while ($row = mysqli_fetch_assoc($result)) {
+        $rawRows[] = $row;
+    }
+    mysqli_stmt_close($stmt);
 
-        $rawRows = [];
-        while ($row = mysqli_fetch_assoc($result)) {
-            $rawRows[] = $row;
-        }
-        mysqli_stmt_close($stmt);
+    // Build rows with subtotals per period and total
+    $lastPeriod = null;
+    $periodHours = 0;
+    $grandTotal = 0;
 
-        // Build rows with subtotals per period and grand total
-        $lastPeriod = null;
-        $periodHours = 0;
-        $grandTotal = 0;
+    foreach ($rawRows as $i => $row) {
+        $label = period_label($row['period'], $timePeriod);
+        $hours = round($row['total_hours'], 2);
 
-        foreach ($rawRows as $i => $row) {
-            $label = period_label($row['period'], $timePeriod);
-            $hours = round($row['total_hours'], 2);
-
-            // If period changed, insert subtotal for previous period
-            if ($lastPeriod !== null && $row['period'] !== $lastPeriod) {
-                $rows[] = ['Subtotal', '', round($periodHours, 2)];
-                $rows[] = ['', '', ''];  // blank separator row
-                $periodHours = 0;
-            }
-
-            $rows[] = [$label, $row['volunteer_name'], $hours];
-            $periodHours += $hours;
-            $grandTotal += $hours;
-            $lastPeriod = $row['period'];
-        }
-
-        // Final period subtotal
-        if ($lastPeriod !== null) {
+        // If period changed, insert subtotal for previous period
+        if ($lastPeriod !== null && $row['period'] !== $lastPeriod) {
             $rows[] = ['Subtotal', '', round($periodHours, 2)];
+            $rows[] = ['', '', ''];  // blank separator row
+            $periodHours = 0;
         }
 
-        // Total
-        if (!empty($rawRows)) {
-            $rows[] = ['', '', ''];
-            $rows[] = ['Total', '', round($grandTotal, 2)];
-        }
-        break;
+        $rows[] = [$label, $row['volunteer_name'], $hours];
+        $periodHours += $hours;
+        $grandTotal += $hours;
+        $lastPeriod = $row['period'];
+    }
 
-    // =====================================================
-    // VOLUNTEER PARTICIPATION
-    // =====================================================
-    case 'volunteer_participation':
-        $title = 'Volunteer Participation Report';
-        $headers = ['Period', 'Event', 'Signups', 'Attended', 'No Shows', 'Attendance Rate'];
-        $periodExpr = period_expr('e.startDate', $timePeriod);
+    // Final period subtotal
+    if ($lastPeriod !== null) {
+        $rows[] = ['Subtotal', '', round($periodHours, 2)];
+    }
 
-        $sql = "SELECT {$periodExpr} AS period,
-                       e.name AS event_name,
-                       COUNT(ep.userID) AS signups,
-                       SUM(CASE WHEN ep.attended = 1 THEN 1 ELSE 0 END) AS attended,
-                       SUM(CASE WHEN ep.attended = 0 THEN 1 ELSE 0 END) AS no_shows
-                FROM dbeventpersons ep
-                JOIN dbevents e ON ep.eventID = e.id
-                JOIN dbpersons p ON ep.userID = p.id
-                WHERE e.startDate >= ?
-                  AND e.startDate <= ?";
-        $params = [$dateFrom, $dateTo];
-        $paramTypes = 'ss';
+    // Total
+    if (!empty($rawRows)) {
+        $rows[] = ['', '', ''];
+        $rows[] = ['Total', '', round($grandTotal, 2)];
+    }
 
-        if ($userStatus !== 'all') {
-            $sql .= " AND p.status = ?";
-            $params[] = $userStatus;
-            $paramTypes .= 's';
-        }
-        if ($eventId !== 'all') {
-            $sql .= " AND e.id = ?";
-            $params[] = $eventId;
-            $paramTypes .= 's';
-        }
-        if ($volunteer !== 'all') {
-            $sql .= " AND CONCAT(p.first_name, ' ', p.last_name) = ?";
-            $params[] = $volunteer;
-            $paramTypes .= 's';
-        }
+// =====================================================
+// VOLUNTEER PARTICIPATION
+// =====================================================
+} elseif ($type === 'volunteer_participation') {
+    $title = 'Volunteer Participation Report';
+    $headers = ['Period', 'Event', 'Signups', 'Attended', 'No Shows', 'Attendance Rate'];
+    $periodExpr = period_expr('e.startDate', $timePeriod);
 
-        $sql .= " GROUP BY period, e.id
-                   ORDER BY period ASC, event_name ASC";
+    $sql = "SELECT {$periodExpr} AS period,
+                   e.name AS event_name,
+                   COUNT(ep.userID) AS signups,
+                   SUM(CASE WHEN ep.attended = 1 THEN 1 ELSE 0 END) AS attended,
+                   SUM(CASE WHEN ep.attended = 0 THEN 1 ELSE 0 END) AS no_shows
+            FROM dbeventpersons ep
+            JOIN dbevents e ON ep.eventID = e.id
+            JOIN dbpersons p ON ep.userID = p.id
+            WHERE e.startDate >= ?
+              AND e.startDate <= ?";
+    $params = [$dateFrom, $dateTo];
+    $paramTypes = 'ss';
 
-        $stmt = mysqli_prepare($con, $sql);
-        mysqli_stmt_bind_param($stmt, $paramTypes, ...$params);
-        mysqli_stmt_execute($stmt);
-        $result = mysqli_stmt_get_result($stmt);
+    if ($userStatus !== 'all') {
+        $sql .= " AND p.status = ?";
+        $params[] = $userStatus;
+        $paramTypes .= 's';
+    }
+    if ($eventId !== 'all') {
+        $sql .= " AND e.id = ?";
+        $params[] = $eventId;
+        $paramTypes .= 's';
+    }
+    if ($volunteer !== 'all') {
+        $sql .= " AND CONCAT(p.first_name, ' ', p.last_name) = ?";
+        $params[] = $volunteer;
+        $paramTypes .= 's';
+    }
 
-        while ($row = mysqli_fetch_assoc($result)) {
-            $signups = intval($row['signups']);
-            $attended = intval($row['attended']);
-            $noShows = intval($row['no_shows']);
-            $rate = $signups > 0 ? round(($attended / $signups) * 100, 1) . '%' : 'N/A';
-            $rows[] = [
-                period_label($row['period'], $timePeriod),
-                $row['event_name'],
-                $signups,
-                $attended,
-                $noShows,
-                $rate
-            ];
-        }
-        mysqli_stmt_close($stmt);
-        break;
+    $sql .= " GROUP BY period, e.id
+               ORDER BY period ASC, event_name ASC";
 
-    // =====================================================
-    // VOLUNTEER GROWTH
-    // =====================================================
-    case 'volunteer_growth':
-        $title = 'Volunteer Growth Report';
-        $headers = ['Period', 'New Volunteers', 'Total Active', 'Total Inactive'];
-        $periodExpr = period_expr('p.start_date', $timePeriod);
+    $stmt = mysqli_prepare($con, $sql);
+    mysqli_stmt_bind_param($stmt, $paramTypes, ...$params);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
 
-        // Get all periods with new volunteer counts
-        $sql = "SELECT {$periodExpr} AS period,
-                       COUNT(*) AS new_volunteers
-                FROM dbpersons p
-                WHERE p.id != 'vmsroot'
-                  AND p.start_date >= ?
-                  AND p.start_date <= ?";
-        $params = [$dateFrom, $dateTo];
-        $paramTypes = 'ss';
+    while ($row = mysqli_fetch_assoc($result)) {
+        $signups = intval($row['signups']);
+        $attended = intval($row['attended']);
+        $noShows = intval($row['no_shows']);
+        $rate = $signups > 0 ? round(($attended / $signups) * 100, 1) . '%' : 'N/A';
+        $rows[] = [
+            period_label($row['period'], $timePeriod),
+            $row['event_name'],
+            $signups,
+            $attended,
+            $noShows,
+            $rate
+        ];
+    }
+    mysqli_stmt_close($stmt);
 
-        if ($userStatus !== 'all') {
-            $sql .= " AND p.status = ?";
-            $params[] = $userStatus;
-            $paramTypes .= 's';
-        }
+// =====================================================
+// VOLUNTEER GROWTH
+// =====================================================
+} elseif ($type === 'volunteer_growth') {
+    $title = 'Volunteer Growth Report';
+    $headers = ['Period', 'New Volunteers', 'Total Active', 'Total Inactive'];
+    $periodExpr = period_expr('p.start_date', $timePeriod);
 
-        $sql .= " GROUP BY period ORDER BY period ASC";
+    // Get all periods with new volunteer counts
+    $sql = "SELECT {$periodExpr} AS period,
+                   COUNT(*) AS new_volunteers
+            FROM dbpersons p
+            WHERE p.id != 'vmsroot'
+              AND p.start_date >= ?
+              AND p.start_date <= ?";
+    $params = [$dateFrom, $dateTo];
+    $paramTypes = 'ss';
 
-        $stmt = mysqli_prepare($con, $sql);
-        mysqli_stmt_bind_param($stmt, $paramTypes, ...$params);
-        mysqli_stmt_execute($stmt);
-        $result = mysqli_stmt_get_result($stmt);
+    if ($userStatus !== 'all') {
+        $sql .= " AND p.status = ?";
+        $params[] = $userStatus;
+        $paramTypes .= 's';
+    }
 
-        $periods = [];
-        while ($row = mysqli_fetch_assoc($result)) {
-            $periods[$row['period']] = intval($row['new_volunteers']);
-        }
-        mysqli_stmt_close($stmt);
+    $sql .= " GROUP BY period ORDER BY period ASC";
 
-        // For each period, get cumulative active and inactive counts as of the period end
-        foreach ($periods as $period => $newCount) {
-            // Determine end date of period
-            switch ($timePeriod) {
-                case 'weekly':
-                    // period = "2026-03-09" (Monday of the week)
-                    $dt = new DateTime($period);
-                    $dt->modify('+6 days'); // Sunday
-                    $periodEnd = $dt->format('Y-m-d');
-                    break;
-                case 'monthly':
-                    $periodEnd = date('Y-m-t', strtotime($period . '-01'));
-                    break;
-                case 'yearly':
-                    $periodEnd = $period . '-12-31';
-                    break;
-            }
+    $stmt = mysqli_prepare($con, $sql);
+    mysqli_stmt_bind_param($stmt, $paramTypes, ...$params);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
 
-            // Active count as of period end
-            $stmt2 = mysqli_prepare($con,
-                "SELECT COUNT(*) AS cnt FROM dbpersons
-                 WHERE id != 'vmsroot' AND start_date <= ? AND status = 'Active' AND archived = 0");
-            mysqli_stmt_bind_param($stmt2, 's', $periodEnd);
-            mysqli_stmt_execute($stmt2);
-            $r = mysqli_stmt_get_result($stmt2);
-            $active = intval(mysqli_fetch_assoc($r)['cnt']);
-            mysqli_stmt_close($stmt2);
+    $periods = [];
+    while ($row = mysqli_fetch_assoc($result)) {
+        $periods[$row['period']] = intval($row['new_volunteers']);
+    }
+    mysqli_stmt_close($stmt);
 
-            // Inactive count as of period end
-            $stmt3 = mysqli_prepare($con,
-                "SELECT COUNT(*) AS cnt FROM dbpersons
-                 WHERE id != 'vmsroot' AND start_date <= ? AND status = 'Inactive'");
-            mysqli_stmt_bind_param($stmt3, 's', $periodEnd);
-            mysqli_stmt_execute($stmt3);
-            $r = mysqli_stmt_get_result($stmt3);
-            $inactive = intval(mysqli_fetch_assoc($r)['cnt']);
-            mysqli_stmt_close($stmt3);
-
-            $rows[] = [
-                period_label($period, $timePeriod),
-                $newCount,
-                $active,
-                $inactive
-            ];
-        }
-        break;
-
-    // =====================================================
-    // TOP VOLUNTEERS
-    // =====================================================
-    case 'top_volunteers':
-        $title = "Top $topN Volunteers Report";
-        $headers = ['Rank', 'Volunteer', 'Total Hours', 'Events Attended'];
-
-        $sql = "SELECT CONCAT(p.first_name, ' ', p.last_name) AS volunteer_name,
-                       SUM(TIMESTAMPDIFF(SECOND, ph.start_time, ph.end_time)) / 3600.0 AS total_hours,
-                       COUNT(DISTINCT ph.eventID) AS events_attended
-                FROM dbpersonhours ph
-                JOIN dbpersons p ON ph.personID = p.id
-                WHERE ph.end_time IS NOT NULL
-                  AND DATE(ph.start_time) >= ?
-                  AND DATE(ph.start_time) <= ?";
-        $params = [$dateFrom, $dateTo];
-        $paramTypes = 'ss';
-
-        if ($userStatus !== 'all') {
-            $sql .= " AND p.status = ?";
-            $params[] = $userStatus;
-            $paramTypes .= 's';
-        }
-        if ($eventId !== 'all') {
-            $sql .= " AND ph.eventID = ?";
-            $params[] = $eventId;
-            $paramTypes .= 's';
+    // For each period, get cumulative active and inactive counts as of the period end
+    foreach ($periods as $period => $newCount) {
+        // Determine end date of period
+        if ($timePeriod === 'weekly') {
+            // period = "2026-03-09" (Monday of the week)
+            $dt = new DateTime($period);
+            $dt->modify('+6 days'); // Sunday
+            $periodEnd = $dt->format('Y-m-d');
+        } elseif ($timePeriod === 'monthly') {
+            $periodEnd = date('Y-m-t', strtotime($period . '-01'));
+        } elseif ($timePeriod === 'yearly') {
+            $periodEnd = $period . '-12-31';
         }
 
-        $sql .= " GROUP BY ph.personID
-                   ORDER BY total_hours DESC
-                   LIMIT ?";
-        $params[] = $topN;
-        $paramTypes .= 'i';
+        // Active count as of period end
+        $stmt2 = mysqli_prepare($con,
+            "SELECT COUNT(*) AS cnt FROM dbpersons
+             WHERE id != 'vmsroot' AND start_date <= ? AND status = 'Active' AND archived = 0");
+        mysqli_stmt_bind_param($stmt2, 's', $periodEnd);
+        mysqli_stmt_execute($stmt2);
+        $r = mysqli_stmt_get_result($stmt2);
+        $active = intval(mysqli_fetch_assoc($r)['cnt']);
+        mysqli_stmt_close($stmt2);
 
-        $stmt = mysqli_prepare($con, $sql);
-        mysqli_stmt_bind_param($stmt, $paramTypes, ...$params);
-        mysqli_stmt_execute($stmt);
-        $result = mysqli_stmt_get_result($stmt);
+        // Inactive count as of period end
+        $stmt3 = mysqli_prepare($con,
+            "SELECT COUNT(*) AS cnt FROM dbpersons
+             WHERE id != 'vmsroot' AND start_date <= ? AND status = 'Inactive'");
+        mysqli_stmt_bind_param($stmt3, 's', $periodEnd);
+        mysqli_stmt_execute($stmt3);
+        $r = mysqli_stmt_get_result($stmt3);
+        $inactive = intval(mysqli_fetch_assoc($r)['cnt']);
+        mysqli_stmt_close($stmt3);
 
-        $rank = 1;
-        while ($row = mysqli_fetch_assoc($result)) {
-            $rows[] = [
-                $rank++,
-                $row['volunteer_name'],
-                round($row['total_hours'], 2),
-                intval($row['events_attended'])
-            ];
-        }
-        mysqli_stmt_close($stmt);
-        break;
+        $rows[] = [
+            period_label($period, $timePeriod),
+            $newCount,
+            $active,
+            $inactive
+        ];
+    }
+
+// =====================================================
+// TOP VOLUNTEERS
+// =====================================================
+} elseif ($type === 'top_volunteers') {
+    $title = "Top $topN Volunteers Report";
+    $headers = ['Rank', 'Volunteer', 'Total Hours', 'Events Attended'];
+
+    $sql = "SELECT CONCAT(p.first_name, ' ', p.last_name) AS volunteer_name,
+                   SUM(TIMESTAMPDIFF(SECOND, ph.start_time, ph.end_time)) / 3600.0 AS total_hours,
+                   COUNT(DISTINCT ph.eventID) AS events_attended
+            FROM dbpersonhours ph
+            JOIN dbpersons p ON ph.personID = p.id
+            WHERE ph.end_time IS NOT NULL
+              AND DATE(ph.start_time) >= ?
+              AND DATE(ph.start_time) <= ?";
+    $params = [$dateFrom, $dateTo];
+    $paramTypes = 'ss';
+
+    if ($userStatus !== 'all') {
+        $sql .= " AND p.status = ?";
+        $params[] = $userStatus;
+        $paramTypes .= 's';
+    }
+    if ($eventId !== 'all') {
+        $sql .= " AND ph.eventID = ?";
+        $params[] = $eventId;
+        $paramTypes .= 's';
+    }
+
+    $sql .= " GROUP BY ph.personID
+               ORDER BY total_hours DESC
+               LIMIT ?";
+    $params[] = $topN;
+    $paramTypes .= 'i';
+
+    $stmt = mysqli_prepare($con, $sql);
+    mysqli_stmt_bind_param($stmt, $paramTypes, ...$params);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+
+    $rank = 1;
+    while ($row = mysqli_fetch_assoc($result)) {
+        $rows[] = [
+            $rank++,
+            $row['volunteer_name'],
+            round($row['total_hours'], 2),
+            intval($row['events_attended'])
+        ];
+    }
+    mysqli_stmt_close($stmt);
 }
 
 mysqli_close($con);
@@ -500,6 +506,7 @@ if ($format === 'csv') {
         .actions {
             margin-top: 1.5rem;
             display: flex;
+            align-items: center;
             gap: 1rem;
         }
         .actions button, .actions a {
