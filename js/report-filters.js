@@ -46,7 +46,61 @@ function updateFilters() {
 }
 
 document.getElementById('type').addEventListener('change', updateFilters);
-document.addEventListener('DOMContentLoaded', updateFilters);
+
+// --- Filter persistence via sessionStorage ---
+const STORAGE_KEY = 'report_filters';
+
+function saveFiltersToStorage() {
+    const form = document.getElementById('report-form');
+    if (!form) return;
+    const data = {};
+    form.querySelectorAll('select, input').forEach(el => {
+        if (el.name) data[el.name] = el.value;
+    });
+    // Also save the visible text for autocomplete search fields
+    const eventSearch = document.getElementById('event_id_search');
+    const volunteerSearch = document.getElementById('volunteer_search');
+    if (eventSearch) data['_event_id_search'] = eventSearch.value;
+    if (volunteerSearch) data['_volunteer_search'] = volunteerSearch.value;
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+function restoreFiltersFromStorage() {
+    const raw = sessionStorage.getItem(STORAGE_KEY);
+    if (!raw) return;
+    const data = JSON.parse(raw);
+    const form = document.getElementById('report-form');
+    if (!form) return;
+
+    // Restore form fields
+    form.querySelectorAll('select, input').forEach(el => {
+        if (el.name && data[el.name] !== undefined) {
+            el.value = data[el.name];
+        }
+    });
+
+    // Restore autocomplete search text
+    const eventSearch = document.getElementById('event_id_search');
+    const volunteerSearch = document.getElementById('volunteer_search');
+    if (eventSearch && data['_event_id_search'] !== undefined) {
+        eventSearch.value = data['_event_id_search'];
+    }
+    if (volunteerSearch && data['_volunteer_search'] !== undefined) {
+        volunteerSearch.value = data['_volunteer_search'];
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    restoreFiltersFromStorage();
+    updateFilters();
+
+    // Save on any change to form inputs
+    const form = document.getElementById('report-form');
+    if (form) {
+        form.addEventListener('change', saveFiltersToStorage);
+        form.addEventListener('input', saveFiltersToStorage);
+    }
+});
 
 // Validate that start date is before end date
 document.addEventListener('DOMContentLoaded', function () {
@@ -129,6 +183,7 @@ function initAutocomplete(searchId, hiddenId, listId, allValue, allPlaceholder) 
             searchInput.value = this.textContent;
             hiddenInput.value = this.getAttribute('data-value');
             list.style.display = 'none';
+            saveFiltersToStorage();
         });
     });
 
@@ -146,6 +201,7 @@ function initAutocomplete(searchId, hiddenId, listId, allValue, allPlaceholder) 
             hiddenInput.value = allValue;
             list.style.display = 'none';
             searchInput.blur();
+            saveFiltersToStorage();
         }
     });
 }
