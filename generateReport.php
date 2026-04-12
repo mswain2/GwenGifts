@@ -61,7 +61,7 @@ require_once('header.php');
 
             <?php if (!empty($_SESSION['report_errors'])): ?>
                 <?php foreach ($_SESSION['report_errors'] as $error): ?>
-                    <p class="error"><?= htmlspecialchars($error) ?></p>
+                    <div class="report-error"><?= htmlspecialchars($error) ?></div>
                 <?php endforeach; ?>
                 <?php unset($_SESSION['report_errors']); ?>
             <?php endif; ?>
