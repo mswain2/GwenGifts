@@ -255,6 +255,15 @@ if (date("H:i:s") > "18:19:59") {
         $current_page = strtolower(substr($_SERVER['PHP_SELF'], strrpos($_SERVER['PHP_SELF'], '/') + 1));
         $current_page = substr($current_page, strpos($current_page, "/"));
 
+        // If user must complete returning volunteer setup, only allow the form and logout
+        if (isset($_SESSION['change-password']) && $_SESSION['change-password']) {
+            $allowed_pages = ['returningvolunteerform.php', 'logout.php'];
+            if (!in_array($current_page, $allowed_pages)) {
+                echo "<script type=\"text/javascript\">window.location = \"returningVolunteerForm.php\";</script>";
+                die();
+            }
+        }
+
         if ($permission_array[$current_page] > $_SESSION['access_level']) {
             //in this case, the user doesn't have permission to view this page.
             //we redirect them to the index page.
