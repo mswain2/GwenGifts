@@ -43,25 +43,23 @@ $validTypes   = ['volunteer_hours', 'volunteer_participation', 'volunteer_growth
 $validPeriods = ['weekly', 'monthly', 'yearly'];
 $validFormats = ['csv', 'pdf'];
 
-if (!in_array($type, $validTypes)) {
-    $_SESSION['report_error'] = 'Invalid report type given.';
-    header('Location: generateReport.php');
-    exit();
-}
+$errors = [];
 
+if (!in_array($type, $validTypes)) {
+    $errors[] = 'Invalid report type given.';
+}
 if (!in_array($timePeriod, $validPeriods)) {
-    $_SESSION['report_error'] = 'Invalid time period for report given.';
-    header('Location: generateReport.php');
-    exit();
+    $errors[] = 'Invalid time period for report given.';
 }
 if (!in_array($format, $validFormats)) {
-    $_SESSION['report_error'] = 'Invalid report format given.';
-    header('Location: generateReport.php');
-    exit();
+    $errors[] = 'Invalid report format given.';
+}
+if ($dateFrom && $dateTo && $dateFrom >= $dateTo) {
+    $errors[] = 'Start date must be before end date.';
 }
 
-if ($dateFrom && $dateTo && $dateFrom >= $dateTo) {
-    $_SESSION['report_error'] = 'Start date must be before end date.';
+if (!empty($errors)) {
+    $_SESSION['report_errors'] = $errors;
     header('Location: generateReport.php');
     exit();
 }
