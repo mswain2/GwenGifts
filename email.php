@@ -60,7 +60,7 @@ function retrieveAllEmails(array $ids = []): array {
 }
 
 function sendEmails(array $emails, string $senderName, string $subject, string $body): array {
-    $url = "https://jenniferp217.sg-host.com/email/send_email.php";
+    $url = "https://jenniferp232.sg-host.com/email/send_email.php";
 
     $payload = [
         "emails" => $emails,

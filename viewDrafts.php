@@ -12,11 +12,11 @@ if (!isset($_SESSION['_id'])) {
     exit;
 }
 
-$isAdmin = $_SESSION['access_level'] >= 2;
+$isEventManager = $_SESSION['access_level'] >= 2;
 $userId = $_SESSION['_id'];
 $message = '';
 
-if (!$isAdmin) {
+if (!$isEventManager) {
     echo "<div class='error-toast'>You do not have permission to view this page.</div>";
     exit();
 }
@@ -30,7 +30,17 @@ if (isset($_GET['delete'])) {
     $stmt->bind_param("is", $draftId, $userId);
     $stmt->execute();
     $stmt->close();
-    $message = "<div class='success-toast'>Draft deleted successfully!</div>";
+    $message = "<div class='happy-toast'>Draft deleted successfully!</div>";
+}
+
+if (isset($_GET['msg'])) {
+    if($_GET['msg'] == "Sent 1, Failed 0"){
+        $message = "<div class='happy-toast'>Draft sent successfully!</div>";
+    }
+    if($_GET['msg'] == "Sent 0, Failed 1"){
+        $message = "<div class='error-toast'>Error sending draft.</div>";
+    }
+    
 }
 
 // === Retrieve Drafts for Current User ===
@@ -48,6 +58,8 @@ $drafts = [];
 while ($row = $result->fetch_assoc()) {
     $drafts[] = $row;
 }
+
+
 
 $stmt->close();
 mysqli_close($connection);
