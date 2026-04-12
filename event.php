@@ -121,6 +121,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         header('Location: event.php?id=' . $eid . '&attachSuccess');
         die();
     }
+    if (isset($_POST['withdraw-submit'])) {
+        $account_name = $_SESSION['_id'];
+        if (remove_user_from_event($id, $account_name)) {
+            header('Location: event.php?id=' . urlencode($id) . '&withdrawSuccess');
+        } else {
+            header('Location: event.php?id=' . urlencode($id) . '&withdrawFail');
+        }
+        die();
+    }
     if (isset($_POST['signup-submit'])) {
         if (!$active) {
             echo 'forbidden';
@@ -290,6 +299,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php endif ?>
         <?php if (isset($_GET['cancelSuccess'])): ?>
             <div class="happy-toast">Sign-up canceled successfully!</div>
+        <?php endif ?>
+        <?php if (isset($_GET['withdrawSuccess'])): ?>
+            <div class="happy-toast">You have withdrawn from this event.</div>
+        <?php endif ?>
+        <?php if (isset($_GET['withdrawFail'])): ?>
+            <div class="happy-toast" style="background-color:#c0392b;">Failed to withdraw. Please try again.</div>
         <?php endif ?>
         <?php if ($displayUpdateMessage): ?>
             <div class="happy-toast">Attendance information updated successfully!</div>
@@ -584,6 +599,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <form action="event.php?id=<?php echo urlencode($id); ?>" method="post">
                 <input type="hidden" name="signup-submit" value="1">
                 <button type="submit" class="button primary">Sign Up!</button>
+            </form>
+            <?php else: ?>
+            <form action="event.php?id=<?php echo urlencode($id); ?>" method="post" onsubmit="return confirm('Are you sure you want to withdraw from this event?');">
+                <input type="hidden" name="withdraw-submit" value="1">
+                <button type="submit" class="button cancel">Withdraw</button>
             </form>
             <?php endif; ?>
             <?php if ($isEventManager) : ?>
