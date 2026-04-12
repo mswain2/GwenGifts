@@ -222,7 +222,7 @@ function trainingDetailsFromPerson($user_info): array
     <h1>View Sign-Up List</h1>
 
     <main class="general">
-        <h2><?php echo htmlspecialchars($event_info['name']); ?></h2>
+        <h2><?php echo $event_info['name']; ?></h2>
 
         <?php if (isset($remove_success)): ?>
             <p class="success"><?php echo htmlspecialchars($remove_success); ?></p>

@@ -8,7 +8,7 @@
     $accessLevel = 0;
     $userID = null;
     $isAdmin = false;
-    if (!isset($_SESSION['access_level']) || $_SESSION['access_level'] < 2) {
+    if (!isset($_SESSION['access_level']) || $_SESSION['access_level'] < 1) {
         header('Location: index.php');
         die();
     }
@@ -20,6 +20,12 @@
         $isAdmin = $accessLevel >= 2;
         $userID = $_SESSION['_id'];
     } else {
+        header('Location: index.php');
+        die();
+    }
+
+    // Volunteers can only view their own profile, not others'
+    if (!$isAdmin && isset($_GET['id']) && strtolower($_GET['id']) !== strtolower($userID)) {
         header('Location: index.php');
         die();
     }
@@ -205,6 +211,9 @@
           </div>
           <div class="flex justify-between py-2">
             <span class="font-medium">AED Certified</span><span><?php echo $user->get_aed_training_completion_formatted() ?></span>
+          </div>
+          <div class="flex justify-between py-2">
+            <span class="font-medium">Hours Volunteered</span><span><?php echo $user->get_total_hours_volunteered() ?></span>
           </div>
         </div>
       </div>
