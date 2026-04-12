@@ -59,6 +59,11 @@ require_once('header.php');
                 <p class="sub-text">Generate reports on volunteer activity filtered by date, event, or volunteer. Reports are available in CSV or PDF format.</p>
             </div>
 
+            <?php if (!empty($_SESSION['report_error'])): ?>
+                <p class="error"><?= htmlspecialchars($_SESSION['report_error']) ?></p>
+                <?php unset($_SESSION['report_error']); ?>
+            <?php endif; ?>
+
             <!-- Form -->
             <form method="POST" action="processReport.php" id="report-form">
 
