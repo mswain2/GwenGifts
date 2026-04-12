@@ -532,7 +532,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             } else {
                                 echo '<span>' . $media['description'] . '</span>';
                                 if ($isEventManager) {
-                                    echo ' <a href="deleteEventMedia.php?eid=' . $id . '&mid=' . $media['id'] . '" onclick="return confirm(\'Delete this media video?\');">Remove</a>';
+                                    echo ' <a style="color: red;" href="deleteEventMedia.php?eid=' . $id . '&mid=' . $media['id'] . '" onclick="return confirm(\'Delete this media video?\');">Remove</a>';
                                 }
                                 echo '<br><iframe width="560" height="315" src="' . $media['url'] . '" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>';
                             }
