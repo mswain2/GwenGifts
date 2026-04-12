@@ -55,7 +55,7 @@ if (!in_array($timePeriod, $validPeriods)) {
     exit();
 }
 if (!in_array($format, $validFormats)) {
-    $_SESSION['report_error'] = 'Invalid report format.';
+    $_SESSION['report_error'] = 'Invalid report format given.';
     header('Location: generateReport.php');
     exit();
 }
