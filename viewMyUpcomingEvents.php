@@ -90,11 +90,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 } */
  
     // Fetch events the user is signed up for
-function fetch_user_signups($user_id, $sortDirection) {
+function fetch_user_upcoming_events($user_id, $sortDirection) {
     $connection = connect();
 
     // Query user's events and sort them by date depending on sort choice
-    $query = "SELECT e.id, e.name, e.startDate 
+    $query = "SELECT e.id, e.name, e.startDate
               FROM dbevents e
               INNER JOIN dbeventpersons ep ON e.id = ep.eventID
               WHERE ep.userID = '$user_id' AND ep.attended=0
@@ -153,7 +153,7 @@ function fetch_my_pending($userid) {
     return $pending;
 }
 
-$upcoming_events = fetch_user_signups($user_id, $sortDirection);
+$upcoming_events = fetch_user_upcoming_events($user_id, $sortDirection);
 $pending_events = fetch_my_pending($user_id);
 ?>
 

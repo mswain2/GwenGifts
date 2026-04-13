@@ -53,10 +53,23 @@ require_once('header.php');
         <div class="top-bar">
             <a href="createBoardDiscussion.php" class="blue-button">+ New Board Discussion</a>
         </div>
+
+        <?php if (in_array($userType, ['admin', 'superadmin'])): ?>
+        <div class="top-bar">
+            <div id="bulk-actions" style="display:none;">
+                <span style="font-weight: bold;">With Selected:</span>
+                <button type="button" class="delete-button" onclick="deleteSelectedDiscussions();">Delete</button>
+            </div>
+        </div>
+        <?php endif; ?>
+
  
         <table>
             <thead>
                 <tr>
+                    <?php if (in_array($userType, ['admin', 'superadmin'])): ?>
+                        <th><input type="checkbox" id="selectAll"></th>
+                    <?php endif; ?>
                     <th>Author</th>
                     <th>Title</th>
                     <th>Date</th>
@@ -68,8 +81,16 @@ require_once('header.php');
                     <?php foreach ($discussions as $discussion): 
                         $person = get_user_from_author($discussion['author_id']);
                         $author_name = $person ? $person->get_first_name() . ' ' . $person->get_last_name() : 'Unknown';
+                        $entryValue = htmlspecialchars($discussion['author_id']) . '|' . htmlspecialchars($discussion['title']) . '|board';
                     ?>
                         <tr>
+
+                            <?php if (in_array($userType, ['admin', 'superadmin'])): ?>
+                                <td>
+                                    <input type="checkbox" class="rowCheckbox" name="selected_discussions[]" value="<?php echo $entryValue; ?>">
+                                </td>
+                            <?php endif; ?>
+
                             <td><?php echo htmlspecialchars($author_name); ?></td>
                             <td><?php echo htmlspecialchars($discussion['title']); ?></td>
                             <td><?php echo htmlspecialchars($discussion['time']); ?></td>
@@ -92,7 +113,7 @@ require_once('header.php');
                         </tr>
                     <?php endforeach; ?>
                 <?php else: ?>
-                    <tr><td colspan="4">No board discussions found.</td></tr>
+                    <tr><td colspan="5">No board discussions found.</td></tr>
                 <?php endif; ?>
             </tbody>
         </table>
@@ -106,6 +127,57 @@ require_once('header.php');
         <a href="discussionMain.php" class="return-button">Back to Discussions Management</a>
     </div>
 </main>
+<script>
+    <?php if (in_array($userType, ['admin', 'superadmin'])): ?>
+    document.getElementById('selectAll').addEventListener('change', function() {
+        const checkboxes = document.querySelectorAll('.rowCheckbox');
+        checkboxes.forEach(cb => cb.checked = this.checked);
+        toggleBulkActions();
+    });
+
+    document.querySelectorAll('.rowCheckbox').forEach(cb => {
+        cb.addEventListener('change', toggleBulkActions);
+    });
+
+    function toggleBulkActions() {
+        const anyChecked = [...document.querySelectorAll('.rowCheckbox')].some(cb => cb.checked);
+        document.getElementById('bulk-actions').style.display = anyChecked ? 'block' : 'none';
+    }
+
+    function deleteSelectedDiscussions() {
+        const selected = [...document.querySelectorAll('.rowCheckbox:checked')]
+            .map(cb => cb.value);
+
+        if (selected.length === 0) {
+            alert('No discussions selected for deletion.');
+            return;
+        }
+
+        if (confirm('Are you sure you want to delete the selected discussions?')) {
+            const formData = new FormData();
+            formData.append('bulk_delete', true);
+            formData.append('selected_discussions', JSON.stringify(selected));
+            formData.append('category', 'board');
+
+            fetch('deleteBulk.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.redirect) {
+                    window.location.href = data.redirect;
+                } else {
+                    alert('An error occurred while deleting discussions.');
+                }
+            })
+            .catch(() => {
+                alert('An error occurred while deleting discussions.');
+            });
+        }
+    }
+    <?php endif; ?>
+</script>
 </body>
 </html>
 <?php ob_end_flush(); ?>

@@ -49,8 +49,20 @@ function loadEnv(string $file): array {
     return $env;
 }
 
+function validateSmtpEnv(array $env): array {
+    $required = ['SMTP_HOST', 'SMTP_USER', 'SMTP_PASS', 'SMTP_PORT', 'SMTP_FROM_NAME'];
+    $missing = [];
+    foreach ($required as $key) {
+        if (empty($env[$key])) {
+            $missing[] = $key;
+        }
+    }
+    return $missing;
+}
+
 // Load .env file
 $env = loadEnv(__DIR__ . '/email/.env');
+$missingEnvKeys = validateSmtpEnv($env);
 
 // ------------------------
 // Send emails via PHPMailer
@@ -59,6 +71,13 @@ function sendEmails(array $emails, string $subject, string $body): array {
     global $env; // use loaded .env variables
     $results = [];
     $success = true;
+
+    $required = ['SMTP_HOST', 'SMTP_USER', 'SMTP_PASS', 'SMTP_PORT', 'SMTP_FROM_NAME'];
+    foreach ($required as $key) {
+        if (empty($env[$key])) {
+            return ['success' => false, 'results' => [['email' => '', 'success' => false, 'error' => "Missing SMTP env key: $key"]]];
+        }
+    }
 
     foreach ($emails as $email) {
         $mail = new PHPMailer(true);
@@ -129,7 +148,12 @@ function retrieveAllEmails(array $ids = []): array {
 // Submit or schedule email
 // ------------------------
 function submitEmail(array $recipientIDs, string $subject, string $body, bool $sendNow, string $sendDate, string $recipientsType): array {
+    global $missingEnvKeys;
     $errors = [];
+
+    if (!empty($missingEnvKeys)) {
+        return ['success' => false, 'errors' => ["Missing SMTP configuration: " . implode(', ', $missingEnvKeys)]];
+    }
 
     // Determine recipients
     if ($recipientsType === 'specific' && !empty($recipientIDs)) {
@@ -145,7 +169,7 @@ function submitEmail(array $recipientIDs, string $subject, string $body, bool $s
 
     // Send Now
     if ($sendNow) {
-        $results = sendEmails(array_values($emails), "WhiskeyValorAdmin", $subject, $body);
+        $results = sendEmails(array_values($emails), $subject, $body);
         if (!$results['success']) {
             foreach ($results['results'] as $f) $errors[] = "Failed to send to {$f['email']}: {$f['error']}";
             return ['success' => false, 'errors' => $errors ?: ["Unknown error sending emails"]];
@@ -180,10 +204,10 @@ function submitEmail(array $recipientIDs, string $subject, string $body, bool $s
 // ------------------------
 // Form handling
 // ------------------------
-$isAdmin = $_SESSION['access_level'] >= 2;
+$isEventManager = $_SESSION['access_level'] >= 2;
 $submissionMessage = '';
 
-if ($isAdmin && $_SERVER["REQUEST_METHOD"] === "POST") {
+if ($isEventManager && $_SERVER["REQUEST_METHOD"] === "POST") {
 
     $action = $_POST['action'] ?? 'send';
     $subject = trim($_POST['subject'] ?? '');
@@ -229,7 +253,7 @@ if ($isAdmin && $_SERVER["REQUEST_METHOD"] === "POST") {
         if (!$stmt->execute()) {
             $submissionMessage = "<div class='error-toast'>Failed to save draft: {$stmt->error}</div>";
         } else {
-            $submissionMessage = "<div class='success-toast'>Draft saved!</div>";
+            $submissionMessage = "<div class='happy-toast'>Draft saved!</div>";
         }
 
         $stmt->close();
@@ -248,7 +272,7 @@ if ($isAdmin && $_SERVER["REQUEST_METHOD"] === "POST") {
             $result = submitEmail($recipientIDs, $subject, $content, $sendNow, $sendDate, $recipientsType);
 
             if ($result['success']) {
-                $submissionMessage = "<div class='success-toast'>Email successfully sent/scheduled!</div>";
+                $submissionMessage = "<div class='happy-toast'>Email successfully sent/scheduled!</div>";
             } else {
                 $submissionMessage = "<div class='error-toast'>Errors:<br>" . implode("<br>", $result['errors']) . "</div>";
             }
@@ -263,19 +287,22 @@ if ($isAdmin && $_SERVER["REQUEST_METHOD"] === "POST") {
 <html>
 <head>
     <?php require_once('universal.inc'); ?>
-    <title>Gwyneth's Gift | Send Email</title>
+    <title>Gwyneth's Gift | Create Email</title>
     <link rel="stylesheet" href="css/base.css">
 </head>
 <body>
 <?php require_once('header.php'); ?>
 <h1>Create Email</h1>
 
-<?php if (!$isAdmin): ?>
+<?php if (!$isEventManager): ?>
     <div class='error-toast'>You do not have permission to view this page.</div>
 <?php else: ?>
 
 <main class="date">
-<?= $submissionMessage ?>
+<?=$submissionMessage ?>
+<?php if (!empty($missingEnvKeys)): ?>
+    <div class='error-toast'>Missing SMTP configuration: <?= htmlspecialchars(implode(', ', $missingEnvKeys)) ?>. Create email/.env with these keys.</div>
+<?php endif; ?>
 
     <form method="POST">
         <label for="subject">* Email Subject</label>
@@ -297,8 +324,8 @@ if ($isAdmin && $_SERVER["REQUEST_METHOD"] === "POST") {
 
         <label for="recipients">Recipients</label>
         <select name="recipients" id="recipients">
-            <option value="all">All Whiskey Valor Members</option>
-            <option value="specific">Specific Users</option>
+            <option value="all">All Gwyneth's Gift Members</option>
+            <option value="specific">Specific User</option>
         </select>
 
         <div id="selectorRecipients" style="display:none;">
@@ -311,7 +338,7 @@ if ($isAdmin && $_SERVER["REQUEST_METHOD"] === "POST") {
             </select>
         </div>
 
-        <button type="submit" name="action" value="send" class="submit-btn">Create Email</button>
+        <button type="submit" name="action" value="send" class="submit-btn">Send Email</button>
         <button type="submit" name="action" value="draft" class="draft-btn">Save Draft</button>
 
     </form>

@@ -208,7 +208,10 @@
             if ($d['numSignups'] >= $d['capacity']) {
                 return '<span class="act-btn act-full">Full</span>' . $viewBtn;
             }
-            return '<a class="act-btn act-register" href="eventSignUp.php?event_name=' . urlencode($d['title']) . '&restricted=' . urlencode($access) . '&id=' . urlencode($d['eventID']) . '">Sign Up</a>' . $viewBtn;
+            return '<form action="event.php?id=' . urlencode($d['eventID']) . '" method="post" style="display:inline">'
+                 . '<input type="hidden" name="signup-submit" value="1">'
+                 . '<button type="submit" class="act-btn act-register">Sign Up</button>'
+                 . '</form>' . $viewBtn;
         }
 
         // Capacity ring SVG (used in card view)

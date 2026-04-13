@@ -1,6 +1,5 @@
-<!--Looks like a combo of editHours.php and editEvent.php - Kenzie-->
-
 <?php
+    ob_start();
     session_cache_expire(30);
     session_start();
     date_default_timezone_set("America/New_York");
@@ -151,3 +150,4 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     </main>
 </body>
 </html>
+<?php ob_end_flush(); ?>

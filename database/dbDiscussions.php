@@ -159,6 +159,16 @@ function discussion_exists($title, $category = null) {
     return $exists;
 }
 
+function deleteAllDiscussions($category = 'general') {
+    $con = connect();
+    $safe_category = mysqli_real_escape_string($con, $category);
+    
+    $result1 = mysqli_query($con, "DELETE FROM discussion_replies WHERE category = '$safe_category'");
+    $result2 = mysqli_query($con, "DELETE FROM dbdiscussions WHERE category = '$safe_category'");
+    
+    mysqli_close($con);
+    return $result1 && $result2;
+}
 
 function deleteDiscussions($discussions) {
     $con = connect();

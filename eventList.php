@@ -40,6 +40,20 @@ $isManager = in_array($userType, ['event_manager', 'board_member', 'admin', 'sup
 
 //Approve or reject hours if form submitted
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $isManager) {
+
+    if (isset($_POST['manual_hours_action'])) {
+        $username = $_POST['manual_hours_username'] ?? ''; 
+        $hours = intval($_POST['manual_hours'] ?? 0);
+        $minutes = intval($_POST['manual_minutes'] ?? 0);
+        $total = $hours + ($minutes / 60);
+
+        if ($total > 0) {
+            add_hours_to_person($username, $total);
+        }
+        header('Location: eventList.php?username=' . urlencode($username) . '&hours_added=' . $hours . 'h' . $minutes . 'm');
+        exit();
+    }
+
     $action     = $_POST['action']     ?? null;
     $personID   = $_POST['personID']   ?? null;
     $eventID    = $_POST['eventID']    ?? null;
@@ -126,6 +140,30 @@ $event_ids = get_attended_event_ids($username);
     <?php endif ?>
  
     <main class="general">
+        <?php if ($isManager): ?>
+            <fieldset class="section-box" style="margin-bottom: 1.5rem;">
+                <h2>Manually Add Hours</h2>
+                <?php if (isset($_GET['hours_added'])): ?>
+                    <p style="color: green;">✓ <?php echo htmlspecialchars($_GET['hours_added']); ?> successfully added.</p>
+                <?php endif; ?>
+                <form method="POST" style="display:flex; gap:1rem; align-items:center; flex-wrap:wrap;">
+                    <input type="hidden" name="manual_hours_action" value="1">
+                    <input type="hidden" name="manual_hours_username" value="<?php echo htmlspecialchars($username); ?>">
+                    <label>Hours:</label>
+                    <input type="number" name="manual_hours" min="0" step="1" value="0"
+                        style="padding:6px 10px; border-radius:4px; border:1px solid #ccc; width:80px;">
+                    <label>Minutes:</label>
+                    <input type="number" name="manual_minutes" min="0" max="59" step="1" value="0"
+                        style="padding:6px 10px; border-radius:4px; border:1px solid #ccc; width:80px;">
+                    <button type="submit" class="button success"
+                            style="height:36px; padding:0 16px;"
+                            onclick="return confirm('Add these hours to this volunteer?');">
+                        Add Hours
+                    </button>
+                </form>
+            </fieldset>
+        <?php endif; ?>
+
         <?php if (!empty($event_ids)): ?>
  
             <?php foreach ($event_ids as $event_id): ?>
