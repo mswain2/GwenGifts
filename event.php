@@ -135,6 +135,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             echo 'forbidden';
             die();
         }
+        if (htmlspecialchars_decode($event_info['startDate']) < date('Y-m-d')) {
+            header('Location: event.php?id=' . urlencode($id));
+            die();
+        }
         $account_name = $_SESSION['_id'];
         $event_type = isset($event_info['type']) ? $event_info['type'] : '';
         $event_name = htmlspecialchars_decode($event_info['name']);
@@ -595,12 +599,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <?php endif ?>
             <?php endif*/ ?>
 
-            <?php if (!check_if_signed_up($id, $user->get_id())): ?>
+            <?php if (!check_if_signed_up($id, $user->get_id()) && !$event_in_past): ?>
             <form action="event.php?id=<?php echo urlencode($id); ?>" method="post">
                 <input type="hidden" name="signup-submit" value="1">
                 <button type="submit" class="button primary">Sign Up!</button>
             </form>
-            <?php else: ?>
+            <?php elseif (check_if_signed_up($id, $user->get_id())): ?>
             <form action="event.php?id=<?php echo urlencode($id); ?>" method="post" onsubmit="return confirm('Are you sure you want to withdraw from this event?');">
                 <input type="hidden" name="withdraw-submit" value="1">
                 <button type="submit" class="button cancel">Withdraw</button>
