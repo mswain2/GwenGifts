@@ -16,7 +16,7 @@ function retrieveAllEmails(array $ids = []): array {
 
     // --- ALL members ---
     if (empty($ids)) {
-        $query = "SELECT id, email FROM dbpersons WHERE email IS NOT NULL AND email != ''";
+        $query = "SELECT id, email FROM dbpersons WHERE email IS NOT NULL AND email != '' AND email_prefs = 'true'";
         $res = $conn->query($query);
         while ($row = $res->fetch_assoc()) {
             $emails[$row['id']] = $row['email'];

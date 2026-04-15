@@ -118,7 +118,7 @@ function retrieveAllEmails(array $ids = []): array {
     $emails = [];
 
     if (empty($ids)) {
-        $res = $conn->query("SELECT id, email FROM dbpersons WHERE email IS NOT NULL AND email != ''");
+        $res = $conn->query("SELECT id, email FROM dbpersons WHERE email IS NOT NULL AND email != '' AND email_prefs = 'true'");
         while ($row = $res->fetch_assoc()) {
             $emails[$row['id']] = $row['email'];
         }
@@ -128,7 +128,7 @@ function retrieveAllEmails(array $ids = []): array {
     $placeholders = implode(',', array_fill(0, count($ids), '?'));
     $types = str_repeat('s', count($ids));
 
-    $sql = "SELECT id, email FROM dbpersons WHERE id IN ($placeholders) AND email IS NOT NULL AND email != ''";
+    $sql = "SELECT id, email FROM dbpersons WHERE id IN ($placeholders) AND email IS NOT NULL AND email != '' AND email_prefs = 'true'";
     $stmt = $conn->prepare($sql);
     if ($stmt === false) return [];
 
@@ -149,25 +149,25 @@ function retrieveRoleEmails(string $recipientsType){
     $emails = [];
 
     if ($recipientsType === 'vols'){
-        $res = $conn->query("SELECT id, email FROM dbpersons WHERE email IS NOT NULL AND email != '' AND type = 'volunteer'");
+        $res = $conn->query("SELECT id, email FROM dbpersons WHERE email IS NOT NULL AND email != '' AND email_prefs = 'true' AND type = 'volunteer'");
         while ($row = $res->fetch_assoc()) {
             $emails[$row['id']] = $row['email'];
         }
         return $emails;
     } elseif ($recipientsType === 'ems'){
-        $res = $conn->query("SELECT id, email FROM dbpersons WHERE email IS NOT NULL AND email != '' AND type = 'event_manager'");
+        $res = $conn->query("SELECT id, email FROM dbpersons WHERE email IS NOT NULL AND email != '' AND email_prefs = 'true' AND type = 'event_manager'");
         while ($row = $res->fetch_assoc()) {
             $emails[$row['id']] = $row['email'];
         }
         return $emails;
     } elseif ($recipientsType === 'bms'){
-        $res = $conn->query("SELECT id, email FROM dbpersons WHERE email IS NOT NULL AND email != '' AND type = 'board_member'");
+        $res = $conn->query("SELECT id, email FROM dbpersons WHERE email IS NOT NULL AND email != '' AND email_prefs = 'true' AND type = 'board_member'");
         while ($row = $res->fetch_assoc()) {
             $emails[$row['id']] = $row['email'];
         }
         return $emails;
     } elseif ($recipientsType === 'admin'){
-        $res = $conn->query("SELECT id, email FROM dbpersons WHERE email IS NOT NULL AND email != '' AND type = 'admin'");
+        $res = $conn->query("SELECT id, email FROM dbpersons WHERE email IS NOT NULL AND email != '' AND email_prefs = 'true' AND type = 'admin'");
         while ($row = $res->fetch_assoc()) {
             $emails[$row['id']] = $row['email'];
         }
@@ -198,6 +198,8 @@ function submitEmail(array $recipientIDs, string $subject, string $body, bool $s
         $emails = retrieveAllEmails();
         $recipientIDs = array_keys($emails);
     }
+    var_dump($emails);
+    die();
 
     if (empty($emails)) {
         return ['success' => false, 'errors' => ["No emails found for selected recipients."]];
