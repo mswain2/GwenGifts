@@ -24,6 +24,8 @@ if (isset($_SESSION['access_level']) && $_SESSION['access_level'] >= 1) {
 // }
 
 require_once('include/input-validation.php');
+include_once(__DIR__ . '/email.php');
+require_once('include/time.php');
 $args = sanitize($_GET);
 $displayUpdateMessage = false;
 if (isset($args["id"])) {
@@ -80,6 +82,8 @@ $active = $user->get_status() == 'Active';
 
 ini_set("display_errors", 1);
 error_reporting(E_ALL);
+$env = loadEnv(__DIR__ . '/email/.env');
+$missingEnvKeys = validateSmtpEnv($env);
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $args = sanitize($_POST);
     $get = sanitize($_GET);
@@ -165,6 +169,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 die();
             }
             send_system_message($account_name, "You are now signed up for $event_name!", "Thank you for signing up for $event_name!");
+            
+            $subject = "Gwyneth's Gift Sign-up Confirmation for " . $event_name;
+            $content = "You have signed up to attend  " . $event_name . 
+            " from " . time24hTo12h($event_info['startTime']) . " to " . time24hTo12h($event_info['endTime']) . " on " . 
+            (new DateTime($event_info['startDate']))->format('m-d-Y') . "!";
+            
+            // Collect recipient IDs
+            $recipientIDs = [$account_name];
+            $recipientsType = "specific";
+            $result = submitEmail($recipientIDs, $subject, $content, true, '', $recipientsType);
+
+            $subject = "Gwyneth's Gift Event Reminder: " . $event_name;
+            $content = "This is a reminder to attend  " . $event_name . 
+            " from " . time24hTo12h($event_info['startTime']) . " to " . time24hTo12h($event_info['endTime']) . " today!";
+            
+            // Collect recipient IDs
+            $recipientIDs = [$account_name];
+            $recipientsType = "specific";
+            $result = submitEmail($recipientIDs, $subject, $content, false, $event_info['startDate'], $recipientsType);
+
+            /*if ($result['success']) {
+                var_dump('success');
+                die();
+            } else {
+                var_dump('error');
+                var_dump("Errors:<br>" . implode("<br>", $result['errors']));
+                die();
+            }*/
             header('Location: signupSuccess.php');
             die();
         }
@@ -377,7 +409,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         //$event_training_level = $event_info['affiliation'];
         $num_signups = $event_num_signups['RowCount'];
         $recurrence = $event_info['recurrence_interval_days'];
-        require_once('include/time.php');
         ?>
 
         <!-- Event Information Table -->
