@@ -191,7 +191,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $password, null, null, null,
             $emergency_contact_last_name,
             $gender, $t_shirt_size, $computer_access, $camera_access,
-            $transportation_access, $skills, $experience, $about_consent
+            $transportation_access, $skills, $experience, $about_consent, $force_password_change=0
         );
 
         $result = add_person($newperson);
