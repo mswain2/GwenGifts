@@ -144,6 +144,37 @@ function retrieveAllEmails(array $ids = []): array {
     return $emails;
 }
 
+function retrieveRoleEmails(string $recipientsType){
+    $conn = connect();
+    $emails = [];
+
+    if ($recipientsType === 'vols'){
+        $res = $conn->query("SELECT id, email FROM dbpersons WHERE email IS NOT NULL AND email != '' AND type = 'volunteer'");
+        while ($row = $res->fetch_assoc()) {
+            $emails[$row['id']] = $row['email'];
+        }
+        return $emails;
+    } elseif ($recipientsType === 'ems'){
+        $res = $conn->query("SELECT id, email FROM dbpersons WHERE email IS NOT NULL AND email != '' AND type = 'event_manager'");
+        while ($row = $res->fetch_assoc()) {
+            $emails[$row['id']] = $row['email'];
+        }
+        return $emails;
+    } elseif ($recipientsType === 'bms'){
+        $res = $conn->query("SELECT id, email FROM dbpersons WHERE email IS NOT NULL AND email != '' AND type = 'board_member'");
+        while ($row = $res->fetch_assoc()) {
+            $emails[$row['id']] = $row['email'];
+        }
+        return $emails;
+    } elseif ($recipientsType === 'admin'){
+        $res = $conn->query("SELECT id, email FROM dbpersons WHERE email IS NOT NULL AND email != '' AND type = 'admin'");
+        while ($row = $res->fetch_assoc()) {
+            $emails[$row['id']] = $row['email'];
+        }
+        return $emails;
+    }
+}
+
 // ------------------------
 // Submit or schedule email
 // ------------------------
@@ -158,7 +189,12 @@ function submitEmail(array $recipientIDs, string $subject, string $body, bool $s
     // Determine recipients
     if ($recipientsType === 'specific' && !empty($recipientIDs)) {
         $emails = retrieveAllEmails($recipientIDs);
-    } else {
+    } 
+    elseif ($recipientsType === 'vols' || $recipientsType === 'ems' || $recipientsType === 'bms' || $recipientsType === 'admin'){
+        $emails = retrieveRoleEmails($recipientsType);
+        $recipientIDs = array_keys($emails);
+    }
+    else {
         $emails = retrieveAllEmails();
         $recipientIDs = array_keys($emails);
     }
@@ -240,7 +276,7 @@ if ($isEventManager && $_SERVER["REQUEST_METHOD"] === "POST") {
 
         // use the real recipientID selected from the form
         // If no recipient selected, store "all"
-        $rid = $recipientID !== '' ? $recipientID : "all";
+        $rid = $recipientID !== '' ? $recipientID : $recipientsType;
 
 
         $stmt->bind_param("ssss", 
@@ -325,13 +361,17 @@ if ($isEventManager && $_SERVER["REQUEST_METHOD"] === "POST") {
         <label for="recipients">Recipients</label>
         <select name="recipients" id="recipients">
             <option value="all">All Gwyneth's Gift Members</option>
+            <option value="vols">Volunteers</option>
+            <option value="ems">Event Managers</option>
+            <option value="bms">Board Members</option>
+            <option value="admin">Administrators</option>
             <option value="specific">Specific User</option>
         </select>
 
         <div id="selectorRecipients" style="display:none;">
             <label for="recipientID">Select Member</label>
             <select id="recipientID" name="recipientID">
-                <option value="">-- Select a Member --</option>
+                <option value="">-- Select a Member or Type to Search --</option>
                 <?php foreach ($allMembers as $m): ?>
                     <option value="<?= htmlspecialchars($m['value']) ?>"><?= htmlspecialchars($m['label']) ?></option>
                 <?php endforeach; ?>
