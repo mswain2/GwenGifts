@@ -100,6 +100,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $transportation_access = $args['transportation_access'] ?? null;
     if (empty($transportation_access)) { $errors = true; $error_messages['transportation_access'] = 'Please select an option.'; }
 
+    $has_disability = $args['has_disability'] ?? 'no';
+    if (!valueConstrainedTo($has_disability, ['yes', 'no'])) {
+        $errors = true; $error_messages['has_disability'] = 'Please select an option.';
+    }
+    $disability_specifications = ($has_disability === 'yes') ? ($args['disability_specifications'] ?? '') : '';
+
     $skills     = $args['skills']     ?? null;
     $experience = $args['experience'] ?? null;
 
@@ -216,6 +222,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 transportation_access = '" . $transportation_access . "',
                 skills = '" . mysqli_real_escape_string($con, $skills ?? '') . "',
                 experience = '" . mysqli_real_escape_string($con, $experience ?? '') . "',
+                has_disability = '" . mysqli_real_escape_string($con, $has_disability) . "',
+                disability_specifications = '" . mysqli_real_escape_string($con, $disability_specifications) . "',
                 password = '" . $password . "',
                 force_password_change = 0
                 WHERE id = '" . mysqli_real_escape_string($con, $id) . "'";
