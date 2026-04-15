@@ -54,7 +54,19 @@ $draft = $result->fetch_assoc();
 $query->close();
 
 // Determine recipients value based on existing draft
-$recipientsValue = ($draft['recipientID'] === 'all') ? 'all' : 'specific';
+if ($draft['recipientID'] === 'all') {
+    $recipientsValue = 'all';
+} elseif ($draft['recipientID'] === 'vols') {
+    $recipientsValue = 'vols';
+} elseif ($draft['recipientID'] === 'ems') {
+    $recipientsValue = 'ems';
+} elseif ($draft['recipientID'] === 'bms') {
+    $recipientsValue = 'bms';
+} elseif ($draft['recipientID'] === 'admin') {
+    $recipientsValue = 'admin';
+} else {
+    $recipientsValue = 'specific';
+}
 
 // Determine send type based on existing draft
 $sendTypeValue = empty($draft['scheduledSend']) ? 'draft' : 'schedule';
@@ -64,7 +76,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $subject = $_POST['subject'] ?? '';
     $body = $_POST['body'] ?? '';
     $recipients = $_POST['recipients'] ?? 'all';
-    $recipientID = ($recipients === 'all') ? 'all' : ($_POST['recipientID'] ?? '');
+    $recipientID = ($recipients === 'specific') ? ($_POST['recipientID'] ?? '') : $recipients;
     $sendType = $_POST['sendType'] ?? 'draft';
     $scheduledSend = ($sendType === 'schedule') ? ($_POST['scheduledSend'] ?? null) : null;
 
@@ -93,7 +105,19 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 }
 
 // Recalculate recipients value after potential update
-$recipientsValue = ($draft['recipientID'] === 'all') ? 'all' : 'specific';
+if ($draft['recipientID'] === 'all') {
+    $recipientsValue = 'all';
+} elseif ($draft['recipientID'] === 'vols') {
+    $recipientsValue = 'vols';
+} elseif ($draft['recipientID'] === 'ems') {
+    $recipientsValue = 'ems';
+} elseif ($draft['recipientID'] === 'bms') {
+    $recipientsValue = 'bms';
+} elseif ($draft['recipientID'] === 'admin') {
+    $recipientsValue = 'admin';
+} else {
+    $recipientsValue = 'specific';
+}
 
 // Recalculate send type value after potential update
 $sendTypeValue = empty($draft['scheduledSend']) ? 'draft' : 'schedule';
@@ -128,7 +152,11 @@ mysqli_close($conn);
         <label for="recipients">Recipients</label>
         <select name="recipients" id="recipients">
             <option value="all" <?php if ($recipientsValue == 'all') echo 'selected'; ?>>All Gwyneth's Gift Members</option>
-            <option value="specific" <?php if ($recipientsValue == 'specific') echo 'selected'; ?>>Specific Users</option>
+            <option value="vols" <?php if ($recipientsValue == 'vols') echo 'selected'; ?>>Volunteers</option>
+            <option value="ems" <?php if ($recipientsValue == 'ems') echo 'selected'; ?>>Event Managers</option>
+            <option value="bms" <?php if ($recipientsValue == 'bms') echo 'selected'; ?>>Board Members</option>
+            <option value="admin" <?php if ($recipientsValue == 'admin') echo 'selected'; ?>>Administrators</option>
+            <option value="specific" <?php if ($recipientsValue == 'specific') echo 'selected'; ?>>Specific User</option>
         </select>
 
         <div id="selectorRecipients" style="display:none;">
