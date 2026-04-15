@@ -139,6 +139,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             header('Location: event.php?id=' . urlencode($id));
             die();
         }
+        if ($event_num_signups['RowCount'] >= intval(htmlspecialchars_decode($event_info['capacity']))) {
+            header('Location: event.php?id=' . urlencode($id));
+            die();
+        }
         $account_name = $_SESSION['_id'];
         $event_type = isset($event_info['type']) ? $event_info['type'] : '';
         $event_name = htmlspecialchars_decode($event_info['name']);
@@ -599,7 +603,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <?php endif ?>
             <?php endif*/ ?>
 
-            <?php if (!check_if_signed_up($id, $user->get_id()) && !$event_in_past): ?>
+            <?php if (!check_if_signed_up($id, $user->get_id()) && !$event_in_past && $num_signups < $event_capacity): ?>
             <form action="event.php?id=<?php echo urlencode($id); ?>" method="post">
                 <input type="hidden" name="signup-submit" value="1">
                 <button type="submit" class="button primary">Sign Up!</button>

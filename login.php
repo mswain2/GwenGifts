@@ -153,10 +153,10 @@
                         echo '<span class="text-white bg-red-700 text-center block p-2 rounded-lg mb-2">No login with that username and password combination currently exists.</span>';
                     }
                     if ($archivedAccount) {
-                        echo '<span class="text-white bg-red-700 block p-2 rounded-lg mb-2">This account has either been archived or not yet approved by managment. For help, notify <a href="mailto:volunteer@fredspca.org">volunteer@fredspca.org</a>.</span>';
+                        echo '<span class="text-black text-center block p-2 rounded-lg mb-2" style="background-color:#f6a4b5;">This account is deactivated. For administrative assistance, please contact <a href="mailto:gwynethsgift2012@gmail.com">gwynethsgift2012@gmail.com</a>.</span>';
                     }
 		    if (isset($_GET['registerSuccess'])) {
-                        echo '<span class="text-white text-center bg-green-700 block p-2 rounded-lg mb-2">Registration Successful! Please login below.</span>';
+                        echo '<span class="text-white text-center block p-2 rounded-lg mb-2" style="background-color:#2f4159;">Registration Successful! Please login below.</span>';
 		    } 
                 ?>
         <div class="mb-4">
