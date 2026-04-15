@@ -375,6 +375,17 @@ class Person {
 		return number_format(floatval($this->total_hours_volunteered ?? 0), 2);
 	}
 
+	function get_total_hours_volunteered_formatted() {
+		$decimal = floatval($this->total_hours_volunteered ?? 0);
+		$total_minutes = round($decimal * 60);
+		$h = intdiv($total_minutes, 60);
+		$m = $total_minutes % 60;
+		if ($h > 0 && $m > 0) return "{$h} hr {$m} min";
+		if ($h > 0) return "{$h} hr";
+		if ($m > 0) return "{$m} min";
+		return "0 min";
+	}
+
 	function set_total_hours_volunteered($hours) {
 		$this->total_hours_volunteered = $hours;
 	}

@@ -42,15 +42,29 @@ $isManager = in_array($userType, ['event_manager', 'board_member', 'admin', 'sup
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $isManager) {
 
     if (isset($_POST['manual_hours_action'])) {
-        $username = $_POST['manual_hours_username'] ?? ''; 
+        $username = $_POST['manual_hours_username'] ?? '';
         $hours = intval($_POST['manual_hours'] ?? 0);
         $minutes = intval($_POST['manual_minutes'] ?? 0);
         $total = $hours + ($minutes / 60);
+        $label = $hours . 'h' . $minutes . 'm';
 
         if ($total > 0) {
-            add_hours_to_person($username, $total);
+            if ($_POST['manual_hours_action'] === 'add') {
+                add_hours_to_person($username, $total);
+                header('Location: eventList.php?username=' . urlencode($username) . '&hours_added=' . $label);
+            } else {
+                $viewed = retrieve_person($username);
+                $current = $viewed ? floatval($viewed->get_total_hours_volunteered()) : 0;
+                $new_total = max(0, $current - $total);
+                $con = connect();
+                $safe_user = mysqli_real_escape_string($con, $username);
+                mysqli_query($con, "UPDATE dbpersons SET total_hours_volunteered = '$new_total' WHERE id = '$safe_user'");
+                mysqli_close($con);
+                header('Location: eventList.php?username=' . urlencode($username) . '&hours_removed=' . $label);
+            }
+        } else {
+            header('Location: eventList.php?username=' . urlencode($username));
         }
-        header('Location: eventList.php?username=' . urlencode($username) . '&hours_added=' . $hours . 'h' . $minutes . 'm');
         exit();
     }
 
@@ -142,12 +156,13 @@ $event_ids = get_attended_event_ids($username);
     <main class="general">
         <?php if ($isManager): ?>
             <fieldset class="section-box" style="margin-bottom: 1.5rem;">
-                <h2>Manually Add Hours</h2>
+                <h2>Manually Configure Hours</h2>
                 <?php if (isset($_GET['hours_added'])): ?>
                     <p style="color: green;">✓ <?php echo htmlspecialchars($_GET['hours_added']); ?> successfully added.</p>
+                <?php elseif (isset($_GET['hours_removed'])): ?>
+                    <p style="color: green;">✓ <?php echo htmlspecialchars($_GET['hours_removed']); ?> successfully removed.</p>
                 <?php endif; ?>
                 <form method="POST" style="display:flex; gap:1rem; align-items:center; flex-wrap:wrap;">
-                    <input type="hidden" name="manual_hours_action" value="1">
                     <input type="hidden" name="manual_hours_username" value="<?php echo htmlspecialchars($username); ?>">
                     <label>Hours:</label>
                     <input type="number" name="manual_hours" min="0" step="1" value="0"
@@ -155,10 +170,15 @@ $event_ids = get_attended_event_ids($username);
                     <label>Minutes:</label>
                     <input type="number" name="manual_minutes" min="0" max="59" step="1" value="0"
                         style="padding:6px 10px; border-radius:4px; border:1px solid #ccc; width:80px;">
-                    <button type="submit" class="button success"
+                    <button type="submit" name="manual_hours_action" value="add" class="button success"
                             style="height:36px; padding:0 16px;"
                             onclick="return confirm('Add these hours to this volunteer?');">
                         Add Hours
+                    </button>
+                    <button type="submit" name="manual_hours_action" value="remove" class="button danger"
+                            style="height:36px; padding:0 16px;"
+                            onclick="return confirm('Remove these hours from this volunteer?');">
+                        Remove Hours
                     </button>
                 </form>
             </fieldset>
