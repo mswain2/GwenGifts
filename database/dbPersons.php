@@ -665,6 +665,7 @@ function make_a_person($result_row) {
     @$result_row['force_password_change']
     );
     $thePerson->set_profile_pic(@$result_row['profile_pic'] ?: 'images/usaicon.png');
+    $thePerson->set_total_hours_volunteered(floatval($result_row['total_hours_volunteered'] ?? 0));
 
     $thePerson->set_cpr_training_completion(@$result_row['cpr_training_completion'] ?: 'no');
     $thePerson->set_aed_training_completion(@$result_row['aed_training_completion'] ?: 'no');

@@ -2,3 +2,6 @@
 .claude/
 CLAUDE.md
 sql/.DS_Store
+.gitignore
+training_docs
+board_docs

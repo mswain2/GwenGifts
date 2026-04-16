@@ -223,12 +223,13 @@ if (date("H:i:s") > "18:19:59") {
         $permission_array['noshows.php'] = 2;
         $permission_array["view_encrypted_gallery.php"] = 2;
         $permission_array['upload_encrypted_image.php'] = 1;
-        $permission_array['createsuggestion.php'] = 1;
-        $permission_array['viewsuggestion.php'] = 2;
+        $permission_array['eventsignup.php'] = 99;
+        $permission_array['createsuggestion.php'] = 99;
+        $permission_array['viewsuggestion.php'] = 99;
         $permission_array['boarddocuments.php'] = 1;
         $permission_array['addboarddocument.php'] = 2;
         $permission_array['addboardmeeting.php'] = 2;
-        $permission_array['viewsuggestions.php'] = 2;
+        $permission_array['viewsuggestions.php'] = 99;
         $permission_array['eventtrainingmanagement.php'] = 2;
         $permission_array['viewboarddiscussions.php'] = 1;
         $permission_array['createboarddiscussion.php'] = 1;
@@ -254,6 +255,15 @@ if (date("H:i:s") > "18:19:59") {
         //Check if they're at a valid page for their access level.
         $current_page = strtolower(substr($_SERVER['PHP_SELF'], strrpos($_SERVER['PHP_SELF'], '/') + 1));
         $current_page = substr($current_page, strpos($current_page, "/"));
+
+        // If user must complete returning volunteer setup, only allow the form and logout
+        if (isset($_SESSION['change-password']) && $_SESSION['change-password']) {
+            $allowed_pages = ['returningvolunteerform.php', 'logout.php'];
+            if (!in_array($current_page, $allowed_pages)) {
+                echo "<script type=\"text/javascript\">window.location = \"returningVolunteerForm.php\";</script>";
+                die();
+            }
+        }
 
         if ($permission_array[$current_page] > $_SESSION['access_level']) {
             //in this case, the user doesn't have permission to view this page.

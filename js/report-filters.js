@@ -46,4 +46,167 @@ function updateFilters() {
 }
 
 document.getElementById('type').addEventListener('change', updateFilters);
-document.addEventListener('DOMContentLoaded', updateFilters);
+
+// --- Filter persistence via sessionStorage ---
+const STORAGE_KEY = 'report_filters';
+
+function saveFiltersToStorage() {
+    const form = document.getElementById('report-form');
+    if (!form) return;
+    const data = {};
+    form.querySelectorAll('select, input').forEach(el => {
+        if (el.name) data[el.name] = el.value;
+    });
+    // Also save the visible text for autocomplete search fields
+    const eventSearch = document.getElementById('event_id_search');
+    const volunteerSearch = document.getElementById('volunteer_search');
+    if (eventSearch) data['_event_id_search'] = eventSearch.value;
+    if (volunteerSearch) data['_volunteer_search'] = volunteerSearch.value;
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+function restoreFiltersFromStorage() {
+    const raw = sessionStorage.getItem(STORAGE_KEY);
+    if (!raw) return;
+    const data = JSON.parse(raw);
+    const form = document.getElementById('report-form');
+    if (!form) return;
+
+    // Restore form fields
+    form.querySelectorAll('select, input').forEach(el => {
+        if (el.name && data[el.name] !== undefined) {
+            el.value = data[el.name];
+        }
+    });
+
+    // Restore autocomplete search text
+    const eventSearch = document.getElementById('event_id_search');
+    const volunteerSearch = document.getElementById('volunteer_search');
+    if (eventSearch && data['_event_id_search'] !== undefined) {
+        eventSearch.value = data['_event_id_search'];
+    }
+    if (volunteerSearch && data['_volunteer_search'] !== undefined) {
+        volunteerSearch.value = data['_volunteer_search'];
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    restoreFiltersFromStorage();
+    updateFilters();
+
+    // Save on any change to form inputs
+    const form = document.getElementById('report-form');
+    if (form) {
+        form.addEventListener('change', saveFiltersToStorage);
+        form.addEventListener('input', saveFiltersToStorage);
+    }
+});
+
+// Validate that start date is before end date
+document.addEventListener('DOMContentLoaded', function () {
+    const dateFrom = document.getElementById('date_from');
+    const dateTo = document.getElementById('date_to');
+    if (!dateFrom || !dateTo) return;
+
+    function updateDateMin() {
+        if (dateFrom.value) {
+            // End date must be at least one day after start date
+            const next = new Date(dateFrom.value);
+            next.setDate(next.getDate() + 1);
+            const yyyy = next.getFullYear();
+            const mm = String(next.getMonth() + 1).padStart(2, '0');
+            const dd = String(next.getDate()).padStart(2, '0');
+            dateTo.min = yyyy + '-' + mm + '-' + dd;
+        } else {
+            dateTo.removeAttribute('min');
+        }
+        dateTo.setCustomValidity('');
+    }
+
+    dateFrom.addEventListener('input', updateDateMin);
+    dateTo.addEventListener('input', function () {
+        dateTo.setCustomValidity('');
+    });
+
+    updateDateMin();
+
+    // On submit, if end date is invalid, scroll to it and show the browser tooltip
+    const form = document.getElementById('report-form');
+    if (form) {
+        form.addEventListener('submit', function (e) {
+            if (dateFrom.value && dateTo.value && dateTo.validity && !dateTo.validity.valid) {
+                e.preventDefault();
+                dateTo.reportValidity();
+            }
+        });
+    }
+});
+
+// Autocomplete for Event and Volunteer fields
+function initAutocomplete(searchId, hiddenId, listId, allValue, allPlaceholder) {
+    const searchInput = document.getElementById(searchId);
+    const hiddenInput = document.getElementById(hiddenId);
+    const list = document.getElementById(listId);
+    if (!searchInput || !list) return;
+
+    const items = list.querySelectorAll('.autocomplete-item');
+
+    searchInput.addEventListener('focus', function () {
+        filterItems('');
+        list.style.display = 'block';
+    });
+
+    searchInput.addEventListener('input', function () {
+        const query = this.value.toLowerCase();
+        hiddenInput.value = allValue;
+        filterItems(query);
+        list.style.display = 'block';
+    });
+
+    function filterItems(query) {
+        let hasVisible = false;
+        items.forEach(item => {
+            const text = item.textContent.toLowerCase();
+            if (!query || text.includes(query)) {
+                item.style.display = 'block';
+                hasVisible = true;
+            } else {
+                item.style.display = 'none';
+            }
+        });
+        list.style.display = hasVisible ? 'block' : 'none';
+    }
+
+    items.forEach(item => {
+        item.addEventListener('mousedown', function (e) {
+            e.preventDefault();
+            searchInput.value = this.textContent;
+            hiddenInput.value = this.getAttribute('data-value');
+            list.style.display = 'none';
+            saveFiltersToStorage();
+        });
+    });
+
+    searchInput.addEventListener('blur', function () {
+        list.style.display = 'none';
+        if (!searchInput.value.trim()) {
+            hiddenInput.value = allValue;
+        }
+    });
+
+    // Allow clearing to reset to "all"
+    searchInput.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+            searchInput.value = '';
+            hiddenInput.value = allValue;
+            list.style.display = 'none';
+            searchInput.blur();
+            saveFiltersToStorage();
+        }
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    initAutocomplete('event_id_search', 'event_id', 'event_id_list', 'all', 'All Events');
+    initAutocomplete('volunteer_search', 'volunteer', 'volunteer_list', 'all', 'All Volunteers');
+});

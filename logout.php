@@ -27,5 +27,6 @@ session_write_close();
         <main>
             <p class="happy-toast centered">You have been logged out.</p>
         </main>
+        <script>sessionStorage.removeItem('report_filters');</script>
     </body>
 </html>

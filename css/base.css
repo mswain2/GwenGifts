@@ -978,6 +978,17 @@ form.signup-form a:hover {
 .report-description strong {
     color: var(--main-color);
 }
+.report-error {
+    background-color: #fef2f2;
+    border-left: 4px solid #b91c1c;
+    border-radius: 4px;
+    padding: 0.75rem 1rem;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    color: #7f1d1d;
+    line-height: 1.5;
+}
 /* Filter show/hide animation */
 [data-reports] {
     transition: opacity 0.25s ease, max-height 0.3s ease;
@@ -2003,6 +2014,7 @@ main.user-role {
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     border-radius: 8px;
     overflow: hidden;
+    margin: 1rem auto;
 }
 
 .drafts-table th, .drafts-table td {

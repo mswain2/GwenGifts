@@ -165,6 +165,7 @@ require_once('header.php');
                 const formData = new FormData();
                 formData.append('bulk_delete', true);
                 formData.append('selected_discussions', JSON.stringify(selected));
+                formData.append('category', 'general');
 
                 fetch('deleteBulk.php', {
                     method: 'POST',

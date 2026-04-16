@@ -1532,4 +1532,86 @@ color: black !important;
 
 .user-link:hover {
   color: var(--accent-color);
+}
+
+/* Report Page */
+.report-field-row {
+    display: flex;
+    gap: 1rem;
+}
+.report-field-row > .report-field-half {
+    flex: 1;
+}
+.report-divider {
+    border: none;
+    border-top: 1px solid #e8e8e8;
+    margin: 1.5rem 0 1rem;
+}
+.report-section-heading {
+    color: var(--main-color);
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+.report-description {
+    background-color: #f0f4f8;
+    border-left: 4px solid var(--main-color);
+    border-radius: 4px;
+    padding: 0.75rem 1rem;
+    margin-top: 1.25rem;
+    margin-bottom: 1.25rem;
+    font-size: 0.9rem;
+    color: #444;
+    line-height: 1.5;
+}
+.report-description strong {
+    color: var(--main-color);
+}
+.report-error {
+    background-color: #fef2f2;
+    border-left: 4px solid #b91c1c;
+    border-radius: 4px;
+    padding: 0.75rem 1rem;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    color: #7f1d1d;
+    line-height: 1.5;
+}
+/* Filter show/hide */
+[data-reports].filter-hidden {
+    display: none;
+}
+[data-reports].filter-visible {
+    display: block;
+}
+.report-field-row.filter-visible {
+    display: flex;
+}
+/* Autocomplete */
+.autocomplete-wrap {
+    position: relative;
+}
+.autocomplete-list {
+    display: none;
+    position: absolute;
+    z-index: 100;
+    width: 100%;
+    max-height: 200px;
+    overflow-y: auto;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+.autocomplete-item {
+    padding: 0.5rem 0.75rem;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: #333;
+}
+.autocomplete-item:hover {
+    background-color: #f0f4f8;
+    color: var(--main-color);
 }  

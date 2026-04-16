@@ -11,7 +11,6 @@ require_once('include/input-validation.php');
 require_once('database/dbEvents.php');
 require_once('database/dbPersons.php');
 require_once('database/dbAttendance.php');
-require_once('database/dbTrainingPersons.php');
 
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
@@ -48,30 +47,8 @@ if (!$event_info) {
 
 $signups = fetch_event_signups($id);
 
-$pending_signups = [];
-if (is_callable('fetch_pending_signups')) {
-    $pending_signups = call_user_func('fetch_pending_signups', $id);
-} elseif (is_callable('fetch_event_pending_signups')) {
-    $pending_signups = call_user_func('fetch_event_pending_signups', $id);
-}
-
 $access_level = $_SESSION['access_level'];
 $attendance_statuses = get_attendance_statuses_for_event($id);
-
-$user_ids_for_trainings = [];
-foreach ($signups as $signup) {
-    if (!empty($signup['userID'])) {
-        $user_ids_for_trainings[] = $signup['userID'];
-    }
-}
-
-foreach ($pending_signups as $signup) {
-    if (!empty($signup['username'])) {
-        $user_ids_for_trainings[] = $signup['username'];
-    }
-}
-
-$training_statuses = get_training_statuses_for_users($user_ids_for_trainings);
 
 function maskEmailForRoster($email): string
 {
@@ -124,6 +101,26 @@ function rosterShirtSize($user_info): string
     return $size !== '' ? $size : 'N/A';
 }
 
+function qualificationStatusLabel($value): string
+{
+    return strtolower(trim((string)$value)) === 'yes' ? 'Completed' : 'Not Done';
+}
+
+function trainingDetailsFromPerson($user_info): array
+{
+    if (!$user_info) {
+        return array(
+            'cpr' => 'Not Done',
+            'aed' => 'Not Done'
+        );
+    }
+
+    return array(
+        'cpr' => qualificationStatusLabel($user_info->get_cpr_training_completion()),
+        'aed' => qualificationStatusLabel($user_info->get_aed_training_completion())
+    );
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -132,102 +129,7 @@ function rosterShirtSize($user_info): string
     <?php require_once('universal.inc'); ?>
     <title>Gwyneth's Gift | View Event Sign-Ups</title>
     <link rel="stylesheet" href="css/messages.css" />
-    <script>
-        function showResolutionConfirmation(userId, notes) {
-            document.getElementById('resolution-confirmation-wrapper').classList.remove('hidden');
-            document.getElementById('modal-user-id').value = userId;
-            document.getElementById('modal-notes').value = notes;
-            document.getElementById('modal-user-id-reject').value = userId;
-            document.getElementById('modal-notes-reject').value = notes;
-            return false;
-        }
 
-        function showApprove() {
-            document.getElementById('approve-confirmation-wrapper').classList.remove('hidden');
-            return false;
-        }
-
-        function showReject() {
-            document.getElementById('reject-confirmation-wrapper').classList.remove('hidden');
-            return false;
-        }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            var selectAll = document.getElementById('select-all-pending');
-            var itemChecks = document.querySelectorAll('.bulk-select');
-            var bulkApprove = document.getElementById('bulk-approve');
-            var bulkReject = document.getElementById('bulk-reject');
-
-            function updateButtons() {
-                var anyChecked = Array.prototype.slice.call(itemChecks).some(function(cb) {
-                    return cb.checked;
-                });
-
-                if (bulkApprove) bulkApprove.disabled = !anyChecked;
-                if (bulkReject) bulkReject.disabled = !anyChecked;
-            }
-
-            if (selectAll) {
-                selectAll.addEventListener('change', function() {
-                    itemChecks.forEach(function(cb) {
-                        cb.checked = selectAll.checked;
-                    });
-                    updateButtons();
-                });
-            }
-
-            itemChecks.forEach(function(cb) {
-                cb.addEventListener('change', updateButtons);
-            });
-
-            updateButtons();
-
-            function postForm(url, data) {
-                return fetch(url, {
-                    method: 'POST',
-                    body: data,
-                    credentials: 'same-origin'
-                });
-            }
-
-            function handleBulk(action) {
-                var selected = Array.prototype.slice.call(document.querySelectorAll('.bulk-select:checked'));
-                if (!selected.length) return;
-
-                var id = document.getElementById('event-id').value;
-                var tasks = selected.map(function(cb) {
-                    var fd = new FormData();
-                    fd.append('id', id);
-                    fd.append('user_id', cb.value);
-                    fd.append('notes', cb.dataset.notes || '');
-
-                    var endpoint = action === 'approve' ? 'approveSignup.php' : 'rejectSignup.php';
-                    return postForm(endpoint, fd);
-                });
-
-                Promise.all(tasks).then(function() {
-                    var url = new URL(window.location.href);
-                    url.searchParams.set('id', id);
-                    url.searchParams.set('pendingSignupSuccess', '1');
-                    window.location.href = url.toString();
-                });
-            }
-
-            if (bulkApprove) {
-                bulkApprove.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    handleBulk('approve');
-                });
-            }
-
-            if (bulkReject) {
-                bulkReject.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    handleBulk('reject');
-                });
-            }
-        });
-    </script>
 
     <style>
         main.general {
@@ -299,28 +201,17 @@ function rosterShirtSize($user_info): string
             background-color: #fafafa;
         }
 
-        th.select-col,
-        td.select-col {
-            text-align: center;
-            width: 52px;
-            vertical-align: middle;
+        .training-breakdown {
+            line-height: 1.45;
+        }
+
+        .training-breakdown div+div {
+            margin-top: 0.2rem;
         }
 
         .phone-col {
             white-space: nowrap;
             min-width: 170px;
-        }
-
-        .bulk-actions {
-            display: flex;
-            gap: .5rem;
-            align-items: center;
-            flex-wrap: wrap;
-            margin: 1rem 0;
-        }
-
-        .bulk-actions .spacer {
-            flex: 1 1 auto;
         }
     </style>
 </head>
@@ -330,12 +221,8 @@ function rosterShirtSize($user_info): string
 
     <h1>View Sign-Up List</h1>
 
-    <?php if (isset($_GET['pendingSignupSuccess'])) : ?>
-        <div class="happy-toast">Sign-up request resolved successfully.</div>
-    <?php endif; ?>
-
     <main class="general">
-        <h2><?php echo htmlspecialchars($event_info['name']); ?></h2>
+        <h2><?php echo $event_info['name']; ?></h2>
 
         <?php if (isset($remove_success)): ?>
             <p class="success"><?php echo htmlspecialchars($remove_success); ?></p>
@@ -348,41 +235,20 @@ function rosterShirtSize($user_info): string
             <p><?php echo htmlspecialchars((string)count($signups)); ?> people have signed up for this event.</p>
         <?php endif; ?>
 
-        <?php if (count($pending_signups) === 1): ?>
-            <p>1 sign-up is pending for this event.</p>
-        <?php else: ?>
-            <p><?php echo htmlspecialchars((string)count($pending_signups)); ?> sign-ups are pending for this event.</p>
-        <?php endif; ?>
 
-        <input type="hidden" id="event-id" value="<?php echo htmlspecialchars($id); ?>">
-
-        <?php if ($access_level >= 2 && count($pending_signups) > 0): ?>
-            <div class="bulk-actions">
-                <div class="spacer"></div>
-                <button class="button success" id="bulk-approve" disabled>Approve Selected</button>
-                <button class="button danger" id="bulk-reject" disabled>Reject Selected</button>
-            </div>
-        <?php endif; ?>
-
-        <?php if (count($signups) > 0 || count($pending_signups) > 0): ?>
+        <?php if (count($signups) > 0): ?>
             <h3>Search Results</h3>
             <div class="table-wrapper">
                 <table class="general">
                     <thead>
                         <tr>
-                            <?php if ($access_level >= 2 && count($pending_signups) > 0): ?>
-                                <th class="select-col">
-                                    <input type="checkbox" id="select-all-pending" title="Select all pending">
-                                </th>
-                            <?php endif; ?>
                             <th>Volunteer Name</th>
                             <th>Attendance</th>
                             <th>Email</th>
                             <th class="phone-col">Phone</th>
-                            <th>Training Status</th>
+                            <th>Training</th>
                             <th>Shirt Size</th>
                             <th>User ID</th>
-                            <th>Pending</th>
                             <?php if ($access_level >= 2): ?>
                                 <th>Actions</th>
                             <?php endif; ?>
@@ -392,10 +258,6 @@ function rosterShirtSize($user_info): string
                         <?php foreach ($signups as $signup): ?>
                             <?php
                             $user_info = retrieve_person($signup['userID']);
-                            $pending = check_if_signed_up($args['id'], $signup['userID']);
-                            $notes = isset($signup['notes']) && $signup['notes'] !== '' && $signup['notes'] !== null
-                                ? $signup['notes']
-                                : 'No notes.';
 
                             $first_name = $user_info ? $user_info->get_first_name() : '';
                             $last_name = $user_info ? $user_info->get_last_name() : '';
@@ -407,35 +269,26 @@ function rosterShirtSize($user_info): string
                             $attendance_status = $attendance_statuses[$signup['userID']] ?? 'Absent';
                             $masked_email = maskEmailForRoster($email);
                             $masked_phone = maskPhoneForRoster($phone);
-                            $training_status = $training_statuses[$signup['userID']] ?? 'Incomplete';
+                            $training_details = trainingDetailsFromPerson($user_info);
                             $shirt_size = rosterShirtSize($user_info);
                             ?>
                             <tr>
-                                <?php if ($access_level >= 2 && count($pending_signups) > 0): ?>
-                                    <td class="select-col"></td>
-                                <?php endif; ?>
-
                                 <td><?php echo htmlspecialchars($full_name !== '' ? $full_name : 'Unknown'); ?></td>
                                 <td><?php echo htmlspecialchars($attendance_status); ?></td>
                                 <td><?php echo htmlspecialchars($masked_email); ?></td>
                                 <td><?php echo htmlspecialchars($masked_phone); ?></td>
-                                <td><?php echo htmlspecialchars($training_status); ?></td>
+                                <td class="training-breakdown">
+                                    <div>CPR: <?php echo htmlspecialchars($training_details['cpr']); ?></div>
+                                    <div>AED: <?php echo htmlspecialchars($training_details['aed']); ?></div>
+                                </td>
                                 <td><?php echo htmlspecialchars($shirt_size); ?></td>
                                 <td>
                                     <a href="viewProfile.php?id=<?php echo urlencode($signup['userID']); ?>">
                                         <?php echo htmlspecialchars($signup['userID']); ?>
                                     </a>
                                 </td>
-                                <td>
-                                    <?php
-                                    if ($pending == '0') {
-                                        echo 'Yes';
-                                    } elseif ($pending == '1') {
-                                        echo 'No';
-                                    }
-                                    ?>
-                                </td>
-                                <?php if ($access_level >= 2 && $pending == '1'): ?>
+
+                                <?php if ($access_level >= 2): ?>
                                     <td>
                                         <form method="POST" style="display:inline;">
                                             <input type="hidden" name="event_id" value="<?php echo htmlspecialchars($id); ?>">
@@ -443,75 +296,6 @@ function rosterShirtSize($user_info): string
                                             <button type="submit" class="button danger" onclick="return confirm('Are you sure you want to remove this user?');">Remove</button>
                                         </form>
                                     </td>
-                                <?php elseif ($access_level >= 2): ?>
-                                    <td></td>
-                                <?php endif; ?>
-                            </tr>
-                        <?php endforeach; ?>
-
-                        <?php foreach ($pending_signups as $signup): ?>
-                            <?php
-                            $user_info = retrieve_person($signup['username']);
-                            if (!$user_info) {
-                                continue;
-                            }
-
-                            $pending = check_if_signed_up($args['id'], $signup['username']);
-                            $notes = (!empty($signup['notes'])) ? $signup['notes'] : 'No Notes';
-
-                            $pending_user_id = $signup['username'];
-                            $pending_full_name = trim($user_info->get_first_name() . ' ' . $user_info->get_last_name());
-                            $pending_attendance_status = $attendance_statuses[$pending_user_id] ?? 'Absent';
-                            $pending_masked_email = maskEmailForRoster($user_info->get_email());
-                            $pending_masked_phone = maskPhoneForRoster($user_info->get_phone1());
-                            $pending_training_status = $training_statuses[$pending_user_id] ?? 'Incomplete';
-                            $pending_shirt_size = rosterShirtSize($user_info);
-                            ?>
-                            <tr>
-                                <?php if ($access_level >= 2 && count($pending_signups) > 0): ?>
-                                    <td class="select-col">
-                                        <?php if ($pending == '0'): ?>
-                                            <input
-                                                type="checkbox"
-                                                class="bulk-select"
-                                                value="<?php echo htmlspecialchars($signup['username']); ?>"
-                                                data-notes="<?php echo htmlspecialchars($signup['notes'] ?? ''); ?>">
-                                        <?php endif; ?>
-                                    </td>
-                                <?php endif; ?>
-
-                                <td><?php echo htmlspecialchars($pending_full_name !== '' ? $pending_full_name : 'Unknown'); ?></td>
-                                <td><?php echo htmlspecialchars($pending_attendance_status); ?></td>
-                                <td><?php echo htmlspecialchars($pending_masked_email); ?></td>
-                                <td class="phone-col"><?php echo htmlspecialchars($pending_masked_phone); ?></td>
-                                <td><?php echo htmlspecialchars($pending_training_status); ?></td>
-                                <td><?php echo htmlspecialchars($pending_shirt_size); ?></td>
-                                <td>
-                                    <a href="viewProfile.php?id=<?php echo urlencode($signup['username']); ?>">
-                                        <?php echo htmlspecialchars($signup['username']); ?>
-                                    </a>
-                                </td>
-                                <td>
-                                    <?php
-                                    if ($pending == '0') {
-                                        echo 'Yes';
-                                    } elseif ($pending == '1') {
-                                        echo 'No';
-                                    }
-                                    ?>
-                                </td>
-
-                                <?php if ($access_level >= 2 && $pending == '0'): ?>
-                                    <td>
-                                        <button
-                                            type="button"
-                                            onclick="showResolutionConfirmation('<?php echo htmlspecialchars($signup['username']); ?>', '<?php echo htmlspecialchars($signup['notes'] ?? ''); ?>')"
-                                            class="button">
-                                            Resolve
-                                        </button>
-                                    </td>
-                                <?php elseif ($access_level >= 2): ?>
-                                    <td></td>
                                 <?php endif; ?>
                             </tr>
                         <?php endforeach; ?>
@@ -522,42 +306,6 @@ function rosterShirtSize($user_info): string
 
         <a class="button cancel" href="index.php">Return to Dashboard</a>
     </main>
-    <div id="resolution-confirmation-wrapper" class="modal-content hidden">
-        <div class="modal-content">
-            <p>Would you like to approve or reject this sign-up request?</p>
-            <button onclick="showApprove()" class="button success">Approve</button>
-            <button onclick="showReject()" class="button danger">Reject</button>
-            <button onclick="document.getElementById('resolution-confirmation-wrapper').classList.add('hidden')" id="cancel-cancel" class="button cancel">Cancel</button>
-        </div>
-    </div>
-
-    <div id="approve-confirmation-wrapper" class="modal-content hidden">
-        <div class="modal-content">
-            <p>Are you sure you want to approve this sign-up request?</p>
-            <p>This action cannot be undone</p>
-            <form method="post" action="approveSignup.php">
-                <input type="submit" value="Approve" class="button success">
-                <input type="hidden" name="id" value="<?= $_REQUEST['id'] ?>">
-                <input type="hidden" id="modal-user-id" name="user_id" value="">
-                <input type="hidden" id="modal-notes" name="notes" value="">
-            </form>
-            <button onclick="document.getElementById('approve-confirmation-wrapper').classList.add('hidden')" id="cancel-cancel" class="button cancel">Cancel</button>
-        </div>
-    </div>
-
-    <div id="reject-confirmation-wrapper" class="modal-content hidden">
-        <div class="modal-content">
-            <p>Are you sure you want to reject this sign-up request?</p>
-            <p>This action cannot be undone</p>
-            <form method="post" action="rejectSignup.php">
-                <input type="submit" value="Reject" class="button danger">
-                <input type="hidden" name="id" value="<?= $_REQUEST['id'] ?>">
-                <input type="hidden" id="modal-user-id-reject" name="user_id" value="">
-                <input type="hidden" id="modal-notes-reject" name="notes" value="">
-            </form>
-            <button onclick="document.getElementById('reject-confirmation-wrapper').classList.add('hidden')" id="cancel-cancel" class="button cancel">Cancel</button>
-        </div>
-    </div>
 </body>
 
 </html>

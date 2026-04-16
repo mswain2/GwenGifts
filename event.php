@@ -121,6 +121,54 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         header('Location: event.php?id=' . $eid . '&attachSuccess');
         die();
     }
+    if (isset($_POST['withdraw-submit'])) {
+        $account_name = $_SESSION['_id'];
+        if (remove_user_from_event($id, $account_name)) {
+            header('Location: event.php?id=' . urlencode($id) . '&withdrawSuccess');
+        } else {
+            header('Location: event.php?id=' . urlencode($id) . '&withdrawFail');
+        }
+        die();
+    }
+    if (isset($_POST['signup-submit'])) {
+        if (!$active) {
+            echo 'forbidden';
+            die();
+        }
+        $account_name = $_SESSION['_id'];
+        $event_type = isset($event_info['type']) ? $event_info['type'] : '';
+        $event_name = htmlspecialchars_decode($event_info['name']);
+
+        if ($event_type === 'Retreat') {
+            require_once('database/dbApplications.php');
+            require_once('database/dbMessages.php');
+            $app_data = array(
+                'user_id' => $account_name,
+                'event_id' => $id,
+                'status' => 'Pending',
+                'flagged' => 0,
+                'notes' => ''
+            );
+            $app_id = create_app($app_data);
+            if (!$app_id) {
+                header('Location: requestFailed.php');
+                die();
+            }
+            send_system_message($account_name, "Your request to sign up for $event_name has been sent to an admin.", "Your request to sign up for $event_name will be reviewed by an admin shortly. You will get another notification when you are approved or denied.");
+            header('Location: signupPending.php');
+            die();
+        } else {
+            require_once('database/dbMessages.php');
+            $signup_id = sign_up_for_event($id, $account_name, 'p', '');
+            if (!$signup_id) {
+                header('Location: eventFailure.php');
+                die();
+            }
+            send_system_message($account_name, "You are now signed up for $event_name!", "Thank you for signing up for $event_name!");
+            header('Location: signupSuccess.php');
+            die();
+        }
+    }
     if (isset($_POST['attach-training-media-submit'])) {
         if ($access_level < 2) {
             echo 'forbidden';
@@ -251,6 +299,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php endif ?>
         <?php if (isset($_GET['cancelSuccess'])): ?>
             <div class="happy-toast">Sign-up canceled successfully!</div>
+        <?php endif ?>
+        <?php if (isset($_GET['withdrawSuccess'])): ?>
+            <div class="happy-toast">You have withdrawn from this event.</div>
+        <?php endif ?>
+        <?php if (isset($_GET['withdrawFail'])): ?>
+            <div class="happy-toast" style="background-color:#c0392b;">Failed to withdraw. Please try again.</div>
         <?php endif ?>
         <?php if ($displayUpdateMessage): ?>
             <div class="happy-toast">Attendance information updated successfully!</div>
@@ -478,7 +532,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             } else {
                                 echo '<span>' . $media['description'] . '</span>';
                                 if ($isEventManager) {
-                                    echo ' <a href="deleteEventMedia.php?eid=' . $id . '&mid=' . $media['id'] . '" onclick="return confirm(\'Delete this media video?\');">Remove</a>';
+                                    echo ' <a style="color: red;" href="deleteEventMedia.php?eid=' . $id . '&mid=' . $media['id'] . '" onclick="return confirm(\'Delete this media video?\');">Remove</a>';
                                 }
                                 echo '<br><iframe width="560" height="315" src="' . $media['url'] . '" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>';
                             }
@@ -541,12 +595,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <?php endif ?>
             <?php endif*/ ?>
 
-            <form action="eventSignUp.php" method="get">
-                <input type="hidden" name="event_name" value="<?php echo htmlspecialchars($event_info['name']); ?>">
-                <input type="hidden" name="event_id" value="<?php echo htmlspecialchars($event_info['id']); ?>">
-                <input type="hidden" name="type" value="<?php echo htmlspecialchars($event_info['type']); ?>">
+            <?php if (!check_if_signed_up($id, $user->get_id())): ?>
+            <form action="event.php?id=<?php echo urlencode($id); ?>" method="post">
+                <input type="hidden" name="signup-submit" value="1">
                 <button type="submit" class="button primary">Sign Up!</button>
             </form>
+            <?php else: ?>
+            <form action="event.php?id=<?php echo urlencode($id); ?>" method="post" onsubmit="return confirm('Are you sure you want to withdraw from this event?');">
+                <input type="hidden" name="withdraw-submit" value="1">
+                <button type="submit" class="button cancel">Withdraw</button>
+            </form>
+            <?php endif; ?>
             <?php if ($isEventManager) : ?>
                 <a href="eventRoster.php?id=<?php echo urlencode($id); ?>" class="button signup">Generate Event Roster</a>
                 <a href="viewEventSignUps.php?id=<?php echo $id; ?>" class="button signup">View Event Signups</a>

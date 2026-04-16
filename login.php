@@ -54,7 +54,7 @@
         if ($user->get_force_password_change()) {
             $_SESSION['access_level'] = 0;
             $_SESSION['change-password'] = true;
-            header('Location: returningVolunteerForm.php');
+            header('Location: changePassword.php');
             die();
         }
 
