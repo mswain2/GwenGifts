@@ -128,9 +128,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['withdraw-submit'])) {
         $account_name = $_SESSION['_id'];
         if (remove_user_from_event($id, $account_name)) {
-            header('Location: event.php?id=' . urlencode($id) . '&withdrawSuccess');
             //Remove the scheduled reminder email from the db
             removeEmail($account_name, $event_info['id']);
+            header('Location: event.php?id=' . urlencode($id) . '&withdrawSuccess');
         } else {
             header('Location: event.php?id=' . urlencode($id) . '&withdrawFail');
         }

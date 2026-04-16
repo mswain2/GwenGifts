@@ -243,6 +243,15 @@ function submitEmail(array $recipientIDs, int $event_id, string $subject, string
 // ------------------------
 function removeEmail(string $rid, int $event_id){
     //Check if it has been sent
-    //If it has been sent, don't worry about removing it
-    //If it has not been sent, remove it
+    $conn = connect();
+    $result = $conn->query("SELECT sent FROM dbscheduledemails WHERE recipientID = '$rid' AND event_id = '$event_id'");
+    $row = mysqli_fetch_assoc($result);
+    $sent = $row['sent'] ?? null;
+    
+    //If it hasn't been sent, remove it.
+    if($sent == 0){
+        $result = $conn->query("DELETE FROM dbscheduledemails WHERE recipientID = '$rid' AND event_id = '$event_id'");  
+    }
+    mysqli_commit($conn);
+    return;
 }
