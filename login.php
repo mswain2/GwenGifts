@@ -150,7 +150,7 @@
       <form class="w-full" method="post">
                 <?php
                     if ($badLogin) {
-                        echo '<span class="text-white bg-red-700 text-center block p-2 rounded-lg mb-2">No login with that username and password combination currently exists.</span>';
+                        echo '<span class="text-black text-center block p-2 rounded-lg mb-2" style="background-color:#f6a4b5;">No login with that username and password combination currently exists.</span>';
                     }
                     if ($archivedAccount) {
                         echo '<span class="text-black text-center block p-2 rounded-lg mb-2" style="background-color:#f6a4b5;">This account is deactivated. For administrative assistance, please contact <a href="mailto:gwynethsgift2012@gmail.com">gwynethsgift2012@gmail.com</a>.</span>';
