@@ -28,6 +28,57 @@ function old($key, $default = '') {
 <!-- imports -->
 <script src="https://nosir.github.io/cleave.js/dist/cleave.min.js"></script>
 <script src="https://nosir.github.io/cleave.js/dist/cleave-phone.i18n.js"></script>
+<style>
+.progress-container {
+    position: relative;
+    width: 100%;
+    margin-bottom: 1rem;
+}
+progress {
+    width: 100%;
+    height: 25px;
+    appearance: none;
+}
+progress::-webkit-progress-bar {
+    background-color: #eee;
+    border-radius: 5px;
+}
+progress::-webkit-progress-value {
+    background-color: var(--secondary-accent-color);
+    border-radius: 5px;
+}
+progress::-moz-progress-bar {
+    background-color: var(--secondary-accent-color);
+    border-radius: 5px;
+}
+.progress-label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: var(--main-color);
+    pointer-events: none;
+}
+.form-pagination-nav {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 1rem 0;
+}
+.form-pagination-nav button {
+    padding: 0.5rem 1.35rem;
+    cursor: pointer;
+}
+.field-error {
+    border-color: var(--error-color, #c0392b) !important;
+    outline-color: var(--error-color, #c0392b);
+}
+</style>
 <!-- Hero Section with Title -->
 <?php require_once('header.php') ?>
 <h1>Welcome Back — Complete Your Account</h1>
@@ -43,13 +94,18 @@ function old($key, $default = '') {
 
         <!-- Title -->
         <h2 class="mb-8">Review Your Information</h2>
+        <?php $total_pages = 10; ?>
+        <div class="progress-container">
+            <progress id="myProgress" value="0" max="100"></progress>
+            <div class="progress-label" id="progressLabel">0%</div>
+        </div>
         <div class="info-box">
             <p class="sub-text">Welcome back! Please review your information below, make any corrections, and set up your new login credentials.</p>
         </div>
 	</div>
 
     <!-- Directions Section -->
-    <fieldset class="section-box mb-4">
+    <fieldset id="page1" class="section-box mb-4">
         <h3 class="mt-2">Directions</h3>
         <p class="mb-2">To complete your account setup, please follow the instructions below:</p>
 
@@ -62,7 +118,7 @@ function old($key, $default = '') {
     </fieldset>
 
     <!-- Personal Information Section -->
-    <fieldset class="section-box mb-4">
+    <fieldset id="page2" class="section-box mb-4" style="display:none;">
         <h3 class="mt-2">Personal Information</h3>
         <p class="mb-2">The following information will help us identify you within our system.</p>
 
@@ -152,7 +208,7 @@ function old($key, $default = '') {
     </fieldset>
 
     <!-- Personal Contact Information Section -->
-    <fieldset class="section-box mb-4">
+    <fieldset id="page3" class="section-box mb-4" style="display:none;">
         <h3>Personal Contact Information</h3>
         <p class="mb-2">The following information will help us determine the best way to contact you regarding event coordination.</p>
 
@@ -194,7 +250,7 @@ function old($key, $default = '') {
     </fieldset>
 
     <!-- Notification Preferences -->
-    <fieldset class="section-box mb-4">
+    <fieldset id="page4" class="section-box mb-4" style="display:none;">
         <h3>Notification Preferences</h3>
         <p class="mb-2">You may change your email preferences at any time.</p>
         <div class="blue-div"></div>
@@ -214,7 +270,7 @@ function old($key, $default = '') {
 
 
     <!-- Emergency Contact Information Section -->
-    <fieldset class="section-box mb-4">
+    <fieldset id="page5" class="section-box mb-4" style="display:none;">
         <h3>Emergency Contact Information</h3>
         <p class="mb-2">Please provide us with someone's contact information on your behalf in case of an emergency.</p>
         <div class="blue-div"></div>
@@ -261,7 +317,7 @@ function old($key, $default = '') {
     </fieldset>
 
     <!-- Availability Section -->
-    <fieldset class="section-box mb-4">
+    <fieldset id="page6" class="section-box mb-4" style="display:none;">
         <h3>Availability</h3>
         <p class="mb-2">The following information will help us determine the best volunteer opportunities for you.</p>
         <p class="mb-2">Click the checkbox next to each day you are available.</p>
@@ -355,7 +411,7 @@ function old($key, $default = '') {
 
 
     <!-- Languages Section -->
-    <fieldset class="section-box mb-4">
+    <fieldset id="page7" class="section-box mb-4" style="display:none;">
         <h3>Languages</h3>
         <p class="mb-2">Please describe your language skills.</p>
         <div class="blue-div"></div>
@@ -568,7 +624,7 @@ function old($key, $default = '') {
     </fieldset>
 
     <!-- Skills and Experience Section -->
-    <fieldset class="section-box mb-4">
+    <fieldset id="page8" class="section-box mb-4" style="display:none;">
         <h3>Skills and Experience</h3>
         <p class="mb-2">Please provide any additional information about your skills and experience that you believe may be relevant for volunteering with our organization.</p>
 
@@ -584,7 +640,7 @@ function old($key, $default = '') {
     </fieldset>
 
     <!-- Additional Information Section -->
-    <fieldset class="section-box mb-4">
+    <fieldset id="page9" class="section-box mb-4" style="display:none;">
         <h3>Additional Information</h3>
         <p class="mb-2">The following information will help us determine the best volunteer opportunities for you and ensure that we are providing you with the best experience possible.</p>
 
@@ -666,7 +722,7 @@ function old($key, $default = '') {
 
 
     <!-- Login Credentials Section -->
-    <fieldset class="section-box mb-4">
+    <fieldset id="page10" class="section-box mb-4" style="display:none;">
         <h3>Login Credentials</h3>
         <p class="mb-2">Choose a username and password to log in to the system.</p>
         <p class="mb-2">We recommend that you save your login information somewhere secure.</p>
@@ -691,12 +747,238 @@ function old($key, $default = '') {
 
     <!-- No Consent Notice section — returning volunteers already consented -->
 
+    <div class="form-pagination-nav">
+        <button type="button" id="prevBtn" onclick="changePage(-1)" style="display:none;">&#8592; Previous</button>
+        <button type="button" id="nextBtn" onclick="changePage(1)">Next &#8594;</button>
+    </div>
     <p class="text-center notice"></p>
-    <input type="submit" name="registration-form" value="Submit" style="width: 50%; margin: auto;">
+    <input type="submit" id="submitBtn" name="registration-form" value="Submit" style="width: 50%; margin: auto; display:none;">
     </form>
    </div>
    <script>
-    // No localStorage save/restore for returning volunteer form
-    // We want DB values on first load, not cached localStorage data
+    var currentPage = 1;
+    var totalPages = <?php echo $total_pages; ?>;
+
+    // ─── Progress bar ─────────────────────────────────────────────────────────
+    function updateProgress(pageNumber) {
+        var progress = Math.round((pageNumber / totalPages) * 100);
+        document.getElementById('myProgress').value = progress;
+        document.getElementById('progressLabel').textContent = progress + '%';
+    }
+
+    // ─── Page visibility ──────────────────────────────────────────────────────
+    function showPage(n) {
+        for (var i = 1; i <= totalPages; i++) {
+            var el = document.getElementById('page' + i);
+            if (el) el.style.display = (i === n) ? '' : 'none';
+        }
+        document.getElementById('prevBtn').style.display = (n === 1) ? 'none' : '';
+        document.getElementById('nextBtn').style.display = (n === totalPages) ? 'none' : '';
+        document.getElementById('submitBtn').style.display = (n === totalPages) ? '' : 'none';
+        updateProgress(n);
+        window.scrollTo(0, 0);
+    }
+
+    // ─── Navigation (validates before advancing) ──────────────────────────────
+    function changePage(direction) {
+        if (direction > 0 && !validateCurrentPage()) return;
+        var next = currentPage + direction;
+        if (next < 1 || next > totalPages) return;
+        currentPage = next;
+        showPage(currentPage);
+    }
+
+    // ─── Error display helpers ────────────────────────────────────────────────
+    function showError(field, message) {
+        field.classList.add('field-error');
+        var err = document.createElement('p');
+        err.className = 'error client-error';
+        err.textContent = message;
+        field.parentNode.insertBefore(err, field.nextSibling);
+    }
+
+    function clearErrors(fieldset) {
+        fieldset.querySelectorAll('.client-error').forEach(function(el) { el.remove(); });
+        fieldset.querySelectorAll('.field-error').forEach(function(el) { el.classList.remove('field-error'); });
+    }
+
+    // ─── Per-page validation ──────────────────────────────────────────────────
+    function validateCurrentPage() {
+        var fieldset = document.getElementById('page' + currentPage);
+        if (!fieldset) return true;
+
+        clearErrors(fieldset);
+        var valid = true;
+
+        // ── 1. Required text / email / tel / date / select / textarea ──────────
+        var selector = [
+            'input[required]:not([type=radio]):not([type=checkbox])',
+            'select[required]',
+            'textarea[required]'
+        ].join(', ');
+
+        fieldset.querySelectorAll(selector).forEach(function(field) {
+            if (field.disabled) return;
+            if (isHidden(field)) return;
+
+            var value = field.value.trim();
+            if (!value) {
+                showError(field, 'This field is required.');
+                valid = false;
+                return;
+            }
+            if (field.pattern) {
+                var re = new RegExp('^(?:' + field.pattern + ')$');
+                if (!re.test(field.value)) {
+                    showError(field, field.title || 'Please match the requested format.');
+                    valid = false;
+                    return;
+                }
+            }
+            if (field.type === 'email' && !isValidEmail(value)) {
+                showError(field, 'Please enter a valid email address.');
+                valid = false;
+            }
+        });
+
+        // ── 2. Radio groups ───────────────────────────────────────────────────
+        var radioGroups = {};
+        fieldset.querySelectorAll('input[type=radio][required]').forEach(function(radio) {
+            if (!radioGroups[radio.name]) radioGroups[radio.name] = [];
+            radioGroups[radio.name].push(radio);
+        });
+        Object.keys(radioGroups).forEach(function(name) {
+            var radios = radioGroups[name];
+            var anyChecked = radios.some(function(r) { return r.checked; });
+            if (!anyChecked) {
+                showError(radios[radios.length - 1], 'Please select an option.');
+                valid = false;
+            }
+        });
+
+        // ── 3. Availability time-range rules (page 6) ─────────────────────────
+        if (currentPage === 6) {
+            var days = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
+            days.forEach(function(day) {
+                var checkbox = document.getElementById(day);
+                if (!checkbox || !checkbox.checked) return;
+
+                var startSel = document.querySelector('[name=' + day + '_start]');
+                var endSel   = document.querySelector('[name=' + day + '_end]');
+                if (!startSel || !endSel) return;
+
+                var startVal = startSel.value;
+                var endVal   = endSel.value;
+                var dayLabel = day.charAt(0).toUpperCase() + day.slice(1);
+
+                if (!startVal) {
+                    showError(startSel, dayLabel + ': Please select a start time.');
+                    valid = false;
+                }
+                if (!endVal) {
+                    showError(endSel, dayLabel + ': Please select an end time.');
+                    valid = false;
+                }
+                if (startVal && endVal && parseTimeValue(endVal) <= parseTimeValue(startVal)) {
+                    showError(endSel, dayLabel + ': End time must be after start time.');
+                    valid = false;
+                }
+            });
+        }
+
+        // ── 4. Password page special rules (page 10) ──────────────────────────
+        if (currentPage === 10) {
+            var pw   = document.getElementById('password');
+            var pwRe = document.getElementById('password-reenter');
+            if (pw && pw.value && !isValidPassword(pw.value)) {
+                showError(pw, 'Password must be at least 8 characters and include a number, an uppercase letter, and a lowercase letter.');
+                valid = false;
+            } else if (pw && pwRe && pw.value && pwRe.value && pw.value !== pwRe.value) {
+                showError(pwRe, 'Passwords do not match.');
+                valid = false;
+            }
+        }
+
+        if (!valid) {
+            var firstError = fieldset.querySelector('.client-error');
+            if (firstError) firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        return valid;
+    }
+
+    // ─── Helper: is the field or an ancestor hidden? ──────────────────────────
+    function isHidden(field) {
+        var el = field;
+        while (el && el.tagName !== 'FIELDSET') {
+            if (window.getComputedStyle(el).display === 'none') return true;
+            el = el.parentElement;
+        }
+        return false;
+    }
+
+    // ─── Format validators ────────────────────────────────────────────────────
+    function isValidEmail(val) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+    }
+
+    function isValidPassword(val) {
+        return val.length >= 8
+            && /[0-9]/.test(val)
+            && /[A-Z]/.test(val)
+            && /[a-z]/.test(val);
+    }
+
+    function parseTimeValue(val) {
+        var hour = parseInt(val, 10);
+        var isPm = val.slice(-2) === 'pm';
+        if (isPm && hour !== 12) return hour + 12;
+        if (!isPm && hour === 12) return 0;
+        return hour;
+    }
+
+    // ─── Live error clearing ──────────────────────────────────────────────────
+    document.querySelector('form.signup-form').addEventListener('input', function(e) {
+        var field = e.target;
+        if (!field.classList.contains('field-error')) return;
+        field.classList.remove('field-error');
+        var next = field.nextSibling;
+        while (next) {
+            if (next.nodeType === 1 && next.classList.contains('client-error')) { next.remove(); break; }
+            if (next.nodeType === 1) break;
+            next = next.nextSibling;
+        }
+    });
+
+    document.querySelector('form.signup-form').addEventListener('change', function(e) {
+        var field = e.target;
+        if (field.type !== 'radio' && field.type !== 'select-one') return;
+        if (field.classList.contains('field-error')) {
+            field.classList.remove('field-error');
+            var next = field.nextSibling;
+            while (next) {
+                if (next.nodeType === 1 && next.classList.contains('client-error')) { next.remove(); break; }
+                if (next.nodeType === 1) break;
+                next = next.nextSibling;
+            }
+        }
+        if (field.type === 'radio') {
+            var fieldset = document.getElementById('page' + currentPage);
+            if (!fieldset) return;
+            fieldset.querySelectorAll('input[type=radio][name="' + field.name + '"]').forEach(function(r) {
+                r.classList.remove('field-error');
+            });
+            var allInGroup = fieldset.querySelectorAll('input[type=radio][name="' + field.name + '"]');
+            var last = allInGroup[allInGroup.length - 1];
+            var sib = last.nextSibling;
+            while (sib) {
+                if (sib.nodeType === 1 && sib.classList.contains('client-error')) { sib.remove(); break; }
+                if (sib.nodeType === 1) break;
+                sib = sib.nextSibling;
+            }
+        }
+    });
+
+    // ─── Initialize ───────────────────────────────────────────────────────────
+    showPage(1);
     </script>
 </main>
