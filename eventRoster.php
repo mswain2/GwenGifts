@@ -178,20 +178,13 @@ foreach ($filtered_rows as $row) {
             </div>
 
             <div>
-                <label for="cpr">CPR Training</label><br>
-                <select name="cpr" id="cpr">
-                    <option value="all" <?php echo $filters['cpr'] === 'all' ? 'selected' : ''; ?>>All</option>
-                    <option value="completed" <?php echo $filters['cpr'] === 'completed' ? 'selected' : ''; ?>>Completed</option>
-                    <option value="not_done" <?php echo $filters['cpr'] === 'not_done' ? 'selected' : ''; ?>>Not Done</option>
-                </select>
-            </div>
-
-            <div>
-                <label for="aed">AED Training</label><br>
-                <select name="aed" id="aed">
-                    <option value="all" <?php echo $filters['aed'] === 'all' ? 'selected' : ''; ?>>All</option>
-                    <option value="completed" <?php echo $filters['aed'] === 'completed' ? 'selected' : ''; ?>>Completed</option>
-                    <option value="not_done" <?php echo $filters['aed'] === 'not_done' ? 'selected' : ''; ?>>Not Done</option>
+                <label for="training">Training</label><br>
+                <select name="training" id="training">
+                    <option value="all" <?php echo $filters['training'] === 'all' ? 'selected' : ''; ?>>All</option>
+                    <option value="none_completed" <?php echo $filters['training'] === 'none_completed' ? 'selected' : ''; ?>>None Completed</option>
+                    <option value="cpr_completed" <?php echo $filters['training'] === 'cpr_completed' ? 'selected' : ''; ?>>CPR Completed</option>
+                    <option value="aed_completed" <?php echo $filters['training'] === 'aed_completed' ? 'selected' : ''; ?>>AED Completed</option>
+                    <option value="all_completed" <?php echo $filters['training'] === 'all_completed' ? 'selected' : ''; ?>>Both Completed</option>
                 </select>
             </div>
 
@@ -204,13 +197,13 @@ foreach ($filtered_rows as $row) {
             </div>
 
             <div>
-                <a href="exportEventRoster.php?id=<?php echo urlencode((string)$id); ?>&attendance=<?php echo urlencode($filters['attendance']); ?>&cpr=<?php echo urlencode($filters['cpr']); ?>&aed=<?php echo urlencode($filters['aed']); ?>&format=csv" class="button signup">
+                <a href="exportEventRoster.php?id=<?php echo urlencode((string)$id); ?>&attendance=<?php echo urlencode($filters['attendance']); ?>&training=<?php echo urlencode($filters['training']); ?>&format=csv" class="button signup">
                     Export CSV
                 </a>
             </div>
 
             <div>
-                <a href="exportEventRoster.php?id=<?php echo urlencode((string)$id); ?>&attendance=<?php echo urlencode($filters['attendance']); ?>&cpr=<?php echo urlencode($filters['cpr']); ?>&aed=<?php echo urlencode($filters['aed']); ?>&format=pdf" class="button signup" target="_blank">
+                <a href="exportEventRoster.php?id=<?php echo urlencode((string)$id); ?>&attendance=<?php echo urlencode($filters['attendance']); ?>&training=<?php echo urlencode($filters['training']); ?>&format=pdf" class="button signup" target="_blank">
                     Export PDF
                 </a>
             </div>

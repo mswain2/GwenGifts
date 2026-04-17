@@ -7,23 +7,18 @@ require_once(dirname(__FILE__) . '/../database/dbTrainingPersons.php');
 function normalize_event_roster_filters($source)
 {
     $attendance = isset($source['attendance']) ? strtolower(trim((string)$source['attendance'])) : 'all';
-    $cpr = isset($source['cpr']) ? strtolower(trim((string)$source['cpr'])) : 'all';
-    $aed = isset($source['aed']) ? strtolower(trim((string)$source['aed'])) : 'all';
+    $training = isset($source['training']) ? strtolower(trim((string)$source['training'])) : 'all';
 
     if (!in_array($attendance, array('all', 'present', 'absent'), true)) {
         $attendance = 'all';
     }
-    if (!in_array($cpr, array('all', 'completed', 'not_done'), true)) {
-        $cpr = 'all';
-    }
-    if (!in_array($aed, array('all', 'completed', 'not_done'), true)) {
-        $aed = 'all';
+    if (!in_array($training, array('all', 'none_completed', 'cpr_completed', 'aed_completed', 'all_completed'), true)) {
+        $training = 'all';
     }
 
     return array(
         'attendance' => $attendance,
-        'cpr' => $cpr,
-        'aed' => $aed
+        'training' => $training
     );
 }
 
@@ -92,25 +87,29 @@ function event_roster_shirt_size($user_info)
 function event_roster_matches_filters($row, $filters)
 {
     $attendance = strtolower(trim((string)($row['attendance_status'] ?? 'Absent')));
-    $cpr = strtolower(trim((string)($row['cpr_training_status'] ?? 'Not Done')));
-    $aed = strtolower(trim((string)($row['aed_training_status'] ?? 'Not Done')));
 
     if (($filters['attendance'] ?? 'all') !== 'all' && $attendance !== $filters['attendance']) {
         return false;
     }
 
-    if (($filters['cpr'] ?? 'all') !== 'all') {
-        $normalizedCpr = ($cpr === 'completed') ? 'completed' : 'not_done';
-        if ($normalizedCpr !== $filters['cpr']) {
-            return false;
-        }
+    $trainingFilter = $filters['training'] ?? 'all';
+    if ($trainingFilter === 'cpr_completed' && strtolower($row['cpr_training_status'] ?? '') !== 'completed') {
+        return false;
     }
-
-    if (($filters['aed'] ?? 'all') !== 'all') {
-        $normalizedAed = ($aed === 'completed') ? 'completed' : 'not_done';
-        if ($normalizedAed !== $filters['aed']) {
-            return false;
-        }
+    if ($trainingFilter === 'aed_completed' && strtolower($row['aed_training_status'] ?? '') !== 'completed') {
+        return false;
+    }
+    if ($trainingFilter === 'all_completed' && (
+        strtolower($row['cpr_training_status'] ?? '') !== 'completed' ||
+        strtolower($row['aed_training_status'] ?? '') !== 'completed'
+    )) {
+        return false;
+    }
+    if ($trainingFilter === 'none_completed' && (
+        strtolower($row['cpr_training_status'] ?? '') === 'completed' ||
+        strtolower($row['aed_training_status'] ?? '') === 'completed'
+    )) {
+        return false;
     }
 
     return true;
