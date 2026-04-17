@@ -74,7 +74,7 @@ $message = $actor .
     ' (' . $event_name_display . ')' .
     ' as ' . strtoupper($format) .
     ' with attendance=' . $filters['attendance'] .
-    ' and training=' . $filters['training'];
+    ' and cpr=' . $filters['cpr'] . ' and aed=' . $filters['aed'];
 
 add_log_entry($message);
 
@@ -90,7 +90,8 @@ if ($format === 'csv') {
     $output = fopen('php://output', 'w');
 
     $attendanceLabel = ucfirst($filters['attendance']);
-    $trainingLabel = ($filters['training'] === 'not_done') ? 'Not Done' : ucfirst($filters['training']);
+    $cprLabel = ($filters['cpr'] === 'not_done') ? 'Not Done' : ucfirst($filters['cpr']);
+    $aedLabel = ($filters['aed'] === 'not_done') ? 'Not Done' : ucfirst($filters['aed']);
     $exportedAt = date('m/d/Y g:i A');
     $totalResults = count($filtered_rows);
 
@@ -98,7 +99,8 @@ if ($format === 'csv') {
     fputcsv($output, array(
         'Event Name',
         'Attendance Filter',
-        'Training Filter',
+        'CPR Filter',
+        'AED Filter',
         'Exported At',
         'Total Results'
     ));
@@ -106,7 +108,8 @@ if ($format === 'csv') {
     fputcsv($output, array(
         $event_name_display,
         $attendanceLabel,
-        $trainingLabel,
+        $cprLabel,
+        $aedLabel,
         $exportedAt,
         $totalResults
     ));
@@ -149,6 +152,9 @@ if ($format !== 'pdf') {
     header('Location: eventRoster.php?id=' . urlencode((string)$id));
     die();
 }
+
+$cprLabel = ($filters['cpr'] === 'not_done') ? 'Not Done' : ucfirst($filters['cpr']);
+$aedLabel = ($filters['aed'] === 'not_done') ? 'Not Done' : ucfirst($filters['aed']);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -220,7 +226,8 @@ if ($format !== 'pdf') {
         <h1>Event Roster Export</h1>
         <p><strong>Event:</strong> <?php echo htmlspecialchars($event_name_display); ?></p>
         <p><strong>Attendance Filter:</strong> <?php echo htmlspecialchars($filters['attendance']); ?></p>
-        <p><strong>Training Filter:</strong> <?php echo htmlspecialchars($filters['training']); ?></p>
+        <p><strong>CPR Filter:</strong> <?php echo htmlspecialchars($cprLabel); ?></p>
+        <p><strong>AED Filter:</strong> <?php echo htmlspecialchars($aedLabel); ?></p>
         <p><strong>Exported At:</strong> <?php echo htmlspecialchars(date('Y-m-d H:i:s')); ?></p>
 
         <table>
