@@ -393,6 +393,10 @@ if (date("H:i:s") > "18:19:59") {
 
             <!-- Color scheme removed; keeping font controls only -->
 
+            <div style="margin-top: 1rem; text-align: center;">
+                <a href="help.php" style="display:inline-block; padding:0.5rem 1.5rem; background:var(--main-color); color:#fff; border-radius:0.5rem; font-weight:600; text-decoration:none; transition:background 0.2s;">Help Center</a>
+            </div>
+
             <div class="accessibility-actions">
                 <button class="reset" id="accReset">Reset</button>
                 <button class="save" id="accSave">Save</button>

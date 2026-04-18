@@ -30,6 +30,10 @@
             <div class="footer-topic">Contact Us</div>
             <a href="https://gwynethsgift.org/contact-us/">Send Us An Email</a>
         </div>
+        <div class="footer-section">
+            <div class="footer-topic">Support</div>
+            <a href="help.php">Help Center</a>
+        </div>
     </div>
 </footer>
 
