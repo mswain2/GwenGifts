@@ -84,7 +84,10 @@ $nextWeek = strtotime(date('Y-m-d', $dayEpoch) . ' +7 days');
 
                     if (isset($events[$e])) {
                         $dayEvents = $events[$e];
-                        foreach ($dayEvents as $info) {
+                        $maxEvents = 2;
+                        $eventCount = count($dayEvents);
+                        $displayEvents = array_slice($dayEvents, 0, $maxEvents);
+                        foreach ($displayEvents as $info) {
 
                             $backgroundCol = 'var(--calendar-event-color)'; // default color
 
@@ -104,6 +107,10 @@ $nextWeek = strtotime(date('Y-m-d', $dayEpoch) . ' +7 days');
                             } else {
                                 $eventsStr .= '<a class="calendar-event" style="background-color: ' . $backgroundCol . '" href="event.php?id=' . $info['id'] . '&user_id=guest">' . htmlspecialchars_decode($info['abbr_name']) . '</a>';
                             }
+                        }
+                        if ($eventCount > $maxEvents) {
+                            $remaining = $eventCount - $maxEvents;
+                            $eventsStr .= '<a class="calendar-event" style="background-color:#6b8caf;text-align:center;" href="viewAllEvents.php?date=' . $e . '">+ ' . $remaining . ' more</a>';
                         }
                     }
                     echo '<td class="calendar-day' . $extraClasses . '" ' . $extraAttributes . ' data-date="' . date('Y-m-d', $date) . '">

@@ -162,7 +162,7 @@ foreach ($filtered_rows as $row) {
 
     <main class="general">
         <h2><?php echo htmlspecialchars($event_name_display); ?></h2>
-        <p><?php echo count($all_rows); ?> approved sign-up(s) are on this roster.</p>
+        <p><?php echo count($all_rows); ?> sign-up(s) are on this roster.</p>
         <p>Showing <?php echo count($filtered_rows); ?> row(s) with the current filters.</p>
 
         <form method="GET" class="roster-controls">
@@ -181,8 +181,10 @@ foreach ($filtered_rows as $row) {
                 <label for="training">Training</label><br>
                 <select name="training" id="training">
                     <option value="all" <?php echo $filters['training'] === 'all' ? 'selected' : ''; ?>>All</option>
-                    <option value="completed" <?php echo $filters['training'] === 'completed' ? 'selected' : ''; ?>>Completed</option>
-                    <option value="not_done" <?php echo $filters['training'] === 'not_done' ? 'selected' : ''; ?>>Not Done</option>
+                    <option value="none_completed" <?php echo $filters['training'] === 'none_completed' ? 'selected' : ''; ?>>None Completed</option>
+                    <option value="cpr_completed" <?php echo $filters['training'] === 'cpr_completed' ? 'selected' : ''; ?>>CPR Completed</option>
+                    <option value="aed_completed" <?php echo $filters['training'] === 'aed_completed' ? 'selected' : ''; ?>>AED Completed</option>
+                    <option value="all_completed" <?php echo $filters['training'] === 'all_completed' ? 'selected' : ''; ?>>Both Completed</option>
                 </select>
             </div>
 

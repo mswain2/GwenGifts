@@ -12,8 +12,7 @@ function normalize_event_roster_filters($source)
     if (!in_array($attendance, array('all', 'present', 'absent'), true)) {
         $attendance = 'all';
     }
-
-    if (!in_array($training, array('all', 'completed', 'not_done'), true)) {
+    if (!in_array($training, array('all', 'none_completed', 'cpr_completed', 'aed_completed', 'all_completed'), true)) {
         $training = 'all';
     }
 
@@ -88,18 +87,29 @@ function event_roster_shirt_size($user_info)
 function event_roster_matches_filters($row, $filters)
 {
     $attendance = strtolower(trim((string)($row['attendance_status'] ?? 'Absent')));
-    $training = strtolower(trim((string)($row['training_status'] ?? 'Not Done')));
 
     if (($filters['attendance'] ?? 'all') !== 'all' && $attendance !== $filters['attendance']) {
         return false;
     }
 
-    if (($filters['training'] ?? 'all') !== 'all') {
-        $normalizedTraining = ($training === 'completed') ? 'completed' : 'not_done';
-
-        if ($normalizedTraining !== $filters['training']) {
-            return false;
-        }
+    $trainingFilter = $filters['training'] ?? 'all';
+    if ($trainingFilter === 'cpr_completed' && strtolower($row['cpr_training_status'] ?? '') !== 'completed') {
+        return false;
+    }
+    if ($trainingFilter === 'aed_completed' && strtolower($row['aed_training_status'] ?? '') !== 'completed') {
+        return false;
+    }
+    if ($trainingFilter === 'all_completed' && (
+        strtolower($row['cpr_training_status'] ?? '') !== 'completed' ||
+        strtolower($row['aed_training_status'] ?? '') !== 'completed'
+    )) {
+        return false;
+    }
+    if ($trainingFilter === 'none_completed' && (
+        strtolower($row['cpr_training_status'] ?? '') === 'completed' ||
+        strtolower($row['aed_training_status'] ?? '') === 'completed'
+    )) {
+        return false;
     }
 
     return true;
