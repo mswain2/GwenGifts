@@ -29,12 +29,10 @@
         'event_manager' => 'Event Manager',
         'board_member'  => 'Board Member',
         'admin'         => 'Administrator',
-        'participant'   => 'Participant',
-        'superadmin'    => 'Super Admin',
     ];
     $allStatuses = [
         'Active'   => 'Active',
-        'Inactive' => 'Archived',
+        'Inactive' => 'Inactive',
     ];
 
     // All events (upcoming + archived) for the event autocomplete
@@ -95,13 +93,31 @@
         }
     }
 
-    // Helper for selected-chip rendering
-    function renderChips($values) {
+    // Compute the comma-separated mailing list for display below the submit button
+    $emails = [];
+    foreach ($results as $p) {
+        $e = trim((string) $p->get_email());
+        if ($e !== '') $emails[] = $e;
+    }
+    $mailingList = implode(', ', $emails);
+
+    // Build label maps so chips can render with friendly text while the hidden input stores the filter value
+    $eventLabels = [];
+    foreach ($eventsAll as $ev) {
+        $eid = (string) $ev->getID();
+        $date = $ev->getStartDate() ? (new DateTime($ev->getStartDate()))->format('M d, Y') : '';
+        $eventLabels[$eid] = $ev->getName() . ($date ? ' - ' . $date : '');
+    }
+
+    // Helper for selected-chip rendering (labels optional; falls back to value as label)
+    function renderChips($values, $labelMap = null) {
         $html = '';
         foreach ($values as $v) {
-            $safe = htmlspecialchars($v, ENT_QUOTES, 'UTF-8');
-            $html .= '<span class="chip" data-value="' . $safe . '">'
-                   . $safe
+            $label = ($labelMap && isset($labelMap[$v])) ? $labelMap[$v] : $v;
+            $safeVal = htmlspecialchars($v, ENT_QUOTES, 'UTF-8');
+            $safeLabel = htmlspecialchars($label, ENT_QUOTES, 'UTF-8');
+            $html .= '<span class="chip" data-value="' . $safeVal . '">'
+                   . $safeLabel
                    . '<button type="button" class="chip-remove" aria-label="Remove">&times;</button></span>';
         }
         return $html;
@@ -127,85 +143,44 @@ require_once('header.php');
 
         <div class="text-center mb-8">
             <h2>Generate an email list</h2>
-            <p class="sub-text">Filter users by role, status, event, email, name, or username. Select multiple values in any field.</p>
+            <p class="sub-text">Filter users by role, status, event, name, or email. Select multiple values in any field.</p>
         </div>
 
-        <?php if ($searchRan): ?>
-            <h3>Results</h3>
-            <?php if (!$anyFilter): ?>
-                <div class="report-error">Select at least one filter.</div>
-            <?php elseif (count($results) === 0): ?>
-                <div class="report-error">No users matched your filters.</div>
-            <?php else: ?>
-                <div class="overflow-x-auto">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>First</th>
-                                <th>Last</th>
-                                <th>Username</th>
-                                <th>Email</th>
-                                <th>Role</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach ($results as $p): ?>
-                                <tr>
-                                    <td><?= htmlspecialchars($p->get_first_name()) ?></td>
-                                    <td><?= htmlspecialchars($p->get_last_name()) ?></td>
-                                    <td><?= htmlspecialchars($p->get_id()) ?></td>
-                                    <td><a class="text-blue-700 underline" href="mailto:<?= htmlspecialchars($p->get_email()) ?>"><?= htmlspecialchars($p->get_email()) ?></a></td>
-                                    <td><?= htmlspecialchars(ucfirst($p->get_type_formatted())) ?></td>
-                                    <td><?= htmlspecialchars(ucfirst($p->get_status())) ?></td>
-                                </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                </div>
-
-                <?php
-                    $emails = array_map(fn($p) => $p->get_email(), $results);
-                    $emails = array_values(array_filter($emails, fn($e) => $e !== ''));
-                    $mailingList = implode(', ', $emails);
-                ?>
-                <div class="mt-4">
-                    <label>Result Mailing List (<?= count($emails) ?>)</label>
-                    <p class="text-gray-700 break-words"><?= htmlspecialchars($mailingList) ?></p>
-                </div>
-            <?php endif; ?>
-            <h3 class="mt-6">Search Again</h3>
+        <?php if ($searchRan && !$anyFilter): ?>
+            <div class="report-error">Select at least one filter.</div>
+        <?php elseif ($searchRan && count($results) === 0): ?>
+            <div class="report-error">No users matched your filters.</div>
         <?php endif; ?>
 
         <form id="email-list-form" method="get" class="space-y-6">
             <input type="hidden" name="search" value="1">
 
-            <!-- Role (checkbox multi-select) -->
+            <!-- Role (autocomplete multi-select) -->
             <div class="report-field">
-                <label>Role</label>
-                <div class="checkbox-grid">
-                    <?php foreach ($allRoles as $value => $label): ?>
-                        <label class="checkbox-option">
-                            <input type="checkbox" class="multi-checkbox" data-target="role-hidden" value="<?= htmlspecialchars($value) ?>"
-                                   <?= in_array($value, $selRoles, true) ? 'checked' : '' ?>>
-                            <?= htmlspecialchars($label) ?>
-                        </label>
-                    <?php endforeach; ?>
+                <label for="role-search">Role</label>
+                <div class="multi-autocomplete" data-hidden="role-hidden">
+                    <div class="chip-area"><?= renderChips($selRoles, $allRoles) ?></div>
+                    <input type="text" id="role-search" class="multi-autocomplete-input" placeholder="Search or select a role..." autocomplete="off">
+                    <div class="autocomplete-list multi-autocomplete-list">
+                        <?php foreach ($allRoles as $value => $label): ?>
+                            <div class="autocomplete-item" data-value="<?= htmlspecialchars($value) ?>" data-label="<?= htmlspecialchars($label) ?>"><?= htmlspecialchars($label) ?></div>
+                        <?php endforeach; ?>
+                    </div>
                 </div>
                 <input type="hidden" id="role-hidden" name="role" value="<?= htmlspecialchars(implode(',', $selRoles)) ?>">
             </div>
 
-            <!-- Status (checkbox multi-select) -->
+            <!-- Status (autocomplete multi-select) -->
             <div class="report-field">
-                <label>Status</label>
-                <div class="checkbox-grid">
-                    <?php foreach ($allStatuses as $value => $label): ?>
-                        <label class="checkbox-option">
-                            <input type="checkbox" class="multi-checkbox" data-target="status-hidden" value="<?= htmlspecialchars($value) ?>"
-                                   <?= in_array($value, $selStatuses, true) ? 'checked' : '' ?>>
-                            <?= htmlspecialchars($label) ?>
-                        </label>
-                    <?php endforeach; ?>
+                <label for="status-search">Status</label>
+                <div class="multi-autocomplete" data-hidden="status-hidden">
+                    <div class="chip-area"><?= renderChips($selStatuses, $allStatuses) ?></div>
+                    <input type="text" id="status-search" class="multi-autocomplete-input" placeholder="Search or select a status..." autocomplete="off">
+                    <div class="autocomplete-list multi-autocomplete-list">
+                        <?php foreach ($allStatuses as $value => $label): ?>
+                            <div class="autocomplete-item" data-value="<?= htmlspecialchars($value) ?>" data-label="<?= htmlspecialchars($label) ?>"><?= htmlspecialchars($label) ?></div>
+                        <?php endforeach; ?>
+                    </div>
                 </div>
                 <input type="hidden" id="status-hidden" name="status" value="<?= htmlspecialchars(implode(',', $selStatuses)) ?>">
             </div>
@@ -214,7 +189,7 @@ require_once('header.php');
             <div class="report-field">
                 <label for="event-search">Event</label>
                 <div class="multi-autocomplete" data-hidden="event-hidden">
-                    <div class="chip-area"><?= renderChips($selEvents) ?></div>
+                    <div class="chip-area"><?= renderChips($selEvents, $eventLabels) ?></div>
                     <input type="text" id="event-search" class="multi-autocomplete-input" placeholder="Search or select an event..." autocomplete="off">
                     <div class="autocomplete-list multi-autocomplete-list">
                         <?php foreach ($eventsAll as $ev):
@@ -227,28 +202,6 @@ require_once('header.php');
                     </div>
                 </div>
                 <input type="hidden" id="event-hidden" name="event" value="<?= htmlspecialchars(implode(',', $selEvents)) ?>">
-            </div>
-
-            <!-- Email (autocomplete multi-select) -->
-            <div class="report-field">
-                <label for="email-search">Email</label>
-                <div class="multi-autocomplete" data-hidden="email-hidden">
-                    <div class="chip-area"><?= renderChips($selEmails) ?></div>
-                    <input type="text" id="email-search" class="multi-autocomplete-input" placeholder="Search or select an email..." autocomplete="off">
-                    <div class="autocomplete-list multi-autocomplete-list">
-                        <?php
-                            $seen = [];
-                            foreach ($personsAll as $p) {
-                                $e = $p->get_email();
-                                if (!$e || isset($seen[$e])) continue;
-                                $seen[$e] = true;
-                                $safe = htmlspecialchars($e);
-                                echo "<div class='autocomplete-item' data-value='$safe' data-label='$safe'>$safe</div>";
-                            }
-                        ?>
-                    </div>
-                </div>
-                <input type="hidden" id="email-hidden" name="email" value="<?= htmlspecialchars(implode(',', $selEmails)) ?>">
             </div>
 
             <!-- Name (autocomplete multi-select) -->
@@ -273,29 +226,38 @@ require_once('header.php');
                 <input type="hidden" id="name-hidden" name="name" value="<?= htmlspecialchars(implode(',', $selNames)) ?>">
             </div>
 
-            <!-- Username (autocomplete multi-select) -->
+            <!-- Email (autocomplete multi-select) -->
             <div class="report-field">
-                <label for="username-search">Username</label>
-                <div class="multi-autocomplete" data-hidden="username-hidden">
-                    <div class="chip-area"><?= renderChips($selUsernames) ?></div>
-                    <input type="text" id="username-search" class="multi-autocomplete-input" placeholder="Search or select a username..." autocomplete="off">
+                <label for="email-search">Email</label>
+                <div class="multi-autocomplete" data-hidden="email-hidden">
+                    <div class="chip-area"><?= renderChips($selEmails) ?></div>
+                    <input type="text" id="email-search" class="multi-autocomplete-input" placeholder="Search or select an email..." autocomplete="off">
                     <div class="autocomplete-list multi-autocomplete-list">
                         <?php
+                            $seen = [];
                             foreach ($personsAll as $p) {
-                                $u = $p->get_id();
-                                if (!$u) continue;
-                                $safe = htmlspecialchars($u);
+                                $e = $p->get_email();
+                                if (!$e || isset($seen[$e])) continue;
+                                $seen[$e] = true;
+                                $safe = htmlspecialchars($e);
                                 echo "<div class='autocomplete-item' data-value='$safe' data-label='$safe'>$safe</div>";
                             }
                         ?>
                     </div>
                 </div>
-                <input type="hidden" id="username-hidden" name="username" value="<?= htmlspecialchars(implode(',', $selUsernames)) ?>">
+                <input type="hidden" id="email-hidden" name="email" value="<?= htmlspecialchars(implode(',', $selEmails)) ?>">
             </div>
 
             <div class="text-center pt-4">
                 <input type="submit" value="Generate List" class="submit-button">
             </div>
+
+            <?php if ($searchRan && $mailingList !== ''): ?>
+                <div class="mailing-list-block">
+                    <label>Result Mailing List (<?= count($emails) ?>)</label>
+                    <p class="mailing-list-text"><?= htmlspecialchars($mailingList) ?></p>
+                </div>
+            <?php endif; ?>
         </form>
     </div>
 

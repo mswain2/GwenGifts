@@ -260,6 +260,16 @@ function initAutocomplete(searchId, hiddenId, listId, allValue, errorMessage) {
     });
 }
 
+// Close any open autocomplete dropdown when clicking outside its wrapper
+document.addEventListener('click', function (e) {
+    document.querySelectorAll('.autocomplete-wrap').forEach(wrap => {
+        if (!wrap.contains(e.target)) {
+            const list = wrap.querySelector('.autocomplete-list');
+            if (list) list.style.display = 'none';
+        }
+    });
+});
+
 document.addEventListener('DOMContentLoaded', function () {
     initAutocomplete('event_id_search', 'event_id', 'event_id_list', 'all', 'No matching event — please select one from the list.');
     initAutocomplete('volunteer_search', 'volunteer', 'volunteer_list', 'all', 'No matching volunteer — please select one from the list.');

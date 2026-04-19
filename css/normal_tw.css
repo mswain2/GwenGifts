@@ -1588,27 +1588,29 @@ color: black !important;
 .report-field-row.filter-visible {
     display: flex;
 }
-/* Multi-select checkbox grid (Role, Status) */
-.checkbox-grid {
+/* Shaded mailing-list result block (matches eventRoster styling) */
+.mailing-list-block {
+    margin: 1.5rem 0 0 0;
+    padding: 1rem;
+    background: #f6f8fb;
+    border: 1px solid #c8d1db;
+    border-radius: 8px;
     display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem 1.25rem;
-    padding: 0.5rem 0;
+    flex-direction: column;
+    gap: 0.5rem;
 }
-.checkbox-option {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    font-size: 0.95rem;
-    color: black !important;
-    cursor: pointer;
-    font-weight: normal;
-    margin-bottom: 0;
-}
-.checkbox-option input[type="checkbox"] {
-    width: auto;
+.mailing-list-block label {
+    display: block;
+    font-weight: 700;
+    color: #243b5a;
     margin: 0;
-    cursor: pointer;
+    line-height: 1.2;
+}
+.mailing-list-text {
+    margin: 0;
+    color: #333;
+    line-height: 1.5;
+    word-break: break-word;
 }
 
 /* Multi-select autocomplete with chips */

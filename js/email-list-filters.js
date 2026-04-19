@@ -1,25 +1,39 @@
 // Multi-select chip widgets for generateEmailList.php
 
 document.addEventListener('DOMContentLoaded', () => {
-    // --- Checkbox-backed multi-select (Role, Status) ---
-    document.querySelectorAll('.multi-checkbox').forEach(cb => {
-        cb.addEventListener('change', () => {
-            const hidden = document.getElementById(cb.dataset.target);
-            if (!hidden) return;
-            const values = [];
-            document.querySelectorAll(`.multi-checkbox[data-target="${cb.dataset.target}"]:checked`)
-                .forEach(el => values.push(el.value));
-            hidden.value = values.join(',');
+    // Close any open dropdown when clicking outside its wrapper
+    document.addEventListener('click', (e) => {
+        document.querySelectorAll('.multi-autocomplete').forEach(wrap => {
+            if (!wrap.contains(e.target)) {
+                const list = wrap.querySelector('.autocomplete-list');
+                if (list) list.style.display = 'none';
+            }
         });
     });
 
-    // --- Autocomplete multi-select (Event, Email, Name, Username) ---
+    // Collect one validator per widget so the form-submit handler can check all of them
+    const widgetValidators = [];
+
     document.querySelectorAll('.multi-autocomplete').forEach(wrap => {
         const hidden    = document.getElementById(wrap.dataset.hidden);
         const chipArea  = wrap.querySelector('.chip-area');
         const input     = wrap.querySelector('.multi-autocomplete-input');
         const list      = wrap.querySelector('.autocomplete-list');
         if (!hidden || !chipArea || !input || !list) return;
+
+        // Build a value -> label map so chips show friendly text while the hidden input keeps filter values
+        const valueToLabel = {};
+        list.querySelectorAll('.autocomplete-item').forEach(item => {
+            const v = item.dataset.value;
+            valueToLabel[v] = item.dataset.label || item.textContent.trim() || v;
+        });
+
+        // Preserve the original placeholder so it can be restored when all chips are removed
+        const originalPlaceholder = input.getAttribute('placeholder') || '';
+        const syncPlaceholder = () => {
+            const hasChips = chipArea.querySelector('.chip') !== null;
+            input.setAttribute('placeholder', hasChips ? '' : originalPlaceholder);
+        };
 
         // Hidden input holds comma-separated list of selected VALUES (not labels)
         const getSelected = () => {
@@ -29,15 +43,16 @@ document.addEventListener('DOMContentLoaded', () => {
             hidden.value = values.join(',');
         };
 
-        // Rebuild chip DOM from hidden input value
+        // Rebuild chip DOM from hidden input value, displaying labels
         const rebuildChips = () => {
             const selected = getSelected();
             chipArea.innerHTML = '';
             selected.forEach(val => {
+                const label = valueToLabel[val] || val;
                 const chip = document.createElement('span');
                 chip.className = 'chip';
                 chip.dataset.value = val;
-                chip.textContent = val;
+                chip.textContent = label;
                 const rm = document.createElement('button');
                 rm.type = 'button';
                 rm.className = 'chip-remove';
@@ -47,14 +62,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 chipArea.appendChild(chip);
             });
             updateListVisibility();
+            syncPlaceholder();
         };
 
-        // Mark items as selected (highlight + hide from dropdown) based on current selection
+        // Hide already-selected items from the dropdown
         const updateListVisibility = () => {
             const selected = getSelected();
             list.querySelectorAll('.autocomplete-item').forEach(item => {
-                const val = item.dataset.value;
-                if (selected.includes(val)) {
+                if (selected.includes(item.dataset.value)) {
                     item.classList.add('is-selected');
                 } else {
                     item.classList.remove('is-selected');
@@ -81,7 +96,6 @@ document.addEventListener('DOMContentLoaded', () => {
             list.style.display = anyVisible ? 'block' : 'none';
         };
 
-        // Add a value to the selection (either from click or from Enter key)
         const addValue = (val) => {
             if (!val) return;
             const selected = getSelected();
@@ -90,10 +104,10 @@ document.addEventListener('DOMContentLoaded', () => {
             setSelected(selected);
             rebuildChips();
             input.value = '';
+            input.setCustomValidity('');
             filterList('');
         };
 
-        // Remove a value from the selection
         const removeValue = (val) => {
             const selected = getSelected().filter(v => v !== val);
             setSelected(selected);
@@ -101,16 +115,18 @@ document.addEventListener('DOMContentLoaded', () => {
             filterList(input.value);
         };
 
-        // --- Events ---
         input.addEventListener('focus', () => {
             filterList(input.value);
             list.style.display = 'block';
         });
 
-        input.addEventListener('input', () => filterList(input.value));
+        input.addEventListener('input', () => {
+            // Clear any previous validity tooltip while the user is typing
+            input.setCustomValidity('');
+            filterList(input.value);
+        });
 
         input.addEventListener('blur', () => {
-            // delay so mousedown on items fires first
             setTimeout(() => { list.style.display = 'none'; }, 150);
         });
 
@@ -145,7 +161,44 @@ document.addEventListener('DOMContentLoaded', () => {
             removeValue(chip.dataset.value);
         });
 
-        // Initial state
-        updateListVisibility();
+        // Initial state — rebuild chips using labels (replaces PHP-rendered raw-value chips if any)
+        rebuildChips();
+
+        // Register validator for the form-submit handler
+        widgetValidators.push({
+            element: input,
+            hasUnmatchedText() { return input.value.trim() !== ''; },
+            hasSelection() { return getSelected().length > 0; },
+            setError(msg) { input.setCustomValidity(msg); },
+            clearError() { input.setCustomValidity(''); }
+        });
     });
+
+    // Form-level validation: block submit on unmatched typed text OR no filters selected
+    const form = document.getElementById('email-list-form');
+    if (form) {
+        form.addEventListener('submit', (e) => {
+            widgetValidators.forEach(v => v.clearError());
+
+            // 1. Unmatched text — user typed but did not click an item
+            const firstUnmatched = widgetValidators.find(v => v.hasUnmatchedText());
+            if (firstUnmatched) {
+                e.preventDefault();
+                firstUnmatched.setError('Please select an option from the list or clear this field before generating.');
+                firstUnmatched.element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                firstUnmatched.element.reportValidity();
+                return;
+            }
+
+            // 2. Nothing selected anywhere — must have at least one filter value
+            const anySelection = widgetValidators.some(v => v.hasSelection());
+            if (!anySelection && widgetValidators.length > 0) {
+                e.preventDefault();
+                const first = widgetValidators[0];
+                first.setError('Select at least one filter before generating a list.');
+                first.element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                first.element.reportValidity();
+            }
+        });
+    }
 });
