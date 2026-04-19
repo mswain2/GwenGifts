@@ -90,8 +90,7 @@ if ($format === 'csv') {
     $output = fopen('php://output', 'w');
 
     $attendanceLabel = ucfirst($filters['attendance']);
-    $trainingLabel = ($filters['training'] === 'not_done') ? 'Not Done' : ucfirst($filters['training']);
-    $exportedAt = date('m/d/Y g:i A');
+    $trainingLabel = $filters['training'] === 'all' ? 'All' : str_replace('_', ' ', ucwords($filters['training'], '_'));
     $totalResults = count($filtered_rows);
 
     // compact metadata section
@@ -149,6 +148,8 @@ if ($format !== 'pdf') {
     header('Location: eventRoster.php?id=' . urlencode((string)$id));
     die();
 }
+
+$trainingLabel = $filters['training'] === 'all' ? 'All' : str_replace('_', ' ', ucwords($filters['training'], '_'));
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -220,7 +221,7 @@ if ($format !== 'pdf') {
         <h1>Event Roster Export</h1>
         <p><strong>Event:</strong> <?php echo htmlspecialchars($event_name_display); ?></p>
         <p><strong>Attendance Filter:</strong> <?php echo htmlspecialchars($filters['attendance']); ?></p>
-        <p><strong>Training Filter:</strong> <?php echo htmlspecialchars($filters['training']); ?></p>
+        <p><strong>Training Filter:</strong> <?php echo htmlspecialchars($trainingLabel); ?></p>
         <p><strong>Exported At:</strong> <?php echo htmlspecialchars(date('Y-m-d H:i:s')); ?></p>
 
         <table>
