@@ -155,7 +155,7 @@ $event_ids = get_attended_event_ids($username);
  
     <main class="general">
         <?php if ($isManager): ?>
-            <fieldset class="section-box" style="margin-bottom: 1.5rem;">
+            <fieldset class="section-box" style="margin-bottom: 1.5rem; width:100%; box-sizing:border-box;">
                 <h2>Manually Configure Hours</h2>
                 <?php if (isset($_GET['hours_added'])): ?>
                     <p style="color: green;">✓ <?php echo htmlspecialchars($_GET['hours_added']); ?> successfully added.</p>
@@ -191,14 +191,15 @@ $event_ids = get_attended_event_ids($username);
                 <?php $event = retrieve_event2($event_id); ?>
                 <?php if (!$event) continue;?>
  
-                <fieldset class="section-box">
+                <fieldset class="section-box" style="width:100%; box-sizing:border-box; min-width:0;">
                     <h2><?php echo htmlspecialchars($event['name']) ?></h2>
  
                     <?php
                         $shifts = get_check_in_outs($username, $event['id']);
                     ?>
  
-                    <table class="general">
+                        <div style="overflow-x:auto; width:100%; max-width:100%;">
+                        <table class="general" style="min-width:600px; width:100%; white-space:normal;">
                         <tr>
                             <th>Start Time</th>
                             <th>End Time</th>
@@ -266,6 +267,7 @@ $event_ids = get_attended_event_ids($username);
                             </tr>
                         <?php endforeach; ?>
                     </table>
+                    </div>
  
                     <?php if ($isManager): ?>
                         <form method="GET" action="setTimes.php">
