@@ -263,6 +263,7 @@
             <div class="blue-div"></div>
             <label for="email"><em>* </em>E-mail</label>
             <input type="email" id="email" name="email" value="<?php echo hsc($person->get_email()); ?>" required placeholder="Enter your e-mail address">
+            <p id="email-unique-error" style="display:none;color:var(--error-color,#c0392b);font-size:.875rem;margin-top:.25rem;"></p>
 
             <label for="phone1"><em>* </em>Phone Number</label>
             <input type="text" id="phone1" class="phone" name="phone1" 
@@ -737,6 +738,55 @@
             delimiter: '-',
             numericOnly: true,
         });
+    </script>
+
+    <script>
+        // Email uniqueness check on blur — shows inline error before submit
+        (function () {
+            var emailField = document.getElementById('email');
+            var errEl      = document.getElementById('email-unique-error');
+            var originalEmail = emailField ? emailField.value.trim().toLowerCase() : '';
+
+            if (!emailField || !errEl) return;
+
+            emailField.addEventListener('blur', async function () {
+                var val = emailField.value.trim().toLowerCase();
+                // If unchanged from original, never flag it.
+                if (val === originalEmail || val === '') {
+                    errEl.style.display = 'none';
+                    errEl.textContent   = '';
+                    emailField.style.borderColor = '';
+                    return;
+                }
+                try {
+                    var body = new URLSearchParams({
+                        action:     'check_email',
+                        email:      val,
+                        exclude_id: '<?php echo htmlspecialchars($id, ENT_QUOTES); ?>'
+                    });
+                    var res  = await fetch('editProfile.php', { method: 'POST', body: body });
+                    var data = await res.json();
+                    if (!data.available) {
+                        errEl.textContent   = 'This email address is already registered to another account.';
+                        errEl.style.display = 'block';
+                        emailField.style.borderColor = 'var(--error-color, #c0392b)';
+                    } else {
+                        errEl.style.display = 'none';
+                        errEl.textContent   = '';
+                        emailField.style.borderColor = '';
+                    }
+                } catch (e) { /* network error — silent */ }
+            });
+
+            // Clear the inline error as soon as the user starts typing again.
+            emailField.addEventListener('input', function () {
+                if (errEl.style.display !== 'none') {
+                    errEl.style.display = 'none';
+                    errEl.textContent   = '';
+                    emailField.style.borderColor = '';
+                }
+            });
+        }());
     </script>
 
     <script>
