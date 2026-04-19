@@ -285,18 +285,8 @@ if (date("H:i:s") > "18:19:59") {
         }
         $_pfp_escaped = htmlspecialchars($_pfp, ENT_QUOTES, 'UTF-8');	
       
-        // load header according to user role/type
-        $type = $_SESSION['type'];
-        if ($type === 'admin' || $type === "superadmin") {
-            require 'partials/nav_admin.php';
-        } else if ($type === 'board_member') {
-            require 'partials/nav_admin.php';
-        }
-        else if ($type === 'event_manager') {
-            require 'partials/nav_admin.php';
-        } else {
-            require 'partials/nav_volunteer.php';
-        }
+        // load nav bar
+        require 'partials/nav.php';
     }
     ?>
     <script>
