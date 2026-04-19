@@ -20,8 +20,11 @@ $timePeriod  = $_POST['time_period'] ?? 'monthly';
 $dateFrom    = $_POST['date_from']   ?? '';
 $dateTo      = $_POST['date_to']     ?? '';
 $userStatus  = $_POST['user_status'] ?? 'all';
-$eventId     = $_POST['event_id']    ?? 'all';
-$volunteer   = $_POST['volunteer']   ?? 'all';
+$eventId     = $_POST['event_id']    ?? '';
+$volunteer   = $_POST['volunteer']   ?? '';
+// Empty string (blank field = no filter) is normalized to the existing 'all' sentinel
+if ($eventId   === '') $eventId   = 'all';
+if ($volunteer === '') $volunteer = 'all';
 $topN        = intval($_POST['top_n'] ?? 10);
 $format      = $_POST['format']      ?? 'csv';
 

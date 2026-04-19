@@ -143,15 +143,15 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 // Autocomplete for Event and Volunteer fields
+// Blank input = no filter (server treats empty hidden value as "all")
 const autocompleteValidators = [];
 
-function initAutocomplete(searchId, hiddenId, listId, allValue, errorMessage) {
+function initAutocomplete(searchId, hiddenId, listId, errorMessage) {
     const searchInput = document.getElementById(searchId);
     const hiddenInput = document.getElementById(hiddenId);
     const list = document.getElementById(listId);
     if (!searchInput || !list) return;
 
-    const allLabel = searchInput.dataset.allLabel || 'All';
     const items = list.querySelectorAll('.autocomplete-item');
 
     function setInvalid() {
@@ -164,7 +164,7 @@ function initAutocomplete(searchId, hiddenId, listId, allValue, errorMessage) {
 
     function clearToBlank() {
         searchInput.value = '';
-        hiddenInput.value = allValue;
+        hiddenInput.value = '';
         clearInvalid();
     }
 
@@ -175,7 +175,8 @@ function initAutocomplete(searchId, hiddenId, listId, allValue, errorMessage) {
 
     searchInput.addEventListener('input', function () {
         const query = this.value.toLowerCase();
-        hiddenInput.value = allValue;
+        // Typing invalidates any previously-matched selection
+        hiddenInput.value = '';
         const hasMatch = filterItems(query);
         list.style.display = 'block';
         if (!query || hasMatch) {
@@ -185,27 +186,18 @@ function initAutocomplete(searchId, hiddenId, listId, allValue, errorMessage) {
         }
     });
 
-    // Returns true if at least one non-"All" item matches the query
     function filterItems(query) {
-        let hasVisible = false;
         let hasMatch = false;
         items.forEach(item => {
-            // Always show the "All" option, even while filtering
-            if (item.classList.contains('autocomplete-item-all')) {
-                item.style.display = 'block';
-                hasVisible = true;
-                return;
-            }
             const text = item.textContent.toLowerCase();
             if (!query || text.includes(query)) {
                 item.style.display = 'block';
-                hasVisible = true;
                 hasMatch = true;
             } else {
                 item.style.display = 'none';
             }
         });
-        list.style.display = hasVisible ? 'block' : 'none';
+        list.style.display = hasMatch ? 'block' : 'none';
         return hasMatch;
     }
 
@@ -229,14 +221,13 @@ function initAutocomplete(searchId, hiddenId, listId, allValue, errorMessage) {
             return;
         }
         // Value present but nothing selected from the list → unmatched
-        if (hiddenInput.value === allValue && value !== allLabel) {
+        if (!hiddenInput.value) {
             setInvalid();
         } else {
             clearInvalid();
         }
     });
 
-    // Allow clearing to reset to "all"
     searchInput.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') {
             clearToBlank();
@@ -246,14 +237,12 @@ function initAutocomplete(searchId, hiddenId, listId, allValue, errorMessage) {
         }
     });
 
-    // Return an object the form-submit handler can use to validate this field
     autocompleteValidators.push({
         isInvalid() {
-            // Skip validation for fields hidden by the current report type
             if (searchInput.disabled) return false;
             const value = searchInput.value.trim();
             if (!value) return false;
-            return hiddenInput.value === allValue && value !== allLabel;
+            return !hiddenInput.value;
         },
         setInvalid,
         element: searchInput
@@ -271,8 +260,8 @@ document.addEventListener('click', function (e) {
 });
 
 document.addEventListener('DOMContentLoaded', function () {
-    initAutocomplete('event_id_search', 'event_id', 'event_id_list', 'all', 'No matching event — please select one from the list.');
-    initAutocomplete('volunteer_search', 'volunteer', 'volunteer_list', 'all', 'No matching volunteer — please select one from the list.');
+    initAutocomplete('event_id_search', 'event_id', 'event_id_list', 'No matching event — please select one from the list.');
+    initAutocomplete('volunteer_search', 'volunteer', 'volunteer_list', 'No matching volunteer — please select one from the list.');
 
     const form = document.getElementById('report-form');
     if (form) {
