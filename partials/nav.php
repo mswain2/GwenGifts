@@ -55,7 +55,7 @@
         <div class="nav-links">
             <div class="nav-item" style="outline:none;">
                 <div class="icon">
-                    <img src="<?= $_pfp_escaped ?>" alt="User Icon" class="icon-img in-nav-img profile-icon">
+                    <img src="<?= $_pfp_escaped ?>" alt="User Icon" class="profile-icon">
                     <div class="dropdown">
                         <a href="viewProfile.php" style="text-decoration: none;">
                         <div class="in-nav">
