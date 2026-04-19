@@ -947,7 +947,7 @@ progress::-moz-progress-bar {
 
     <div class="form-pagination-nav">
         <button type="button" id="prevBtn" onclick="changePage(-1)" style="display:none;">&#8592; Previous</button>
-        <button type="button" id="nextBtn" onclick="changePage(1)">Next &#8594;</button>
+        <button type="button" id="nextBtn" onclick="handleNext()">Next &#8594;</button>
     </div>
     <p class="text-center notice"></p>
     <input type="submit" id="submitBtn" name="registration-form" value="Submit" style="width: 50%; margin: auto; display:none;">
@@ -983,6 +983,54 @@ progress::-moz-progress-bar {
         if (direction > 0 && !validateCurrentPage()) return;
         var next = currentPage + direction;
         if (next < 1 || next > totalPages) return;
+        currentPage = next;
+        showPage(currentPage);
+    }
+
+    /*
+     * handleNext() – async wrapper for the Next button.
+     * For most pages it behaves exactly like changePage(1).
+     * On page 3 (Personal Contact Information), after all sync checks pass,
+     * it also POSTs the email to VolunteerRegister.php?action=check_email and
+     * blocks advancement if the address is already registered.
+     */
+    async function handleNext() {
+        if (!validateCurrentPage()) return;
+
+        if (currentPage === 3) {
+            var emailField = document.getElementById('email');
+            if (emailField && emailField.value.trim()) {
+                var btn = document.getElementById('nextBtn');
+                var origText = btn.textContent;
+                btn.disabled = true;
+                btn.textContent = 'Checking…';
+                try {
+                    var body = new URLSearchParams({
+                        action: 'check_email',
+                        email:  emailField.value.trim().toLowerCase()
+                    });
+                    var res  = await fetch('VolunteerRegister.php', { method: 'POST', body: body });
+                    var data = await res.json();
+                    if (!data.available) {
+                        showError(emailField,
+                            'This email address is already registered. ' +
+                            'Please use a different email or log in to your existing account.');
+                        var firstErr = document.getElementById('page3').querySelector('.client-error');
+                        if (firstErr) firstErr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        btn.disabled = false;
+                        btn.textContent = origText;
+                        return;
+                    }
+                } catch (e) {
+                    // Network error — allow proceeding rather than blocking the user.
+                }
+                btn.disabled = false;
+                btn.textContent = origText;
+            }
+        }
+
+        var next = currentPage + 1;
+        if (next > totalPages) return;
         currentPage = next;
         showPage(currentPage);
     }

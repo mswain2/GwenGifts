@@ -29,6 +29,27 @@ $error_messages = [];
 $args = [];
 $day_availability = [];
 
+/* ── AJAX email uniqueness check ──────────────────────────────────────── */
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'check_email') {
+    header('Content-Type: application/json');
+    $con       = connect();
+    $email     = strtolower(trim($_POST['email']      ?? ''));
+    $excludeId = trim($_POST['exclude_id'] ?? '');
+    $avail     = false;
+    if ($email !== '') {
+        $safe      = mysqli_real_escape_string($con, $email);
+        $safeExcl  = mysqli_real_escape_string($con, $excludeId);
+        $whereExcl = $safeExcl !== '' ? " AND id != '$safeExcl'" : '';
+        $res       = mysqli_query($con, "SELECT id FROM dbpersons WHERE email = '$safe'$whereExcl LIMIT 1");
+        $avail     = ($res && mysqli_num_rows($res) === 0);
+    } else {
+        $avail = true;
+    }
+    mysqli_close($con);
+    echo json_encode(['available' => $avail]);
+    exit;
+}
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $ignoreList = array('password', 'password-reenter');
     $args = sanitize($_POST, $ignoreList);
