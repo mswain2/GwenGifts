@@ -58,7 +58,15 @@ require_once('header.php');
     <h1 style="color:white;">Generate Report</h1>
 
     <main>
-        <?php $events = get_all_events_sorted_by_date_not_archived(); ?>
+        <?php
+        $events = get_all_events_sorted_by_date_not_archived();
+        function format_event_label($event) {
+            $name = $event->getName();
+            $startDate = $event->getStartDate();
+            $ts = $startDate ? strtotime($startDate) : false;
+            return $ts ? $name . ' — ' . date('M j, Y', $ts) : $name;
+        }
+        ?>
 
         <div class="main-content-box w-[80%] p-8">
 
@@ -135,20 +143,27 @@ require_once('header.php');
                     <div class="report-field" data-reports="volunteer_hours volunteer_participation top_volunteers">
                         <label for="event_id_search">Event</label>
                         <div class="autocomplete-wrap">
-                            <input type="text" id="event_id_search" placeholder="Search or select an event..." autocomplete="off"
-                                value="<?php
-                                    if (!empty($rf['event_id']) && $rf['event_id'] !== 'all') {
-                                        require_once('database/dbEvents.php');
-                                        $savedEvent = retrieve_event($rf['event_id']);
-                                        echo $savedEvent ? htmlspecialchars($savedEvent->getName()) : '';
+                            <?php
+                                $savedEventId = $rf['event_id'] ?? 'all';
+                                $eventDisplay = '';
+                                if (!empty($savedEventId) && $savedEventId !== 'all') {
+                                    require_once('database/dbEvents.php');
+                                    $savedEvent = retrieve_event($savedEventId);
+                                    if ($savedEvent) {
+                                        $eventDisplay = format_event_label($savedEvent);
                                     }
-                                ?>">
+                                }
+                            ?>
+                            <input type="text" id="event_id_search" placeholder="Search or select an event..." autocomplete="off"
+                                data-all-label="All Events"
+                                value="<?= htmlspecialchars($eventDisplay) ?>">
                             <input type="hidden" id="event_id" name="event_id" value="<?= old('event_id', 'all') ?>">
                             <div class="autocomplete-list" id="event_id_list">
+                                <div class="autocomplete-item autocomplete-item-all" data-value="all">All Events</div>
                                 <?php foreach ($events as $event) {
                                     $eid = htmlspecialchars($event->getID());
-                                    $ename = htmlspecialchars($event->getName());
-                                    echo "<div class='autocomplete-item' data-value='$eid'>$ename</div>";
+                                    $elabel = htmlspecialchars(format_event_label($event));
+                                    echo "<div class='autocomplete-item' data-value='$eid'>$elabel</div>";
                                 } ?>
                             </div>
                         </div>
@@ -158,10 +173,18 @@ require_once('header.php');
                     <div class="report-field" data-reports="volunteer_hours volunteer_participation">
                         <label for="volunteer_search">Volunteer</label>
                         <div class="autocomplete-wrap">
+                            <?php
+                                $savedVolunteer = $rf['volunteer'] ?? 'all';
+                                $volunteerDisplay = (!empty($savedVolunteer) && $savedVolunteer !== 'all')
+                                    ? $savedVolunteer
+                                    : '';
+                            ?>
                             <input type="text" id="volunteer_search" placeholder="Search or select a volunteer..." autocomplete="off"
-                                value="<?= (!empty($rf['volunteer']) && $rf['volunteer'] !== 'all') ? htmlspecialchars($rf['volunteer']) : '' ?>">
+                                data-all-label="All Volunteers"
+                                value="<?= htmlspecialchars($volunteerDisplay) ?>">
                             <input type="hidden" id="volunteer" name="volunteer" value="<?= old('volunteer', 'all') ?>">
                             <div class="autocomplete-list" id="volunteer_list">
+                                <div class="autocomplete-item autocomplete-item-all" data-value="all">All Volunteers</div>
                                 <?php
                                 $volunteers = getall_volunteer_names();
                                 if ($volunteers) {

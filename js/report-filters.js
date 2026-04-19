@@ -143,13 +143,30 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 // Autocomplete for Event and Volunteer fields
-function initAutocomplete(searchId, hiddenId, listId, allValue, allPlaceholder) {
+const autocompleteValidators = [];
+
+function initAutocomplete(searchId, hiddenId, listId, allValue, errorMessage) {
     const searchInput = document.getElementById(searchId);
     const hiddenInput = document.getElementById(hiddenId);
     const list = document.getElementById(listId);
     if (!searchInput || !list) return;
 
+    const allLabel = searchInput.dataset.allLabel || 'All';
     const items = list.querySelectorAll('.autocomplete-item');
+
+    function setInvalid() {
+        searchInput.setCustomValidity(errorMessage);
+    }
+
+    function clearInvalid() {
+        searchInput.setCustomValidity('');
+    }
+
+    function clearToBlank() {
+        searchInput.value = '';
+        hiddenInput.value = allValue;
+        clearInvalid();
+    }
 
     searchInput.addEventListener('focus', function () {
         filterItems('');
@@ -159,22 +176,37 @@ function initAutocomplete(searchId, hiddenId, listId, allValue, allPlaceholder) 
     searchInput.addEventListener('input', function () {
         const query = this.value.toLowerCase();
         hiddenInput.value = allValue;
-        filterItems(query);
+        const hasMatch = filterItems(query);
         list.style.display = 'block';
+        if (!query || hasMatch) {
+            clearInvalid();
+        } else {
+            setInvalid();
+        }
     });
 
+    // Returns true if at least one non-"All" item matches the query
     function filterItems(query) {
         let hasVisible = false;
+        let hasMatch = false;
         items.forEach(item => {
+            // Always show the "All" option, even while filtering
+            if (item.classList.contains('autocomplete-item-all')) {
+                item.style.display = 'block';
+                hasVisible = true;
+                return;
+            }
             const text = item.textContent.toLowerCase();
             if (!query || text.includes(query)) {
                 item.style.display = 'block';
                 hasVisible = true;
+                hasMatch = true;
             } else {
                 item.style.display = 'none';
             }
         });
         list.style.display = hasVisible ? 'block' : 'none';
+        return hasMatch;
     }
 
     items.forEach(item => {
@@ -183,30 +215,71 @@ function initAutocomplete(searchId, hiddenId, listId, allValue, allPlaceholder) 
             searchInput.value = this.textContent;
             hiddenInput.value = this.getAttribute('data-value');
             list.style.display = 'none';
+            clearInvalid();
             saveFiltersToStorage();
         });
     });
 
     searchInput.addEventListener('blur', function () {
         list.style.display = 'none';
-        if (!searchInput.value.trim()) {
-            hiddenInput.value = allValue;
+        const value = searchInput.value.trim();
+        if (!value) {
+            clearToBlank();
+            saveFiltersToStorage();
+            return;
+        }
+        // Value present but nothing selected from the list → unmatched
+        if (hiddenInput.value === allValue && value !== allLabel) {
+            setInvalid();
+        } else {
+            clearInvalid();
         }
     });
 
     // Allow clearing to reset to "all"
     searchInput.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') {
-            searchInput.value = '';
-            hiddenInput.value = allValue;
+            clearToBlank();
             list.style.display = 'none';
             searchInput.blur();
             saveFiltersToStorage();
         }
     });
+
+    // Return an object the form-submit handler can use to validate this field
+    autocompleteValidators.push({
+        isInvalid() {
+            // Skip validation for fields hidden by the current report type
+            if (searchInput.disabled) return false;
+            const value = searchInput.value.trim();
+            if (!value) return false;
+            return hiddenInput.value === allValue && value !== allLabel;
+        },
+        setInvalid,
+        element: searchInput
+    });
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-    initAutocomplete('event_id_search', 'event_id', 'event_id_list', 'all', 'All Events');
-    initAutocomplete('volunteer_search', 'volunteer', 'volunteer_list', 'all', 'All Volunteers');
+    initAutocomplete('event_id_search', 'event_id', 'event_id_list', 'all', 'No matching event — please select one from the list.');
+    initAutocomplete('volunteer_search', 'volunteer', 'volunteer_list', 'all', 'No matching volunteer — please select one from the list.');
+
+    const form = document.getElementById('report-form');
+    if (form) {
+        form.addEventListener('submit', function (e) {
+            let firstInvalid = null;
+            autocompleteValidators.forEach(v => {
+                if (v.isInvalid()) {
+                    v.setInvalid();
+                    if (!firstInvalid) firstInvalid = v;
+                }
+            });
+            if (firstInvalid) {
+                e.preventDefault();
+                // Scroll the field into view without moving focus to it
+                firstInvalid.element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                firstInvalid.element.reportValidity();
+            }
+        });
+    }
 });
