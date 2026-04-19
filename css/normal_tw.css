@@ -1548,7 +1548,7 @@ color: black !important;
     margin: 1.5rem 0 1rem;
 }
 .report-section-heading {
-    color: var(--main-color);
+    color: black;
     font-size: 1.1rem;
     font-weight: 600;
     margin-bottom: 1rem;
@@ -1591,6 +1591,14 @@ color: black !important;
 /* Autocomplete */
 .autocomplete-wrap {
     position: relative;
+}
+.autocomplete-wrap input[type="text"] {
+    cursor: pointer;
+}
+#report-form input:not([type="submit"]),
+#report-form select,
+#report-form textarea {
+    color: black !important;
 }
 .autocomplete-list {
     display: none;

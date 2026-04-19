@@ -19,8 +19,14 @@ $currentYear = date("Y");
 $fiscalYearStart = ($currentMonth >= 10) ? $currentYear : $currentYear - 1;
 $fiscalYearEnd = $fiscalYearStart + 1;
 
+// Clear saved filters when arriving fresh from the dashboard
+if (isset($_GET['reset'])) {
+    unset($_SESSION['report_filters']);
+}
+
 // Restore saved filters from session
 $rf = $_SESSION['report_filters'] ?? [];
+$resetStorage = isset($_GET['reset']);
 function old($key, $default = '') {
     global $rf;
     return htmlspecialchars($rf[$key] ?? $default, ENT_QUOTES, 'UTF-8');
@@ -33,6 +39,9 @@ function old($key, $default = '') {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Gwyneth's Gift | Generate Report</title>
+    <?php if ($resetStorage): ?>
+    <script>sessionStorage.removeItem('report_filters');</script>
+    <?php endif; ?>
     <script src="js/report-filters.js" defer></script>
     <link href="css/normal_tw.css" rel="stylesheet">
 <?php
@@ -126,7 +135,7 @@ require_once('header.php');
                     <div class="report-field" data-reports="volunteer_hours volunteer_participation top_volunteers">
                         <label for="event_id_search">Event</label>
                         <div class="autocomplete-wrap">
-                            <input type="text" id="event_id_search" placeholder="All Events" autocomplete="off"
+                            <input type="text" id="event_id_search" placeholder="Search or select an event..." autocomplete="off"
                                 value="<?php
                                     if (!empty($rf['event_id']) && $rf['event_id'] !== 'all') {
                                         require_once('database/dbEvents.php');
@@ -149,7 +158,7 @@ require_once('header.php');
                     <div class="report-field" data-reports="volunteer_hours volunteer_participation">
                         <label for="volunteer_search">Volunteer</label>
                         <div class="autocomplete-wrap">
-                            <input type="text" id="volunteer_search" placeholder="All Volunteers" autocomplete="off"
+                            <input type="text" id="volunteer_search" placeholder="Search or select a volunteer..." autocomplete="off"
                                 value="<?= (!empty($rf['volunteer']) && $rf['volunteer'] !== 'all') ? htmlspecialchars($rf['volunteer']) : '' ?>">
                             <input type="hidden" id="volunteer" name="volunteer" value="<?= old('volunteer', 'all') ?>">
                             <div class="autocomplete-list" id="volunteer_list">
