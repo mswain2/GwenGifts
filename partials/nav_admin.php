@@ -33,14 +33,14 @@
                     <div class="in-nav">
                         <img src="images/users-solid.svg">
                         <span>Pending Applications</span>
-                    </div> -->
-                    </a>
-                    <a href="adminViewingEvents.php" style="text-decoration: none;">
+                    </div>
+                    </a> -->
+                    <!-- <a href="adminViewingEvents.php" style="text-decoration: none;">
                     <div class="in-nav">
                         <img src="images/pencil-solid-full.svg">
                         <span>Edit Event</span>
                     </div>
-                    </a>
+                    </a> -->
                 </div>
             </div>
             <!-- <div class="nav-item"> Groups <span>&#9660</span>

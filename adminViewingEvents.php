@@ -1,6 +1,10 @@
 <?php
     // Template for new VMS pages. Base your new page on this one
 
+    // prevent access to this unused page
+    header('Location: index.php');
+    die();
+
     // Make session information accessible, allowing us to associate
     // data with the logged-in user.
     session_cache_expire(30);
@@ -66,7 +70,7 @@
                                         echo "
                                         <tr data-event-id='$eventID'>
                                             <td><a href='event.php?id=$eventID'>$title</a></td> <!-- Link updated here -->
-                                            <td>$date</td>
+                                            <td>$startDate</td>
                                             <td><a class='button sign-up' href='eventSignUp.php'>Sign Up</a></td>
                                         </tr>";
                                     } else {

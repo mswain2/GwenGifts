@@ -50,16 +50,16 @@ require_once('header.php');
       <!-- Buttons Section -->
       <div class="button-section">
 
-        <button onclick="window.location.href='addEvent.php';">
-          <div class="button-left-gray"></div>
-          <div>Create Event</div>
-          <img class="button-icon h-12 w-12 left-4" src="images/plus-solid.svg" alt="Plus Icon">
-        </button>
-
         <button onclick="window.location.href='viewAllEvents.php';">
           <div class="button-left-gray"></div>
           <div>Browse Events</div>
           <img class="button-icon h-10 w-10 left-5" src="images/list-solid.svg" alt="List Icon">
+        </button>
+
+        <button onclick="window.location.href='addEvent.php';">
+          <div class="button-left-gray"></div>
+          <div>Create Event</div>
+          <img class="button-icon h-12 w-12 left-4" src="images/plus-solid.svg" alt="Plus Icon">
         </button>
 
         <button onclick="window.location.href='editHours.php';">
@@ -84,7 +84,7 @@ require_once('header.php');
           <img class="button-icon h-10 w-10 left-5" src="images/clock-regular.svg" alt="Calendar Icon">
         </button> -->
 
-        <button onclick="window.location.href='adminViewingEvents.php';">
+        <!-- <button onclick="window.location.href='adminViewingEvents.php';">
           <div class="button-left-gray"></div>
           <div>Edit Event</div>
           <img class="button-icon h-10 w-10 left-5" src="images/pencil-solid-full.svg" alt="Pencil Icon">
@@ -94,7 +94,7 @@ require_once('header.php');
           <div class="button-left-gray"></div>
           <div>Generate Event Report</div>
           <img class="button-icon h-12 w-12 left-4" src="images/create-report.svg" alt="Plus Icon">
-        </button>
+        </button> -->
 
         <div class="text-center mt-6">
           <a href="index.php" class="return-button">Return to Dashboard</a>
