@@ -19,6 +19,58 @@ function old($key, $default = '') {
 <!-- imports -->
 <script src="https://nosir.github.io/cleave.js/dist/cleave.min.js"></script>
 <script src="https://nosir.github.io/cleave.js/dist/cleave-phone.i18n.js"></script>
+<style>
+.progress-container {
+    position: relative;
+    width: 100%;
+    margin-bottom: 1rem;
+}
+progress {
+    width: 100%;
+    height: 25px;
+    appearance: none;
+}
+progress::-webkit-progress-bar {
+    background-color: #eee;
+    border-radius: 5px;
+}
+progress::-webkit-progress-value {
+    background-color: var(--secondary-accent-color);
+    border-radius: 5px;
+}
+progress::-moz-progress-bar {
+    background-color: var(--secondary-accent-color);
+    border-radius: 5px;
+}
+.progress-label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: var(--main-color);
+    pointer-events: none;
+}
+.form-pagination-nav {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 1rem 0;
+}
+.form-pagination-nav button {
+    padding: 0.5rem 1.35rem;
+    cursor: pointer;
+}
+/* Highlight invalid fields on client-side validation failure */
+.field-error {
+    border-color: var(--error-color, #c0392b) !important;
+    outline-color: var(--error-color, #c0392b);
+}
+</style>
 <!-- Hero Section with Title -->
 <?php require_once('header.php') ?>
 <h1>Account Registration</h1>
@@ -50,13 +102,19 @@ function old($key, $default = '') {
 
         <!-- Title -->
         <h2 class="mb-8">Registration Form</h2>
+        <?php $total_pages = $isAdminCreating ? 10 : 11; ?>
+        
         <div class="info-box">
             <p class="sub-text">We thank you sincerely for your interest in volunteering as a part of our foundation.</p>
         </div>
 	</div>
+    <div class="progress-container">
+        <progress id="myProgress" value="0" max="100"></progress>
+        <div class="progress-label" id="progressLabel">0%</div>
+    </div>
 
     <!-- Directions Section -->
-    <fieldset class="section-box mb-4">
+    <fieldset id="page1" class="section-box mb-4">
         <h3 class="mt-2">Directions</h3>
         <p class="mb-2">To create your account, please follow the instructions below:</p>
 
@@ -69,7 +127,7 @@ function old($key, $default = '') {
     </fieldset>
         
     <!-- Personal Information Section -->
-    <fieldset class="section-box mb-4">
+    <fieldset id="page2" class="section-box mb-4" style="display:none;">
         <h3 class="mt-2">Personal Information</h3>
         <p class="mb-2">The following information will help us identify you within our system.</p>
     
@@ -199,7 +257,7 @@ function old($key, $default = '') {
     </fieldset>
 
     <!-- Personal Contact Information Section -->
-    <fieldset class="section-box mb-4">
+    <fieldset id="page3" class="section-box mb-4" style="display:none;">
         <h3>Personal Contact Information</h3>
         <p class="mb-2">The following information will help us determine the best way to contact you regarding event coordination.</p>
 
@@ -240,7 +298,7 @@ function old($key, $default = '') {
     </fieldset>
 
     <!-- Notification Preferences -->
-    <fieldset class="section-box mb-4">
+    <fieldset id="page4" class="section-box mb-4" style="display:none;">
         <h3>Notification Preferences</h3>
         <p class="mb-2">You may change your email preferences at any time.</p>
         <div class="blue-div"></div>
@@ -260,7 +318,7 @@ function old($key, $default = '') {
 
 
     <!-- Emergency Contact Information Section -->
-    <fieldset class="section-box mb-4">
+    <fieldset id="page5" class="section-box mb-4" style="display:none;">
         <h3>Emergency Contact Information</h3>
         <p class="mb-2">Please provide us with someone's contact information on your behalf in case of an emergency.</p>
         <div class="blue-div"></div>
@@ -306,7 +364,7 @@ function old($key, $default = '') {
     </fieldset>
 
     <!-- Availability Section -->
-    <fieldset class="section-box mb-4">
+    <fieldset id="page6" class="section-box mb-4" style="display:none;">
         <h3>Availability</h3>
         <p class="mb-2">The following information will help us determine the best volunteer opportunities for you.</p>
         <p class="mb-2">Click the checkbox next to each day you are available.</p>
@@ -414,7 +472,7 @@ function old($key, $default = '') {
 
 
     <!-- Languages Section -->
-    <fieldset class="section-box mb-4">
+    <fieldset id="page7" class="section-box mb-4" style="display:none;">
         <h3>Languages</h3>
         <p class="mb-2">Please describe your language skills.</p>
         <div class="blue-div"></div>
@@ -649,7 +707,7 @@ function old($key, $default = '') {
     </fieldset>
 
     <!-- Skills and Experience Section -->
-    <fieldset class="section-box mb-4">
+    <fieldset id="page8" class="section-box mb-4" style="display:none;">
         <h3>Skills and Experience</h3>
         <p class="mb-2">Please provide any additional information about your skills and experience that you believe may be relevant for volunteering with our organization.</p>
     
@@ -664,7 +722,7 @@ function old($key, $default = '') {
         <textarea id="experience" name="experience" placeholder="Eg. other volunteer work..."><?php echo old('experience'); ?></textarea>    </fieldset>
 
     <!-- Additional Information Section -->
-    <fieldset class="section-box mb-4">
+    <fieldset id="page9" class="section-box mb-4" style="display:none;">
         <h3>Additional Information</h3>
         <p class="mb-2">The following information will help us determine the best volunteer opportunities for you and ensure that we are providing you with the best experience possible.</p>
         
@@ -815,7 +873,7 @@ function old($key, $default = '') {
 
 
     <!-- Login Credentials Section. This section has been left untouched. -->
-    <fieldset class="section-box mb-4">
+    <fieldset id="page10" class="section-box mb-4" style="display:none;">
         <h3>Login Credentials</h3>
         <p class="mb-2">Provide the following information to log in to the system.</p>
         <p class="mb-2">We recommend that you save your login information somewhere secure.</p>
@@ -847,7 +905,7 @@ function old($key, $default = '') {
     <!-- Consent Notice Section -->
 
     <?php if (!$isAdminCreating): ?>
-    <fieldset class="section-box mb-4">
+    <fieldset id="page11" class="section-box mb-4" style="display:none;">
         <h3>Consent Notice</h3>
         <p class="mb-2">Please review the following before creating your account.</p>
         <div class="blue-div"></div>
@@ -887,10 +945,400 @@ function old($key, $default = '') {
     </fieldset>
     <?php endif; ?>
 
+    <div class="form-pagination-nav">
+        <button type="button" id="prevBtn" onclick="changePage(-1)" style="display:none;">&#8592; Previous</button>
+        <button type="button" id="nextBtn" onclick="handleNext()">Next &#8594;</button>
+    </div>
     <p class="text-center notice"></p>
-    <input type="submit" name="registration-form" value="Submit" style="width: 50%; margin: auto;">
+    <input type="submit" id="submitBtn" name="registration-form" value="Submit" style="width: 50%; margin: auto; display:none;">
     </form>
    </div> 
+   <script>
+    var currentPage = 1;
+    var totalPages = <?php echo $total_pages; ?>;
+
+    // ─── Progress bar ─────────────────────────────────────────────────────────
+    function updateProgress(pageNumber) {
+        var progress = Math.round((pageNumber / totalPages) * 100);
+        document.getElementById('myProgress').value = progress;
+        document.getElementById('progressLabel').textContent = progress + '%';
+    }
+
+    // ─── Page visibility ──────────────────────────────────────────────────────
+    function showPage(n) {
+        for (var i = 1; i <= totalPages; i++) {
+            var el = document.getElementById('page' + i);
+            if (el) el.style.display = (i === n) ? '' : 'none';
+        }
+        document.getElementById('prevBtn').style.display = (n === 1) ? 'none' : '';
+        document.getElementById('nextBtn').style.display = (n === totalPages) ? 'none' : '';
+        document.getElementById('submitBtn').style.display = (n === totalPages) ? '' : 'none';
+        updateProgress(n);
+        window.scrollTo(0, 0);
+    }
+
+    // ─── Navigation (validates before advancing) ──────────────────────────────
+    function changePage(direction) {
+        // Only validate when going forward; going back is always allowed.
+        if (direction > 0 && !validateCurrentPage()) return;
+        var next = currentPage + direction;
+        if (next < 1 || next > totalPages) return;
+        currentPage = next;
+        showPage(currentPage);
+    }
+
+    /*
+     * handleNext() – async wrapper for the Next button.
+     * For most pages it behaves exactly like changePage(1).
+     * On page 3 (Personal Contact Information), after all sync checks pass,
+     * it also POSTs the email to VolunteerRegister.php?action=check_email and
+     * blocks advancement if the address is already registered.
+     */
+    async function handleNext() {
+        if (!validateCurrentPage()) return;
+
+        if (currentPage === 3) {
+            var emailField = document.getElementById('email');
+            if (emailField && emailField.value.trim()) {
+                var btn = document.getElementById('nextBtn');
+                var origText = btn.textContent;
+                btn.disabled = true;
+                btn.textContent = 'Checking…';
+                try {
+                    var body = new URLSearchParams({
+                        action: 'check_email',
+                        email:  emailField.value.trim().toLowerCase()
+                    });
+                    var res  = await fetch('VolunteerRegister.php', { method: 'POST', body: body });
+                    var data = await res.json();
+                    if (!data.available) {
+                        showError(emailField,
+                            'This email address is already registered. ' +
+                            'Please use a different email or log in to your existing account.');
+                        var firstErr = document.getElementById('page3').querySelector('.client-error');
+                        if (firstErr) firstErr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        btn.disabled = false;
+                        btn.textContent = origText;
+                        return;
+                    }
+                } catch (e) {
+                    // Network error — allow proceeding rather than blocking the user.
+                }
+                btn.disabled = false;
+                btn.textContent = origText;
+            }
+        }
+
+        var next = currentPage + 1;
+        if (next > totalPages) return;
+        currentPage = next;
+        showPage(currentPage);
+    }
+
+    // ─── Error display helpers ─────────────────────────────────────────────────
+    /*
+     * showError(field, message)
+     *   Adds a red border class to `field` and inserts a <p class="error">
+     *   immediately after it so the user can see what went wrong.
+     *   We use `insertBefore(err, field.nextSibling)` rather than appending
+     *   to the parent, so the message always appears directly below the field
+     *   regardless of what else is in the parent container.
+     */
+    function showError(field, message) {
+        field.classList.add('field-error');
+        var err = document.createElement('p');
+        err.className = 'error client-error';
+        err.textContent = message;
+        field.parentNode.insertBefore(err, field.nextSibling);
+    }
+
+    /*
+     * clearErrors(fieldset)
+     *   Removes every .client-error message and every .field-error highlight
+     *   that we injected on a previous validation attempt.
+     *   We only clear inside the current fieldset so errors on other pages
+     *   (if any) are unaffected.
+     */
+    function clearErrors(fieldset) {
+        fieldset.querySelectorAll('.client-error').forEach(function(el) { el.remove(); });
+        fieldset.querySelectorAll('.field-error').forEach(function(el) { el.classList.remove('field-error'); });
+    }
+
+    // ─── Per-page validation ───────────────────────────────────────────────────
+    /*
+     * validateCurrentPage()
+     *   Returns true if the current page passes all checks, false otherwise.
+     *
+     *   Strategy:
+     *   1. Clear any errors left over from the last attempt.
+     *   2. Scan the fieldset for every [required] input/select/textarea that is
+     *      neither disabled nor itself hidden (e.g. the disability text area).
+     *      - Empty value  → required error
+     *      - `pattern` attribute present → test with the same anchored regex
+     *        the browser would use (^(?:pattern)$)
+     *      - type="email" → lightweight format check as a second pass
+     *   3. Radio groups need special treatment: querySelectorAll gives us each
+     *      <input type="radio"> individually, but we must check the whole group
+     *      (same `name`) as a unit. We collect them into a plain object keyed
+     *      by name, then verify that at least one is checked per group.
+     *   4. Password page (page 10) gets two extra rules on top of the generic
+     *      ones: strength requirements and confirmation match. These run after
+     *      the generic loop so the "required" check fires first for an empty
+     *      field, and the strength/match check fires only when there is a value.
+     *   5. We never return early — we collect ALL errors on the page so the user
+     *      sees everything at once rather than playing whack-a-mole.
+     */
+    function validateCurrentPage() {
+        var fieldset = document.getElementById('page' + currentPage);
+        if (!fieldset) return true; // no fieldset = nothing to validate
+
+        clearErrors(fieldset);
+
+        var valid = true;
+
+        // ── 1. Text / email / tel / date / select / textarea ──────────────────
+        var selector = [
+            'input[required]:not([type=radio]):not([type=checkbox])',
+            'select[required]',
+            'textarea[required]'
+        ].join(', ');
+
+        fieldset.querySelectorAll(selector).forEach(function(field) {
+            // Skip fields that are disabled (e.g. unchecked-day time selects)
+            // or whose own container is hidden (e.g. disability spec textarea).
+            if (field.disabled) return;
+            if (isHidden(field)) return;
+
+            var value = field.value.trim();
+
+            if (!value) {
+                showError(field, 'This field is required.');
+                valid = false;
+                return; // don't pile on more errors for the same empty field
+            }
+
+            // Pattern check — mirrors the browser's implicit ^(?:pattern)$ wrap.
+            if (field.pattern) {
+                var re = new RegExp('^(?:' + field.pattern + ')$');
+                if (!re.test(field.value)) {
+                    // field.title is the human-readable hint we set on the element.
+                    showError(field, field.title || 'Please match the requested format.');
+                    valid = false;
+                    return;
+                }
+            }
+
+            // Email format — browsers handle this natively, but since hidden
+            // fields skip native validation we need to replicate it ourselves.
+            if (field.type === 'email' && !isValidEmail(value)) {
+                showError(field, 'Please enter a valid email address.');
+                valid = false;
+            }
+        });
+
+        // ── 2. Radio groups ───────────────────────────────────────────────────
+        /*
+         * We build a map of { name → [radio elements] } so we can check each
+         * named group exactly once, even though querySelectorAll returns every
+         * individual <input type="radio"> element separately.
+         */
+        var radioGroups = {};
+        fieldset.querySelectorAll('input[type=radio][required]').forEach(function(radio) {
+            if (!radioGroups[radio.name]) radioGroups[radio.name] = [];
+            radioGroups[radio.name].push(radio);
+        });
+
+        Object.keys(radioGroups).forEach(function(name) {
+            var radios = radioGroups[name];
+            var anyChecked = radios.some(function(r) { return r.checked; });
+            if (!anyChecked) {
+                // Attach the error after the last radio in the group so it
+                // appears at the bottom of the group, not mid-list.
+                showError(radios[radios.length - 1], 'Please select an option.');
+                valid = false;
+            }
+        });
+
+        // ── 3. Availability page time-range rules (page 6) ────────────────────
+        /*
+         * The time selects (sunday_start, sunday_end, etc.) have no `required`
+         * attribute, so the generic loop above never touches them. We only care
+         * about days whose checkbox is actually checked. For each checked day:
+         *   a) Both start and end must be selected (non-empty).
+         *   b) End time must be strictly after start time.
+         * parseTimeValue converts a value like "1pm" → 13 so we can compare
+         * them as plain integers.
+         */
+        if (currentPage === 6) {
+            var days = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
+            days.forEach(function(day) {
+                var checkbox = document.getElementById(day);
+                if (!checkbox || !checkbox.checked) return; // day not ticked — skip
+
+                var startSel = document.querySelector('[name=' + day + '_start]');
+                var endSel   = document.querySelector('[name=' + day + '_end]');
+                if (!startSel || !endSel) return;
+
+                var startVal = startSel.value;
+                var endVal   = endSel.value;
+                var dayLabel = day.charAt(0).toUpperCase() + day.slice(1);
+
+                if (!startVal) {
+                    showError(startSel, dayLabel + ': Please select a start time.');
+                    valid = false;
+                }
+                if (!endVal) {
+                    showError(endSel, dayLabel + ': Please select an end time.');
+                    valid = false;
+                }
+                if (startVal && endVal && parseTimeValue(endVal) <= parseTimeValue(startVal)) {
+                    showError(endSel, dayLabel + ': End time must be after start time.');
+                    valid = false;
+                }
+            });
+        }
+
+        // ── 4. Password page special rules ────────────────────────────────────
+        /*
+         * Page 10 is Login Credentials. The generic loop above already catches
+         * empty password fields. Here we add the two extra semantic checks:
+         *   a) Strength: min 8 chars, at least one digit, one uppercase, one lowercase.
+         *   b) Match:    both password fields must be identical.
+         * We only run these when the field is non-empty (the generic loop already
+         * flagged it if it was empty, no need to double-report).
+         */
+        if (currentPage === 10) {
+            var pw   = document.getElementById('password');
+            var pwRe = document.getElementById('password-reenter');
+            if (pw && pw.value && !isValidPassword(pw.value)) {
+                showError(pw, 'Password must be at least 8 characters and include a number, an uppercase letter, and a lowercase letter.');
+                valid = false;
+            } else if (pw && pwRe && pw.value && pwRe.value && pw.value !== pwRe.value) {
+                showError(pwRe, 'Passwords do not match.');
+                valid = false;
+            }
+        }
+
+        // Scroll to first error so the user doesn't have to hunt for it.
+        if (!valid) {
+            var firstError = fieldset.querySelector('.client-error');
+            if (firstError) firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        return valid;
+    }
+
+    // ─── Helper: is the field itself (or a direct ancestor) hidden? ────────────
+    /*
+     * `display:none` on the field or any ancestor means the field is not
+     * visible. We walk up the DOM and stop at the fieldset boundary so we
+     * don't accidentally skip fields that are inside a conditionally-shown
+     * sub-section (e.g. the disability textarea) when that section IS visible.
+     */
+    function isHidden(field) {
+        var el = field;
+        while (el && el.tagName !== 'FIELDSET') {
+            if (window.getComputedStyle(el).display === 'none') return true;
+            el = el.parentElement;
+        }
+        return false;
+    }
+
+    // ─── Format validators ─────────────────────────────────────────────────────
+    function isValidEmail(val) {
+        // Same basic check browsers apply: local@domain.tld
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+    }
+
+    function isValidPassword(val) {
+        return val.length >= 8
+            && /[0-9]/.test(val)
+            && /[A-Z]/.test(val)
+            && /[a-z]/.test(val);
+    }
+
+    /*
+     * parseTimeValue(val) → 0-23
+     * Converts the select values PHP generates ("12am","1am"…"11am","12pm","1pm"…"11pm")
+     * into a 24-hour integer so start/end times can be compared with plain >.
+     *   12am → 0   (midnight)
+     *   1am  → 1
+     *   11am → 11
+     *   12pm → 12  (noon)
+     *   1pm  → 13
+     *   11pm → 23
+     * parseInt stops at the first non-digit, so "12am" → 12 and "1pm" → 1.
+     */
+    function parseTimeValue(val) {
+        var hour = parseInt(val, 10);
+        var isPm = val.slice(-2) === 'pm';
+        if (isPm && hour !== 12) return hour + 12;
+        if (!isPm && hour === 12) return 0;
+        return hour;
+    }
+
+    // ─── Live error clearing ───────────────────────────────────────────────────
+    /*
+     * Once the user starts correcting a field that we flagged, remove that
+     * field's error immediately so they get positive feedback as they type.
+     * We attach a single delegated listener to the form rather than one per
+     * field so this works for dynamically-added elements (e.g. language
+     * competency selects rendered by JS on page 7) without extra wiring.
+     */
+    document.querySelector('form.signup-form').addEventListener('input', function(e) {
+        var field = e.target;
+        if (field.classList.contains('field-error')) {
+            field.classList.remove('field-error');
+            // Remove the error <p> that immediately follows this field.
+            var next = field.nextSibling;
+            while (next) {
+                if (next.nodeType === 1 && next.classList.contains('client-error')) {
+                    next.remove();
+                    break;
+                }
+                // Stop if we hit a non-text, non-error node — it belongs to
+                // the next field, not this one.
+                if (next.nodeType === 1 && !next.classList.contains('client-error')) break;
+                next = next.nextSibling;
+            }
+        }
+    });
+    // Radio buttons fire 'change', not 'input', so we need a separate listener.
+    document.querySelector('form.signup-form').addEventListener('change', function(e) {
+        var field = e.target;
+        if (field.type !== 'radio' && field.type !== 'select-one') return;
+        if (field.classList.contains('field-error')) {
+            field.classList.remove('field-error');
+            var next = field.nextSibling;
+            while (next) {
+                if (next.nodeType === 1 && next.classList.contains('client-error')) { next.remove(); break; }
+                if (next.nodeType === 1) break;
+                next = next.nextSibling;
+            }
+        }
+        // For radio groups: when any radio in a group is selected, clear the
+        // error shown after the last radio in that group.
+        if (field.type === 'radio') {
+            var fieldset = document.getElementById('page' + currentPage);
+            if (!fieldset) return;
+            fieldset.querySelectorAll('input[type=radio][name="' + field.name + '"]').forEach(function(r) {
+                r.classList.remove('field-error');
+            });
+            // Remove the .client-error that trails the last radio in the group.
+            var allInGroup = fieldset.querySelectorAll('input[type=radio][name="' + field.name + '"]');
+            var last = allInGroup[allInGroup.length - 1];
+            var sib = last.nextSibling;
+            while (sib) {
+                if (sib.nodeType === 1 && sib.classList.contains('client-error')) { sib.remove(); break; }
+                if (sib.nodeType === 1) break;
+                sib = sib.nextSibling;
+            }
+        }
+    });
+
+    // ─── Initialize ───────────────────────────────────────────────────────────
+    showPage(1);
+    </script>
    <script>
     // Save form data to localStorage on input
     function saveFormData() {

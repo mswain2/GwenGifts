@@ -21,6 +21,24 @@ if (isset($_SESSION['_id'])) {
     $isAdminCreating = $loggedInUser && in_array($loggedInUser->get_type(), ['admin', 'superadmin']);
 }
 
+/* ── AJAX email uniqueness check ──────────────────────────────────────── */
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'check_email') {
+    header('Content-Type: application/json');
+    $con   = connect();
+    $email = strtolower(trim($_POST['email'] ?? ''));
+    $avail = false;
+    if ($email !== '') {
+        $safe  = mysqli_real_escape_string($con, $email);
+        $res   = mysqli_query($con, "SELECT id FROM dbpersons WHERE email = '$safe' LIMIT 1");
+        $avail = ($res && mysqli_num_rows($res) === 0);
+    } else {
+        $avail = true;
+    }
+    mysqli_close($con);
+    echo json_encode(['available' => $avail]);
+    exit;
+}
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $ignoreList = array('password', 'password-reenter');
     $args = sanitize($_POST, $ignoreList);
@@ -59,7 +77,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (!validateZipcode($zip_code)) { $errors = true; $error_messages['zip'] = 'Invalid ZIP code.'; }
 
     $email = strtolower($args['email'] ?? '');
-    if (!validateEmail($email)) { $errors = true; $error_messages['email'] = 'Invalid email address.'; }
+    if (!validateEmail($email)) {
+        $errors = true; $error_messages['email'] = 'Invalid email address.';
+    } else {
+        $con     = connect();
+        $safe    = mysqli_real_escape_string($con, $email);
+        $chk     = mysqli_query($con, "SELECT id FROM dbpersons WHERE email = '$safe' LIMIT 1");
+        if ($chk && mysqli_num_rows($chk) > 0) {
+            $errors = true;
+            $error_messages['email'] = 'This email address is already registered. Please use a different email or log in to your existing account.';
+        }
+        mysqli_close($con);
+    }
 
     $email_consent = isset($args['email_prefs']) ? 'true' : 'false';
 
@@ -191,7 +220,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $password, null, null, null,
             $emergency_contact_last_name,
             $gender, $t_shirt_size, $computer_access, $camera_access,
-            $transportation_access, $skills, $experience, $about_consent
+            $transportation_access, $skills, $experience, $about_consent, $force_password_change=0
         );
 
         $result = add_person($newperson);

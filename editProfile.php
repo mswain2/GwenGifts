@@ -22,6 +22,28 @@
 
     require_once('include/input-validation.php');
 
+    /* ── AJAX email uniqueness check ──────────────────────────────────── */
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'check_email') {
+        require_once('database/dbPersons.php');
+        header('Content-Type: application/json');
+        $con       = connect();
+        $email     = strtolower(trim($_POST['email']      ?? ''));
+        $excludeId = trim($_POST['exclude_id'] ?? $_SESSION['_id'] ?? '');
+        $avail     = false;
+        if ($email !== '') {
+            $safe     = mysqli_real_escape_string($con, $email);
+            $safeExcl = mysqli_real_escape_string($con, $excludeId);
+            $where    = $safeExcl !== '' ? " AND id != '$safeExcl'" : '';
+            $res      = mysqli_query($con, "SELECT id FROM dbpersons WHERE email = '$safe'$where LIMIT 1");
+            $avail    = ($res && mysqli_num_rows($res) === 0);
+        } else {
+            $avail = true;
+        }
+        mysqli_close($con);
+        echo json_encode(['available' => $avail]);
+        exit;
+    }
+
     if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["modify_access"]) && isset($_POST["id"])) {
         $id = $_POST['id'];
         header("Location: /gwyneth/modifyUserRole.php?id=$id");
@@ -89,7 +111,17 @@
         $email = validateEmail($args['email']);
         if (!$email) {
             $errors = true;
-            // echo 'bad email';
+            $error_messages[] = 'Invalid email address.';
+        } else {
+            $con      = connect();
+            $safe     = mysqli_real_escape_string($con, $email);
+            $safeId   = mysqli_real_escape_string($con, $id);
+            $chk      = mysqli_query($con, "SELECT id FROM dbpersons WHERE email = '$safe' AND id != '$safeId' LIMIT 1");
+            if ($chk && mysqli_num_rows($chk) > 0) {
+                $errors = true;
+                $error_messages[] = 'That email address is already registered to another account.';
+            }
+            mysqli_close($con);
         }
 
         $phone1 = validateAndFilterPhoneNumber($args['phone1']);
