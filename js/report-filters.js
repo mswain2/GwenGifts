@@ -143,13 +143,30 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 // Autocomplete for Event and Volunteer fields
-function initAutocomplete(searchId, hiddenId, listId, allValue, allPlaceholder) {
+// Blank input = no filter (server treats empty hidden value as "all")
+const autocompleteValidators = [];
+
+function initAutocomplete(searchId, hiddenId, listId, errorMessage) {
     const searchInput = document.getElementById(searchId);
     const hiddenInput = document.getElementById(hiddenId);
     const list = document.getElementById(listId);
     if (!searchInput || !list) return;
 
     const items = list.querySelectorAll('.autocomplete-item');
+
+    function setInvalid() {
+        searchInput.setCustomValidity(errorMessage);
+    }
+
+    function clearInvalid() {
+        searchInput.setCustomValidity('');
+    }
+
+    function clearToBlank() {
+        searchInput.value = '';
+        hiddenInput.value = '';
+        clearInvalid();
+    }
 
     searchInput.addEventListener('focus', function () {
         filterItems('');
@@ -158,23 +175,30 @@ function initAutocomplete(searchId, hiddenId, listId, allValue, allPlaceholder) 
 
     searchInput.addEventListener('input', function () {
         const query = this.value.toLowerCase();
-        hiddenInput.value = allValue;
-        filterItems(query);
+        // Typing invalidates any previously-matched selection
+        hiddenInput.value = '';
+        const hasMatch = filterItems(query);
         list.style.display = 'block';
+        if (!query || hasMatch) {
+            clearInvalid();
+        } else {
+            setInvalid();
+        }
     });
 
     function filterItems(query) {
-        let hasVisible = false;
+        let hasMatch = false;
         items.forEach(item => {
             const text = item.textContent.toLowerCase();
             if (!query || text.includes(query)) {
                 item.style.display = 'block';
-                hasVisible = true;
+                hasMatch = true;
             } else {
                 item.style.display = 'none';
             }
         });
-        list.style.display = hasVisible ? 'block' : 'none';
+        list.style.display = hasMatch ? 'block' : 'none';
+        return hasMatch;
     }
 
     items.forEach(item => {
@@ -183,30 +207,78 @@ function initAutocomplete(searchId, hiddenId, listId, allValue, allPlaceholder) 
             searchInput.value = this.textContent;
             hiddenInput.value = this.getAttribute('data-value');
             list.style.display = 'none';
+            clearInvalid();
             saveFiltersToStorage();
         });
     });
 
     searchInput.addEventListener('blur', function () {
         list.style.display = 'none';
-        if (!searchInput.value.trim()) {
-            hiddenInput.value = allValue;
+        const value = searchInput.value.trim();
+        if (!value) {
+            clearToBlank();
+            saveFiltersToStorage();
+            return;
+        }
+        // Value present but nothing selected from the list → unmatched
+        if (!hiddenInput.value) {
+            setInvalid();
+        } else {
+            clearInvalid();
         }
     });
 
-    // Allow clearing to reset to "all"
     searchInput.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') {
-            searchInput.value = '';
-            hiddenInput.value = allValue;
+            clearToBlank();
             list.style.display = 'none';
             searchInput.blur();
             saveFiltersToStorage();
         }
     });
+
+    autocompleteValidators.push({
+        isInvalid() {
+            if (searchInput.disabled) return false;
+            const value = searchInput.value.trim();
+            if (!value) return false;
+            return !hiddenInput.value;
+        },
+        setInvalid,
+        element: searchInput
+    });
 }
 
+// Close any open autocomplete dropdown when clicking outside its wrapper
+document.addEventListener('click', function (e) {
+    document.querySelectorAll('.autocomplete-wrap').forEach(wrap => {
+        if (!wrap.contains(e.target)) {
+            const list = wrap.querySelector('.autocomplete-list');
+            if (list) list.style.display = 'none';
+        }
+    });
+});
+
 document.addEventListener('DOMContentLoaded', function () {
-    initAutocomplete('event_id_search', 'event_id', 'event_id_list', 'all', 'All Events');
-    initAutocomplete('volunteer_search', 'volunteer', 'volunteer_list', 'all', 'All Volunteers');
+    initAutocomplete('event_id_search', 'event_id', 'event_id_list', 'No matching event — please select one from the list.');
+    initAutocomplete('volunteer_search', 'volunteer', 'volunteer_list', 'No matching volunteer — please select one from the list.');
+
+    const form = document.getElementById('report-form');
+    if (form) {
+        form.addEventListener('submit', function (e) {
+            let firstInvalid = null;
+            autocompleteValidators.forEach(v => {
+                if (v.isInvalid()) {
+                    v.setInvalid();
+                    if (!firstInvalid) firstInvalid = v;
+                }
+            });
+            if (firstInvalid) {
+                e.preventDefault();
+                // Scroll the field into view without moving focus to it
+                firstInvalid.element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                firstInvalid.element.reportValidity();
+            }
+        });
+    }
 });

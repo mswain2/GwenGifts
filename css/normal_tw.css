@@ -1548,9 +1548,9 @@ color: black !important;
     margin: 1.5rem 0 1rem;
 }
 .report-section-heading {
-    color: var(--main-color);
-    font-size: 1.1rem;
-    font-weight: 600;
+    color: black;
+    font-size: var(--text-lg);
+    font-weight: bold;
     margin-bottom: 1rem;
 }
 .report-description {
@@ -1588,9 +1588,111 @@ color: black !important;
 .report-field-row.filter-visible {
     display: flex;
 }
+/* Shaded mailing-list result block (matches eventRoster styling) */
+.mailing-list-block {
+    margin: 1.5rem 0 0 0;
+    padding: 1rem;
+    background: #f6f8fb;
+    border: 1px solid #c8d1db;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+.mailing-list-block label {
+    display: block;
+    font-weight: 700;
+    color: #243b5a;
+    margin: 0;
+    line-height: 1.2;
+}
+.mailing-list-text {
+    margin: 0;
+    color: #333;
+    line-height: 1.5;
+    word-break: break-word;
+}
+
+/* Multi-select autocomplete with chips */
+.multi-autocomplete {
+    position: relative;
+    border: 2px solid var(--color-gray-300);
+    border-radius: var(--radius-md);
+    padding: 0.4rem 0.5rem;
+    background: #fff;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem;
+    min-height: 2.75rem;
+    cursor: text;
+}
+.multi-autocomplete:focus-within {
+    border-color: var(--color-blue-500);
+}
+.chip-area {
+    display: contents;
+}
+.chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.15rem 0.5rem;
+    background: var(--color-blue-100);
+    color: var(--main-color);
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    white-space: nowrap;
+}
+.chip-remove {
+    background: transparent;
+    border: none;
+    color: var(--main-color);
+    font-size: 1rem;
+    line-height: 1;
+    padding: 0 0.1rem;
+    cursor: pointer;
+    border-radius: 999px;
+}
+.chip-remove:hover {
+    background: rgba(0,0,0,0.1);
+}
+.multi-autocomplete-input {
+    flex: 1 1 8rem;
+    min-width: 8rem;
+    border: none !important;
+    outline: none;
+    padding: 0.25rem 0.25rem !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    font-size: 0.95rem;
+    color: black !important;
+    width: auto !important;
+}
+/* Position the shared .autocomplete-list below the chip container */
+.multi-autocomplete .autocomplete-list {
+    top: 100%;
+    left: -2px;
+    right: -2px;
+    width: auto;
+}
+.autocomplete-item.is-selected {
+    display: none;
+}
+
 /* Autocomplete */
 .autocomplete-wrap {
     position: relative;
+}
+.autocomplete-wrap input[type="text"] {
+    cursor: pointer;
+}
+#report-form input:not([type="submit"]),
+#report-form select,
+#report-form textarea {
+    color: black !important;
 }
 .autocomplete-list {
     display: none;
@@ -1614,4 +1716,4 @@ color: black !important;
 .autocomplete-item:hover {
     background-color: #f0f4f8;
     color: var(--main-color);
-}  
+}

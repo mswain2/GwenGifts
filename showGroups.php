@@ -33,17 +33,7 @@ $tailwind_mode = true;
 require_once('header.php');
 ?>
 <style>
-        .date-box {
-            background: #f0f0f0;
-            padding: 7px 30px;
-            border-radius: 50px;
-            box-shadow: -2px 2px 4px rgba(0, 0, 0, 0.08) inset;
-            color: #333333;
-            font-size: 24px;
-            font-weight: 700;
-            text-align: center;
-        }   
-        .dropdown {
+.dropdown {
             padding-right: 50px;
         }   
 

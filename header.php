@@ -283,20 +283,13 @@ if (date("H:i:s") > "18:19:59") {
             require_once(dirname(__FILE__) . '/database/dbPersons.php');
             $_pfp = get_profile_pic($_SESSION['_id']);
         }
-        $_pfp_escaped = htmlspecialchars($_pfp, ENT_QUOTES, 'UTF-8');	
-      
-        // load header according to user role/type
-        $type = $_SESSION['type'];
-        if ($type === 'admin' || $type === "superadmin") {
-            require 'partials/nav_admin.php';
-        } else if ($type === 'board_member') {
-            require 'partials/nav_admin.php';
-        }
-        else if ($type === 'event_manager') {
-            require 'partials/nav_admin.php';
-        } else {
-            require 'partials/nav_volunteer.php';
-        }
+        $_pfp_escaped = htmlspecialchars($_pfp, ENT_QUOTES, 'UTF-8');
+
+        // Base URL for the project — works whether installed at domain root (SiteGround) or in a subdir (XAMPP).
+        $_base_url = rtrim(str_replace('\\', '/', str_replace(rtrim($_SERVER['DOCUMENT_ROOT'], '/\\'), '', __DIR__)), '/') . '/';
+
+        // load nav bar
+        require 'partials/nav.php';
     }
     ?>
     <script>

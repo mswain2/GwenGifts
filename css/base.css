@@ -1750,17 +1750,6 @@ div .dd {
     gap: 20px;
 }
 
-.date-box {
-    background: #f0f0f0;
-    padding: 10px 30px;
-    border-radius: 50px;
-    box-shadow: -2px 2px 4px rgba(0, 0, 0, 0.08) inset;
-    color: #333333;
-    font-size: 24px;
-    font-weight: 700;
-    text-align: center;
-}
-
 .icon {
     width: 47px;
     height: 47px;

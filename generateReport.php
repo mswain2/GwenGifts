@@ -19,8 +19,14 @@ $currentYear = date("Y");
 $fiscalYearStart = ($currentMonth >= 10) ? $currentYear : $currentYear - 1;
 $fiscalYearEnd = $fiscalYearStart + 1;
 
+// Clear saved filters when arriving fresh from the dashboard
+if (isset($_GET['reset'])) {
+    unset($_SESSION['report_filters']);
+}
+
 // Restore saved filters from session
 $rf = $_SESSION['report_filters'] ?? [];
+$resetStorage = isset($_GET['reset']);
 function old($key, $default = '') {
     global $rf;
     return htmlspecialchars($rf[$key] ?? $default, ENT_QUOTES, 'UTF-8');
@@ -33,6 +39,9 @@ function old($key, $default = '') {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Gwyneth's Gift | Generate Report</title>
+    <?php if ($resetStorage): ?>
+    <script>sessionStorage.removeItem('report_filters');</script>
+    <?php endif; ?>
     <script src="js/report-filters.js" defer></script>
     <link href="css/normal_tw.css" rel="stylesheet">
 <?php
@@ -49,7 +58,15 @@ require_once('header.php');
     <h1 style="color:white;">Generate Report</h1>
 
     <main>
-        <?php $events = get_all_events_sorted_by_date_not_archived(); ?>
+        <?php
+        $events = get_all_events_sorted_by_date_not_archived();
+        function format_event_label($event) {
+            $name = $event->getName();
+            $startDate = $event->getStartDate();
+            $ts = $startDate ? strtotime($startDate) : false;
+            return $ts ? $name . ' — ' . date('M j, Y', $ts) : $name;
+        }
+        ?>
 
         <div class="main-content-box w-[80%] p-8">
 
@@ -126,20 +143,26 @@ require_once('header.php');
                     <div class="report-field" data-reports="volunteer_hours volunteer_participation top_volunteers">
                         <label for="event_id_search">Event</label>
                         <div class="autocomplete-wrap">
-                            <input type="text" id="event_id_search" placeholder="All Events" autocomplete="off"
-                                value="<?php
-                                    if (!empty($rf['event_id']) && $rf['event_id'] !== 'all') {
-                                        require_once('database/dbEvents.php');
-                                        $savedEvent = retrieve_event($rf['event_id']);
-                                        echo $savedEvent ? htmlspecialchars($savedEvent->getName()) : '';
+                            <?php
+                                $savedEventId = $rf['event_id'] ?? '';
+                                $eventDisplay = '';
+                                if (!empty($savedEventId) && $savedEventId !== 'all') {
+                                    require_once('database/dbEvents.php');
+                                    $savedEvent = retrieve_event($savedEventId);
+                                    if ($savedEvent) {
+                                        $eventDisplay = format_event_label($savedEvent);
                                     }
-                                ?>">
-                            <input type="hidden" id="event_id" name="event_id" value="<?= old('event_id', 'all') ?>">
+                                }
+                                $savedEventHidden = (!empty($savedEventId) && $savedEventId !== 'all') ? $savedEventId : '';
+                            ?>
+                            <input type="text" id="event_id_search" placeholder="Search or select an event..." autocomplete="off"
+                                value="<?= htmlspecialchars($eventDisplay) ?>">
+                            <input type="hidden" id="event_id" name="event_id" value="<?= htmlspecialchars($savedEventHidden) ?>">
                             <div class="autocomplete-list" id="event_id_list">
                                 <?php foreach ($events as $event) {
                                     $eid = htmlspecialchars($event->getID());
-                                    $ename = htmlspecialchars($event->getName());
-                                    echo "<div class='autocomplete-item' data-value='$eid'>$ename</div>";
+                                    $elabel = htmlspecialchars(format_event_label($event));
+                                    echo "<div class='autocomplete-item' data-value='$eid'>$elabel</div>";
                                 } ?>
                             </div>
                         </div>
@@ -149,9 +172,15 @@ require_once('header.php');
                     <div class="report-field" data-reports="volunteer_hours volunteer_participation">
                         <label for="volunteer_search">Volunteer</label>
                         <div class="autocomplete-wrap">
-                            <input type="text" id="volunteer_search" placeholder="All Volunteers" autocomplete="off"
-                                value="<?= (!empty($rf['volunteer']) && $rf['volunteer'] !== 'all') ? htmlspecialchars($rf['volunteer']) : '' ?>">
-                            <input type="hidden" id="volunteer" name="volunteer" value="<?= old('volunteer', 'all') ?>">
+                            <?php
+                                $savedVolunteer = $rf['volunteer'] ?? '';
+                                $volunteerDisplay = (!empty($savedVolunteer) && $savedVolunteer !== 'all')
+                                    ? $savedVolunteer
+                                    : '';
+                            ?>
+                            <input type="text" id="volunteer_search" placeholder="Search or select a volunteer..." autocomplete="off"
+                                value="<?= htmlspecialchars($volunteerDisplay) ?>">
+                            <input type="hidden" id="volunteer" name="volunteer" value="<?= htmlspecialchars($volunteerDisplay) ?>">
                             <div class="autocomplete-list" id="volunteer_list">
                                 <?php
                                 $volunteers = getall_volunteer_names();

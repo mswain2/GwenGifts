@@ -120,9 +120,9 @@
         </div>
 
         <!-- Generate Report -->
-        <div class="content-box-test" onclick="window.location.href='generateReport.php'">
+        <div class="content-box-test" onclick="window.location.href='generateReport.php?reset=1'">
             <div class="icon-overlay">
-                <img style="border-radius: 5px;" src="images/create-report.svg" alt="Report Icon">
+                <img style="border-radius: 5px;" src="images/send.png" alt="Report Icon">
             </div>
 
             <div class="large-text-sub">Generate Report</div>
@@ -153,9 +153,9 @@
         </div>
 
         <!-- Generate Email List -->
-        <div class="content-box-test" onclick="window.location.href='personSearch.php'">
+        <div class="content-box-test" onclick="window.location.href='generateEmailList.php'">
             <div class="icon-overlay">
-                <img style="border-radius: 5px;" src="images/send.png" alt="Email List Icon">
+                <img style="border-radius: 5px;" src="images/users-solid.svg" alt="Email List Icon">
             </div>
 
             <div class="large-text-sub">Generate Email List</div>
