@@ -31,14 +31,12 @@ function retrieve_person_id_by_email($email) {
 function create_password_reset_token($user_id) {
     ensure_password_resets_table();
     $con = connect();
-    $token = bin2hex(random_bytes(32));
-    $expires_at = date('Y-m-d H:i:s', time() + 900); // 15 minutes
+    $token      = bin2hex(random_bytes(32));
     $safe_user  = mysqli_real_escape_string($con, $user_id);
     $safe_token = mysqli_real_escape_string($con, $token);
-    $safe_exp   = mysqli_real_escape_string($con, $expires_at);
     $result = mysqli_query($con,
         "INSERT INTO dbpasswordresets (token, user_id, expires_at, used)
-         VALUES ('$safe_token', '$safe_user', '$safe_exp', 0)"
+         VALUES ('$safe_token', '$safe_user', NOW() + INTERVAL 15 MINUTE, 0)"
     );
     mysqli_close($con);
     return $result ? $token : false;
