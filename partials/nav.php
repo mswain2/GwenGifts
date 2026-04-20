@@ -59,7 +59,7 @@
                     <div class="dropdown">
                         <a href="viewProfile.php" style="text-decoration: none;">
                         <div class="in-nav">
-                            <img src="images/view-profile-solid.svg">
+                            <img src="<?= $_base_url ?>images/view-profile-solid.svg">
                             <span>View Profile</span>
                         </div>
                         </a>
