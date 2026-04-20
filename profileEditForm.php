@@ -123,11 +123,13 @@
                     <img src="images/users-solid.svg"> Emergency Contact
                 </a>
             </div>
+            <?php if (!$isAdmin || $editingSelf): ?>
             <div class="sidebar-item">
                 <a href="#notifs">
                     <img src="images/inbox.svg"> Notification Preferences
                 </a>
             </div>
+            <?php endif; ?>
             <div class="sidebar-item">
                 <a href="#availability">
                     <img src="images/clock-regular.svg"> Availability
@@ -286,6 +288,7 @@
 
         </fieldset>
 
+        <?php if (!$isAdmin || $editingSelf): ?>
         <fieldset class="section-box" id="notifs">
             <h3 class="mt-2">Notification Preferences</h3>
             <p class="mb-2">You may change your email preferences at any time.</p>
@@ -302,6 +305,7 @@
 
             <label><input type="checkbox" id="email_prefs" name="email_prefs" value="true" <?php if ($person->get_email_prefs()) echo 'checked'; ?>> I consent.</label>
         </fieldset>
+        <?php endif; ?>
 
         <fieldset class="section-box" id="emergency-contact">
             <h3 class="mt-2">Emergency Contact</h3>
