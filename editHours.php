@@ -21,8 +21,9 @@ if ($accessLevel < 1) {
 }
 
 // Process the form submission or auto-redirect based on access level
-if ($_SERVER["REQUEST_METHOD"] == "POST" || $accessLevel == 1) {
+if ($_SERVER["REQUEST_METHOD"] == "POST" || ($accessLevel == 1 && !isset($_GET['error']))) {
     require_once('include/input-validation.php');
+    require_once('database/dbPersons.php');
     
     // Use session username if accessLevel is 1, otherwise validate form input
     if ($accessLevel == 1) {
@@ -43,6 +44,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" || $accessLevel == 1) {
         echo '<p class="error-message">Bad username.</p>';
         die();
     } else {
+        $person = retrieve_person($username);
+        if (!$person) {
+            header("Location: editHours.php?error=user_not_found");
+            die();
+        }
         // Redirect to the event list page
         header("Location: eventList.php?username=" . urlencode($username));
         die();
@@ -62,6 +68,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" || $accessLevel == 1) {
     <div class="container"> 
         <main class="general">
             <h2>Change Hours for Event</h2>
+
+            <?php if (isset($_GET['error']) && $_GET['error'] === 'user_not_found'): ?>
+                <p class="error-message" style="color:red;">No volunteer found with that username.</p>
+            <?php endif; ?>
 
             <?php if ($accessLevel > 1): ?>
                 <!--shows the form only if access level is greater than 1 -->
