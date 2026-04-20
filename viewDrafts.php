@@ -79,7 +79,7 @@ mysqli_close($connection);
     <div class="drafts-container">
         
         <?php echo $message; ?>
-
+    
         <?php if (empty($drafts)): ?>
             <p>No drafts found.</p>
         <?php else: ?>
@@ -94,6 +94,18 @@ mysqli_close($connection);
                 </thead>
                 <tbody>
                     <?php foreach ($drafts as $draft): ?>
+                        <?php
+                            if ($draft['recipientID'] == 'vols'){
+                                $draft['recipientID'] = 'Volunteers';
+                            }elseif ($draft['recipientID'] == 'ems'){
+                                $draft['recipientID'] = 'Event Managers';
+                            }elseif ($draft['recipientID'] == 'bms'){
+                                $draft['recipientID'] = 'Board Members';
+                            }elseif ($draft['recipientID'] == 'admin'){
+                                $draft['recipientID'] = 'Administrators';
+                            }
+                        ?>
+
                         <tr>
                             <td><?php echo htmlspecialchars($draft['subject']); ?></td>
                             <td><?php echo htmlspecialchars($draft['recipientID']); ?></td>
