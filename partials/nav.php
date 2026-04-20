@@ -2,7 +2,7 @@
     <!-- Left Section: Logo & Nav Links -->
     <div class="left-section">
         <div class="nav-logo">
-            <a href="index.php"><img src="<?= $_base_url ?>images/gwynethsGiftLogo.png" alt="Logo"></a>
+            <a href="index.php"><img src="images/gwenythsGiftLogo.png" alt="Logo"></a>
         </div>
         <div class="nav-links">
             <div class="nav-item"><a href="index.php">Home</a></div>
@@ -59,7 +59,7 @@
                     <div class="dropdown">
                         <a href="viewProfile.php" style="text-decoration: none;">
                         <div class="in-nav">
-                            <img src="<?= $_base_url ?>images/view-profile-solid.svg">
+                            <img src="images/view-profile-solid.svg">
                             <span>View Profile</span>
                         </div>
                         </a>

@@ -285,9 +285,6 @@ if (date("H:i:s") > "18:19:59") {
         }
         $_pfp_escaped = htmlspecialchars($_pfp, ENT_QUOTES, 'UTF-8');
 
-        // Base URL for the project — works whether installed at domain root (SiteGround) or in a subdir (XAMPP).
-        $_base_url = rtrim(str_replace('\\', '/', str_replace(rtrim($_SERVER['DOCUMENT_ROOT'], '/\\'), '', __DIR__)), '/') . '/';
-
         // load nav bar
         require 'partials/nav.php';
     }
