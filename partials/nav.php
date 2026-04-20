@@ -2,7 +2,7 @@
     <!-- Left Section: Logo & Nav Links -->
     <div class="left-section">
         <div class="nav-logo">
-            <a href="index.php"><img src="images/gwynethsGiftLogo.png" alt="Logo"></a>
+            <a href="index.php"><img src="<?= $_base_url ?>images/gwynethsGiftLogo.png" alt="Logo"></a>
         </div>
         <div class="nav-links">
             <div class="nav-item"><a href="index.php">Home</a></div>
