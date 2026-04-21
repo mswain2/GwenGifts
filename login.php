@@ -150,13 +150,13 @@
       <form class="w-full" method="post">
                 <?php
                     if ($badLogin) {
-                        echo '<span class="text-white bg-red-700 text-center block p-2 rounded-lg mb-2">No login with that username and password combination currently exists.</span>';
+                        echo '<span class="text-black text-center block p-2 rounded-lg mb-2" style="background-color:#f6a4b5;">No login with that username and password combination currently exists.</span>';
                     }
                     if ($archivedAccount) {
-                        echo '<span class="text-white bg-red-700 block p-2 rounded-lg mb-2">This account has either been archived or not yet approved by managment. For help, notify <a href="mailto:volunteer@fredspca.org">volunteer@fredspca.org</a>.</span>';
+                        echo '<span class="text-black text-center block p-2 rounded-lg mb-2" style="background-color:#f6a4b5;">This account is deactivated. For administrative assistance, please contact <a href="mailto:gwynethsgift2012@gmail.com">gwynethsgift2012@gmail.com</a>.</span>';
                     }
 		    if (isset($_GET['registerSuccess'])) {
-                        echo '<span class="text-white text-center bg-green-700 block p-2 rounded-lg mb-2">Registration Successful! Please login below.</span>';
+                        echo '<span class="text-white text-center block p-2 rounded-lg mb-2" style="background-color:#2f4159;">Registration Successful! Please login below.</span>';
 		    } 
                 ?>
         <div class="mb-4">
@@ -168,7 +168,7 @@
           <input class="w-full p-3 border border-gray-300 rounded-lg bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400" type="password" name="password" placeholder="Enter your password" required>
         </div>
         <div class="flex justify-between items-center mb-4">
-          <a href="#" class="text-[#22654D] text-sm hover:underline">Forgot password?</a>
+          <a href="forgotPassword.php" class="text-[#22654D] text-sm hover:underline">Forgot password?</a>
           <a href="https://gwynethsgift.org/" class="text-[#22654D] text-sm hover:underline">Gwyneth's Gift Website</a>
         </div>
         <button class="login">Login</button>
