@@ -1468,7 +1468,8 @@ textarea {
 }
 .btn {
     display: inline-block;
-    margin-top: 20px;
+    margin-top: 10px;
+    margin-bottom: 20px;
     padding: 10px 20px;
     border-radius: 5px;
     font-weight: bold;

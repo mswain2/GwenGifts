@@ -145,34 +145,6 @@
             background-color: #fff;
         }
 
-        .btn-submit {
-            background-color: #6b8caf;
-            color: white;
-            padding: 10px 28px;
-            border: none;
-            border-radius: 50px;
-            font-family: Quicksand, sans-serif;
-            font-size: 16px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: background 0.2s ease;
-            margin-right: 10px;
-        }
-        .btn-submit:hover { background-color: #57789a; }
-
-        .btn-cancel {
-            display: inline-block;
-            background-color: #f0f0f0;
-            color: #333;
-            padding: 10px 28px;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: 700;
-            font-size: 16px;
-            transition: background 0.2s ease;
-        }
-        .btn-cancel:hover { background-color: #e0e0e0; }
-
         .error-msg {
             background: #f8d7da;
             color: #721c24;
@@ -190,7 +162,7 @@
     <h2><b>Add Document</b></h2>
 
     <?php if ($error): ?>
-        <div class="error-msg"><?php echo htmlspecialchars($error); ?></div>
+        <div class="error-toast"><?php echo htmlspecialchars($error); ?></div>
     <?php endif; ?>
 
     <form method="POST" enctype="multipart/form-data">
@@ -214,8 +186,8 @@
             <input type="file" id="doc_file" name="doc_file" accept=".pdf,.doc,.docx,.xls,.xlsx,.txt" required>
         </div>
 
-        <button type="submit" class="btn-submit">Upload Document</button>
-        <a href="boardDocuments.php" class="btn-cancel">Cancel</a>
+        <button type="submit" class="button submit">Upload Document</button>
+        <a href="boardDocuments.php" class="button cancel">Cancel</a>
     </form>
 </div>
 
