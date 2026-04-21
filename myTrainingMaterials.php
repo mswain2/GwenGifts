@@ -231,7 +231,7 @@ if ($isAdmin && $view_scope === 'mine') {
             min-width: 170px;
             padding: 10px 16px;
             border: 1px solid #e0e0e0;
-            border-radius: 50px;
+            border-radius: 0.25rem;
             font-family: Quicksand, sans-serif;
             font-size: 14px;
             background-color: #f8f8f8;
@@ -251,10 +251,10 @@ if ($isAdmin && $view_scope === 'mine') {
 
         .filter-bar button {
             display: inline-block;
-            background-color: #314767;
+            background-color: var(--main-color);
             color: white;
             padding: 10px 22px;
-            border-radius: 50px;
+            border-radius: 0.25rem;
             border: none;
             text-decoration: none;
             font-weight: 700;
@@ -265,15 +265,15 @@ if ($isAdmin && $view_scope === 'mine') {
         }
 
         .filter-bar button:hover {
-            background-color: #263955;
+            background-color: var(--accent-color);
         }
 
         .filter-bar .clear-btn {
             display: inline-block;
-            background-color: #f0f0f0;
-            color: #333;
+            background-color: var(--secondary-accent-color);
+            color: white;
             padding: 10px 20px;
-            border-radius: 50px;
+            border-radius: 0.25rem;
             text-decoration: none;
             font-weight: 700;
             font-size: 14px;
@@ -281,7 +281,7 @@ if ($isAdmin && $view_scope === 'mine') {
         }
 
         .filter-bar .clear-btn:hover {
-            background-color: #e0e0e0;
+            background-color: var(--accent-color);
         }
 
         .table-wrap {
@@ -330,7 +330,7 @@ if ($isAdmin && $view_scope === 'mine') {
 
         .view-link,
         .event-link {
-            color: #6b8caf;
+            color: var(--main-color);
             font-weight: 700;
             text-decoration: none;
             white-space: nowrap;
@@ -494,7 +494,7 @@ if ($isAdmin && $view_scope === 'mine') {
     <?php endif; ?>
 
     <div class="bottom-actions">
-        <a class="cancel dashboard-return no-span" href="index.php">Return to Dashboard</a>
+        <a class="button cancel" href="index.php">Return to Dashboard</a>
     </div>
 </div>
 </body>
