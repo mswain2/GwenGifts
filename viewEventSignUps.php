@@ -119,7 +119,7 @@ function trainingDetailsFromPerson($user_info): array
 
 <head>
     <?php require_once('universal.inc'); ?>
-    <title>Gwyneth's Gift | View Event Sign-Ups</title>
+    <title>Gwyneth's Gift | Manage Event Signups</title>
     <link rel="stylesheet" href="css/messages.css" />
 
 
@@ -211,7 +211,7 @@ function trainingDetailsFromPerson($user_info): array
 <body>
     <?php require_once('header.php'); ?>
 
-    <h1>View Sign-Up List</h1>
+    <h1>Manage Event Signups</h1>
 
     <main class="general">
         <h2><?php echo $event_info['name']; ?></h2>
