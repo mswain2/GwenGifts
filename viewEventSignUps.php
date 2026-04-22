@@ -50,35 +50,27 @@ $signups = fetch_event_signups($id);
 $access_level = $_SESSION['access_level'];
 $attendance_statuses = get_attendance_statuses_for_event($id);
 
-function maskEmailForRoster($email): string
+function maskEmailForRoster($email)
 {
     $email = trim((string)$email);
-
-    if ($email === '' || strpos($email, '@') === false) {
-        return 'N/A';
-    }
-
-    [$local, $domain] = explode('@', $email, 2);
-
-    if ($local === '') {
-        return 'N/A';
-    }
-
-    $visible = min(2, strlen($local));
-    $masked_local = substr($local, 0, $visible) . str_repeat('*', max(3, strlen($local) - $visible));
-
-    return $masked_local . '@' . $domain;
+    return $email !== '' ? $email : 'N/A';
 }
 
-function maskPhoneForRoster($phone): string
+function maskPhoneForRoster($phone)
 {
     $digits = preg_replace('/\D+/', '', (string)$phone);
 
-    if ($digits === '' || strlen($digits) < 4) {
+    if (strlen($digits) === 11 && $digits[0] === '1') {
+        $digits = substr($digits, 1);
+    }
+
+    if (strlen($digits) !== 10) {
         return 'N/A';
     }
 
-    return '***-***-' . substr($digits, -4);
+    return substr($digits, 0, 3) . '-' .
+        substr($digits, 3, 3) . '-' .
+        substr($digits, 6, 4);
 }
 
 function volunteerConsentedToShareShirtSize($user_info): bool
@@ -267,16 +259,16 @@ function trainingDetailsFromPerson($user_info): array
                             $phone = $user_info ? $user_info->get_phone1() : '';
 
                             $attendance_status = $attendance_statuses[$signup['userID']] ?? 'Absent';
-                            $masked_email = maskEmailForRoster($email);
-                            $masked_phone = maskPhoneForRoster($phone);
+                            $display_email = maskEmailForRoster($email);
+                            $display_phone = maskPhoneForRoster($phone);
                             $training_details = trainingDetailsFromPerson($user_info);
                             $shirt_size = rosterShirtSize($user_info);
                             ?>
                             <tr>
                                 <td><?php echo htmlspecialchars($full_name !== '' ? $full_name : 'Unknown'); ?></td>
                                 <td><?php echo htmlspecialchars($attendance_status); ?></td>
-                                <td><?php echo htmlspecialchars($masked_email); ?></td>
-                                <td><?php echo htmlspecialchars($masked_phone); ?></td>
+                                <td><?php echo htmlspecialchars($display_email); ?></td>
+                                <td><?php echo htmlspecialchars($display_phone); ?></td>
                                 <td class="training-breakdown">
                                     <div>CPR: <?php echo htmlspecialchars($training_details['cpr']); ?></div>
                                     <div>AED: <?php echo htmlspecialchars($training_details['aed']); ?></div>
