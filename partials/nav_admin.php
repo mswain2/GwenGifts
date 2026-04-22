@@ -1,106 +1,129 @@
-<div class="navbar">
+<?php $sb_current = basename($_SERVER['PHP_SELF']); ?>
 
-    <!-- Left Section: Logo & Nav Links -->
 
-    <div class="left-section">
-        <div class="logo-container">
-            <a href="index.php"><img src="images/cropped-logo.png" alt="Logo"></a>
-        </div>
-            <!--<a href="viewCheckInOut.php" style="color: white; text-decoration: none;"><div class="date-box">Check In/Out</div></a>-->
-        <div class="nav-links">
-            <div class="nav-item"><a href="index.php">Home</a></div>
-            <div class="nav-item">Events <span class="dropdown-arrow">&#9660</span>
-                <div class="dropdown">
-                    <a href="addEvent.php" style="text-decoration: none;">
-                    <div class="in-nav">
-                        <img src="images/plus-solid.svg">
-                        <span>Create Event</span>
-                    </div>
-                    </a>
-                    <a href="viewAllEvents.php" style="text-decoration: none;">
-                    <div class="in-nav">
-                        <img src="images/list-solid.svg">
-                        <span>Browse Events</span>
-                    </div>
-                    </a>
-                    <a href="editHours.php" style="text-decoration: none;">
-                    <div class="in-nav">
-                        <img src="images/clock-regular.svg">
-                        <span>Manage Volunteer Hours</span>
-                    </div>
-                    </a>
-                    <!-- <a href="viewPendingApps.php" style="text-decoration: none;">
-                    <div class="in-nav">
-                        <img src="images/users-solid.svg">
-                        <span>Pending Applications</span>
-                    </div> -->
-                    </a>
-                    <a href="adminViewingEvents.php" style="text-decoration: none;">
-                    <div class="in-nav">
-                        <img src="images/pencil-solid-full.svg">
-                        <span>Edit Event</span>
-                    </div>
-                    </a>
-                </div>
-            </div>
-            <!-- <div class="nav-item"> Groups <span>&#9660</span>
-                <div class="dropdown">
-                    <a href="createGroup.php" style="text-decoration: none;">
-                    <div class="in-nav">
-                        <img src="images/creategroup.svg">
-                        <span>Create Group</span>
-                    </div>
-                    </a>
+<script>
+/* Apply body classes before first paint to avoid layout flash */
+(function(){
+    document.body.classList.add('sb-active');
+    if (localStorage.getItem('gg_sidebar') === 'collapsed') {
+        document.body.classList.add('sidebar-collapsed');
+    }
+})();
+</script>
 
-                    <a href="showGroups.php" style="text-decoration: none;">
-                    <div class="in-nav">
-                        <img src="images/group.svg">
-                        <span>View Groups</span>
-                    </div>
-                    </a>
+<!-- ── TOP BAR ────────────────────────────────────────────────────────────── -->
+<div class="gg-topbar">
+    <button class="gg-hamburger" id="gg-hamburger" aria-label="Toggle navigation" aria-expanded="true" aria-controls="gg-sidebar">
+        <span></span><span></span><span></span>
+    </button>
+    <a href="index.php" class="gg-topbar-brand">
+        <img src="images/cropped-logo.png" alt="Gwyneth's Gift" class="gg-topbar-logo">
+        <span class="gg-topbar-name">Gwyneth's Gift</span>
+    </a>
+</div>
 
-                    <a href="noShows.php" style="text-decoration: none;">
-                    <div class="in-nav">
-                        <img src="images/group.svg">
-                        <span>No Shows</span>
-                    </div>
-                    </a>
-                </div>
-            </div> -->
-        </div>
-    </div>
+<!-- ── SIDEBAR ────────────────────────────────────────────────────────────── -->
+<nav class="gg-sidebar" id="gg-sidebar" aria-label="Main navigation">
+    <div class="sb-nav">
 
-    <!-- Right Section: Date & Icon -->
-    
-    <div class="right-section">
-        <a href="help.php" title="Help Center">
-            <div class="icon-butt">
-                <svg width="30" height="30" viewBox="0 0 24 24" fill="var(--main-color)" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/>
-                </svg>
-            </div>
+        <a class="sb-item <?= $sb_current==='index.php' ? 'sb-current' : '' ?>" href="index.php">
+            <svg class="sb-icon" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+            <span class="sb-label">Home</span>
         </a>
-        <a href="calendar.php">
-            <div class="icon-butt">
-                <svg width="30" height="30" viewBox="0 0 24 24" fill="var(--main-color)" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M3 4C3 3.44772 3.44772 3 4 3H6V2C6 1.44772 6.44772 1 7 1C7.55228 1 8 1.44772 8 2V3H16V2C16 1.44772 16.4477 1 17 1C17.5523 1 18 1.44772 18 2V3H20C20.5523 3 21 3.44772 21 4V21C21 21.5523 20.5523 22 20 22H4C3.44772 22 3 21.5523 3 21V4ZM5 5V20H19V5H5ZM7 10H9V12H7V10ZM11 10H13V12H11V10ZM15 10H17V12H15V10ZM7 14H9V16H7V14ZM11 14H13V16H11V14ZM15 14H17V16H15V14Z"/>
-                </svg>
-            </div>
+
+        <div class="sb-section">Events</div>
+        <a class="sb-item <?= $sb_current==='addEvent.php' ? 'sb-current' : '' ?>" href="addEvent.php">
+            <img class="sb-icon" src="images/plus-solid.svg" alt="">
+            <span class="sb-label">Create Event</span>
         </a>
-        <div class="date-box"></div>
-        <div class="nav-links">
-            <div class="nav-item">
-                <div class="icon">
-                    <img src="<?= $_pfp_escaped ?>" alt="User Icon" class="icon-img in-nav-img" style="width:49px; height:49px; min-width:49px; min-height:49px; max-width:49px; max-height:49px; object-fit:cover; border-radius:50%;">
-                    <div class="dropdown">
-                        <a href="viewProfile.php" style="text-decoration: none;"><div>View Profile</div></a>
-                        <a href="editProfile.php" style="text-decoration: none;"><div>Edit Profile</div></a>
-                        <a href="changePassword.php" style="text-decoration: none;"><div>Change Password</div></a>
-                        <a href="logout.php" style="text-decoration: none;"><div>Log Out</div></a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+        <a class="sb-item <?= $sb_current==='viewAllEvents.php' ? 'sb-current' : '' ?>" href="viewAllEvents.php">
+            <img class="sb-icon" src="images/list-solid.svg" alt="">
+            <span class="sb-label">Browse Events</span>
+        </a>
+        <a class="sb-item <?= $sb_current==='adminViewingEvents.php' ? 'sb-current' : '' ?>" href="adminViewingEvents.php">
+            <img class="sb-icon" src="images/pencil-solid-full.svg" alt="">
+            <span class="sb-label">Edit Events</span>
+        </a>
+        <a class="sb-item <?= $sb_current==='editHours.php' ? 'sb-current' : '' ?>" href="editHours.php">
+            <img class="sb-icon" src="images/clock-regular.svg" alt="">
+            <span class="sb-label">Volunteer Hours</span>
+        </a>
+        <a class="sb-item <?= $sb_current==='calendar.php' ? 'sb-current' : '' ?>" href="calendar.php">
+            <img class="sb-icon" src="images/view-calendar.svg" alt="">
+            <span class="sb-label">Calendar</span>
+        </a>
+
+        <div class="sb-section">Volunteers</div>
+        <a class="sb-item <?= $sb_current==='searchVolunteers.php' ? 'sb-current' : '' ?>" href="searchVolunteers.php">
+            <img class="sb-icon" src="images/person-search.svg" alt="">
+            <span class="sb-label">Search Volunteers</span>
+        </a>
+
+        <div class="sb-section">Community</div>
+        <a class="sb-item <?= $sb_current==='inbox.php' ? 'sb-current' : '' ?>" href="inbox.php">
+            <img class="sb-icon" src="images/inbox.svg" alt="">
+            <span class="sb-label">Inbox</span>
+        </a>
+        <a class="sb-item <?= $sb_current==='discussionMain.php' ? 'sb-current' : '' ?>" href="discussionMain.php">
+            <img class="sb-icon" src="images/group.svg" alt="">
+            <span class="sb-label">Discussions</span>
+        </a>
+
+        <div class="sb-section">Resources</div>
+        <a class="sb-item <?= $sb_current==='boardDocuments.php' ? 'sb-current' : '' ?>" href="boardDocuments.php">
+            <img class="sb-icon" src="images/file-regular.svg" alt="">
+            <span class="sb-label">Documents</span>
+        </a>
+        <a class="sb-item <?= $sb_current==='help.php' ? 'sb-current' : '' ?>" href="help.php">
+            <svg class="sb-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg>
+            <span class="sb-label">Help</span>
+        </a>
+
+        <hr class="sb-divider">
+        <a class="sb-item <?= $sb_current==='viewProfile.php' ? 'sb-current' : '' ?>" href="viewProfile.php">
+            <img class="sb-icon" src="images/view-profile.svg" alt="">
+            <span class="sb-label">View Profile</span>
+        </a>
+        <a class="sb-item <?= $sb_current==='editProfile.php' ? 'sb-current' : '' ?>" href="editProfile.php">
+            <img class="sb-icon" src="images/manage-account.svg" alt="">
+            <span class="sb-label">Edit Profile</span>
+        </a>
+        <a class="sb-item <?= $sb_current==='changePassword.php' ? 'sb-current' : '' ?>" href="changePassword.php">
+            <img class="sb-icon" src="images/change-password.svg" alt="">
+            <span class="sb-label">Change Password</span>
+        </a>
+        <a class="sb-item" href="logout.php">
+            <img class="sb-icon" src="images/logout.svg" alt="">
+            <span class="sb-label">Log Out</span>
+        </a>
 
     </div>
+
+    <a class="sb-profile" href="viewProfile.php" aria-label="View your profile">
+        <img class="sb-pfp" src="<?= $_pfp_escaped ?>" alt="" onerror="this.onerror=null;this.src='images/usaicon.png'">
+        <div class="sb-profile-info">
+            <div class="sb-profile-name"><?= htmlspecialchars(trim(($_SESSION['f_name'] ?? '') . ' ' . ($_SESSION['l_name'] ?? ''))); ?></div>
+            <div class="sb-profile-role"><?= htmlspecialchars(ucfirst(str_replace('_', ' ', $_SESSION['type'] ?? 'Admin'))); ?></div>
+        </div>
+    </a>
+</nav>
+
+<script>
+(function(){
+    var btn  = document.getElementById('gg-hamburger');
+    var body = document.body;
+    if (!btn) return;
+    btn.setAttribute('aria-expanded', String(!body.classList.contains('sidebar-collapsed')));
+    btn.addEventListener('click', function(){
+        var mobile = window.innerWidth <= 768;
+        if (mobile) {
+            var open = body.classList.toggle('sidebar-open');
+            btn.setAttribute('aria-expanded', String(open));
+        } else {
+            var collapsed = body.classList.toggle('sidebar-collapsed');
+            localStorage.setItem('gg_sidebar', collapsed ? 'collapsed' : 'expanded');
+            btn.setAttribute('aria-expanded', String(!collapsed));
+        }
+    });
+})();
+</script>

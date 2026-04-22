@@ -1187,9 +1187,9 @@ function find_user_names($name) {
     function get_events_attended_by($personID) {
         $today = date("Y-m-d");
         $query = "select * from dbeventpersons, dbevents
-                  where userID='$personID' and eventID=id
-                  and date<='$today' and attended=1
-                  order by date asc";
+                  where userID='$personID' and eventID=dbevents.id
+                  and startDate<='$today' and attended=1
+                  order by startDate asc";
         $connection = connect();
         $result = mysqli_query($connection, $query);
         if ($result) {
