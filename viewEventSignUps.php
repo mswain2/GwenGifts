@@ -33,6 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['bulk_action'])) {
     }
 
     if (remove_user_from_event($event_id, $user_id)) {
+        clear_attendance_for_user($event_id, $user_id);
         $remove_success = "User $user_id was successfully removed.";
     } else {
         $remove_error = "Failed to remove user $user_id.";
