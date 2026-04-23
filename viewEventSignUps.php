@@ -304,7 +304,7 @@ function trainingDetailsFromPerson($user_info): array
                 </table>
             </div>
         <?php endif; ?>
-
+        <a class="button cancel" href="event.php?id=<?php echo urlencode($id); ?>">Return to Event</a>
         <a class="button cancel" href="index.php">Return to Dashboard</a>
     </main>
 </body>

@@ -51,11 +51,17 @@ $notes = isset($_POST['attendee_notes']) ? $_POST['attendee_notes'] : [];
 
 $allSignups = fetch_event_signups($eventId); 
 $allUserIds = array_column($allSignups, 'userID');
+$already_logged = get_attendance_statuses_for_event($eventId);
 
 $success = true;
 foreach ($allUserIds as $uid) {
     $isPresent = in_array($uid, $presentIds);
     $comment   = isset($notes[$uid]) ? $notes[$uid] : '';
+
+    if (!$isPresent && isset($already_logged[$uid])) {
+        continue;
+    }
+
     $ok = logAttendance($eventId, $loggingId, $uid, $isPresent, $comment);
     if (!$ok) $success = false;
 }
