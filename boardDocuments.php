@@ -182,9 +182,9 @@ if ($is_admin) {
         .filter-bar button:hover { background-color: var(--accent-color); }
         .filter-bar a.clear-btn {
             padding: 8px 16px;
-            background-color: #f0f0f0;
-            color: #333;
-            border-radius: 50px;
+            background-color: var(--secondary-accent-color);
+            color: white;
+            border-radius: 0.25rem;
             text-decoration: none;
             font-weight: 700;
             font-size: 14px;

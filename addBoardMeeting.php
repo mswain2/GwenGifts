@@ -280,7 +280,7 @@
                 <input type="submit" value="Schedule Meeting" style="width:100%;">
 
             </form>
-            <a class="button cancel" href="calendar.php" style="margin-top: -.5rem">Return to Calendar</a>
+            <a class="button cancel" href="index.php" style="margin-top: -.5rem">Return to Dashboard</a>
         </main>
 
         <script>

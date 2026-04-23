@@ -424,8 +424,8 @@
     border-radius: 10px;
     font-size: 0.68rem;
     font-weight: 600;
-    background-color: rgba(220, 53, 69, 0.12);
-    color: #dc3545;
+    background-color: var(--secondary-accent-color);
+    color: white;
 }
 
 /* Card right: capacity ring */
@@ -472,7 +472,7 @@
 
 .ring-available .ring-fill { stroke: var(--main-color); }
 .ring-limited .ring-fill   { stroke: var(--accent-color); }
-.ring-full .ring-fill       { stroke: #dc3545; }
+.ring-full .ring-fill       { stroke: var(--secondary-accent-color) }
 
 .ring-label {
     position: absolute;
