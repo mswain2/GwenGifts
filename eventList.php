@@ -50,16 +50,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $isManager) {
 
         if ($total > 0) {
             if ($_POST['manual_hours_action'] === 'add') {
-                add_hours_to_person($username, $total);
+                add_manual_hours_to_person($username, $total);
                 header('Location: eventList.php?username=' . urlencode($username) . '&hours_added=' . $label);
             } else {
-                $viewed = retrieve_person($username);
-                $current = $viewed ? floatval($viewed->get_total_hours_volunteered()) : 0;
-                $new_total = max(0, $current - $total);
-                $con = connect();
-                $safe_user = mysqli_real_escape_string($con, $username);
-                mysqli_query($con, "UPDATE dbpersons SET total_hours_volunteered = '$new_total' WHERE id = '$safe_user'");
-                mysqli_close($con);
+                remove_manual_hours_from_person($username, $total);
                 header('Location: eventList.php?username=' . urlencode($username) . '&hours_removed=' . $label);
             }
         } else {
@@ -75,7 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $isManager) {
 
     if ($action && $personID && $eventID && $startTime) {
         $newStatus = 'approved';
-        $connection = connect(); 
+        $connection = connect();
 
         $personID  = mysqli_real_escape_string($connection, $personID);
         $eventID   = mysqli_real_escape_string($connection, $eventID);
@@ -134,25 +128,27 @@ $event_ids = get_attended_event_ids($username);
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <?php require_once('universal.inc'); ?>
     <link rel="stylesheet" href="css/editprofile.css" type="text/css" />
     <title>Gwyneth's Gift | User Events</title>
 </head>
+
 <body>
-<?php require_once('header.php'); ?>
-<?php if ($isManager): ?>
+    <?php require_once('header.php'); ?>
+    <?php if ($isManager): ?>
         <?php
-            $viewed_person = retrieve_person($username);
-            $name = $viewed_person
-                ? $viewed_person->get_first_name() . ' ' . $viewed_person->get_last_name() . "'s"
-                : htmlspecialchars($username) . "'s";
+        $viewed_person = retrieve_person($username);
+        $name = $viewed_person
+            ? $viewed_person->get_first_name() . ' ' . $viewed_person->get_last_name() . "'s"
+            : htmlspecialchars($username) . "'s";
         ?>
         <h1 style="color:white;"><?php echo $name ?> Event Attendance Log</h1>
     <?php else: ?>
         <h1 style="color:white;">Your Event Attendance Log</h1>
     <?php endif ?>
- 
+
     <main class="general">
         <?php if ($isManager): ?>
             <fieldset class="section-box" style="margin-bottom: 1.5rem; width:100%; box-sizing:border-box;">
@@ -171,13 +167,13 @@ $event_ids = get_attended_event_ids($username);
                     <input type="number" name="manual_minutes" min="0" max="59" step="1" value="0"
                         style="padding:6px 10px; border-radius:4px; border:1px solid #ccc; width:80px;">
                     <button type="submit" name="manual_hours_action" value="add" class="button success"
-                            style="height:36px; padding:0 16px;"
-                            onclick="return confirm('Add these hours to this volunteer?');">
+                        style="height:36px; padding:0 16px;"
+                        onclick="return confirm('Add these hours to this volunteer?');">
                         Add Hours
                     </button>
                     <button type="submit" name="manual_hours_action" value="remove" class="button danger"
-                            style="height:36px; padding:0 16px;"
-                            onclick="return confirm('Remove these hours from this volunteer?');">
+                        style="height:36px; padding:0 16px;"
+                        onclick="return confirm('Remove these hours from this volunteer?');">
                         Remove Hours
                     </button>
                 </form>
@@ -185,117 +181,119 @@ $event_ids = get_attended_event_ids($username);
         <?php endif; ?>
 
         <?php if (!empty($event_ids)): ?>
- 
+
             <?php foreach ($event_ids as $event_id): ?>
- 
+
                 <?php $event = retrieve_event2($event_id); ?>
-                <?php if (!$event) continue;?>
- 
+                <?php if (!$event) continue; ?>
+
                 <fieldset class="section-box" style="width:100%; box-sizing:border-box; min-width:0;">
                     <h2><?php echo htmlspecialchars($event['name']) ?></h2>
- 
+
                     <?php
-                        $shifts = get_check_in_outs($username, $event['id']);
+                    $shifts = get_check_in_outs($username, $event['id']);
                     ?>
- 
-                        <div style="overflow-x:auto; width:100%; max-width:100%;">
+
+                    <div style="overflow-x:auto; width:100%; max-width:100%;">
                         <table class="general" style="min-width:600px; width:100%; white-space:normal;">
-                        <tr>
-                            <th>Start Time</th>
-                            <th>End Time</th>
-                            <th>Duration (min)</th>
-                            <th>Status</th>
-                            <?php if ($isManager): ?>
-                                <th>Edit</th>
-                                <th>Delete</th>
-                                <th>Approve</th>
-                            <?php endif; ?>
-                        </tr>
- 
-                        <?php foreach ($shifts as $shift): ?>
-                            <?php
+                            <tr>
+                                <th>Start Time</th>
+                                <th>End Time</th>
+                                <th>Duration (min)</th>
+                                <th>Status</th>
+                                <?php if ($isManager): ?>
+                                    <th>Edit</th>
+                                    <th>Delete</th>
+                                    <th>Approve</th>
+                                <?php endif; ?>
+                            </tr>
+
+                            <?php foreach ($shifts as $shift): ?>
+                                <?php
                                 $start_parts = explode(' ', $shift['start_time']);
                                 $end_parts   = explode(' ', $shift['end_time']);
 
                                 $start_epoch = strtotime($shift['start_time']);
                                 $end_epoch   = strtotime($shift['end_time']);
                                 $duration    = ($end_epoch - $start_epoch) / 60;
- 
-                                $status = $shift['status'] ?? 'pending';
-                            ?>
-                            <tr>
-                                <td><?php echo isset($start_parts[1]) ? htmlspecialchars($start_parts[1]) : ''; ?></td>
-                                <td><?php echo isset($end_parts[1])   ? htmlspecialchars($end_parts[1])   : ''; ?></td>
-                                <td><?php echo round($duration, 2); ?></td>
-                                <td><?php echo htmlspecialchars(ucfirst($status)); ?></td>
- 
-                                <?php if ($isManager): ?>
-                                    <td>
-                                        <?php if ($status !== 'approved'): ?>
-                                        <form method="GET" action="editTimes.php" style="display:inline;">
-                                            <input type="hidden" name="eventId"    value="<?php echo htmlspecialchars($event['id']); ?>" />
-                                            <input type="hidden" name="user"       value="<?php echo htmlspecialchars($username); ?>" />
-                                            <input type="hidden" name="start_time" value="<?php echo htmlspecialchars($shift['start_time']); ?>" />
-                                            <input type="hidden" name="end_time"   value="<?php echo htmlspecialchars($shift['end_time']); ?>" />
-                                            <button type="submit" class="button edit-button" style="width:80px; height:36px; line-height:36px; padding:0 12px; display:inline-block;">Edit</button>
-                                        </form>
-                                        <?php endif; ?>
-                                    </td>
 
-                                    <td>
-                                        <button class="button danger" style="width:80px; height:36px; line-height:36px; padding:0 12px; display:inline-block;"
-                                            onclick="confirmAction('<?php echo $event['id']; ?>', '<?php echo addslashes($shift['start_time']); ?>', '<?php echo addslashes($shift['end_time']); ?>')">
-                                            Delete
-                                        </button>
-                                    </td>
- 
-                                    <td>
-                                        <?php if ($status !== 'approved'): ?>
-                                        <form method="POST" style="display:inline;" onsubmit="event.preventDefault(); confirmApprove(this);">
-                                            <input type="hidden" name="action"     value="approve">
-                                            <input type="hidden" name="personID"   value="<?php echo htmlspecialchars($username); ?>">
-                                            <input type="hidden" name="eventID"    value="<?php echo htmlspecialchars($event['id']); ?>">
-                                            <input type="hidden" name="start_time" value="<?php echo htmlspecialchars($shift['start_time']); ?>">
-                                            <button type="submit" class="button success" style="width:90px; height:36px; line-height:36px; padding:0 12px; display:inline-block;">Approve</button>
-                                        </form>
-                                        <?php else: ?>
-                                            <span style="color:#5cb85c;"> Approved</span>
-                                        <?php endif; ?>
-                                    </td>
- 
-                                <?php endif; ?>
-                            </tr>
-                        <?php endforeach; ?>
-                    </table>
+                                $status = $shift['status'] ?? 'pending';
+                                ?>
+                                <tr>
+                                    <td><?php echo isset($start_parts[1]) ? htmlspecialchars($start_parts[1]) : ''; ?></td>
+                                    <td><?php echo isset($end_parts[1])   ? htmlspecialchars($end_parts[1])   : ''; ?></td>
+                                    <td><?php echo round($duration, 2); ?></td>
+                                    <td><?php echo htmlspecialchars(ucfirst($status)); ?></td>
+
+                                    <?php if ($isManager): ?>
+                                        <td>
+                                            <?php if ($status !== 'approved'): ?>
+                                                <form method="GET" action="editTimes.php" style="display:inline;">
+                                                    <input type="hidden" name="eventId" value="<?php echo htmlspecialchars($event['id']); ?>" />
+                                                    <input type="hidden" name="user" value="<?php echo htmlspecialchars($username); ?>" />
+                                                    <input type="hidden" name="start_time" value="<?php echo htmlspecialchars($shift['start_time']); ?>" />
+                                                    <input type="hidden" name="end_time" value="<?php echo htmlspecialchars($shift['end_time']); ?>" />
+                                                    <button type="submit" class="button edit-button" style="width:80px; height:36px; line-height:36px; padding:0 12px; display:inline-block;">Edit</button>
+                                                </form>
+                                            <?php endif; ?>
+                                        </td>
+
+                                        <td>
+                                            <button class="button danger" style="width:80px; height:36px; line-height:36px; padding:0 12px; display:inline-block;"
+                                                onclick="confirmAction('<?php echo $event['id']; ?>', '<?php echo addslashes($shift['start_time']); ?>', '<?php echo addslashes($shift['end_time']); ?>')">
+                                                Delete
+                                            </button>
+                                        </td>
+
+                                        <td>
+                                            <?php if ($status !== 'approved'): ?>
+                                                <form method="POST" style="display:inline;" onsubmit="event.preventDefault(); confirmApprove(this);">
+                                                    <input type="hidden" name="action" value="approve">
+                                                    <input type="hidden" name="personID" value="<?php echo htmlspecialchars($username); ?>">
+                                                    <input type="hidden" name="eventID" value="<?php echo htmlspecialchars($event['id']); ?>">
+                                                    <input type="hidden" name="start_time" value="<?php echo htmlspecialchars($shift['start_time']); ?>">
+                                                    <button type="submit" class="button success" style="width:90px; height:36px; line-height:36px; padding:0 12px; display:inline-block;">Approve</button>
+                                                </form>
+                                            <?php else: ?>
+                                                <span style="color:#5cb85c;"> Approved</span>
+                                            <?php endif; ?>
+                                        </td>
+
+                                    <?php endif; ?>
+                                </tr>
+                            <?php endforeach; ?>
+                        </table>
                     </div>
- 
+
                     <?php if ($isManager): ?>
                         <form method="GET" action="setTimes.php">
-                            <input type="hidden" name="eventID"   value="<?php echo htmlspecialchars($event['id']); ?>" />
+                            <input type="hidden" name="eventID" value="<?php echo htmlspecialchars($event['id']); ?>" />
                             <input type="hidden" name="eventName" value="<?php echo htmlspecialchars($event['name']); ?>" />
-                            <input type="hidden" name="userID"    value="<?php echo htmlspecialchars($username); ?>" />
+                            <input type="hidden" name="userID" value="<?php echo htmlspecialchars($username); ?>" />
                             <center><button class="button success" style="width: 50%; margin: 25px;">Add a new check-in</button></center>
                         </form>
                     <?php endif; ?>
-                    </fieldset>
+                </fieldset>
 
-                <?php endforeach; ?>
-            <?php else: ?>
-                <p class="no-events-message">No events attended by <?php echo htmlspecialchars($username); ?>.</p>
-            <?php endif; ?>
-            <a class="button cancel" href="index.php" style="margin-top: -.5rem">Return to Dashboard</a>
-        </main>
-        <script>
-    function confirmAction(eventID, start_time, end_time) {
-        if (confirm("Are you sure you want to delete this check-in?")) {
-            window.location.href = 'deleteTimes.php?userID=<?php echo htmlspecialchars($username); ?>&eventID=' + eventID + '&start_time=' + encodeURIComponent(start_time) + '&end_time=' + encodeURIComponent(end_time);
+            <?php endforeach; ?>
+        <?php else: ?>
+            <p class="no-events-message">No events attended by <?php echo htmlspecialchars($username); ?>.</p>
+        <?php endif; ?>
+        <a class="button cancel" href="index.php" style="margin-top: -.5rem">Return to Dashboard</a>
+    </main>
+    <script>
+        function confirmAction(eventID, start_time, end_time) {
+            if (confirm("Are you sure you want to delete this check-in?")) {
+                window.location.href = 'deleteTimes.php?userID=<?php echo htmlspecialchars($username); ?>&eventID=' + eventID + '&start_time=' + encodeURIComponent(start_time) + '&end_time=' + encodeURIComponent(end_time);
+            }
         }
-    }
-    function confirmApprove(formEl) {
-        if (confirm("Are you sure you want to approve these hours?")) {
-            formEl.submit();
+
+        function confirmApprove(formEl) {
+            if (confirm("Are you sure you want to approve these hours?")) {
+                formEl.submit();
+            }
         }
-    }
     </script>
 </body> -->
+
 </html>
