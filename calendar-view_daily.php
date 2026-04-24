@@ -1,11 +1,15 @@
 <?php
+$sessionName = session_name();
+$sessionId = isset($_COOKIE[$sessionName]) ? $_COOKIE[$sessionName] : '';
+if ($sessionId) {
+    session_id($sessionId);
+}
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
 date_default_timezone_set("America/New_York");
 
-// Accept ?month=YYYY-MM-DD, fallback to today
 if (isset($_GET['month']) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $_GET['month'])) {
     $dayStr = $_GET['month'];
 } else {
@@ -18,32 +22,31 @@ if (!$dayEpoch) {
     exit;
 }
 
-$today      = strtotime(date("Y-m-d"));
+$today       = strtotime(date("Y-m-d"));
 $previousDay = date('Y-m-d', strtotime($dayStr . ' -1 day'));
 $nextDay     = date('Y-m-d', strtotime($dayStr . ' +1 day'));
 
 require_once('database/dbEvents.php');
 require_once('database/dbPersons.php');
 
-$loggedIn   = isset($_SESSION['_id']) ? 1 : 0;
-$userID     = isset($_SESSION['_id']) ? $_SESSION['_id'] : null;
-$accessLevel = isset($_SESSION['access_level']) ? $_SESSION['access_level'] : 0;
+$uid = isset($_GET['uid']) ? $_GET['uid'] : (isset($_SESSION['_id']) ? $_SESSION['_id'] : '');
+$al  = isset($_GET['al'])  ? (int)$_GET['al']  : (isset($_SESSION['access_level']) ? (int)$_SESSION['access_level'] : 0);
 
-$dayEvents = fetch_events_on_date($dayStr, $loggedIn);
+$allEvents = fetch_events_in_date_range($dayStr, $dayStr);
+$dayEvents = isset($allEvents[$dayStr]) ? $allEvents[$dayStr] : [];
 
 $formattedDate = date('l, F j, Y', $dayEpoch);
 ?>
 
 <div style="padding: 1rem;">
 
-    <!-- Date heading with prev/next navigation -->
     <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem;">
-        <a href="#" onclick="loadDailyView('<?php echo $previousDay; ?>')" 
+        <a href="#" onclick="loadDailyView('<?php echo $previousDay; ?>', '<?php echo htmlspecialchars($uid); ?>', <?php echo $al; ?>)" 
            style="color:var(--main-color); font-size:1.5rem; text-decoration:none; padding:0.25rem 0.75rem;">&#8249;</a>
         <h2 style="font-size:1.1rem; font-weight:600; color:var(--main-color);">
             <?php echo htmlspecialchars($formattedDate); ?>
         </h2>
-        <a href="#" onclick="loadDailyView('<?php echo $nextDay; ?>')"
+        <a href="#" onclick="loadDailyView('<?php echo $nextDay; ?>', '<?php echo htmlspecialchars($uid); ?>', <?php echo $al; ?>)"
            style="color:var(--main-color); font-size:1.5rem; text-decoration:none; padding:0.25rem 0.75rem;">&#8250;</a>
     </div>
 
@@ -69,14 +72,14 @@ $formattedDate = date('l, F j, Y', $dayEpoch);
                     $isBoardEvent = !empty($info['board_event']) && $info['board_event'] == 1;
 
                     if (is_archived($eventID)) {
-                        if ($accessLevel < 2) continue;
+                        if ($al < 2) continue;
                     }
 
-                    $signups   = fetch_event_signups($eventID);
+                    $signups    = fetch_event_signups($eventID);
                     $numSignups = count($signups);
-                    $isSignedUp = $userID ? check_if_signed_up($eventID, $userID) : false;
+                    $isSignedUp = $uid ? check_if_signed_up($eventID, $uid) : false;
 
-                    $rowStyle = $isBoardEvent ? 'background-color:#e8eef5;' : '';
+                    $rowStyle   = $isBoardEvent ? 'background-color:#e8eef5;' : '';
                     $titleColor = $isBoardEvent ? 'color:#1a3a6b;font-weight:700;' : '';
                 ?>
                 <tr style="<?php echo $rowStyle; ?>">
@@ -99,7 +102,7 @@ $formattedDate = date('l, F j, Y', $dayEpoch);
                         <?php endif; ?>
                     </td>
                     <td>
-                        <?php if ($loggedIn): ?>
+                        <?php if ($uid): ?>
                             <?php if ($isSignedUp): ?>
                                 <span style="color:#4CAF50;font-weight:700;">✓ Signed Up</span>
                             <?php elseif ($numSignups < $capacity): ?>
@@ -125,9 +128,11 @@ $formattedDate = date('l, F j, Y', $dayEpoch);
 </div>
 
 <script>
-function loadDailyView(date) {
+function loadDailyView(date, uid, al) {
     if (typeof loadView === 'function') {
-        loadView('calendar-view_daily.php?month=' + date);
+        let url = 'calendar-view_daily.php?month=' + date;
+        if (uid) url += '&uid=' + encodeURIComponent(uid) + '&al=' + al;
+        loadView(url);
     }
 }
 </script>
