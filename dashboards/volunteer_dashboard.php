@@ -52,7 +52,7 @@ $trainingPreview = array_slice(get_training_materials_by_user($uid) ?: [], 0, 4)
 /* Recent discussions */
 $allDiscussions = get_all_discussions() ?: [];
 usort($allDiscussions, fn($a, $b) => strcmp($b['time'] ?? '', $a['time'] ?? ''));
-$recentDiscussions = array_slice($allDiscussions, 0, 4);
+$recentDiscussions = array_slice($allDiscussions, 0, 3);
 
 /* Board documents (3 most recent accessible to volunteers) */
 $boardDocsPreview = [];
@@ -60,9 +60,6 @@ $_dbconn = connect();
 $_bdResult = mysqli_query($_dbconn, "SELECT doc_name, file_path, uploaded_at FROM boarddocuments WHERE deleted = 0 AND clearance_level = 'volunteer' ORDER BY uploaded_at DESC LIMIT 3");
 if ($_bdResult) { while ($_row = mysqli_fetch_assoc($_bdResult)) { $boardDocsPreview[] = $_row; } }
 
-/* Milestone calculations */
-$_hourTiers  = [5, 10, 25, 50, 100, 250, 500, 1000];
-$_eventTiers = [1, 5, 10, 25, 50, 100];
 
 /* Profile stats */
 $attendedRows        = get_events_attended_by($uid) ?: [];
@@ -97,24 +94,24 @@ $volType             = ucfirst($person->get_type() ?: 'Volunteer');
 </section>
 
 <!-- ── STATS BAR ─────────────────────────────────────────────────────────── -->
-<nav class="vd-stats" aria-label="Your activity summary">
-    <a class="vd-stat" href="viewProfile.php" aria-label="<?php echo $volunteerHours; ?> volunteer hours">
+<div class="vd-stats" aria-label="Your activity summary">
+    <div class="vd-stat">
         <span class="vd-stat-val"><?php echo number_format($volunteerHours, 1); ?></span>
         <span class="vd-stat-lbl">Hours Volunteered</span>
-    </a>
-    <a class="vd-stat" href="viewProfile.php" aria-label="<?php echo $eventsAttendedCount; ?> events attended">
+    </div>
+    <div class="vd-stat">
         <span class="vd-stat-val"><?php echo $eventsAttendedCount; ?></span>
         <span class="vd-stat-lbl">Events Attended</span>
-    </a>
-    <a class="vd-stat" href="viewMyUpcomingEvents.php" aria-label="<?php echo count($upcomingEvents); ?> upcoming events">
+    </div>
+    <div class="vd-stat">
         <span class="vd-stat-val"><?php echo count($upcomingEvents); ?></span>
         <span class="vd-stat-lbl">Upcoming Events</span>
-    </a>
-    <a class="vd-stat" href="inbox.php" aria-label="<?php echo $unreadCount; ?> unread messages">
+    </div>
+    <div class="vd-stat">
         <span class="vd-stat-val"><?php echo $unreadCount; ?></span>
         <span class="vd-stat-lbl">Unread Messages</span>
-    </a>
-</nav>
+    </div>
+</div>
 
 <!-- ── QUICK NAV ─────────────────────────────────────────────────────────── -->
 <nav class="vd-quicknav" aria-label="Quick navigation">
@@ -134,9 +131,9 @@ $volType             = ucfirst($person->get_type() ?: 'Volunteer');
         <img class="vd-qn-icon" src="images/list-solid.svg" alt="" aria-hidden="true">
         <span class="vd-qn-label">Sign Up</span>
     </a>
-    <a class="vd-qn-card" href="inbox.php" aria-label="Inbox<?php echo $unreadCount > 0 ? ", $unreadCount unread" : ''; ?>">
+    <a class="vd-qn-card" href="inbox.php" aria-label="Notifications<?php echo $unreadCount > 0 ? ", $unreadCount unread" : ''; ?>">
         <img class="vd-qn-icon" src="images/<?php echo $unreadCount > 0 ? 'inbox-unread.svg' : 'inbox.svg'; ?>" alt="" aria-hidden="true">
-        <span class="vd-qn-label">Inbox</span>
+        <span class="vd-qn-label">Notifications</span>
         <?php if ($unreadCount > 0): ?>
             <span class="vd-qn-badge" aria-hidden="true"><?php echo $unreadCount; ?></span>
         <?php endif; ?>
@@ -145,7 +142,7 @@ $volType             = ucfirst($person->get_type() ?: 'Volunteer');
         <img class="vd-qn-icon" src="images/file-regular.svg" alt="" aria-hidden="true">
         <span class="vd-qn-label">Documents</span>
     </a>
-    <a class="vd-qn-card" href="discussionMain.php" aria-label="Discussions">
+    <a class="vd-qn-card" href="viewDiscussions.php" aria-label="Discussions">
         <img class="vd-qn-icon" src="images/group.svg" alt="" aria-hidden="true">
         <span class="vd-qn-label">Discussions</span>
     </a>
@@ -334,7 +331,7 @@ $volType             = ucfirst($person->get_type() ?: 'Volunteer');
         <!-- Inbox preview -->
         <div class="vd-panel" role="region" aria-labelledby="vd-inbox-heading">
             <div class="vd-panel-header">
-                <span class="vd-panel-title" id="vd-inbox-heading">Inbox<?php echo $unreadCount > 0 ? " ($unreadCount)" : ''; ?></span>
+                <span class="vd-panel-title" id="vd-inbox-heading">Notifications<?php echo $unreadCount > 0 ? " ($unreadCount)" : ''; ?></span>
                 <a href="inbox.php" class="vd-panel-action">View all →</a>
             </div>
             <div class="vd-panel-body" aria-live="polite">
@@ -356,14 +353,14 @@ $volType             = ucfirst($person->get_type() ?: 'Volunteer');
         <div class="vd-panel" role="region" aria-labelledby="vd-disc-heading">
             <div class="vd-panel-header">
                 <span class="vd-panel-title" id="vd-disc-heading">Discussions</span>
-                <a href="discussionMain.php" class="vd-panel-action">View all →</a>
+                <a href="viewDiscussions.php" class="vd-panel-action">View all →</a>
             </div>
             <div class="vd-panel-body">
                 <?php if (empty($recentDiscussions)): ?>
                     <p class="vd-empty-sm">No discussions yet.</p>
                 <?php else: ?>
                     <?php foreach ($recentDiscussions as $disc): ?>
-                        <a href="discussionMain.php" style="text-decoration:none;">
+                        <a href="viewDiscussions.php" style="text-decoration:none;">
                             <div class="vd-disc-item">
                                 <div class="vd-disc-title"><?php echo htmlspecialchars($disc['title'] ?? 'Untitled'); ?></div>
                                 <div class="vd-disc-meta">
@@ -377,68 +374,39 @@ $volType             = ucfirst($person->get_type() ?: 'Volunteer');
             </div>
         </div>
 
-        <!-- Volunteer Milestones -->
-        <div class="vd-panel" style="flex:1;" role="region" aria-labelledby="vd-milestone-heading">
+        <!-- Next Upcoming Event -->
+        <?php $nextEvent = $upcomingEvents[0] ?? null; ?>
+        <div class="vd-panel" style="flex:1;" role="region" aria-labelledby="vd-next-heading">
             <div class="vd-panel-header">
-                <span class="vd-panel-title" id="vd-milestone-heading">Milestones</span>
+                <span class="vd-panel-title" id="vd-next-heading">Next Event</span>
+                <a href="viewMyUpcomingEvents.php" class="vd-panel-action">View all →</a>
             </div>
             <div class="vd-panel-body">
-                <?php
-                $prevHourTier = 0; $nextHourTier = null;
-                foreach ($_hourTiers as $_t) {
-                    if ($volunteerHours >= $_t) { $prevHourTier = $_t; }
-                    elseif ($nextHourTier === null) { $nextHourTier = $_t; }
-                }
-                $hourPct = $nextHourTier
-                    ? min(100, round(($volunteerHours - $prevHourTier) / ($nextHourTier - $prevHourTier) * 100))
-                    : 100;
-                $prevEventTier = 0; $nextEventTier = null;
-                foreach ($_eventTiers as $_t) {
-                    if ($eventsAttendedCount >= $_t) { $prevEventTier = $_t; }
-                    elseif ($nextEventTier === null) { $nextEventTier = $_t; }
-                }
-                $eventPct = $nextEventTier
-                    ? min(100, round(($eventsAttendedCount - $prevEventTier) / ($nextEventTier - $prevEventTier) * 100))
-                    : 100;
+                <?php if (!$nextEvent): ?>
+                    <p class="vd-empty-sm">No upcoming events. <a href="viewAllEvents.php" class="vd-panel-action">Browse events →</a></p>
+                <?php else:
+                    $neDate  = $nextEvent['startDate'] ?? '';
+                    $neMonth = $neDate ? date('M', strtotime($neDate)) : '—';
+                    $neDay   = $neDate ? date('j',   strtotime($neDate)) : '—';
+                    $neName  = $nextEvent['name']     ?? 'Event';
+                    $neLoc   = $nextEvent['location'] ?? '';
+                    $neId    = $nextEvent['id']        ?? '';
                 ?>
-                <div class="vd-ms-section">Hours Volunteered</div>
-                <div class="vd-ms-tier">
-                    <?php echo number_format($volunteerHours, 1); ?> hrs
-                    <?php if ($prevHourTier > 0): ?>&nbsp;·&nbsp;<?php echo $prevHourTier; ?>hr Club<?php endif; ?>
-                </div>
-                <?php if ($nextHourTier): ?>
-                    <div class="vd-ms-next"><?php echo $nextHourTier - $volunteerHours; ?> hrs to <?php echo $nextHourTier; ?>hr Club</div>
-                    <div class="vd-ms-bar-wrap" role="progressbar" aria-valuenow="<?php echo $hourPct; ?>" aria-valuemin="0" aria-valuemax="100">
-                        <div class="vd-ms-bar" style="width:<?php echo $hourPct; ?>%"></div>
+                <a href="event.php?id=<?php echo urlencode($neId); ?>" style="text-decoration:none;">
+                    <div class="vd-upc-item">
+                        <div class="vd-upc-date" aria-hidden="true">
+                            <div class="vd-upc-month"><?php echo $neMonth; ?></div>
+                            <div class="vd-upc-day"><?php echo $neDay; ?></div>
+                        </div>
+                        <div class="vd-upc-info">
+                            <div class="vd-upc-name"><?php echo htmlspecialchars($neName); ?></div>
+                            <?php if ($neLoc): ?>
+                                <div class="vd-upc-loc"><?php echo htmlspecialchars($neLoc); ?></div>
+                            <?php endif; ?>
+                        </div>
                     </div>
-                <?php else: ?>
-                    <div class="vd-ms-next">All hour milestones unlocked!</div>
-                    <div class="vd-ms-bar-wrap"><div class="vd-ms-bar" style="width:100%"></div></div>
+                </a>
                 <?php endif; ?>
-                <div class="vd-ms-badges">
-                    <?php foreach ($_hourTiers as $_t): ?>
-                        <span class="vd-ms-badge <?php echo $volunteerHours >= $_t ? 'vd-ms-badge--done' : ''; ?>"><?php echo $_t; ?>hr</span>
-                    <?php endforeach; ?>
-                </div>
-                <div class="vd-ms-section">Events Attended</div>
-                <div class="vd-ms-tier">
-                    <?php echo $eventsAttendedCount; ?> event<?php echo $eventsAttendedCount !== 1 ? 's' : ''; ?>
-                    <?php if ($prevEventTier > 0): ?>&nbsp;·&nbsp;<?php echo $prevEventTier; ?>-Event Club<?php endif; ?>
-                </div>
-                <?php if ($nextEventTier): ?>
-                    <div class="vd-ms-next"><?php echo $nextEventTier - $eventsAttendedCount; ?> more to <?php echo $nextEventTier; ?>-Event Club</div>
-                    <div class="vd-ms-bar-wrap" role="progressbar" aria-valuenow="<?php echo $eventPct; ?>" aria-valuemin="0" aria-valuemax="100">
-                        <div class="vd-ms-bar" style="width:<?php echo $eventPct; ?>%"></div>
-                    </div>
-                <?php else: ?>
-                    <div class="vd-ms-next">All event milestones unlocked!</div>
-                    <div class="vd-ms-bar-wrap"><div class="vd-ms-bar" style="width:100%"></div></div>
-                <?php endif; ?>
-                <div class="vd-ms-badges">
-                    <?php foreach ($_eventTiers as $_t): ?>
-                        <span class="vd-ms-badge <?php echo $eventsAttendedCount >= $_t ? 'vd-ms-badge--done' : ''; ?>"><?php echo $_t; ?></span>
-                    <?php endforeach; ?>
-                </div>
             </div>
         </div>
 
@@ -548,5 +516,6 @@ $volType             = ucfirst($person->get_type() ?: 'Volunteer');
 
     renderWeek();
 })();
+
 </script>
 </body>

@@ -34,16 +34,12 @@ $discussions = get_all_discussions();
 <html lang="en">
 <head>
     <title>Gwyneth's Gift | View Discussions</title>
-  	<link href="css/normal_tw.css" rel="stylesheet">
-
-<?php
-$tailwind_mode = true;
-require_once('header.php');
-?>
-<h1>View Discussions</h1>
-
+    <link href="css/sidebar.css" rel="stylesheet">
+    <link href="css/normal_tw.css" rel="stylesheet">
 </head>
 <body>
+<?php require_once('header.php'); ?>
+<h1>View Discussions</h1>
         
     <main>
 
@@ -79,9 +75,9 @@ require_once('header.php');
             </thead>
             <tbody>
                 <?php if ($discussions): ?>
-                    <?php foreach ($discussions as $discussion): 
+                    <?php foreach ($discussions as $discussion):
                         $person = get_user_from_author($discussion['author_id']);
-                        $author_name = $person->get_first_name() . ' ' . $person->get_last_name();
+                        $author_name = $person ? $person->get_first_name() . ' ' . $person->get_last_name() : $discussion['author_id'];
                         $entryValue = htmlspecialchars($discussion['author_id']) . '|' . htmlspecialchars($discussion['title']) . '|general';
                     ?>
                         <tr>

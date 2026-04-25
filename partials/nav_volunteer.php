@@ -30,6 +30,10 @@
             <svg class="sb-icon" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
             <span class="sb-label">Home</span>
         </a>
+        <a class="sb-item <?= $sb_current==='calendar.php' ? 'sb-current' : '' ?>" href="calendar.php">
+            <img class="sb-icon" src="images/view-calendar.svg" alt="">
+            <span class="sb-label">Calendar</span>
+        </a>
 
         <div class="sb-section">Events</div>
         <a class="sb-item <?= $sb_current==='viewMyUpcomingEvents.php' ? 'sb-current' : '' ?>" href="viewMyUpcomingEvents.php">
@@ -40,17 +44,13 @@
             <img class="sb-icon" src="images/list-solid.svg" alt="">
             <span class="sb-label">Browse Events</span>
         </a>
-        <a class="sb-item <?= $sb_current==='calendar.php' ? 'sb-current' : '' ?>" href="calendar.php">
-            <img class="sb-icon" src="images/view-calendar.svg" alt="">
-            <span class="sb-label">Calendar</span>
-        </a>
 
         <div class="sb-section">Community</div>
         <a class="sb-item <?= $sb_current==='inbox.php' ? 'sb-current' : '' ?>" href="inbox.php">
             <img class="sb-icon" src="images/inbox.svg" alt="">
-            <span class="sb-label">Inbox</span>
+            <span class="sb-label">Notifications</span>
         </a>
-        <a class="sb-item <?= $sb_current==='discussionMain.php' ? 'sb-current' : '' ?>" href="discussionMain.php">
+        <a class="sb-item <?= $sb_current==='viewDiscussions.php' ? 'sb-current' : '' ?>" href="viewDiscussions.php">
             <img class="sb-icon" src="images/group.svg" alt="">
             <span class="sb-label">Discussions</span>
         </a>

@@ -2246,7 +2246,7 @@ body.sidebar-collapsed .gg-sidebar { width: 0; box-shadow: none; }
     border: 3px solid rgba(245,193,110,.65);
     box-shadow: 0 4px 18px rgba(0,0,0,.3);
 }
-.vd-hero-logo { height: 4.5rem; opacity: .88; }
+.vd-hero-logo { height: 4.5rem; opacity: .88; border: 3px solid rgba(245,193,110,.65); border-radius: 6px; box-shadow: 0 4px 18px rgba(0,0,0,.3); }
 
 /* Stats bar */
 .vd-stats {
@@ -2438,16 +2438,6 @@ body.sidebar-collapsed .gg-sidebar { width: 0; box-shadow: none; }
 .vd-disc-title { font-size: .8rem; font-weight: 600; color: #2f4159; }
 .vd-disc-meta  { font-size: .7rem; color: #999; margin-top: .1rem; }
 
-/* Milestones card */
-.vd-ms-achieved     { font-size: .7rem; color: #888; margin-bottom: .6rem; }
-.vd-ms-tier         { font-size: .95rem; font-weight: 700; color: var(--main-color); margin-bottom: .15rem; }
-.vd-ms-next         { font-size: .7rem; color: #888; margin-bottom: .5rem; }
-.vd-ms-bar-wrap     { background: #f0f2f5; border-radius: 99px; height: 7px; overflow: hidden; margin-bottom: .9rem; }
-.vd-ms-bar          { height: 100%; border-radius: 99px; background: var(--main-color); transition: width .4s ease; }
-.vd-ms-badges       { display: flex; flex-wrap: wrap; gap: .4rem; }
-.vd-ms-badge        { font-size: .65rem; font-weight: 700; padding: .2rem .55rem; border-radius: 99px; background: #f0f2f5; color: #aaa; }
-.vd-ms-badge--done  { background: var(--main-color); color: #fff; }
-.vd-ms-section      { font-size: .65rem; font-weight: 700; color: #bbb; text-transform: uppercase; letter-spacing: .04em; margin: .75rem 0 .3rem; }
 
 /* Board docs preview card */
 .vd-doc-item        { display: flex; align-items: center; gap: .6rem; padding: .5rem 0; border-bottom: 1px solid #f0f2f5; }

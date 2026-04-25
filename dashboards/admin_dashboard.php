@@ -1,211 +1,536 @@
- <body>
-    <!-- get header.php -->
-    <?php require 'header.php'; ?>
+<?php
+/* ── Data preparation ───────────────────────────────────────────────────── */
+require_once('database/dbMessages.php');
+require_once('database/dbEvents.php');
+require_once('database/dbDiscussions.php');
 
-    <!-- welcome message -->
-    <div style="margin-top: 0px; padding: 30px 20px;">
-        <h2><b>Welcome <?php echo $person->get_first_name() ?>!</b> Let's get started.</h2>
+$uid   = $person->get_id();
+$today = date('Y-m-d');
+$hour  = (int) date('H');
+
+if      ($hour < 12) { $greeting = 'Good morning'; }
+elseif  ($hour < 17) { $greeting = 'Good afternoon'; }
+else                  { $greeting = 'Good evening'; }
+
+/* Unread messages */
+$unreadCount  = (int)(get_user_unread_count($uid) ?? 0);
+$inboxPreview = array_slice(get_user_unread_messages($uid) ?: [], 0, 3);
+
+/* Calendar events: 4 weeks back → 8 weeks forward */
+$calStart       = date('Y-m-d', strtotime('-4 weeks'));
+$calEnd         = date('Y-m-d', strtotime('+8 weeks'));
+$calEvents      = fetch_events_in_date_range($calStart, $calEnd) ?: [];
+$calData        = [];
+foreach ($calEvents as $d => $evs) {
+    $calData[$d] = array_values(array_map(fn($e) => $e['name'], $evs));
+}
+$calDataJson    = json_encode($calData, JSON_HEX_TAG | JSON_HEX_QUOT);
+$todayEventsRaw = $calEvents[$today] ?? [];
+
+/* Upcoming registered events (next 5) + signup dates for calendar */
+$signupIds      = fetch_user_signups($uid);
+$upcomingEvents = [];
+$signupDates    = [];
+foreach (array_keys($signupIds) as $eid) {
+    $ev = fetch_event_by_id($eid);
+    if (!$ev) continue;
+    if (!empty($ev['startDate'])) {
+        $signupDates[] = $ev['startDate'];
+    }
+    if (isset($ev['startDate']) && $ev['startDate'] >= $today && ($ev['completed'] ?? '') !== 'Y') {
+        $upcomingEvents[] = $ev;
+    }
+}
+usort($upcomingEvents, fn($a, $b) => strcmp($a['startDate'], $b['startDate']));
+$upcomingEvents  = array_slice($upcomingEvents, 0, 5);
+$signupDatesJson = json_encode(array_values(array_unique($signupDates)), JSON_HEX_TAG);
+
+/* Recent general discussions */
+$allDiscussions = get_all_discussions() ?: [];
+usort($allDiscussions, fn($a, $b) => strcmp($b['time'] ?? '', $a['time'] ?? ''));
+$recentDiscussions = array_slice($allDiscussions, 0, 3);
+
+/* Recent board discussions */
+$allBoardDiscussions = get_board_discussions() ?: [];
+usort($allBoardDiscussions, fn($a, $b) => strcmp($b['time'] ?? '', $a['time'] ?? ''));
+$recentBoardDiscussions = array_slice($allBoardDiscussions, 0, 3);
+
+/* Board documents (all clearance levels, 3 most recent) */
+$boardDocsPreview = [];
+$_dbconn = connect();
+$_bdResult = mysqli_query($_dbconn, "SELECT doc_name, file_path, uploaded_at FROM boarddocuments WHERE deleted = 0 ORDER BY uploaded_at DESC LIMIT 3");
+if ($_bdResult) { while ($_row = mysqli_fetch_assoc($_bdResult)) { $boardDocsPreview[] = $_row; } }
+
+/* Profile stats */
+$attendedRows        = get_events_attended_by($uid) ?: [];
+$eventsAttendedCount = count($attendedRows);
+$attendedDates       = array_values(array_unique(array_filter(array_column($attendedRows, 'startDate'))));
+$attendedDatesJson   = json_encode($attendedDates, JSON_HEX_TAG);
+$volunteerHours      = floatval($person->get_total_hours_volunteered());
+$memberSince         = $person->get_start_date();
+$profilePic          = $person->get_profile_pic() ?: 'images/usaicon.png';
+$volEmail            = $person->get_email();
+$volType             = ucfirst(str_replace('_', ' ', $person->get_type() ?: 'Admin'));
+?>
+
+<body>
+<a class="vd-skip" href="#vd-main-content">Skip to main content</a>
+
+<?php require 'header.php'; ?>
+<?php require 'partials/toasts.php'; ?>
+
+<!-- ── HERO ──────────────────────────────────────────────────────────────── -->
+<section class="vd-hero" aria-label="Dashboard header">
+    <div class="vd-hero-left">
+        <p class="vd-greeting" aria-hidden="true"><?php echo htmlspecialchars($greeting); ?></p>
+        <h1 class="vd-hero-name"><?php echo htmlspecialchars($person->get_first_name()); ?> <span class="vd-hero-username">(<?php echo htmlspecialchars($uid); ?>)</span> — <?php echo htmlspecialchars($volType); ?></h1>
+        <p class="vd-hero-date"><?php echo date('l, F j, Y'); ?></p>
+        <div class="vd-hero-bar" aria-hidden="true"></div>
     </div>
+    <div class="vd-hero-right" aria-hidden="true">
+        <img src="<?php echo htmlspecialchars($profilePic); ?>" alt="Your profile picture" class="vd-hero-avatar" onerror="this.onerror=null;this.src='images/usaicon.png'">
+        <img src="images/gwenythsGiftLogo.png" alt="Gwyneth's Gift" class="vd-hero-logo" onerror="this.onerror=null;this.style.display='none'">
+    </div>
+</section>
 
-    <!-- get toasts.php -->
-    <?php require 'partials/toasts.php'; ?>
+<!-- ── STATS BAR ─────────────────────────────────────────────────────────── -->
+<div class="vd-stats" aria-label="Your activity summary">
+    <div class="vd-stat">
+        <span class="vd-stat-val"><?php echo number_format($volunteerHours, 1); ?></span>
+        <span class="vd-stat-lbl">Hours Volunteered</span>
+    </div>
+    <div class="vd-stat">
+        <span class="vd-stat-val"><?php echo $eventsAttendedCount; ?></span>
+        <span class="vd-stat-lbl">Events Attended</span>
+    </div>
+    <div class="vd-stat">
+        <span class="vd-stat-val"><?php echo count($upcomingEvents); ?></span>
+        <span class="vd-stat-lbl">Upcoming Events</span>
+    </div>
+    <div class="vd-stat">
+        <span class="vd-stat-val"><?php echo $unreadCount; ?></span>
+        <span class="vd-stat-lbl">Unread Messages</span>
+    </div>
+</div>
 
-    <!-- main toolbar -->
-    <div class="full-width-bar">
-        <!-- user management button -->
-        <div class="content-box">
-            <img src="images/cpr.jpg" style="filter:brightness(2) contrast(40%) blur(4px) opacity(60%);">
+<!-- ── QUICK NAV ─────────────────────────────────────────────────────────── -->
+<nav class="vd-quicknav" aria-label="Quick navigation">
+    <a class="vd-qn-card" href="viewProfile.php" aria-label="My Profile">
+        <img class="vd-qn-icon" src="images/view-profile.svg" alt="" aria-hidden="true">
+        <span class="vd-qn-label">My Profile</span>
+    </a>
+    <a class="vd-qn-card" href="editProfile.php" aria-label="Edit Profile">
+        <img class="vd-qn-icon" src="images/manage-account.svg" alt="" aria-hidden="true">
+        <span class="vd-qn-label">Edit Profile</span>
+    </a>
+    <a class="vd-qn-card" href="viewMyUpcomingEvents.php" aria-label="My Events">
+        <img class="vd-qn-icon" src="images/new-event.svg" alt="" aria-hidden="true">
+        <span class="vd-qn-label">My Events</span>
+    </a>
+    <a class="vd-qn-card" href="viewAllEvents.php" aria-label="Sign Up for Events">
+        <img class="vd-qn-icon" src="images/list-solid.svg" alt="" aria-hidden="true">
+        <span class="vd-qn-label">Sign Up</span>
+    </a>
+    <a class="vd-qn-card" href="inbox.php" aria-label="Notifications<?php echo $unreadCount > 0 ? ", $unreadCount unread" : ''; ?>">
+        <img class="vd-qn-icon" src="images/<?php echo $unreadCount > 0 ? 'inbox-unread.svg' : 'inbox.svg'; ?>" alt="" aria-hidden="true">
+        <span class="vd-qn-label">Notifications</span>
+        <?php if ($unreadCount > 0): ?>
+            <span class="vd-qn-badge" aria-hidden="true"><?php echo $unreadCount; ?></span>
+        <?php endif; ?>
+    </a>
+    <a class="vd-qn-card" href="boardDocuments.php" aria-label="Documents">
+        <img class="vd-qn-icon" src="images/file-regular.svg" alt="" aria-hidden="true">
+        <span class="vd-qn-label">Documents</span>
+    </a>
+    <a class="vd-qn-card" href="viewBoardDiscussions.php" aria-label="Board Discussions">
+        <img class="vd-qn-icon" src="images/group.svg" alt="" aria-hidden="true">
+        <span class="vd-qn-label">Board Discussions</span>
+    </a>
+    <a class="vd-qn-card" href="viewDiscussions.php" aria-label="Discussions">
+        <img class="vd-qn-icon" src="images/group.svg" alt="" aria-hidden="true">
+        <span class="vd-qn-label">Discussions</span>
+    </a>
+</nav>
 
-            <div class="small-text">Make a difference.</div>
-            <div class="large-text">User Management</div>
+<!-- ── 3-COLUMN BODY ─────────────────────────────────────────────────────── -->
+<main class="vd-body" id="vd-main-content">
 
-            <button class="circle-arrow-button" onclick="window.location.href='volunteerManagement.php'">
-                <span class="button-text">Go</span>
-                <div class="circle">&gt;</div>
-            </button>
+    <!-- ── LEFT COLUMN ──────────────────────────────────────────────────── -->
+    <div style="display:flex;flex-direction:column;gap:1.25rem;align-self:stretch;">
+
+        <!-- Profile Card -->
+        <div class="vd-panel" role="region" aria-labelledby="vd-profile-heading">
+            <div class="vd-panel-header">
+                <span class="vd-panel-title" id="vd-profile-heading">My Profile</span>
+                <a href="editProfile.php" class="vd-panel-action" aria-label="Edit your profile">Edit →</a>
+            </div>
+            <div class="vd-panel-body">
+                <img src="<?php echo htmlspecialchars($profilePic); ?>" alt="Your profile picture" class="vd-prof-avatar" onerror="this.onerror=null;this.src='images/usaicon.png'">
+                <p class="vd-prof-name"><?php echo htmlspecialchars($person->get_first_name() . ' ' . $person->get_last_name()); ?></p>
+                <p class="vd-prof-role"><?php echo htmlspecialchars($volType); ?></p>
+                <hr class="vd-prof-divider">
+                <div class="vd-meta-row">
+                    <span class="vd-meta-key">Username</span>
+                    <span class="vd-meta-val"><?php echo htmlspecialchars($uid); ?></span>
+                </div>
+                <div class="vd-meta-row">
+                    <span class="vd-meta-key">Email</span>
+                    <span class="vd-meta-val" style="text-align:right;max-width:60%;">
+                        <a class="vd-meta-link" href="mailto:<?php echo htmlspecialchars($volEmail); ?>">
+                            <?php echo htmlspecialchars($volEmail); ?>
+                        </a>
+                    </span>
+                </div>
+                <div class="vd-meta-row">
+                    <span class="vd-meta-key">Since</span>
+                    <span class="vd-meta-val">
+                        <?php echo $memberSince ? htmlspecialchars(date('M j, Y', strtotime($memberSince))) : '—'; ?>
+                    </span>
+                </div>
+                <div class="vd-prof-actions">
+                    <a href="viewProfile.php"    class="vd-btn vd-btn--primary">View Profile</a>
+                    <a href="editProfile.php"    class="vd-btn vd-btn--outline">Edit Profile</a>
+                    <a href="changePassword.php" class="vd-btn vd-btn--outline">Change Password</a>
+                </div>
+            </div>
         </div>
 
-        <!-- event management button -->
-        <div class="content-box">
-            <img src="images/momprom.jpg" style="filter:brightness(1) contrast(40%) blur(4px) opacity(60%);">
-            <div class="small-text">Let's have some fun!</div>
-            <div class="large-text">Event Management</div>
-            <button class="circle-arrow-button" onclick="window.location.href='eventManagement.php'">
-                <span class="button-text"><?php
-                                            require_once('database/dbEvents.php');
-                                            require_once('database/dbPersons.php');
-                                            require_once('database/dbApplications.php');
-                                            $pendingsignups = all_pending_names();
-                                            if (sizeof($pendingsignups) > 0) {
-                                                echo '<span class="colored-box">' . sizeof($pendingsignups) . '</span>';
-                                            }
-                                            ?> Go </span>
-                <div class="circle">&gt;</div>
-            </button>
+        <!-- Event Management -->
+        <div class="vd-panel" role="region" aria-labelledby="vd-evmgmt-heading">
+            <div class="vd-panel-header">
+                <span class="vd-panel-title" id="vd-evmgmt-heading">Event Management</span>
+            </div>
+            <div class="vd-panel-body" style="display:flex;flex-direction:column;gap:.5rem;">
+                <a href="addEvent.php"       class="vd-btn vd-btn--primary" style="text-align:center;">+ Create Event</a>
+                <a href="viewAllEvents.php"  class="vd-btn vd-btn--outline"  style="text-align:center;">Browse Events</a>
+                <a href="editHours.php"      class="vd-btn vd-btn--outline"  style="text-align:center;">Manage Volunteer Hours</a>
+                <a href="generateReport.php" class="vd-btn vd-btn--outline"  style="text-align:center;">Generate Event Report</a>
+            </div>
         </div>
+
+        <!-- Board Documents Preview -->
+        <div class="vd-panel" style="flex:1;" role="region" aria-labelledby="vd-docs-heading">
+            <div class="vd-panel-header">
+                <span class="vd-panel-title" id="vd-docs-heading">Documents</span>
+                <a href="boardDocuments.php" class="vd-panel-action">View all →</a>
+            </div>
+            <div class="vd-panel-body">
+                <?php if (empty($boardDocsPreview)): ?>
+                    <p class="vd-empty-sm">No documents available yet.</p>
+                <?php else: ?>
+                    <?php foreach ($boardDocsPreview as $doc): ?>
+                        <a href="<?php echo htmlspecialchars($doc['file_path']); ?>" target="_blank" style="text-decoration:none;">
+                            <div class="vd-doc-item">
+                                <img class="vd-doc-icon" src="images/file-regular.svg" alt="" aria-hidden="true">
+                                <span class="vd-doc-name"><?php echo htmlspecialchars($doc['doc_name']); ?></span>
+                                <span class="vd-doc-date"><?php echo htmlspecialchars(date('M j', strtotime($doc['uploaded_at']))); ?></span>
+                            </div>
+                        </a>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </div>
+        </div>
+
     </div>
 
-    <!-- Admin dashboard -->
-    <div style="margin-top: 50px; padding: 0px 80px;">
-        <h2><b>Admin Dashboard</b></h2>
-    </div>
-    <div class="full-width-bar-sub">
+    <!-- ── CENTER COLUMN ─────────────────────────────────────────────────── -->
+    <div class="vd-cal-panel">
 
-        <!-- calculate number of inbox messages -->
-        <?php
-        require_once('database/dbMessages.php');
-        $unreadMessageCount = 0;
-        $inboxIcon = 'inbox.svg';
-        if (isset($person)) {
-            $unreadMessageCount = get_user_unread_count($person->get_id());
-            if ($unreadMessageCount > 0) {
-                $inboxIcon = 'inbox-unread.svg';
+        <!-- Today strip -->
+        <div class="vd-today-strip" role="region" aria-label="Today's events">
+            <div class="vd-today-date"><?php echo date('l, F j'); ?></div>
+            <div class="vd-today-sub">
+                <?php echo empty($todayEventsRaw) ? 'No events scheduled today.' : count($todayEventsRaw) . ' event' . (count($todayEventsRaw) !== 1 ? 's' : '') . ' today'; ?>
+            </div>
+            <?php if (!empty($todayEventsRaw)): ?>
+                <div class="vd-today-events" aria-live="polite">
+                    <?php foreach ($todayEventsRaw as $te): ?>
+                        <div class="vd-today-ev"><?php echo htmlspecialchars($te['name'] ?? $te); ?></div>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
+        </div>
+
+        <!-- Weekly calendar -->
+        <div class="vd-panel" role="region" aria-labelledby="vd-cal-heading">
+            <div class="vd-week-nav">
+                <button class="vd-week-btn" id="vd-prev-week" aria-label="Previous week">&#8592;</button>
+                <span class="vd-week-label" id="vd-week-label" aria-live="polite"></span>
+                <button class="vd-week-btn" id="vd-next-week" aria-label="Next week">&#8594;</button>
+            </div>
+            <div class="vd-week-grid" id="vd-week-grid" role="grid" aria-label="Weekly calendar"></div>
+            <div class="vd-cal-legend" aria-label="Calendar legend">
+                <span class="vd-cal-legend-item">
+                    <span class="vd-cal-legend-dot" style="background:var(--secondary-accent-color)"></span>Past (unattended)
+                </span>
+                <span class="vd-cal-legend-item">
+                    <span class="vd-cal-legend-dot" style="background:var(--main-color)"></span>Attending / Attended
+                </span>
+                <span class="vd-cal-legend-item">
+                    <span class="vd-cal-legend-dot" style="background:var(--accent-color)"></span>Other events
+                </span>
+            </div>
+            <div style="padding:.25rem 1.1rem .75rem; text-align:center;">
+                <a href="calendar.php" class="vd-panel-action">Open full calendar →</a>
+            </div>
+        </div>
+
+        <!-- Upcoming registered events -->
+        <div class="vd-panel" style="flex:1;" role="region" aria-labelledby="vd-upcoming-heading">
+            <div class="vd-panel-header">
+                <span class="vd-panel-title" id="vd-upcoming-heading">My Upcoming Events</span>
+                <a href="viewMyUpcomingEvents.php" class="vd-panel-action">View all →</a>
+            </div>
+            <div class="vd-panel-body">
+                <?php if (empty($upcomingEvents)): ?>
+                    <p class="vd-empty-sm">No upcoming events registered. <a href="viewAllEvents.php" class="vd-panel-action">Browse events →</a></p>
+                <?php else: ?>
+                    <?php foreach ($upcomingEvents as $ev): ?>
+                        <?php
+                            $evDate  = $ev['startDate'] ?? '';
+                            $evMonth = $evDate ? date('M', strtotime($evDate)) : '—';
+                            $evDay   = $evDate ? date('j', strtotime($evDate))  : '—';
+                            $evName  = $ev['name'] ?? 'Event';
+                            $evLoc   = $ev['location'] ?? '';
+                            $evId    = $ev['id'] ?? '';
+                        ?>
+                        <a href="event.php?id=<?php echo urlencode($evId); ?>" style="text-decoration:none;">
+                            <div class="vd-upc-item">
+                                <div class="vd-upc-date" aria-hidden="true">
+                                    <div class="vd-upc-month"><?php echo $evMonth; ?></div>
+                                    <div class="vd-upc-day"><?php echo $evDay; ?></div>
+                                </div>
+                                <div class="vd-upc-info">
+                                    <div class="vd-upc-name"><?php echo htmlspecialchars($evName); ?></div>
+                                    <?php if ($evLoc): ?><div class="vd-upc-loc"><?php echo htmlspecialchars($evLoc); ?></div><?php endif; ?>
+                                </div>
+                            </div>
+                        </a>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ── RIGHT COLUMN ──────────────────────────────────────────────────── -->
+    <div style="display:flex;flex-direction:column;gap:1.25rem;align-self:stretch;">
+
+        <!-- Inbox preview -->
+        <div class="vd-panel" role="region" aria-labelledby="vd-inbox-heading">
+            <div class="vd-panel-header">
+                <span class="vd-panel-title" id="vd-inbox-heading">Notifications<?php echo $unreadCount > 0 ? " ($unreadCount)" : ''; ?></span>
+                <a href="inbox.php" class="vd-panel-action">View all →</a>
+            </div>
+            <div class="vd-panel-body" aria-live="polite">
+                <?php if (empty($inboxPreview)): ?>
+                    <p class="vd-empty-sm">No unread messages.</p>
+                <?php else: ?>
+                    <?php foreach ($inboxPreview as $msg): ?>
+                        <div class="vd-msg-item">
+                            <div class="vd-msg-from"><?php echo htmlspecialchars($msg['senderID'] ?? 'System'); ?></div>
+                            <div class="vd-msg-subj"><?php echo htmlspecialchars($msg['title'] ?? '(no subject)'); ?></div>
+                            <div class="vd-msg-time"><?php echo htmlspecialchars($msg['time'] ?? ''); ?></div>
+                        </div>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </div>
+        </div>
+
+        <!-- Board Discussions Preview -->
+        <div class="vd-panel" role="region" aria-labelledby="vd-boarddisc-heading">
+            <div class="vd-panel-header">
+                <span class="vd-panel-title" id="vd-boarddisc-heading">Board Discussions</span>
+                <a href="viewBoardDiscussions.php" class="vd-panel-action">View all →</a>
+            </div>
+            <div class="vd-panel-body">
+                <?php if (empty($recentBoardDiscussions)): ?>
+                    <p class="vd-empty-sm">No board discussions yet. <a href="createBoardDiscussion.php" class="vd-panel-action">Start one →</a></p>
+                <?php else: ?>
+                    <?php foreach ($recentBoardDiscussions as $disc): ?>
+                        <a href="discussionContent.php?author=<?php echo urlencode($disc['author_id'] ?? ''); ?>&title=<?php echo urlencode($disc['title'] ?? ''); ?>&category=board" style="text-decoration:none;">
+                            <div class="vd-disc-item">
+                                <div class="vd-disc-title"><?php echo htmlspecialchars($disc['title'] ?? 'Untitled'); ?></div>
+                                <div class="vd-disc-meta">
+                                    <?php echo htmlspecialchars($disc['author_id'] ?? ''); ?>
+                                    <?php if (!empty($disc['time'])): ?> · <?php echo htmlspecialchars(date('M j', strtotime($disc['time']))); ?><?php endif; ?>
+                                </div>
+                            </div>
+                        </a>
+                    <?php endforeach; ?>
+                    <div style="padding:.5rem 0 0;text-align:center;">
+                        <a href="createBoardDiscussion.php" class="vd-panel-action">+ New board discussion →</a>
+                    </div>
+                <?php endif; ?>
+            </div>
+        </div>
+
+        <!-- Recent general discussions -->
+        <div class="vd-panel" role="region" aria-labelledby="vd-disc-heading">
+            <div class="vd-panel-header">
+                <span class="vd-panel-title" id="vd-disc-heading">Discussions</span>
+                <a href="viewDiscussions.php" class="vd-panel-action">View all →</a>
+            </div>
+            <div class="vd-panel-body">
+                <?php if (empty($recentDiscussions)): ?>
+                    <p class="vd-empty-sm">No discussions yet.</p>
+                <?php else: ?>
+                    <?php foreach ($recentDiscussions as $disc): ?>
+                        <a href="viewDiscussions.php" style="text-decoration:none;">
+                            <div class="vd-disc-item">
+                                <div class="vd-disc-title"><?php echo htmlspecialchars($disc['title'] ?? 'Untitled'); ?></div>
+                                <div class="vd-disc-meta">
+                                    <?php echo htmlspecialchars($disc['author_id'] ?? ''); ?>
+                                    <?php if (!empty($disc['time'])): ?> · <?php echo htmlspecialchars(date('M j', strtotime($disc['time']))); ?><?php endif; ?>
+                                </div>
+                            </div>
+                        </a>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </div>
+        </div>
+
+        <!-- Next Upcoming Event -->
+        <?php $nextEvent = $upcomingEvents[0] ?? null; ?>
+        <div class="vd-panel" style="flex:1;" role="region" aria-labelledby="vd-next-heading">
+            <div class="vd-panel-header">
+                <span class="vd-panel-title" id="vd-next-heading">Next Event</span>
+                <a href="viewMyUpcomingEvents.php" class="vd-panel-action">View all →</a>
+            </div>
+            <div class="vd-panel-body">
+                <?php if (!$nextEvent): ?>
+                    <p class="vd-empty-sm">No upcoming events. <a href="viewAllEvents.php" class="vd-panel-action">Browse events →</a></p>
+                <?php else:
+                    $neDate  = $nextEvent['startDate'] ?? '';
+                    $neMonth = $neDate ? date('M', strtotime($neDate)) : '—';
+                    $neDay   = $neDate ? date('j',   strtotime($neDate)) : '—';
+                    $neName  = $nextEvent['name']     ?? 'Event';
+                    $neLoc   = $nextEvent['location'] ?? '';
+                    $neId    = $nextEvent['id']        ?? '';
+                ?>
+                <a href="event.php?id=<?php echo urlencode($neId); ?>" style="text-decoration:none;">
+                    <div class="vd-upc-item">
+                        <div class="vd-upc-date" aria-hidden="true">
+                            <div class="vd-upc-month"><?php echo $neMonth; ?></div>
+                            <div class="vd-upc-day"><?php echo $neDay; ?></div>
+                        </div>
+                        <div class="vd-upc-info">
+                            <div class="vd-upc-name"><?php echo htmlspecialchars($neName); ?></div>
+                            <?php if ($neLoc): ?>
+                                <div class="vd-upc-loc"><?php echo htmlspecialchars($neLoc); ?></div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </a>
+                <?php endif; ?>
+            </div>
+        </div>
+
+    </div>
+
+</main>
+
+<?php require 'partials/footer.php'; ?>
+
+<script>
+(function () {
+    var calData      = <?php echo $calDataJson; ?>;
+    var signupDates  = <?php echo $signupDatesJson; ?>;
+    var attendedDates= <?php echo $attendedDatesJson; ?>;
+    var today        = '<?php echo $today; ?>';
+    var DAYS         = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    var MONTHS       = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+    var signupSet = {}, attendedSet = {};
+    signupDates.forEach(function(d)   { signupSet[d]   = true; });
+    attendedDates.forEach(function(d) { attendedSet[d]  = true; });
+
+    function getMonday(dateStr) {
+        var d = new Date(dateStr + 'T00:00:00');
+        var day = d.getDay();
+        var diff = (day === 0) ? -6 : 1 - day;
+        d.setDate(d.getDate() + diff);
+        return d;
+    }
+
+    function isoDate(d) {
+        var mm = String(d.getMonth() + 1).padStart(2, '0');
+        var dd = String(d.getDate()).padStart(2, '0');
+        return d.getFullYear() + '-' + mm + '-' + dd;
+    }
+
+    var monday = getMonday(today);
+
+    function renderWeek() {
+        var grid  = document.getElementById('vd-week-grid');
+        var label = document.getElementById('vd-week-label');
+        var sunday = new Date(monday); sunday.setDate(monday.getDate() + 6);
+        label.textContent =
+            MONTHS[monday.getMonth()] + ' ' + monday.getDate() +
+            ' – ' +
+            MONTHS[sunday.getMonth()] + ' ' + sunday.getDate() + ', ' + sunday.getFullYear();
+
+        grid.innerHTML = '';
+        for (var i = 0; i < 7; i++) {
+            var d   = new Date(monday); d.setDate(monday.getDate() + i);
+            var iso = isoDate(d);
+            var evs = calData[iso] || [];
+            var col = document.createElement('div');
+            col.className = 'vd-week-col';
+            col.setAttribute('role', 'gridcell');
+            col.setAttribute('aria-label', DAYS[d.getDay()] + ' ' + d.getDate() + (evs.length ? ', ' + evs.length + ' event' + (evs.length !== 1 ? 's' : '') : ''));
+
+            var dow = document.createElement('div');
+            dow.className = 'vd-week-dow';
+            dow.textContent = DAYS[d.getDay()];
+
+            var num = document.createElement('div');
+            num.className = 'vd-week-day';
+            var isToday      = iso === today;
+            var isAttended   = !!attendedSet[iso];
+            var isSignup     = !!signupSet[iso];
+            var isPast       = iso < today;
+            var isUnattended = isSignup && isPast && !isAttended;
+            var isActive     = isAttended || (isSignup && !isUnattended);
+
+            if (isToday) {
+                num.classList.add('vd-week-day--today');
+                num.setAttribute('aria-current', 'date');
             }
+            if (isActive)          num.classList.add('vd-week-day--signup');
+            else if (isUnattended) num.classList.add('vd-week-day--unattended');
+            else if (evs.length > 0) num.classList.add('vd-week-day--has');
+            num.textContent = d.getDate();
+
+            var dotClass = isActive ? 'vd-week-dot vd-week-dot--signup'
+                         : isUnattended ? 'vd-week-dot vd-week-dot--unattended'
+                         : 'vd-week-dot';
+            var dots = document.createElement('div');
+            dots.className = 'vd-week-dots';
+            var dotCount = Math.min(evs.length || (isActive || isUnattended ? 1 : 0), 3);
+            for (var j = 0; j < dotCount; j++) {
+                var dot = document.createElement('div');
+                dot.className = dotClass;
+                dots.appendChild(dot);
+            }
+
+            col.appendChild(dow);
+            col.appendChild(num);
+            col.appendChild(dots);
+            grid.appendChild(col);
         }
-        ?>
+    }
 
-        <!-- Calendar -->
-        <div class="content-box-test" onclick="window.location.href='calendar.php'">
-            <div class="icon-overlay">
-                <img style="border-radius: 5px;" src="images/view-calendar.svg" alt="Calendar Icon">
-            </div>
+    document.getElementById('vd-prev-week').addEventListener('click', function () {
+        monday.setDate(monday.getDate() - 7);
+        renderWeek();
+    });
+    document.getElementById('vd-next-week').addEventListener('click', function () {
+        monday.setDate(monday.getDate() + 7);
+        renderWeek();
+    });
 
-            <div class="large-text-sub">Calendar</div>
-            <div class="graph-text">See upcoming events/trainings.</div>
-            <button class="arrow-button">→</button>
-        </div>
-
-        <!-- Pending IDs -->
-        <!-- <div class="content-box-test" onclick="window.location.href='view_encrypted_gallery.php'">
-            <div class="icon-overlay">
-                <img style="border-radius: 5px;" src="images/file-regular.svg" alt="Document Icon">
-            </div>
-
-            <div class="large-text-sub">View Pending IDs </div>
-            <div class="graph-text">View pending and arbitrate user submitted IDs.</div>
-            <button class="arrow-button">→</button>
-        </div> -->
-
-        <!-- System Notifications -->
-        <div class="content-box-test" onclick="window.location.href='inbox.php'">
-            <div class="icon-overlay">
-                <img style="border-radius: 5px;" src="images/<?php echo $inboxIcon ?>" alt="Notification Icon">
-            </div>
-
-            <div class="large-text-sub">
-                System Notifications<?php
-                                    if ($unreadMessageCount > 0) {
-                                        echo ' (' . $unreadMessageCount . ')';
-                                    }
-                                    ?>
-            </div>
-            <div class="graph-text">Stay up to date.</div>
-            <button class="arrow-button">→</button>
-        </div>
-
-        <!-- Generate Report -->
-        <div class="content-box-test" onclick="window.location.href='generateReport.php'">
-            <div class="icon-overlay">
-                <img style="border-radius: 5px;" src="images/create-report.svg" alt="Report Icon">
-            </div>
-
-            <div class="large-text-sub">Generate Report</div>
-            <div class="graph-text">From this quarter or annual.</div>
-            <button class="arrow-button">→</button>
-        </div>
-
-        <!-- Create Email -->
-        <div class="content-box-test" onclick="window.location.href='createEmail.php'">
-            <div class="icon-overlay">
-                <img style="border-radius: 5px;" src="images/inbox.svg" alt="Email Icon">
-            </div>
-
-            <div class="large-text-sub">Create Email</div>
-            <div class="graph-text">Send new messages to volunteers.</div>
-            <button class="arrow-button">→</button>
-        </div>
-
-        <!-- View Drafts -->
-        <div class="content-box-test" onclick="window.location.href='viewDrafts.php'">
-            <div class="icon-overlay">
-                <img style="border-radius: 5px;" src="images/search.svg" alt="Drafts Icon">
-            </div>
-
-            <div class="large-text-sub">View Drafts</div>
-            <div class="graph-text">Check saved email drafts.</div>
-            <button class="arrow-button">→</button>
-        </div>
-
-        <!-- Generate Email List -->
-        <div class="content-box-test" onclick="window.location.href='personSearch.php'">
-            <div class="icon-overlay">
-                <img style="border-radius: 5px;" src="images/send.png" alt="Email List Icon">
-            </div>
-
-            <div class="large-text-sub">Generate Email List</div>
-            <div class="graph-text">Volunteer Emails</div>
-            <button class="arrow-button">→</button>
-        </div>
-
-        <!-- User Suggestions - Deprecated -->
-         <!--
-        <div class="content-box-test" onclick="window.location.href='viewSuggestions.php'">
-            <div class="icon-overlay">
-                <img style="border-radius: 5px;" src="images/clipboard-regular.svg" alt="Discussions Icon">
-            </div>
-
-            <div class="large-text-sub">User Suggestions</div>
-            <div class="graph-text">View user submitted suggestions.</div>
-            <button class="arrow-button">→</button>
-        </div>
-        -->
-
-        <!-- Discussions -->
-        <div class="content-box-test" onclick="window.location.href='discussionMain.php'">
-            <div class="icon-overlay">
-                <img style="border-radius: 5px;" src="images/group.svg" alt="Discussions Icon">
-            </div>
-
-            <div class="large-text-sub">Discussions</div>
-            <div class="graph-text">View discussions.</div>
-            <button class="arrow-button">→</button>
-        </div>
-
-        <!-- Add Board Meeting -->
-        <div class="content-box-test" onclick="window.location.href='addBoardMeeting.php'">
-            <div class="icon-overlay">
-                <img style="border-radius: 5px;" src="images/search.svg" alt="Drafts Icon">
-            </div>
-
-            <div class="large-text-sub">Add Board Meeting</div>
-            <div class="graph-text">Schedule a Board Meeting.</div>
-            <button class="arrow-button">→</button>
-        </div>
-
-        <!-- Documents -->
-        <div class="content-box-test" onclick="window.location.href='boardDocuments.php'">
-            <div class="icon-overlay">
-                <img style="border-radius: 5px;" src="images/file-regular.svg" alt="Drafts Icon">
-            </div>
-
-            <div class="large-text-sub">Documents</div>
-            <div class="graph-text">Manage files.</div>
-            <button class="arrow-button">→</button>
-        </div>
-
-        <!-- Training Materials -->
-        <div class="content-box-test" onclick="window.location.href='myTrainingMaterials.php'">
-            <div class="icon-overlay">
-                <img style="border-radius: 5px;" src="images/file-regular.svg" alt="Training Materials Icon">
-            </div>
-
-            <div class="large-text-sub">Training Materials</div>
-            <div class="graph-text">Access files for your events.</div>
-            <button class="arrow-button">→</button>
-        </div>
-
-    </div>
-
-    <?php require 'partials/footer.php'; ?>
-
+    renderWeek();
+})();
+</script>
 </body>

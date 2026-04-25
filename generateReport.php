@@ -34,19 +34,15 @@ function old($key, $default = '') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Gwyneth's Gift | Generate Report</title>
     <script src="js/report-filters.js" defer></script>
+    <link href="css/sidebar.css" rel="stylesheet">
     <link href="css/normal_tw.css" rel="stylesheet">
-<?php
-$tailwind_mode = true;
-require_once('header.php');
-?>
-
 </head>
 <body>
+<?php require_once('header.php'); ?>
     <?php require_once('database/dbEvents.php'); ?>
     <?php require_once('database/dbPersons.php'); ?>
 
-    <!-- Hero Section with Title -->
-    <h1 style="color:white;">Generate Report</h1>
+    <h1>Generate Report</h1>
 
     <main>
         <?php $events = get_all_events_sorted_by_date_not_archived(); ?>
