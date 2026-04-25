@@ -42,8 +42,10 @@ foreach (array_keys($signupIds) as $eid) {
     }
 }
 usort($upcomingEvents, fn($a, $b) => strcmp($a['startDate'], $b['startDate']));
+$signedUpCount   = count($upcomingEvents);
 $upcomingEvents  = array_slice($upcomingEvents, 0, 5);
 $signupDatesJson = json_encode(array_values(array_unique($signupDates)), JSON_HEX_TAG);
+
 
 /* Recent general discussions */
 $allDiscussions = get_all_discussions() ?: [];
@@ -83,25 +85,21 @@ $volType             = ucfirst(str_replace('_', ' ', $person->get_type() ?: 'Boa
 <section class="vd-hero" aria-label="Dashboard header">
     <div class="vd-hero-left">
         <p class="vd-greeting" aria-hidden="true"><?php echo htmlspecialchars($greeting); ?></p>
-        <h1 class="vd-hero-name"><?php echo htmlspecialchars($person->get_first_name()); ?> <span class="vd-hero-username">(<?php echo htmlspecialchars($uid); ?>)</span> — <?php echo htmlspecialchars($volType); ?></h1>
-        <p class="vd-hero-date"><?php echo date('l, F j, Y'); ?></p>
+        <h1 class="vd-hero-name"><?php echo htmlspecialchars($person->get_first_name()); ?></h1>
         <div class="vd-hero-bar" aria-hidden="true"></div>
     </div>
-    <div class="vd-hero-right" aria-hidden="true">
-        <img src="<?php echo htmlspecialchars($profilePic); ?>" alt="Your profile picture" class="vd-hero-avatar" onerror="this.onerror=null;this.src='images/usaicon.png'">
-        <img src="images/gwenythsGiftLogo.png" alt="Gwyneth's Gift" class="vd-hero-logo" onerror="this.onerror=null;this.style.display='none'">
-    </div>
+    <img src="images/gwenythsGiftLogo.png" alt="Gwyneth's Gift" class="vd-hero-logo" aria-hidden="true" onerror="this.onerror=null;this.style.display='none'">
 </section>
 
 <!-- ── STATS BAR ─────────────────────────────────────────────────────────── -->
 <div class="vd-stats" aria-label="Your activity summary">
     <div class="vd-stat">
         <span class="vd-stat-val"><?php echo number_format($volunteerHours, 1); ?></span>
-        <span class="vd-stat-lbl">Hours Volunteered</span>
+        <span class="vd-stat-lbl">Own Hours Volunteered</span>
     </div>
     <div class="vd-stat">
         <span class="vd-stat-val"><?php echo $eventsAttendedCount; ?></span>
-        <span class="vd-stat-lbl">Events Attended</span>
+        <span class="vd-stat-lbl">Events Attended By Self</span>
     </div>
     <div class="vd-stat">
         <span class="vd-stat-val"><?php echo count($upcomingEvents); ?></span>
@@ -114,6 +112,7 @@ $volType             = ucfirst(str_replace('_', ' ', $person->get_type() ?: 'Boa
 </div>
 
 <!-- ── QUICK NAV ─────────────────────────────────────────────────────────── -->
+<!--
 <nav class="vd-quicknav" aria-label="Quick navigation">
     <a class="vd-qn-card" href="viewProfile.php" aria-label="My Profile">
         <img class="vd-qn-icon" src="images/view-profile.svg" alt="" aria-hidden="true">
@@ -151,6 +150,7 @@ $volType             = ucfirst(str_replace('_', ' ', $person->get_type() ?: 'Boa
         <span class="vd-qn-label">Discussions</span>
     </a>
 </nav>
+-->
 
 <!-- ── 3-COLUMN BODY ─────────────────────────────────────────────────────── -->
 <main class="vd-body" id="vd-main-content">
@@ -162,17 +162,12 @@ $volType             = ucfirst(str_replace('_', ' ', $person->get_type() ?: 'Boa
         <div class="vd-panel" role="region" aria-labelledby="vd-profile-heading">
             <div class="vd-panel-header">
                 <span class="vd-panel-title" id="vd-profile-heading">My Profile</span>
-                <a href="editProfile.php" class="vd-panel-action" aria-label="Edit your profile">Edit →</a>
             </div>
             <div class="vd-panel-body">
                 <img src="<?php echo htmlspecialchars($profilePic); ?>" alt="Your profile picture" class="vd-prof-avatar" onerror="this.onerror=null;this.src='images/usaicon.png'">
                 <p class="vd-prof-name"><?php echo htmlspecialchars($person->get_first_name() . ' ' . $person->get_last_name()); ?></p>
                 <p class="vd-prof-role"><?php echo htmlspecialchars($volType); ?></p>
                 <hr class="vd-prof-divider">
-                <div class="vd-meta-row">
-                    <span class="vd-meta-key">Username</span>
-                    <span class="vd-meta-val"><?php echo htmlspecialchars($uid); ?></span>
-                </div>
                 <div class="vd-meta-row">
                     <span class="vd-meta-key">Email</span>
                     <span class="vd-meta-val" style="text-align:right;max-width:60%;">
@@ -190,7 +185,6 @@ $volType             = ucfirst(str_replace('_', ' ', $person->get_type() ?: 'Boa
                 <div class="vd-prof-actions">
                     <a href="viewProfile.php"    class="vd-btn vd-btn--primary">View Profile</a>
                     <a href="editProfile.php"    class="vd-btn vd-btn--outline">Edit Profile</a>
-                    <a href="changePassword.php" class="vd-btn vd-btn--outline">Change Password</a>
                 </div>
             </div>
         </div>
@@ -353,7 +347,7 @@ $volType             = ucfirst(str_replace('_', ' ', $person->get_type() ?: 'Boa
         </div>
 
         <!-- Recent general discussions -->
-        <div class="vd-panel" role="region" aria-labelledby="vd-disc-heading">
+        <div class="vd-panel" style="flex:1;" role="region" aria-labelledby="vd-disc-heading">
             <div class="vd-panel-header">
                 <span class="vd-panel-title" id="vd-disc-heading">Discussions</span>
                 <a href="viewDiscussions.php" class="vd-panel-action">View all →</a>
@@ -377,41 +371,6 @@ $volType             = ucfirst(str_replace('_', ' ', $person->get_type() ?: 'Boa
             </div>
         </div>
 
-        <!-- Next Upcoming Event -->
-        <?php $nextEvent = $upcomingEvents[0] ?? null; ?>
-        <div class="vd-panel" style="flex:1;" role="region" aria-labelledby="vd-next-heading">
-            <div class="vd-panel-header">
-                <span class="vd-panel-title" id="vd-next-heading">Next Event</span>
-                <a href="viewMyUpcomingEvents.php" class="vd-panel-action">View all →</a>
-            </div>
-            <div class="vd-panel-body">
-                <?php if (!$nextEvent): ?>
-                    <p class="vd-empty-sm">No upcoming events. <a href="viewAllEvents.php" class="vd-panel-action">Browse events →</a></p>
-                <?php else:
-                    $neDate  = $nextEvent['startDate'] ?? '';
-                    $neMonth = $neDate ? date('M', strtotime($neDate)) : '—';
-                    $neDay   = $neDate ? date('j',   strtotime($neDate)) : '—';
-                    $neName  = $nextEvent['name']     ?? 'Event';
-                    $neLoc   = $nextEvent['location'] ?? '';
-                    $neId    = $nextEvent['id']        ?? '';
-                ?>
-                <a href="event.php?id=<?php echo urlencode($neId); ?>" style="text-decoration:none;">
-                    <div class="vd-upc-item">
-                        <div class="vd-upc-date" aria-hidden="true">
-                            <div class="vd-upc-month"><?php echo $neMonth; ?></div>
-                            <div class="vd-upc-day"><?php echo $neDay; ?></div>
-                        </div>
-                        <div class="vd-upc-info">
-                            <div class="vd-upc-name"><?php echo htmlspecialchars($neName); ?></div>
-                            <?php if ($neLoc): ?>
-                                <div class="vd-upc-loc"><?php echo htmlspecialchars($neLoc); ?></div>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-                </a>
-                <?php endif; ?>
-            </div>
-        </div>
 
     </div>
 
@@ -477,7 +436,7 @@ $volType             = ucfirst(str_replace('_', ' ', $person->get_type() ?: 'Boa
             var isAttended   = !!attendedSet[iso];
             var isSignup     = !!signupSet[iso];
             var isPast       = iso < today;
-            var isUnattended = isSignup && isPast && !isAttended;
+            var isUnattended = isPast && evs.length > 0 && !isAttended;
             var isActive     = isAttended || (isSignup && !isUnattended);
 
             if (isToday) {

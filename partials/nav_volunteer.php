@@ -45,6 +45,10 @@
             <span class="sb-label">Browse Events</span>
         </a>
 
+        <a class="sb-item <?= $sb_current==='viewMyUpcomingEvents.php' ? 'sb-current' : '' ?>" href="viewMyUpcomingEvents.php">
+            <img class="sb-icon" src="images/new-event.svg" alt="">
+            <span class="sb-label">My Events</span>
+        </a>
         <div class="sb-section">Community</div>
         <a class="sb-item <?= $sb_current==='inbox.php' ? 'sb-current' : '' ?>" href="inbox.php">
             <img class="sb-icon" src="images/inbox.svg" alt="">
@@ -56,13 +60,13 @@
         </a>
 
         <div class="sb-section">Resources</div>
+        <a class="sb-item <?= $sb_current==='myTrainingMaterials.php' ? 'sb-current' : '' ?>" href="myTrainingMaterials.php">
+            <img class="sb-icon" src="images/clipboard-regular.svg" alt="">
+            <span class="sb-label">My Training Materials</span>
+        </a>
         <a class="sb-item <?= $sb_current==='boardDocuments.php' ? 'sb-current' : '' ?>" href="boardDocuments.php">
             <img class="sb-icon" src="images/file-regular.svg" alt="">
             <span class="sb-label">Documents</span>
-        </a>
-        <a class="sb-item <?= $sb_current==='myTrainingMaterials.php' ? 'sb-current' : '' ?>" href="myTrainingMaterials.php">
-            <img class="sb-icon" src="images/clipboard-regular.svg" alt="">
-            <span class="sb-label">Training</span>
         </a>
         <a class="sb-item <?= $sb_current==='help.php' ? 'sb-current' : '' ?>" href="help.php">
             <svg class="sb-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg>
@@ -70,6 +74,8 @@
         </a>
 
         <hr class="sb-divider">
+
+        <div class="sb-section">My Account</div>
         <a class="sb-item <?= $sb_current==='viewProfile.php' ? 'sb-current' : '' ?>" href="viewProfile.php">
             <img class="sb-icon" src="images/view-profile.svg" alt="">
             <span class="sb-label">View Profile</span>

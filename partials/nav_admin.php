@@ -40,14 +40,21 @@
             <img class="sb-icon" src="images/plus-solid.svg" alt="">
             <span class="sb-label">Create Event</span>
         </a>
+
         <a class="sb-item <?= $sb_current==='viewAllEvents.php' ? 'sb-current' : '' ?>" href="viewAllEvents.php">
             <img class="sb-icon" src="images/list-solid.svg" alt="">
             <span class="sb-label">Browse Events</span>
         </a>
-        <a class="sb-item <?= $sb_current==='generateReport.php' ? 'sb-current' : '' ?>" href="generateReport.php">
-            <img class="sb-icon" src="images/clipboard-regular.svg" alt="">
-            <span class="sb-label">Generate Report</span>
+        <a class="sb-item <?= $sb_current==='viewMyUpcomingEvents.php' ? 'sb-current' : '' ?>" href="viewMyUpcomingEvents.php">
+            <img class="sb-icon" src="images/new-event.svg" alt="">
+            <span class="sb-label">My Events</span>
         </a>
+        <?php if (in_array($_SESSION['type'] ?? '', ['admin', 'superadmin', 'board_member'])): ?>
+        <a class="sb-item <?= $sb_current==='addBoardMeeting.php' ? 'sb-current' : '' ?>" href="addBoardMeeting.php">
+            <img class="sb-icon" src="images/view-calendar.svg" alt="">
+            <span class="sb-label">Add Board Meeting</span>
+        </a>
+        <?php endif; ?>
 
         <div class="sb-section">Volunteers</div>
         <a class="sb-item <?= $sb_current==='personSearch.php' ? 'sb-current' : '' ?>" href="personSearch.php">
@@ -58,6 +65,12 @@
             <img class="sb-icon" src="images/clock-regular.svg" alt="">
             <span class="sb-label">Volunteer Hours</span>
         </a>
+        
+        <a class="sb-item <?= $sb_current==='generateReport.php' ? 'sb-current' : '' ?>" href="generateReport.php">
+            <img class="sb-icon" src="images/clipboard-regular.svg" alt="">
+            <span class="sb-label">Generate Report</span>
+        </a>
+
         <div class="sb-section">Community</div>
         <a class="sb-item <?= $sb_current==='inbox.php' ? 'sb-current' : '' ?>" href="inbox.php">
             <img class="sb-icon" src="images/inbox.svg" alt="">
@@ -73,8 +86,24 @@
             <img class="sb-icon" src="images/group.svg" alt="">
             <span class="sb-label">Discussions</span>
         </a>
+        <a class="sb-item <?= $sb_current==='createEmail.php' ? 'sb-current' : '' ?>" href="createEmail.php">
+            <img class="sb-icon" src="images/inbox.svg" alt="">
+            <span class="sb-label">Create Email</span>
+        </a>
+        <a class="sb-item <?= $sb_current==='viewDrafts.php' ? 'sb-current' : '' ?>" href="viewDrafts.php">
+            <img class="sb-icon" src="images/file-regular.svg" alt="">
+            <span class="sb-label">View Drafts</span>
+        </a>
+        <a class="sb-item <?= $sb_current==='personSearch.php' ? 'sb-current' : '' ?>" href="personSearch.php">
+            <img class="sb-icon" src="images/send.png" alt="">
+            <span class="sb-label">Email List</span>
+        </a>
 
         <div class="sb-section">Resources</div>
+        <a class="sb-item <?= $sb_current==='myTrainingMaterials.php' ? 'sb-current' : '' ?>" href="myTrainingMaterials.php">
+            <img class="sb-icon" src="images/clipboard-regular.svg" alt="">
+            <span class="sb-label">My Training Materials</span>
+        </a>
         <a class="sb-item <?= $sb_current==='boardDocuments.php' ? 'sb-current' : '' ?>" href="boardDocuments.php">
             <img class="sb-icon" src="images/file-regular.svg" alt="">
             <span class="sb-label">Documents</span>
@@ -85,6 +114,8 @@
         </a>
 
         <hr class="sb-divider">
+
+        <div class="sb-section">My Account</div>
         <a class="sb-item <?= $sb_current==='viewProfile.php' ? 'sb-current' : '' ?>" href="viewProfile.php">
             <img class="sb-icon" src="images/view-profile.svg" alt="">
             <span class="sb-label">View Profile</span>

@@ -41,15 +41,20 @@ body.sb-active.sidebar-collapsed { padding-left: 0; }
     width: 220px; height: calc(100vh - 44px);
     background: #2f4159; z-index: 1100;
     display: flex; flex-direction: column;
-    overflow: hidden; transition: width .25s ease;
+    overflow-x: hidden; overflow-y: visible; transition: width .25s ease;
     box-shadow: 2px 0 10px rgba(0,0,0,.18);
 }
 body.sidebar-collapsed .gg-sidebar { width: 0; box-shadow: none; }
 
 .sb-nav {
-    flex: 1; overflow-y: auto; overflow-x: hidden; padding: .35rem 0;
-    scrollbar-width: thin; scrollbar-color: rgba(255,255,255,.12) transparent;
+    flex: 1; min-height: 0; overflow-y: scroll; overflow-x: hidden;
+    padding: .35rem 0 80px;
+    scrollbar-width: auto; scrollbar-color: var(--accent-color) rgba(0,0,0,.25);
 }
+.sb-nav::-webkit-scrollbar          { width: 8px; }
+.sb-nav::-webkit-scrollbar-track    { background: rgba(0,0,0,.25); border-radius: 4px; }
+.sb-nav::-webkit-scrollbar-thumb    { background: var(--accent-color); border-radius: 4px; }
+.sb-nav::-webkit-scrollbar-thumb:hover { background: #ffd48a; }
 
 .sb-item {
     display: flex; align-items: center; gap: .7rem;
@@ -82,12 +87,16 @@ body.sidebar-collapsed .gg-sidebar { width: 0; box-shadow: none; }
 .sb-divider { border: none; border-top: 1px solid rgba(255,255,255,.1); margin: .3rem 0; }
 
 .sb-profile {
+    position: fixed; bottom: 0; left: 0;
+    width: 220px; z-index: 1101;
+    background: #2f4159;
     border-top: 1px solid rgba(255,255,255,.1);
     padding: .7rem 1rem;
     display: flex; align-items: center; gap: .6rem;
     overflow: hidden; text-decoration: none;
-    flex-shrink: 0; transition: background .15s;
+    transition: background .15s, width .25s ease;
 }
+body.sidebar-collapsed .sb-profile { width: 0; }
 .sb-profile:hover { background: rgba(255,255,255,.07); }
 .sb-pfp {
     width: 32px; height: 32px; border-radius: 50%; object-fit: cover;
@@ -130,4 +139,6 @@ body.sidebar-collapsed .gg-sidebar { width: 0; box-shadow: none; }
     .gg-sidebar                             { width: 0; box-shadow: none; }
     body.sidebar-collapsed .gg-sidebar      { width: 0; }
     body.sb-active.sidebar-open .gg-sidebar { width: 220px; box-shadow: 2px 0 18px rgba(0,0,0,.35); }
+    .sb-profile                             { width: 0; overflow: hidden; }
+    body.sb-active.sidebar-open .sb-profile { width: 220px; }
 }
