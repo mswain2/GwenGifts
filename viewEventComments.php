@@ -108,7 +108,7 @@ $event_comments = get_event_comments($eventID, $comments_per_page, $offset);
                                     <p><?php echo htmlspecialchars_decode($comment['user_id']);?></p>
                                     <?php
                                     if ($isEventManager) {
-                                        echo ' <a style="color: red;" href="deleteEventComment.php?eid=' . $comment['event_id'] . '&cid=' . $comment['id'] . '" onclick="return confirm(\'Delete this comment?\');">Remove</a>';
+                                        echo ' <a class="remove-link" href="deleteEventComment.php?eid=' . $comment['event_id'] . '&cid=' . $comment['id'] . '" onclick="return confirm(\'Delete this comment?\');">Remove</a>';
                                     }
                                     ?>
                                 </div>

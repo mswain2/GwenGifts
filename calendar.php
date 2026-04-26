@@ -214,12 +214,12 @@
                 </div>
                 <?php if ($calUserType === 'board'): ?>
                 <div style="display:flex; justify-content:center; align-items:center; gap:8px; padding: 6px 0;">
-                <select id="event-filter-select" style="padding:6px 140px;border-radius:50px;border:1px solid #e0e0e0;font-family:inherit;font-size:14px;background:#f8f8f8;width:auto;">
+                <select id="event-filter-select" style="padding:6px 140px;border-radius:0.25rem;border:1px solid #e0e0e0;font-family:inherit;font-size:14px;background:#f8f8f8;width:auto;">
                     <option value="public"  <?php echo $currentFilter==='public' ?'selected':''; ?>>Public Events</option>
                     <option value="board"   <?php echo $currentFilter==='board'  ?'selected':''; ?>>Board Events</option>
                     <option value="all"     <?php echo $currentFilter==='all'    ?'selected':''; ?>>All Events</option>
                 </select>
-                    <button id="apply-filter-btn" style="padding:6px 18px;border-radius:50px;border:none;background:#6b8caf;color:white;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;width:auto;margin:0;height:36px;line-height:1;">Apply</button>      
+                    <button id="apply-filter-btn" style="padding:6px 18px;border-radius:0.25rem;border:none;background:var(--main-color);color:white;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;width:auto;margin:0;height:36px;line-height:1;">Apply</button>      
                 </div>
                 <?php endif; ?>
             </div>

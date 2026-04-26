@@ -63,8 +63,8 @@ table, td, tr, th, form, fieldset, em, button, a {
     --info-toast-background-color: var(--main-color);
     --info-toast-font-color: white;
 
-    --error-toast-background-color: #701a1a;
-    --error-toast-font-color: white;
+    --error-toast-background-color: var(--secondary-accent-color);
+    --error-toast-font-color: var(--main-color);
 
 
     --shadow-and-border-color: #e8e8e8;
@@ -96,7 +96,7 @@ table, td, tr, th, form, fieldset, em, button, a {
 
     --cancel-button-background-color: var(--secondary-accent-color);
 
-    --error-color: red;
+    --error-color: var(--secondary-accent-color);
 
     /* Global rules */
     font-size: 18px;
@@ -757,7 +757,7 @@ img.filter-button {
 
 button.cancel, a.cancel {
     background-color: var(--cancel-button-background-color);
-    color: white;
+    color: white !important;
 }
 
 button.cancel:hover, a.cancel:hover {

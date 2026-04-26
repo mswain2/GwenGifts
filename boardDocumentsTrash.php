@@ -98,20 +98,6 @@
             margin-bottom: 24px;
         }
 
-        .back-btn {
-            display: inline-block;
-            background-color: #f0f0f0;
-            color: #333;
-            padding: 10px 24px;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: 700;
-            font-size: 15px;
-            margin-bottom: 24px;
-            transition: background 0.2s ease;
-        }
-        .back-btn:hover { background-color: #e0e0e0; }
-
         .doc-table {
             width: 100%;
             border-collapse: collapse;
@@ -145,34 +131,12 @@
         .clearance-badge.admin        { background-color: #fce4ec; color: #880e4f; }
         .clearance-badge.superadmin   { background-color: #263238; color: #ffffff; }
 
-        .restore-btn {
-            background-color: #6b8caf;
-            color: white;
-            border: none;
-            padding: 6px 16px;
-            border-radius: 50px;
-            font-family: Quicksand, sans-serif;
-            font-weight: 700;
-            font-size: 13px;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        .restore-btn:hover { background-color: #57789a; }
-
         .empty-msg {
             color: #828282;
             font-size: 16px;
             margin-top: 20px;
         }
 
-        .happy-toast {
-            background: #d4edda;
-            color: #155724;
-            padding: 12px 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            font-weight: 700;
-        }
     </style>
 </head>
 <body>
@@ -185,10 +149,10 @@
     <?php if (isset($_GET['restored'])): ?>
         <div class="happy-toast">Document restored successfully!</div>
     <?php elseif (isset($_GET['perm_deleted'])): ?>
-        <div class="happy-toast" style="background:#f8d7da;color:#721c24;">Document permanently deleted.</div>
+        <div class="happy-toast">Document permanently deleted.</div>
     <?php endif; ?>
 
-    <a class="back-btn" href="boardDocuments.php">← Back to Documents</a>
+    <a class="button cancel" href="boardDocuments.php">← Back to Documents</a>
 
     <?php if ($result && mysqli_num_rows($result) > 0): ?>
         <table class="doc-table">
@@ -218,16 +182,14 @@
                     <td>
                         <form method="POST" action="boardDocumentsTrash.php">
                             <input type="hidden" name="restore_id" value="<?php echo (int)$row['id']; ?>">
-                            <button type="submit" class="restore-btn">Restore</button>
+                            <button type="submit" class="button submit">Restore</button>
                         </form>
                     </td>
                     <td>
                         <form method="POST" action="boardDocumentsTrash.php"
                               onsubmit="return confirm('PERMANENTLY delete this document? This cannot be undone.');">
                             <input type="hidden" name="perm_delete_id" value="<?php echo (int)$row['id']; ?>">
-                            <button type="submit" class="restore-btn" style="background-color:#cc0000;"
-                                onmouseover="this.style.backgroundColor='#a30000'"
-                                onmouseout="this.style.backgroundColor='#cc0000'">
+                            <button type="submit" class="button cancel">
                                 Delete
                             </button>
                         </form>

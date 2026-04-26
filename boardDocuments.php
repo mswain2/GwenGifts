@@ -121,16 +121,16 @@ if ($is_admin) {
         .add-btn {
             display: inline-flex;
             align-items: center;
-            background-color: #6b8caf;
+            background-color: var(--main-color);
             color: white;
             padding: 10px 24px;
-            border-radius: 50px;
+            border-radius: 0.25rem;
             text-decoration: none;
             font-weight: 700;
             font-size: 16px;
             transition: background 0.2s ease;
         }
-        .add-btn:hover { background-color: #57789a; }
+        .add-btn:hover { background-color: var(--accent-color); color: white;}
         .top-bar {
             display: flex;
             align-items: center;
@@ -141,16 +141,16 @@ if ($is_admin) {
         .trash-btn {
             display: inline-flex;
             align-items: center;
-            background-color: #f0f0f0;
-            color: #333;
+            background-color: var(--main-color);
+            color: white;
             padding: 10px 24px;
-            border-radius: 50px;
+            border-radius: 0.25rem;
             text-decoration: none;
             font-weight: 700;
             font-size: 16px;
             transition: background 0.2s ease;
         }
-        .trash-btn:hover { background-color: #e0e0e0; }
+        .trash-btn:hover { background-color: var(--accent-color); color: white;}
         .filter-bar {
             display: flex;
             gap: 10px;
@@ -162,7 +162,7 @@ if ($is_admin) {
         .filter-bar select {
             padding: 8px 14px;
             border: 1px solid #e0e0e0;
-            border-radius: 50px;
+            border-radius: 0.25rem;
             font-family: Quicksand, sans-serif;
             font-size: 14px;
             background-color: #f8f8f8;
@@ -170,21 +170,21 @@ if ($is_admin) {
         }
         .filter-bar button {
             padding: 8px 20px;
-            background-color: #6b8caf;
+            background-color: var(--main-color);
             color: white;
             border: none;
-            border-radius: 50px;
+            border-radius: 0.25rem;
             font-family: Quicksand, sans-serif;
             font-weight: 700;
             font-size: 14px;
             cursor: pointer;
         }
-        .filter-bar button:hover { background-color: #57789a; }
+        .filter-bar button:hover { background-color: var(--accent-color); }
         .filter-bar a.clear-btn {
             padding: 8px 16px;
-            background-color: #f0f0f0;
-            color: #333;
-            border-radius: 50px;
+            background-color: var(--secondary-accent-color);
+            color: white;
+            border-radius: 0.25rem;
             text-decoration: none;
             font-weight: 700;
             font-size: 14px;
@@ -192,10 +192,10 @@ if ($is_admin) {
         .bulk-btn {
             display: 8px 20px;
             align-items: left;
-            background-color: #cc0000;
+            background-color: var(--secondary-accent-color);
             color: white;
             padding: 10px 24px;
-            border-radius: 50px;
+            border-radius: 0.25rem;
             border: none;
             font-family: Quicksand, sans-serif;
             font-weight: 700;
@@ -205,7 +205,7 @@ if ($is_admin) {
             width: auto;
             margin: 0;
         }
-        .bulk-btn:hover { background-color: #a30000; color: white; }
+        .bulk-btn:hover { background-color: var(--accent-color); color: white; }
         .modal-overlay {
             display: none;
             position: fixed;
@@ -232,13 +232,13 @@ if ($is_admin) {
         .modal-doc-list li { padding: 8px 4px; border-bottom: 1px solid #e0e0e0; display: flex; align-items: center; gap: 10px; }
         .modal-doc-list li:last-child { border-bottom: none; }
         .modal-actions { display: flex; gap: 10px; flex-wrap: wrap; }
-        .modal-delete-btn { background-color: #cc0000; color: white; border: none; padding: 10px 24px; border-radius: 50px; font-family: Quicksand, sans-serif; font-weight: 700; font-size: 15px; cursor: pointer; }
-        .modal-delete-btn:hover { background-color: #a30000; }
+        .modal-delete-btn { background-color: var(--secondary-accent-color); color: white; border: none; padding: 10px 24px; border-radius: 50px; font-family: Quicksand, sans-serif; font-weight: 700; font-size: 15px; cursor: pointer; }
+        .modal-delete-btn:hover { background-color: var(--accent-color); }
         .modal-cancel-btn { background-color: #f0f0f0; color: #333; border: none; padding: 10px 24px; border-radius: 50px; font-family: Quicksand, sans-serif; font-weight: 700; font-size: 15px; cursor: pointer; }
         .modal-cancel-btn:hover { background-color: #e0e0e0; }
         .bottom-bar { margin-top: 30px; display: flex; gap: 12px; flex-wrap: wrap; }
-        .return-btn { display: inline-flex; align-items: center; background-color: var(--secondary-accent-color); color: white; padding: 10px 24px; border-radius: 50px; text-decoration: none; font-weight: 700; font-size: 16px; transition: background 0.2s ease; }
-        .return-btn:hover { background-color: #e8849a; color: white; }
+        .return-btn { display: inline-flex; align-items: center; background-color: var(--secondary-accent-color); color: white; padding: 10px 24px; border-radius: 0.25rem; text-decoration: none; font-weight: 700; font-size: 16px; transition: background 0.2s ease; }
+        .return-btn:hover { background-color: var(--accent-color); color: white; }
 
         .clearance-badge { display: inline-block; padding: 3px 10px; border-radius: 50px; font-size: 12px; font-weight: 700; }
         .clearance-badge.public       { background-color: #e8f5e9; color: #2e7d32; }
@@ -247,9 +247,8 @@ if ($is_admin) {
         .clearance-badge.board_member { background-color: #f3e5f5; color: #6a1b9a; }
         .clearance-badge.admin        { background-color: #fce4ec; color: #880e4f; }
         .clearance-badge.superadmin   { background-color: #263238; color: #ffffff; }
-        .delete-btn { background: none; border: none; color: #cc0000; font-size: 18px; cursor: pointer; padding: 4px 8px; border-radius: 6px; }
-        .delete-btn:hover { background-color: #fce4ec; }
-        .error-toast { background: #f8d7da; color: #721c24; padding: 12px 20px; border-radius: 8px; margin-bottom: 20px; font-weight: 700; }
+        .delete-btn { background: none; border: none; color: #cc0000; font-size: 18px; cursor: pointer; padding: 4px 8px; border-radius: 0.25rem; }
+        .delete-btn:hover { background-color: var(--accent-color); }
         .doc-table {
             width: 100%;
             border-collapse: collapse;
@@ -269,7 +268,7 @@ if ($is_admin) {
         .doc-table tr:hover td { background-color: #f5f5f5; }
 
         .doc-table a {
-            color: #6b8caf;
+            color: var(--main-color);
             font-weight: 700;
             text-decoration: none;
         }
@@ -281,14 +280,6 @@ if ($is_admin) {
             margin-top: 20px;
         }
 
-        .happy-toast {
-            background: #d4edda;
-            color: #155724;
-            padding: 12px 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            font-weight: 700;
-        }
     </style>
 </head>
 <body>
@@ -316,8 +307,8 @@ if ($is_admin) {
             <a class="add-btn" href="addBoardDocument.php">+ Add Document</a>
         <?php endif; ?>
         <?php if ($is_admin): ?>
-            <button class="bulk-btn" onclick="document.getElementById('bulk-delete-modal').classList.add('active')">🗑 Delete Documents</button>
             <a class="trash-btn" href="boardDocumentsTrash.php">🗑 View Trash</a>
+            <button class="bulk-btn" onclick="document.getElementById('bulk-delete-modal').classList.add('active')">🗑 Delete Documents</button>
         <?php endif; ?>
     </div>
 
@@ -381,7 +372,9 @@ if ($is_admin) {
                     <?php if ($can_upload): ?>
                     <td>
                         <a href="editBoardDocument.php?id=<?php echo (int)$row['id']; ?>"
-                           style="color:#6b8caf;font-weight:700;text-decoration:none;">Edit</a>
+                           style="color:var(--main-color);font-weight:700;text-decoration:none;"
+                           onmouseover="this.style.textDecoration='underline'"
+                           onmouseout="this.style.textDecoration='none'">Edit</a>
                     </td>
                     <?php endif; ?>
                 </tr>

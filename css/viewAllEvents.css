@@ -424,8 +424,8 @@
     border-radius: 10px;
     font-size: 0.68rem;
     font-weight: 600;
-    background-color: rgba(220, 53, 69, 0.12);
-    color: #dc3545;
+    background-color: var(--secondary-accent-color);
+    color: white;
 }
 
 /* Card right: capacity ring */
@@ -472,7 +472,7 @@
 
 .ring-available .ring-fill { stroke: var(--main-color); }
 .ring-limited .ring-fill   { stroke: var(--accent-color); }
-.ring-full .ring-fill       { stroke: #dc3545; }
+.ring-full .ring-fill       { stroke: var(--secondary-accent-color) }
 
 .ring-label {
     position: absolute;
@@ -834,26 +834,27 @@
 }
 
 .act-full {
-    background-color: rgba(220, 53, 69, 0.12) !important;
-    color: #dc3545 !important;
+    background-color: var(--secondary-accent-color) !important;
+    color: white !important;
     border: 1.5px solid rgba(220, 53, 69, 0.3) !important;
     cursor: default;
 }
 
 .act-full:hover {
-    background-color: rgba(220, 53, 69, 0.12) !important;
+    background-color: var(--secondary-accent-color) !important;
     transform: none;
 }
 
 .act-view {
-    background-color: white !important;
-    color: var(--main-color) !important;
+    background-color: var(--main-color) !important;
+    color: white !important;
     border-color: var(--main-color) !important;
 }
 
 .act-view:hover {
-    background-color: var(--main-color) !important;
+    background-color: var(--accent-color) !important;
     color: white !important;
+    border-color: var(--accent-color) !important;
 }
 
 .act-login {
@@ -920,7 +921,7 @@
 }
 
 .pagination button:hover:not(:disabled) {
-    background: var(--standout-background) !important;
+    background: var(--accent-color) !important;
     border-color: var(--main-color) !important;
 }
 

@@ -107,7 +107,7 @@
                 <button type="submit" name="log" id="log">Log Selected Attendees</button>
             </form>
             <div style="text-align: center; margin-top: 2rem;">
-            <a href="index.php" class="button cancel" style="width: 60%;">Return to Dashboard</a>
+                <a class="button cancel" href="event.php?id=<?php echo urlencode((string)$id); ?>">Return to Event</a>
             </div>
 
             </div>

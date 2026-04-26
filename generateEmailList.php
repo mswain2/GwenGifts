@@ -261,9 +261,8 @@ require_once('header.php');
         </form>
     </div>
 
-    <div class="text-center mt-6">
-        <a href="index.php" class="return-button">Return to Dashboard</a>
-    </div>
+        <a href="index.php" class="btn btn-back">Return to Dashboard</a>
+
 </main>
 
 </body>

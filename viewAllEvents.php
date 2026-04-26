@@ -574,8 +574,11 @@
             <a class="button" href="calendar.php">View Calendar</a>
             <?php if ($accessLevel >= 2): ?>
                 <a class="button" href="addEvent.php">Create New Event</a>
+                <a class="button cancel" href="eventManagement.php">Return to Event Management</a>
+            <?php else: ?>
+                <a class="button cancel" href="index.php">Return to Dashboard</a>
             <?php endif; ?>
-            <a class="button cancel" href="index.php">Return to Dashboard</a>
+            
         </div>
 
         <?php if ($loggedIn && $userID !== 'guest'): ?>

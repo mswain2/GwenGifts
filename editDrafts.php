@@ -18,16 +18,6 @@ if (!$isEventManager) {
     exit;
 }
 
-function getUsersAndEmails() {
-    $conn = connect();
-    $members = [];
-    $res = $conn->query("SELECT id, CONCAT(first_name,' ',last_name,' (',email,')') as label FROM dbpersons ORDER BY first_name");
-    while ($row = $res->fetch_assoc()) {
-        $members[] = ['label' => $row['label'], 'value' => $row['id']];
-    }
-    return $members;
-}
-
 $allMembers = getUsersAndEmails();
 
 // === Connect to DB ===
