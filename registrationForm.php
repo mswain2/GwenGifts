@@ -950,7 +950,7 @@ progress::-moz-progress-bar {
     </div>
 
     <?php if ($isAdminCreating): ?>
-        <a href="volunteerManagement.php" class="button cancel">Return to User Management</a>
+        <a href="index.php" class="button cancel">Return to Dashboard</a>
     <?php endif; ?>
 
     <p class="text-center notice"></p>
