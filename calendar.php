@@ -80,7 +80,9 @@
             }
         }
     }
-    $currentFilter = isset($_GET['event_filter']) ? $_GET['event_filter'] : 'public';
+    $currentFilter = isset($_GET['event_filter']) ? $_GET['event_filter'] : 'all';
+    $calUserId = isset($_SESSION['_id']) ? $_SESSION['_id'] : '';
+    $calAccessLevel = isset($_SESSION['access_level']) ? (int)$_SESSION['access_level'] : 0;
 ?>
 <!-- ── HTML DOCUMENT START ── -->
 <!DOCTYPE html>
@@ -197,7 +199,8 @@
                  Hamburger menu with icon buttons to switch between different calendar views:
                  List view, Monthly grid, Weekly view, and Daily view.
                  The checkbox acts as a CSS toggle to show/hide the menu. -->
-           <div style="position:relative; margin-top:8px;">
+            <div id="session-data" data-user-id="<?php echo htmlspecialchars($calUserId); ?>" data-access-level="<?php echo $calAccessLevel; ?>" style="display:none;"></div>
+            <div style="position:relative; margin-top:8px;">
                 <div class="filter-wrapper" style="position: absolute; left: 1rem; top: 0;">
                     <div class="filter-menu-wrapper">
                         <input type="checkbox" />
