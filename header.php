@@ -288,8 +288,17 @@ if (date("H:i:s") > "18:19:59") {
         // Base URL for the project — works whether installed at domain root (SiteGround) or in a subdir (XAMPP).
         $_base_url = rtrim(str_replace('\\', '/', str_replace(rtrim($_SERVER['DOCUMENT_ROOT'], '/\\'), '', __DIR__)), '/') . '/';
 
-        // load nav bar
-        require 'partials/nav.php';
+        // load nav bar according to user role/type
+        $type = $_SESSION['type'];
+        if ($type === 'admin' || $type === 'superadmin') {
+            require 'partials/nav_admin.php';
+        } else if ($type === 'board_member') {
+            require 'partials/nav_admin.php';
+        } else if ($type === 'event_manager') {
+            require 'partials/nav_admin.php';
+        } else {
+            require 'partials/nav_volunteer.php';
+        }
     }
     ?>
     <script>

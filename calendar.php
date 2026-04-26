@@ -88,8 +88,7 @@
     <head>
         <!-- Load shared site-wide styles, meta tags, and configuration -->
         <?php require('universal.inc'); ?>
-        <!-- Load the site header (navigation bar, logo, etc.) -->
-        <?php require('header.php'); ?>
+        <link rel="stylesheet" href="css/sidebar.css">
         <!-- jQuery library for DOM manipulation and AJAX -->
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <!-- Custom JS that handles rendering the calendar grid dynamically -->
@@ -100,6 +99,13 @@
         <style>.happy-toast { margin: 0 1rem 1rem 1rem; }</style>
     </head>
     <body>
+        <?php
+        if (isset($_SESSION['logged_in'])) {
+            require('header.php');
+        } else {
+            require 'partials/nav_guest.php';
+        }
+        ?>
         <!-- ── MONTH JUMPER DIALOG ──
              A hidden popup form that lets users quickly jump to a specific month/year.
              Toggled visible via JavaScript when the user clicks the calendar heading. -->

@@ -57,6 +57,12 @@
         <?php endif; ?>
 
         <div class="sb-section">Volunteers</div>
+        <?php if (in_array($_SESSION['type'] ?? '', ['admin', 'superadmin'])): ?>
+        <a class="sb-item <?= $sb_current==='VolunteerRegister.php' ? 'sb-current' : '' ?>" href="VolunteerRegister.php">
+            <img class="sb-icon" src="images/add-person.svg" alt="">
+            <span class="sb-label">Register Volunteer</span>
+        </a>
+        <?php endif; ?>
         <a class="sb-item <?= $sb_current==='personSearch.php' ? 'sb-current' : '' ?>" href="personSearch.php">
             <img class="sb-icon" src="images/person-search.svg" alt="">
             <span class="sb-label">Search Users</span>
@@ -146,19 +152,38 @@
 
 <script>
 (function(){
-    var btn  = document.getElementById('gg-hamburger');
-    var body = document.body;
+    var btn     = document.getElementById('gg-hamburger');
+    var body    = document.body;
+    var profile = document.querySelector('.sb-profile');
     if (!btn) return;
-    btn.setAttribute('aria-expanded', String(!body.classList.contains('sidebar-collapsed')));
+
+    function setProfile(visible) {
+        if (!profile) return;
+        profile.style.opacity       = visible ? '1' : '0';
+        profile.style.pointerEvents = visible ? '' : 'none';
+    }
+
+    /* Apply initial state instantly (no transition) */
+    var initCollapsed = body.classList.contains('sidebar-collapsed');
+    if (profile) {
+        profile.style.transition = 'none';
+        setProfile(!initCollapsed);
+        profile.offsetHeight; /* force reflow so transition is re-enabled after */
+        profile.style.transition = '';
+    }
+
+    btn.setAttribute('aria-expanded', String(!initCollapsed));
     btn.addEventListener('click', function(){
         var mobile = window.innerWidth <= 768;
         if (mobile) {
             var open = body.classList.toggle('sidebar-open');
             btn.setAttribute('aria-expanded', String(open));
+            setProfile(open);
         } else {
             var collapsed = body.classList.toggle('sidebar-collapsed');
             localStorage.setItem('gg_sidebar', collapsed ? 'collapsed' : 'expanded');
             btn.setAttribute('aria-expanded', String(!collapsed));
+            setProfile(!collapsed);
         }
     });
 })();

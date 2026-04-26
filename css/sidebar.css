@@ -94,9 +94,9 @@ body.sidebar-collapsed .gg-sidebar { width: 0; box-shadow: none; }
     padding: .7rem 1rem;
     display: flex; align-items: center; gap: .6rem;
     overflow: hidden; text-decoration: none;
-    transition: background .15s, width .25s ease;
+    transition: background .15s, opacity .25s ease;
 }
-body.sidebar-collapsed .sb-profile { width: 0; }
+body.sidebar-collapsed .sb-profile { opacity: 0; pointer-events: none; }
 .sb-profile:hover { background: rgba(255,255,255,.07); }
 .sb-pfp {
     width: 32px; height: 32px; border-radius: 50%; object-fit: cover;
@@ -139,6 +139,4 @@ body.sidebar-collapsed .sb-profile { width: 0; }
     .gg-sidebar                             { width: 0; box-shadow: none; }
     body.sidebar-collapsed .gg-sidebar      { width: 0; }
     body.sb-active.sidebar-open .gg-sidebar { width: 220px; box-shadow: 2px 0 18px rgba(0,0,0,.35); }
-    .sb-profile                             { width: 0; overflow: hidden; }
-    body.sb-active.sidebar-open .sb-profile { width: 220px; }
 }
