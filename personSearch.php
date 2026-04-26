@@ -25,16 +25,11 @@
 <html lang="en">
 <head>
     <title>Gwyneth's Gift | Search Users</title>
+    <link href="css/sidebar.css" rel="stylesheet">
     <link href="css/normal_tw.css" rel="stylesheet">
-<?php
-$tailwind_mode = true;
-require_once('header.php');
-?>
-
 </head>
 <body>
-
-
+<?php require_once('header.php'); ?>
 <h1>Search Users</h1>
 
 

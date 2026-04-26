@@ -38,14 +38,12 @@ $discussions = get_board_discussions();
 <html lang="en">
 <head>
     <title>Gwyneth's Gift | Board Discussions</title>
+    <link href="css/sidebar.css" rel="stylesheet">
     <link href="css/normal_tw.css" rel="stylesheet">
-<?php
-$tailwind_mode = true;
-require_once('header.php');
-?>
-<h1>Board Discussions</h1>
 </head>
 <body>
+<?php require_once('header.php'); ?>
+<h1>Board Discussions</h1>
  
 <main>
     <div class="main-content-box w-[90%] p-8">
@@ -123,9 +121,9 @@ require_once('header.php');
     <div class="text-center mt-6">
         <a href="index.php" class="return-button">Return to Dashboard</a>
     </div>
-    <div class="text-center mt-6">
-        <a href="index.php" class="return-button">Return to Dashboard</a>
-    </div>
+    <?php /* <div class="text-center mt-6">
+        <a href="discussionMain.php" class="return-button">Back to Discussions Management</a>
+    </div> */ ?>
 </main>
 <script>
     <?php if (in_array($userType, ['admin', 'superadmin'])): ?>

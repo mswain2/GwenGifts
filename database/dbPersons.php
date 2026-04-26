@@ -1237,29 +1237,28 @@ function fetch_no_shows()
     return $rows;
 }
 
-function get_events_attended_by($personID)
-{
-    $today = date("Y-m-d");
-    $query = "select * from dbeventpersons, dbevents
-                  where userID='$personID' and eventID=id
-                  and date<='$today' and attended=1
-                  order by date asc";
-    $connection = connect();
-    $result = mysqli_query($connection, $query);
-    if ($result) {
-        require_once('include/time.php');
-        $rows = mysqli_fetch_all($result, MYSQLI_ASSOC);
-        mysqli_close($connection);
-        foreach ($rows as &$row) {
-            $row['duration'] = calculateHourDuration($row['startTime'], $row['endTime']);
+    function get_events_attended_by($personID) {
+        $today = date("Y-m-d");
+        $query = "select * from dbeventpersons, dbevents
+                  where userID='$personID' and eventID=dbevents.id
+                  and startDate<='$today' and attended=1
+                  order by startDate asc";
+        $connection = connect();
+        $result = mysqli_query($connection, $query);
+        if ($result) {
+            require_once('include/time.php');
+            $rows = mysqli_fetch_all($result, MYSQLI_ASSOC);
+            mysqli_close($connection);
+            foreach ($rows as &$row) {
+                $row['duration'] = calculateHourDuration($row['startTime'], $row['endTime']);
+            }
+            unset($row); // suggested for security
+            return $rows;
+        } else {
+            mysqli_close($connection);
+            return [];
         }
-        unset($row); // suggested for security
-        return $rows;
-    } else {
-        mysqli_close($connection);
-        return [];
     }
-}
 
 function get_event_from_id($eventID)
 {

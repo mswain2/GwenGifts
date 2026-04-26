@@ -66,11 +66,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <head>
     <meta charset="UTF-8">
     <title>Gwyneth's Gift | Create Discussion</title>
+    <link rel="stylesheet" href="css/sidebar.css">
     <link rel="stylesheet" href="css/normal_tw.css">
-    <?php require('header.php'); ?>
-    <h1>Create a New Discussion</h1>
 </head>
 <body>
+<?php require('header.php'); ?>
+<h1>Create a New Discussion</h1>
 
 
 <main>

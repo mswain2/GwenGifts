@@ -159,7 +159,7 @@ if ($type === 'volunteer_hours') {
         $paramTypes .= 's';
     }
     if ($volunteer !== 'all') {
-        $sql .= " AND CONCAT(p.first_name, ' ', p.last_name) = ?";
+        $sql .= " AND p.id = ?";
         $params[] = $volunteer;
         $paramTypes .= 's';
     }
@@ -248,7 +248,7 @@ if ($type === 'volunteer_hours') {
         $paramTypes .= 's';
     }
     if ($volunteer !== 'all') {
-        $sql .= " AND CONCAT(p.first_name, ' ', p.last_name) = ?";
+        $sql .= " AND p.id = ?";
         $params[] = $volunteer;
         $paramTypes .= 's';
     }
@@ -362,7 +362,7 @@ if ($type === 'volunteer_hours') {
 } elseif ($type === 'volunteer_hours_confirmation_letter') {
     $title = 'Volunteer Hours Confirmation Letter';
     $isConfirmationLetter = true;
-    $letterVolunteerName = $volunteer;
+    $letterVolunteerName = '';
     $letterHours = 0;
 
     $personId = null;
@@ -371,7 +371,7 @@ if ($type === 'volunteer_hours') {
         $con,
         "SELECT id, CONCAT(first_name, ' ', last_name) AS full_name
          FROM dbpersons
-         WHERE TRIM(CONCAT(first_name, ' ', last_name)) = TRIM(?)
+         WHERE id = ?
          LIMIT 1"
     );
     mysqli_stmt_bind_param($stmt, 's', $volunteer);
@@ -468,11 +468,27 @@ if ($eventId !== 'all') {
     $eventName = $eventObj ? $eventObj->getName() : "Event #$eventId";
 }
 
+// --- Resolve volunteer display from ID ---
+$volunteerName = '';
+if ($volunteer !== 'all') {
+    require_once('database/dbPersons.php');
+    $volunteerObj = retrieve_person($volunteer);
+    if ($volunteerObj) {
+        $volunteerName = trim($volunteerObj->get_first_name() . ' ' . $volunteerObj->get_last_name());
+        $vEmail = $volunteerObj->get_email();
+        if (!empty($vEmail)) {
+            $volunteerName .= ' (' . $vEmail . ')';
+        }
+    } else {
+        $volunteerName = "Volunteer #$volunteer";
+    }
+}
+
 // --- Subtitle with filter info ---
 $subtitle = ucfirst(str_replace('_', ' ', $timePeriod)) . " | $dateFrom to $dateTo";
 $subtitle .= " | Status: " . ($userStatus !== 'all' ? $userStatus : 'All');
 $subtitle .= " | Event: " . ($eventId !== 'all' ? $eventName : 'All Events');
-$subtitle .= " | Volunteer: " . ($volunteer !== 'all' ? $volunteer : 'All Volunteers');
+$subtitle .= " | Volunteer: " . ($volunteer !== 'all' ? $volunteerName : 'All Volunteers');
 
 // =====================================================
 // CSV OUTPUT

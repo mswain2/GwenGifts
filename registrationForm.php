@@ -72,7 +72,6 @@ progress::-moz-progress-bar {
 }
 </style>
 <!-- Hero Section with Title -->
-<?php require_once('header.php') ?>
 <h1>Account Registration</h1>
 
 <!--
