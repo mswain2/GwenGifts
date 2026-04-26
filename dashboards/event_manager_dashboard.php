@@ -189,7 +189,6 @@ $volType             = ucfirst(str_replace('_', ' ', $person->get_type() ?: 'Eve
         <div class="vd-panel" role="region" aria-labelledby="vd-upcount-heading">
             <div class="vd-panel-header">
                 <span class="vd-panel-title" id="vd-upcount-heading">Upcoming Events</span>
-                <a href="viewAllEvents.php" class="vd-panel-action">View all →</a>
             </div>
             <div class="vd-panel-body" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem 1rem;">
                 <span style="font-size:3.5rem;font-weight:800;color:var(--main-color);line-height:1;"><?php echo $totalUpcoming; ?></span>
@@ -201,7 +200,6 @@ $volType             = ucfirst(str_replace('_', ' ', $person->get_type() ?: 'Eve
         <div class="vd-panel" role="region" aria-labelledby="vd-monthcount-heading">
             <div class="vd-panel-header">
                 <span class="vd-panel-title" id="vd-monthcount-heading">Events This Month</span>
-                <a href="eventManagement.php" class="vd-panel-action">Manage →</a>
             </div>
             <div class="vd-panel-body" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem 1rem;">
                 <span style="font-size:3.5rem;font-weight:800;color:var(--main-color);line-height:1;"><?php echo $totalThisMonth; ?></span>
