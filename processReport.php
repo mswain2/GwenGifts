@@ -362,7 +362,7 @@ if ($type === 'volunteer_hours') {
 } elseif ($type === 'volunteer_hours_confirmation_letter') {
     $title = 'Volunteer Hours Confirmation Letter';
     $isConfirmationLetter = true;
-    $letterVolunteerName = $volunteer;
+    $letterVolunteerName = '';
     $letterHours = 0;
 
     $personId = null;
@@ -371,7 +371,7 @@ if ($type === 'volunteer_hours') {
         $con,
         "SELECT id, CONCAT(first_name, ' ', last_name) AS full_name
          FROM dbpersons
-         WHERE TRIM(CONCAT(first_name, ' ', last_name)) = TRIM(?)
+         WHERE id = ?
          LIMIT 1"
     );
     mysqli_stmt_bind_param($stmt, 's', $volunteer);

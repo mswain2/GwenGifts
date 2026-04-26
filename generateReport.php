@@ -117,7 +117,7 @@ function old($key, $default = '')
                     </div>
 
                     <!-- Date Range -->
-                    <div class="report-field-row" data-reports="volunteer_hours volunteer_participation volunteer_growth top_volunteers">
+                    <div class="report-field-row" data-reports="volunteer_hours volunteer_participation volunteer_growth top_volunteers volunteer_hours_confirmation_letter">
                         <div class="report-field report-field-half">
                             <label for="date_from">Start Date</label>
                             <input type="date" id="date_from" name="date_from" value="<?= old('date_from', $fiscalYearStart . '-10-01') ?>">
@@ -168,7 +168,7 @@ function old($key, $default = '')
                     </div>
 
                     <!-- Volunteer -->
-                    <div class="report-field" data-reports="volunteer_hours volunteer_participation">
+                    <div class="report-field" data-reports="volunteer_hours volunteer_participation volunteer_hours_confirmation_letter">
                         <label for="volunteer_search">Volunteer</label>
                         <div class="autocomplete-wrap">
                             <?php
