@@ -10,7 +10,7 @@ if (isset($_SESSION['access_level']) && $_SESSION['access_level'] >= 2) {
     $isEventManager = true;
 } else {
     header('Location: index.php');
-    die();
+    die();  
 }
 
 // Get current fiscal year
@@ -36,21 +36,17 @@ function old($key, $default = '')
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Gwyneth's Gift | Generate Report</title>
     <?php if ($resetStorage): ?>
-        <script>
-            sessionStorage.removeItem('report_filters');
-        </script>
+    <script>sessionStorage.removeItem('report_filters');</script>
     <?php endif; ?>
     <script src="js/report-filters.js" defer></script>
     <link href="css/sidebar.css" rel="stylesheet">
     <link href="css/normal_tw.css" rel="stylesheet">
 </head>
-
 <body>
 <?php require_once('header.php'); ?>
     <?php require_once('database/dbEvents.php'); ?>
@@ -121,7 +117,7 @@ function old($key, $default = '')
                     </div>
 
                     <!-- Date Range -->
-                    <div class="report-field-row" data-reports="volunteer_hours volunteer_participation volunteer_growth top_volunteers volunteer_hours_confirmation_letter">
+                    <div class="report-field-row" data-reports="volunteer_hours volunteer_participation volunteer_growth top_volunteers">
                         <div class="report-field report-field-half">
                             <label for="date_from">Start Date</label>
                             <input type="date" id="date_from" name="date_from" value="<?= old('date_from', $fiscalYearStart . '-10-01') ?>">
@@ -147,16 +143,16 @@ function old($key, $default = '')
                         <label for="event_id_search">Event</label>
                         <div class="autocomplete-wrap">
                             <?php
-                            $savedEventId = $rf['event_id'] ?? '';
-                            $eventDisplay = '';
-                            if (!empty($savedEventId) && $savedEventId !== 'all') {
-                                require_once('database/dbEvents.php');
-                                $savedEvent = retrieve_event($savedEventId);
-                                if ($savedEvent) {
-                                    $eventDisplay = format_event_label($savedEvent);
+                                $savedEventId = $rf['event_id'] ?? '';
+                                $eventDisplay = '';
+                                if (!empty($savedEventId) && $savedEventId !== 'all') {
+                                    require_once('database/dbEvents.php');
+                                    $savedEvent = retrieve_event($savedEventId);
+                                    if ($savedEvent) {
+                                        $eventDisplay = format_event_label($savedEvent);
+                                    }
                                 }
-                            }
-                            $savedEventHidden = (!empty($savedEventId) && $savedEventId !== 'all') ? $savedEventId : '';
+                                $savedEventHidden = (!empty($savedEventId) && $savedEventId !== 'all') ? $savedEventId : '';
                             ?>
                             <input type="text" id="event_id_search" placeholder="Search or select an event..." autocomplete="off"
                                 value="<?= htmlspecialchars($eventDisplay) ?>">
@@ -172,26 +168,55 @@ function old($key, $default = '')
                     </div>
 
                     <!-- Volunteer -->
-                    <div class="report-field" data-reports="volunteer_hours volunteer_participation volunteer_hours_confirmation_letter">
+                    <div class="report-field" data-reports="volunteer_hours volunteer_participation">
                         <label for="volunteer_search">Volunteer</label>
                         <div class="autocomplete-wrap">
                             <?php
-                            $savedVolunteer = $rf['volunteer'] ?? '';
-                            $volunteerDisplay = (!empty($savedVolunteer) && $savedVolunteer !== 'all')
-                                ? $savedVolunteer
-                                : '';
+                                // Pull volunteers with email so we can disambiguate duplicate names.
+                                require_once('database/dbinfo.php');
+                                $volunteerCon = connect();
+                                $volunteerRows = [];
+                                if ($volunteerCon) {
+                                    $vRes = mysqli_query($volunteerCon,
+                                        "SELECT id, first_name, last_name, email FROM dbpersons
+                                         ORDER BY last_name, first_name");
+                                    if ($vRes) {
+                                        while ($vRow = mysqli_fetch_assoc($vRes)) {
+                                            $volunteerRows[] = $vRow;
+                                        }
+                                    }
+                                    mysqli_close($volunteerCon);
+                                }
+
+                                $buildLabel = function($vRow) {
+                                    $fullName = trim($vRow['first_name'] . ' ' . $vRow['last_name']);
+                                    if (!empty($vRow['email'])) {
+                                        return $fullName . ' (' . $vRow['email'] . ')';
+                                    }
+                                    return $fullName;
+                                };
+
+                                $savedVolunteer = $rf['volunteer'] ?? '';
+                                $volunteerDisplay = '';
+                                if (!empty($savedVolunteer) && $savedVolunteer !== 'all') {
+                                    foreach ($volunteerRows as $vRow) {
+                                        if ($vRow['id'] === $savedVolunteer) {
+                                            $volunteerDisplay = $buildLabel($vRow);
+                                            break;
+                                        }
+                                    }
+                                }
+                                $savedVolunteerHidden = ($volunteerDisplay !== '') ? $savedVolunteer : '';
                             ?>
                             <input type="text" id="volunteer_search" placeholder="Search or select a volunteer..." autocomplete="off"
                                 value="<?= htmlspecialchars($volunteerDisplay) ?>">
-                            <input type="hidden" id="volunteer" name="volunteer" value="<?= htmlspecialchars($volunteerDisplay) ?>">
+                            <input type="hidden" id="volunteer" name="volunteer" value="<?= htmlspecialchars($savedVolunteerHidden) ?>">
                             <div class="autocomplete-list" id="volunteer_list">
                                 <?php
-                                $volunteers = getall_volunteer_names();
-                                if ($volunteers) {
-                                    foreach ($volunteers as $name) {
-                                        $safe = htmlspecialchars($name);
-                                        echo "<div class='autocomplete-item' data-value='$safe'>$safe</div>";
-                                    }
+                                foreach ($volunteerRows as $vRow) {
+                                    $vid = htmlspecialchars($vRow['id']);
+                                    $vlabel = htmlspecialchars($buildLabel($vRow));
+                                    echo "<div class='autocomplete-item' data-value='$vid'>$vlabel</div>";
                                 }
                                 ?>
                             </div>
@@ -247,5 +272,5 @@ function old($key, $default = '')
     </main>
 
 </body>
-
 </html>
+
