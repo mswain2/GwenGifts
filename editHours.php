@@ -85,7 +85,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" || ($accessLevel == 1 && !isset($_GET['
                 <p>Redirecting you to your event list...</p>
             <?php endif; ?>
 
-            <a class="button cancel" href="index.php" style="margin-top: -.5rem">Return to Dashboard</a>
+            <a class="button cancel" href="eventManagement.php" style="margin-top: -.5rem">Return to Event Management</a>
         </main>
     </div>
 </body>

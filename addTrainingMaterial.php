@@ -168,43 +168,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             resize: vertical;
         }
 
-        .btn-submit {
-            background-color: #6b8caf;
-            color: white;
-            padding: 10px 28px;
-            border: none;
-            border-radius: 50px;
-            font-family: Quicksand, sans-serif;
-            font-size: 16px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: background 0.2s ease;
-            margin-right: 10px;
-        }
-
-        .btn-submit:hover {
-            background-color: #57789a;
-        }
-
-        .btn-cancel {
-            display: inline-block;
-            background-color: #f0f0f0;
-            color: #333;
-            padding: 10px 28px;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: 700;
-            font-size: 16px;
-            transition: background 0.2s ease;
-        }
-
-        .btn-cancel:hover {
-            background-color: #e0e0e0;
-        }
-
         .error-msg {
             background: #f8d7da;
-            color: #721c24;
+            color: --secondary;
             padding: 12px 20px;
             border-radius: 8px;
             margin-bottom: 20px;
@@ -220,7 +186,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <h2><b>Add Training Document</b></h2>
 
         <?php if ($error): ?>
-            <div class="error-msg"><?php echo htmlspecialchars($error); ?></div>
+            <div class="error-toast"><?php echo htmlspecialchars($error); ?></div>
         <?php endif; ?>
 
         <form method="POST" enctype="multipart/form-data">
@@ -241,8 +207,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <input type="file" id="training_file" name="training_file" accept=".pdf,.doc,.docx,.ppt,.pptx,.txt" required>
             </div>
 
-            <button type="submit" class="btn-submit">Upload Material</button>
-            <a href="event.php?id=<?php echo urlencode($eventID); ?>" class="btn-cancel">Cancel</a>
+            <button type="submit" class="button submit">Upload Material</button>
+            <a href="event.php?id=<?php echo urlencode($eventID); ?>" class="button cancel">Cancel</a>
         </form>
     </div>
 

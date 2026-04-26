@@ -49,11 +49,11 @@ if (isset($_SESSION['_id'])) {
             align-items: center;
         }
     </style>
-    <title>Gwyneth's Gift | Inbox</title>
+    <title>Gwyneth's Gift | Notifications</title>
 </head>
 <body>
 <?php require_once('header.php') ?>
-<h1>Inbox</h1>
+<h1>Notifications</h1>
 <main class="general">
     <?php
     require_once('database/dbMessages.php');
@@ -73,10 +73,10 @@ if (isset($_SESSION['_id'])) {
     <?php if (count($allMessages) > 0): ?>
         <form id="bulkDeleteForm" action="deleteNotification.php" method="POST">
             <div class="top-bar">
-            <button type="submit" name="delete_all" class="button delete" style="width:20%; margin-bottom: 10px;" onclick="return confirm('Are you sure you want to delete ALL notifications?');">Delete All</button>
+            <button type="submit" name="delete_all" class="button cancel" style="width:20%; margin-bottom: 10px;" onclick="return confirm('Are you sure you want to delete ALL notifications?');">Delete All</button>
                 <div id="bulk-actions" style="display:none;">
                     <span><strong>With Selected:</strong></span>
-                    <button type="submit" name="bulk_delete" class="button delete" style="margin-bottom: 10px;" onclick="return confirm('Delete selected notifications?');">Delete</button>
+                    <button type="submit" name="bulk_delete" class="button cancel" style="margin-bottom: 10px;" onclick="return confirm('Delete selected notifications?');">Delete</button>
                 </div>
             </div>
 
@@ -113,7 +113,7 @@ if (isset($_SESSION['_id'])) {
                             <td><?= $title ?></td>
                             <td><?= "$month/$day/$year $time" ?></td>
                             <td>
-                                <a class="button delete" 
+                                <a class="button cancel" 
                                 href="deleteNotification.php?id=<?= $messageID ?>" 
                                 onclick="return confirm('Are you sure you want to delete this message?');">
                                 Delete Notification

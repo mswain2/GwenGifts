@@ -10,7 +10,7 @@ if (isset($_SESSION['access_level']) && $_SESSION['access_level'] >= 2) {
     $isEventManager = true;
 } else {
     header('Location: index.php');
-    die();  
+    die();
 }
 
 // Get current fiscal year
@@ -27,7 +27,8 @@ if (isset($_GET['reset'])) {
 // Restore saved filters from session
 $rf = $_SESSION['report_filters'] ?? [];
 $resetStorage = isset($_GET['reset']);
-function old($key, $default = '') {
+function old($key, $default = '')
+{
     global $rf;
     return htmlspecialchars($rf[$key] ?? $default, ENT_QUOTES, 'UTF-8');
 }
@@ -35,17 +36,21 @@ function old($key, $default = '') {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Gwyneth's Gift | Generate Report</title>
     <?php if ($resetStorage): ?>
-    <script>sessionStorage.removeItem('report_filters');</script>
+        <script>
+            sessionStorage.removeItem('report_filters');
+        </script>
     <?php endif; ?>
     <script src="js/report-filters.js" defer></script>
     <link href="css/sidebar.css" rel="stylesheet">
     <link href="css/normal_tw.css" rel="stylesheet">
 </head>
+
 <body>
 <?php require_once('header.php'); ?>
     <?php require_once('database/dbEvents.php'); ?>
@@ -56,7 +61,8 @@ function old($key, $default = '') {
     <main>
         <?php
         $events = get_all_events_sorted_by_date_not_archived();
-        function format_event_label($event) {
+        function format_event_label($event)
+        {
             $name = $event->getName();
             $startDate = $event->getStartDate();
             $ts = $startDate ? strtotime($startDate) : false;
@@ -91,6 +97,7 @@ function old($key, $default = '') {
                         <option value="volunteer_participation" <?= old('type') === 'volunteer_participation' ? 'selected' : '' ?>>Volunteer Participation</option>
                         <option value="volunteer_growth" <?= old('type') === 'volunteer_growth' ? 'selected' : '' ?>>Volunteer Growth</option>
                         <option value="top_volunteers" <?= old('type') === 'top_volunteers' ? 'selected' : '' ?>>Top Volunteers</option>
+                        <option value="volunteer_hours_confirmation_letter" <?= old('type') === 'volunteer_hours_confirmation_letter' ? 'selected' : '' ?>>Volunteer Hours Confirmation Letter</option>
                     </select>
                 </div>
 
@@ -114,7 +121,7 @@ function old($key, $default = '') {
                     </div>
 
                     <!-- Date Range -->
-                    <div class="report-field-row" data-reports="volunteer_hours volunteer_participation volunteer_growth top_volunteers">
+                    <div class="report-field-row" data-reports="volunteer_hours volunteer_participation volunteer_growth top_volunteers volunteer_hours_confirmation_letter">
                         <div class="report-field report-field-half">
                             <label for="date_from">Start Date</label>
                             <input type="date" id="date_from" name="date_from" value="<?= old('date_from', $fiscalYearStart . '-10-01') ?>">
@@ -140,16 +147,16 @@ function old($key, $default = '') {
                         <label for="event_id_search">Event</label>
                         <div class="autocomplete-wrap">
                             <?php
-                                $savedEventId = $rf['event_id'] ?? '';
-                                $eventDisplay = '';
-                                if (!empty($savedEventId) && $savedEventId !== 'all') {
-                                    require_once('database/dbEvents.php');
-                                    $savedEvent = retrieve_event($savedEventId);
-                                    if ($savedEvent) {
-                                        $eventDisplay = format_event_label($savedEvent);
-                                    }
+                            $savedEventId = $rf['event_id'] ?? '';
+                            $eventDisplay = '';
+                            if (!empty($savedEventId) && $savedEventId !== 'all') {
+                                require_once('database/dbEvents.php');
+                                $savedEvent = retrieve_event($savedEventId);
+                                if ($savedEvent) {
+                                    $eventDisplay = format_event_label($savedEvent);
                                 }
-                                $savedEventHidden = (!empty($savedEventId) && $savedEventId !== 'all') ? $savedEventId : '';
+                            }
+                            $savedEventHidden = (!empty($savedEventId) && $savedEventId !== 'all') ? $savedEventId : '';
                             ?>
                             <input type="text" id="event_id_search" placeholder="Search or select an event..." autocomplete="off"
                                 value="<?= htmlspecialchars($eventDisplay) ?>">
@@ -165,14 +172,14 @@ function old($key, $default = '') {
                     </div>
 
                     <!-- Volunteer -->
-                    <div class="report-field" data-reports="volunteer_hours volunteer_participation">
+                    <div class="report-field" data-reports="volunteer_hours volunteer_participation volunteer_hours_confirmation_letter">
                         <label for="volunteer_search">Volunteer</label>
                         <div class="autocomplete-wrap">
                             <?php
-                                $savedVolunteer = $rf['volunteer'] ?? '';
-                                $volunteerDisplay = (!empty($savedVolunteer) && $savedVolunteer !== 'all')
-                                    ? $savedVolunteer
-                                    : '';
+                            $savedVolunteer = $rf['volunteer'] ?? '';
+                            $volunteerDisplay = (!empty($savedVolunteer) && $savedVolunteer !== 'all')
+                                ? $savedVolunteer
+                                : '';
                             ?>
                             <input type="text" id="volunteer_search" placeholder="Search or select a volunteer..." autocomplete="off"
                                 value="<?= htmlspecialchars($volunteerDisplay) ?>">
@@ -189,6 +196,17 @@ function old($key, $default = '') {
                                 ?>
                             </div>
                         </div>
+                    </div>
+
+                    <!-- Text Box Type Name -->
+                    <div class="report-field" data-reports="volunteer_hours_confirmation_letter">
+                        <label for="program_manager_name">Program Manager Name</label>
+                        <input
+                            type="text"
+                            id="program_manager_name"
+                            name="program_manager_name"
+                            value="<?= old('program_manager_name', 'Tiffany Kay') ?>"
+                            placeholder="Enter program manager name">
                     </div>
 
                     <!-- Top N Limit -->
@@ -229,5 +247,5 @@ function old($key, $default = '') {
     </main>
 
 </body>
-</html>
 
+</html>

@@ -17,8 +17,8 @@ $(document).ready(function () {
     let currentMonth = normalizeMonthParam(paramToUse) || new Date().toLocaleDateString('en-CA');
 
     // SCRUM-16: get current event filter (default: public)
-    let currentFilter = new URLSearchParams(window.location.search).get('event_filter') || 'public';
-
+    let currentFilter = new URLSearchParams(window.location.search).get('event_filter') || 'all';
+    
     function monthOnlyFrom(val) {
         if (!val) return new Date().toISOString().slice(0,7);
         return val.slice(0,7);
@@ -83,6 +83,10 @@ $(document).ready(function () {
             let dayParam = currentMonth;
             if (/^\d{4}-\d{2}$/.test(currentMonth)) dayParam = currentMonth + '-01';
             loadView(`calendar-view_weekly.php?month=${encodeURIComponent(dayParam)}&event_filter=${currentFilter}`);
+        } else if (currentView === 'daily') {
+            let dayParam = currentMonth;
+            if (/^\d{4}-\d{2}$/.test(currentMonth)) dayParam = currentMonth + '-01';
+            loadView(`calendar-view_daily.php?month=${encodeURIComponent(dayParam)}&event_filter=${currentFilter}`);
         } else {
             loadView(`calendar-view.php?month=${encodeURIComponent(monthOnlyFrom(currentMonth))}&event_filter=${currentFilter}`);
         }
