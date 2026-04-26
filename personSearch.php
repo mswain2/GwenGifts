@@ -197,7 +197,7 @@ require_once('header.php');
     </div>
 
     <div class="text-center mt-6">
-        <a href="volunteerManagement.php" class="return-button">Return to User Management</a>
+        <a href="index.php" class="return-button">Return to Dashboard</a>
     </div>
 
     <div class="info-section">

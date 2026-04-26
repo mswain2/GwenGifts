@@ -288,7 +288,7 @@
                 <?php if ($date): ?>
                     <a class="button cancel" href="calendar.php?month=<?php echo substr($date, 0, 7) ?>" style="margin-top: -.5rem">Return to Calendar</a>
                 <?php else: ?>
-                    <a class="button cancel" href="eventManagement.php" style="margin-top: -.5rem">Return to Event Management</a>
+                    <a class="button cancel" href="index.php" style="margin-top: -.5rem">Return to Dashboard</a>
                 <?php endif ?>
 
                 <script type="text/javascript">

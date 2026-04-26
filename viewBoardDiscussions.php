@@ -121,7 +121,7 @@ require_once('header.php');
     </div>
  
     <div class="text-center mt-6">
-        <a href="discussionMain.php" class="return-button">Back to Discussions Management</a>
+        <a href="index.php" class="return-button">Return to Dashboard</a>
     </div>
     <div class="text-center mt-6">
         <a href="index.php" class="return-button">Return to Dashboard</a>
