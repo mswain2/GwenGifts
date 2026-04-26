@@ -175,7 +175,7 @@ function retrieveRoleEmails(string $recipientsType){
 // ------------------------
 // Submit or schedule email
 // ------------------------
-function submitEmail(array $recipientIDs, string $subject, string $body, bool $sendNow, string $sendDate, string $recipientsType): array {
+function submitEmail(array $recipientIDs, int $event_id, string $subject, string $body, bool $sendNow, string $sendDate, string $recipientsType): array {
     global $missingEnvKeys;
     $errors = [];
 
@@ -213,12 +213,16 @@ function submitEmail(array $recipientIDs, string $subject, string $body, bool $s
     // Schedule email
     if (empty($sendDate)) return ['success' => false, 'errors' => ["Send date is required for scheduled emails."]];
 
+    if (empty($event_id)){
+        $event_id = 0;
+    }
+
     $conn = connect();
     foreach ($recipientIDs as $recipientID) {
         $stmt = $conn->prepare("
             INSERT INTO dbscheduledemails
-            (userID, recipientID, subject, body, scheduledSend, sent)
-            VALUES (?, ?, ?, ?, ?, 0)
+            (userID, event_id, recipientID, subject, body, scheduledSend, sent)
+            VALUES (?, ?, ?, ?, ?, ?, 0)
         ");
         if (!$stmt) {
             $errors[] = "DB prepare failed: " . $conn->error;
@@ -226,10 +230,28 @@ function submitEmail(array $recipientIDs, string $subject, string $body, bool $s
         }
         $uid = (string)$_SESSION['_id'];
         $rid = (string)$recipientID;
-        $stmt->bind_param("sssss", $uid, $rid, $subject, $body, $sendDate);
+        $stmt->bind_param('sissss', $uid, $event_id, $rid, $subject, $body, $sendDate);
         if (!$stmt->execute()) $errors[] = "Failed to schedule email for {$recipientID}: " . $stmt->error;
         $stmt->close();
     }
 
     return ['success' => empty($errors), 'errors' => $errors];
+}
+
+// ------------------------
+// Remove a scheduled email
+// ------------------------
+function removeEmail(string $rid, int $event_id){
+    //Check if it has been sent
+    $conn = connect();
+    $result = $conn->query("SELECT sent FROM dbscheduledemails WHERE recipientID = '$rid' AND event_id = '$event_id'");
+    $row = mysqli_fetch_assoc($result);
+    $sent = $row['sent'] ?? null;
+    
+    //If it hasn't been sent, remove it.
+    if($sent == 0){
+        $result = $conn->query("DELETE FROM dbscheduledemails WHERE recipientID = '$rid' AND event_id = '$event_id'");  
+    }
+    mysqli_commit($conn);
+    return;
 }

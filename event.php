@@ -128,6 +128,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['withdraw-submit'])) {
         $account_name = $_SESSION['_id'];
         if (remove_user_from_event($id, $account_name)) {
+            //Remove the scheduled reminder email from the db
+            removeEmail($account_name, $event_info['id']);
             header('Location: event.php?id=' . urlencode($id) . '&withdrawSuccess');
         } else {
             header('Location: event.php?id=' . urlencode($id) . '&withdrawFail');
@@ -186,7 +188,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Collect recipient IDs
             $recipientIDs = [$account_name];
             $recipientsType = "specific";
-            $result = submitEmail($recipientIDs, $subject, $content, true, '', $recipientsType);
+            $result = submitEmail($recipientIDs, 0, $subject, $content, true, '', $recipientsType);
 
             $subject = "Gwyneth's Gift Event Reminder: " . $event_name;
             $content = "This is a reminder to attend  " . $event_name . 
@@ -195,7 +197,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Collect recipient IDs
             $recipientIDs = [$account_name];
             $recipientsType = "specific";
-            $result = submitEmail($recipientIDs, $subject, $content, false, $event_info['startDate'], $recipientsType);
+            $today = date('l, F j, Y');
+            $today = new DateTime($today);
+            $event_date = date('l, F j, Y', strtotime($event_info['startDate']));
+            $date = new DateTime($event_date);
+
+            if ($date == $today){
+                $send_now = true;
+            } else {
+                $send_now = false;
+            }
+
+            $result = submitEmail($recipientIDs, $event_info["id"], $subject, $content, $send_now, $event_info['startDate'], $recipientsType);
 
             /*if ($result['success']) {
                 var_dump('success');

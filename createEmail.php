@@ -94,9 +94,11 @@ if ($isEventManager && $_SERVER["REQUEST_METHOD"] === "POST") {
 
         if (empty($subject)) {
             $submissionMessage = "<div class='error-toast'>Email Subject is required.</div>";
+        } else if ($recipientsType === 'specific' && empty($recipientID)) {
+            $submissionMessage = "<div class='error-toast'>Please select a specific recipient.</div>";
         } else {
 
-            $result = submitEmail($recipientIDs, $subject, $content, $sendNow, $sendDate, $recipientsType);
+            $result = submitEmail($recipientIDs, 0, $subject, $content, $sendNow, $sendDate, $recipientsType);
 
             if ($result['success']) {
                 $submissionMessage = "<div class='happy-toast'>Email successfully sent/scheduled!</div>";
@@ -183,6 +185,7 @@ const timeDiv = document.getElementById('selectorTime');
 const sendTimeInput = document.getElementById('sendTime');
 const recipientsSelect = document.getElementById('recipients');
 const recipientsDiv = document.getElementById('selectorRecipients');
+const recipientID = document.getElementById('recipientID');
 
 function toggleTime() {
     const sendNow = scheduledSelect.value === 'true';
@@ -192,6 +195,7 @@ function toggleTime() {
 
 function toggleRecipients() {
     recipientsDiv.style.display = recipientsSelect.value === 'specific' ? 'block' : 'none';
+    recipientID.required = recipientsSelect.value === 'specific';
 }
 
 scheduledSelect.addEventListener('change', toggleTime);
