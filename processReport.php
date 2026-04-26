@@ -198,12 +198,17 @@ if ($type === 'volunteer_hours') {
 
     $sql = "SELECT {$periodExpr} AS period,
                    e.name AS event_name,
-                   COUNT(ep.userID) AS signups,
-                   SUM(CASE WHEN ep.attended = 1 THEN 1 ELSE 0 END) AS attended,
-                   SUM(CASE WHEN ep.attended = 0 THEN 1 ELSE 0 END) AS no_shows
+                   COUNT(DISTINCT ep.userID) AS signups,
+                   COUNT(DISTINCT CASE WHEN da.attended = 1 THEN ep.userID END) AS attended,
+                   COUNT(DISTINCT CASE WHEN da.attended = 0 THEN ep.userID END) AS no_shows
             FROM dbeventpersons ep
             JOIN dbevents e ON ep.eventID = e.id
             JOIN dbpersons p ON ep.userID = p.id
+            LEFT JOIN dbattendance da
+                ON CAST(da.eventId AS CHAR CHARACTER SET utf8mb4) COLLATE utf8mb4_unicode_ci =
+                    CAST(ep.eventID AS CHAR CHARACTER SET utf8mb4) COLLATE utf8mb4_unicode_ci
+                AND CAST(da.userId AS CHAR CHARACTER SET utf8mb4) COLLATE utf8mb4_unicode_ci =
+                    CAST(ep.userID AS CHAR CHARACTER SET utf8mb4) COLLATE utf8mb4_unicode_ci
             WHERE e.startDate >= ?
               AND e.startDate <= ?";
     $params = [$dateFrom, $dateTo];
@@ -234,10 +239,10 @@ if ($type === 'volunteer_hours') {
     $result = mysqli_stmt_get_result($stmt);
 
     while ($row = mysqli_fetch_assoc($result)) {
-        $signups = intval($row['signups']);
+        $signups  = intval($row['signups']);
         $attended = intval($row['attended']);
-        $noShows = intval($row['no_shows']);
-        $rate = $signups > 0 ? round(($attended / $signups) * 100, 1) . '%' : 'N/A';
+        $noShows  = intval($row['no_shows']);
+        $rate     = $signups > 0 ? round(($attended / $signups) * 100, 1) . '%' : 'N/A';
         $rows[] = [
             period_label($row['period'], $timePeriod),
             $row['event_name'],
