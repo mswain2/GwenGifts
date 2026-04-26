@@ -173,22 +173,51 @@ require_once('header.php');
                         <label for="volunteer_search">Volunteer</label>
                         <div class="autocomplete-wrap">
                             <?php
+                                // Pull volunteers with email so we can disambiguate duplicate names.
+                                require_once('database/dbinfo.php');
+                                $volunteerCon = connect();
+                                $volunteerRows = [];
+                                if ($volunteerCon) {
+                                    $vRes = mysqli_query($volunteerCon,
+                                        "SELECT id, first_name, last_name, email FROM dbpersons
+                                         ORDER BY last_name, first_name");
+                                    if ($vRes) {
+                                        while ($vRow = mysqli_fetch_assoc($vRes)) {
+                                            $volunteerRows[] = $vRow;
+                                        }
+                                    }
+                                    mysqli_close($volunteerCon);
+                                }
+
+                                $buildLabel = function($vRow) {
+                                    $fullName = trim($vRow['first_name'] . ' ' . $vRow['last_name']);
+                                    if (!empty($vRow['email'])) {
+                                        return $fullName . ' (' . $vRow['email'] . ')';
+                                    }
+                                    return $fullName;
+                                };
+
                                 $savedVolunteer = $rf['volunteer'] ?? '';
-                                $volunteerDisplay = (!empty($savedVolunteer) && $savedVolunteer !== 'all')
-                                    ? $savedVolunteer
-                                    : '';
+                                $volunteerDisplay = '';
+                                if (!empty($savedVolunteer) && $savedVolunteer !== 'all') {
+                                    foreach ($volunteerRows as $vRow) {
+                                        if ($vRow['id'] === $savedVolunteer) {
+                                            $volunteerDisplay = $buildLabel($vRow);
+                                            break;
+                                        }
+                                    }
+                                }
+                                $savedVolunteerHidden = ($volunteerDisplay !== '') ? $savedVolunteer : '';
                             ?>
                             <input type="text" id="volunteer_search" placeholder="Search or select a volunteer..." autocomplete="off"
                                 value="<?= htmlspecialchars($volunteerDisplay) ?>">
-                            <input type="hidden" id="volunteer" name="volunteer" value="<?= htmlspecialchars($volunteerDisplay) ?>">
+                            <input type="hidden" id="volunteer" name="volunteer" value="<?= htmlspecialchars($savedVolunteerHidden) ?>">
                             <div class="autocomplete-list" id="volunteer_list">
                                 <?php
-                                $volunteers = getall_volunteer_names();
-                                if ($volunteers) {
-                                    foreach ($volunteers as $name) {
-                                        $safe = htmlspecialchars($name);
-                                        echo "<div class='autocomplete-item' data-value='$safe'>$safe</div>";
-                                    }
+                                foreach ($volunteerRows as $vRow) {
+                                    $vid = htmlspecialchars($vRow['id']);
+                                    $vlabel = htmlspecialchars($buildLabel($vRow));
+                                    echo "<div class='autocomplete-item' data-value='$vid'>$vlabel</div>";
                                 }
                                 ?>
                             </div>
