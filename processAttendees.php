@@ -55,14 +55,12 @@ $already_logged = get_attendance_statuses_for_event($eventId);
 
 $success = true;
 foreach ($allUserIds as $uid) {
-    $isPresent = in_array($uid, $presentIds);
-    $comment   = isset($notes[$uid]) ? $notes[$uid] : '';
-
-    if (!$isPresent && isset($already_logged[$uid])) {
+    if (!in_array($uid, $presentIds)) {
         continue;
     }
 
-    $ok = logAttendance($eventId, $loggingId, $uid, $isPresent, $comment);
+    $comment = isset($notes[$uid]) ? $notes[$uid] : '';
+    $ok = logAttendance($eventId, $loggingId, $uid, true, $comment);
     if (!$ok) $success = false;
 }
 
