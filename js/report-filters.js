@@ -2,13 +2,15 @@ const reportDescriptions = {
     volunteer_hours: `<strong>Volunteer Hours</strong> — Total hours served by volunteers, broken down by individual. Use filters to narrow by date range, event, or specific volunteer.`,
     volunteer_participation: `<strong>Volunteer Participation</strong> — Sign-up and attendance rates per event. Shows how many volunteers signed up versus how many actually attended.`,
     volunteer_growth: `<strong>Volunteer Growth</strong> — Tracks new volunteer registrations and churn (inactive volunteers) over time to reveal organizational trends.`,
-    top_volunteers: `<strong>Top Volunteers</strong> — Leaderboard of volunteers ranked by total hours served or events attended within the selected time period.`
+    top_volunteers: `<strong>Top Volunteers</strong> — Leaderboard of volunteers ranked by total hours served or events attended within the selected time period.`,
+    volunteer_hours_confirmation_letter: `<strong>Volunteer Hours Confirmation Letter</strong> — Generates confirmation letters for volunteers based on their hours served.`
 };
 
 function updateFilters() {
     const type = document.getElementById('type').value;
     const dynamicFilters = document.getElementById('dynamic-filters');
     const formatSection = document.getElementById('format-section');
+    const formatSelect = document.getElementById('format');
     const submitSection = document.getElementById('submit-section');
     const descriptionBox = document.getElementById('report-description');
 
@@ -26,8 +28,14 @@ function updateFilters() {
 
     // Show filter section
     dynamicFilters.style.display = 'block';
-    formatSection.style.display = 'block';
     submitSection.style.display = 'block';
+
+    if (type === 'volunteer_hours_confirmation_letter') {
+        formatSelect.value = 'pdf';
+        formatSection.style.display = 'none';
+    } else {
+        formatSection.style.display = 'block';
+    }
 
     // Toggle individual filter fields
     const filterFields = dynamicFilters.querySelectorAll('[data-reports]');

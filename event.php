@@ -662,7 +662,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <?php if ($isEventManager) : ?>
                     <a href="eventRoster.php?id=<?php echo urlencode($id); ?>" class="button signup no-span">Generate Event Roster</a>
-                    <a href="viewEventSignUps.php?id=<?php echo $id; ?>" class="button signup no-span">View Event Signups</a>
+                    <a href="viewEventSignUps.php?id=<?php echo $id; ?>" class="button signup no-span">Manage Event Signups</a>
 
                     <!-- Archive and Unarchive buttons by Thomas -->
                     <!--Remove archive stuff - Kenzie
