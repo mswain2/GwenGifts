@@ -23,6 +23,7 @@
 
     include_once('database/dbPersons.php');
     include_once('database/dbEvents.php');
+    include_once('database/dbAttendance.php');
     include_once('domain/Event.php');
     include_once('domain/Person.php');
     require_once('include/input-validation.php');
@@ -62,6 +63,7 @@
         <main>
             <div class="attendees-wrapper">
             <form method="POST" id="attendance-form" action="processAttendees.php">
+                <input type="hidden" name="event_id" value="<?php echo htmlspecialchars($id); ?>">
                 <div class="attendees-table-wrapper">
                     <div class="thead">
                         <div class="tr">
@@ -72,22 +74,33 @@
                         </div>
                     </div>
                     <div class="tbody">
-                    <?php foreach ($attendees_list as $attendee) { 
-                        $uid = isset($attendee['userID']) ? htmlspecialchars($attendee['userID']) : '';
-                        $attendee = retrieve_person($uid);
-                        $first = $attendee->get_first_name();
-                        $last = $attendee->get_last_name();
+                    <?php 
+                    $already_logged = get_attendance_statuses_for_event($id); // ADD THIS
 
+                    foreach ($attendees_list as $attendee) { 
+                        $uid = isset($attendee['userID']) ? htmlspecialchars($attendee['userID']) : '';
+                        $person = retrieve_person($uid);
+                        $first = $person->get_first_name();
+                        $last = $person->get_last_name();
                         $name = trim($first . ' ' . $last);
 
-                        echo "<div class='tr'>";
-                        // added cb class for js targeting
-                        echo "<span class='td'><input type='checkbox' class='cb' name='attendee[]' value='" . $uid . "'></span>";
-                        echo "<span class='td' id='data'>" . $name . "</span>";
-                        echo "<span class='td' id='data'>" . $uid . "</span>";
-                        // key is uid to associate entries with user
-                        echo "<span class='td' id='data'><input type='text' class='note' name='attendee_notes[" . $uid . "]' placeholder='Enter note...'></span>";
-                        echo "</div>";
+                        if (isset($already_logged[$uid])) {
+                            // Already logged — show status, no checkbox
+                            echo "<div class='tr' style='opacity:0.6;'>";
+                            echo "<span class='td'><input type='checkbox' class='cb' disabled></span>";
+                            echo "<span class='td' id='data'>" . $name . "</span>";
+                            echo "<span class='td' id='data'>" . $uid . "</span>";
+                            echo "<span class='td' id='data'><em>Already logged as: " . htmlspecialchars($already_logged[$uid]) . "</em></span>";
+                            echo "</div>";
+                        } else {
+                            // Not yet logged — normal checkbox row
+                            echo "<div class='tr'>";
+                            echo "<span class='td'><input type='checkbox' class='cb' name='attendee[]' value='" . $uid . "'></span>";
+                            echo "<span class='td' id='data'>" . $name . "</span>";
+                            echo "<span class='td' id='data'>" . $uid . "</span>";
+                            echo "<span class='td' id='data'><input type='text' class='note' name='attendee_notes[" . $uid . "]' placeholder='Enter note...'></span>";
+                            echo "</div>";
+                        }
                     } ?>
                     </div>
                 </div>

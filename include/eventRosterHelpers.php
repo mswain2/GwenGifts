@@ -36,32 +36,24 @@ function event_roster_training_label($rawStatus)
 function event_roster_mask_email($email)
 {
     $email = trim((string)$email);
-
-    if ($email === '' || strpos($email, '@') === false) {
-        return 'N/A';
-    }
-
-    list($local, $domain) = explode('@', $email, 2);
-
-    if ($local === '') {
-        return 'N/A';
-    }
-
-    $visible = min(2, strlen($local));
-    $maskedLocal = substr($local, 0, $visible) . str_repeat('*', max(3, strlen($local) - $visible));
-
-    return $maskedLocal . '@' . $domain;
+    return $email !== '' ? $email : 'N/A';
 }
 
 function event_roster_mask_phone($phone)
 {
     $digits = preg_replace('/\D+/', '', (string)$phone);
 
-    if ($digits === '' || strlen($digits) < 4) {
+    if (strlen($digits) === 11 && $digits[0] === '1') {
+        $digits = substr($digits, 1);
+    }
+
+    if (strlen($digits) !== 10) {
         return 'N/A';
     }
 
-    return '***-***-' . substr($digits, -4);
+    return substr($digits, 0, 3) . '-' .
+        substr($digits, 3, 3) . '-' .
+        substr($digits, 6, 4);
 }
 
 function event_roster_can_share_shirt_size($user_info)
