@@ -153,6 +153,18 @@ html, body { background-color: var(--page-background-color); color: var(--page-f
   margin-bottom: 10px;
 }
 
+.remove-link {
+  padding: 0.5rem;
+  color: white;
+  background-color: var(--secondary-accent-color);
+  border-radius: 0.25rem;
+}
+
+.remove-link:hover {
+  color: white;
+  background-color: var(--accent-color);
+}
+
 .pagination {
     display: flex;
     justify-content: center;

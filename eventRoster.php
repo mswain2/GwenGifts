@@ -256,9 +256,8 @@ foreach ($filtered_rows as $row) {
 
         <?php endif; ?>
 
-        <div class="actions">
-            <a class="button cancel" href="event.php?id=<?php echo urlencode((string)$id); ?>">Return to Event</a>
-        </div>
+        <a class="button cancel" href="event.php?id=<?php echo urlencode((string)$id); ?>">Return to Event</a>
+
     </main>
 </body>
 

@@ -286,7 +286,7 @@ function trainingDetailsFromPerson($user_info): array
                                         <form method="POST" style="display:inline;">
                                             <input type="hidden" name="event_id" value="<?php echo htmlspecialchars($id); ?>">
                                             <input type="hidden" name="user_id" value="<?php echo htmlspecialchars($signup['userID']); ?>">
-                                            <button type="submit" class="button danger" onclick="return confirm('Are you sure you want to remove this user?');">Remove</button>
+                                            <button type="submit" class="button cancel" onclick="return confirm('Are you sure you want to remove this user?');">Remove</button>
                                         </form>
                                     </td>
                                 <?php endif; ?>

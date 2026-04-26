@@ -44,19 +44,15 @@ function old($key, $default = '')
     <script>sessionStorage.removeItem('report_filters');</script>
     <?php endif; ?>
     <script src="js/report-filters.js" defer></script>
+    <link href="css/sidebar.css" rel="stylesheet">
     <link href="css/normal_tw.css" rel="stylesheet">
-<?php
-$tailwind_mode = true;
-require_once('header.php');
-?>
-
 </head>
 <body>
+<?php require_once('header.php'); ?>
     <?php require_once('database/dbEvents.php'); ?>
     <?php require_once('database/dbPersons.php'); ?>
 
-    <!-- Hero Section with Title -->
-    <h1 style="color:white;">Generate Report</h1>
+    <h1>Generate Report</h1>
 
     <main>
         <?php

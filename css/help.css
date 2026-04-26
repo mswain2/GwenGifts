@@ -276,5 +276,6 @@
 }
 
 .help-return-button:hover {
-    background: #e8899c;
+    background: var(--accent-color);
+    color: white;
 }

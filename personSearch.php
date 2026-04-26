@@ -25,16 +25,11 @@
 <html lang="en">
 <head>
     <title>Gwyneth's Gift | Search Users</title>
+    <link href="css/sidebar.css" rel="stylesheet">
     <link href="css/normal_tw.css" rel="stylesheet">
-<?php
-$tailwind_mode = true;
-require_once('header.php');
-?>
-
 </head>
 <body>
-
-
+<?php require_once('header.php'); ?>
 <h1>Search Users</h1>
 
 
@@ -197,7 +192,7 @@ require_once('header.php');
     </div>
 
     <div class="text-center mt-6">
-        <a href="index.php" class="return-button">Return to Dashboard</a>
+        <a href="volunteerManagement.php" class="return-button">Return to User Management</a>
     </div>
 
     <div class="info-section">

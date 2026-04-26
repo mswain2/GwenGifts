@@ -72,7 +72,6 @@ progress::-moz-progress-bar {
 }
 </style>
 <!-- Hero Section with Title -->
-<?php require_once('header.php') ?>
 <h1>Account Registration</h1>
 
 <!--
@@ -949,6 +948,11 @@ progress::-moz-progress-bar {
         <button type="button" id="prevBtn" onclick="changePage(-1)" style="display:none;">&#8592; Previous</button>
         <button type="button" id="nextBtn" onclick="handleNext()">Next &#8594;</button>
     </div>
+
+    <?php if ($isAdminCreating): ?>
+        <a href="volunteerManagement.php" class="button cancel">Return to User Management</a>
+    <?php endif; ?>
+
     <p class="text-center notice"></p>
     <input type="submit" id="submitBtn" name="registration-form" value="Submit" style="width: 50%; margin: auto; display:none;">
     </form>

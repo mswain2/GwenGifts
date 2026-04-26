@@ -211,7 +211,7 @@ $pending_events = fetch_my_pending($user_id);
                                     <form method="POST" style="display:inline;">
                                         <input type="hidden" name="event_id" value="<?php echo htmlspecialchars($event['id']); ?>">
                                         <button type="submit" class="button danger" onclick="return confirm('Are you sure you want to cancel this event?');">
-                                            Cancel
+                                            Withdraw
                                         </button>
                                     </form>
                                 </td>
@@ -224,7 +224,7 @@ $pending_events = fetch_my_pending($user_id);
             <p>You have no sign-ups.</p>
         <?php endif; ?>
         
-        <?php if (count($pending_events) > 0): ?>
+        <!--<?php if (count($pending_events) > 0): ?>
             <p </p>
             <h2>Pending sign-ups:</h2>
             <div class="table-wrapper">
@@ -262,7 +262,7 @@ $pending_events = fetch_my_pending($user_id);
             <?php else: ?>
             <p </p>
                 <p>You have no pending sign-ups.</p>
-            <?php endif; ?>
+            <?php endif; ?> -->
 
         <a class="button cancel" href="index.php">Return to Dashboard</a>
     </main>
