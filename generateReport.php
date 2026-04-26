@@ -202,7 +202,7 @@ function old($key, $default = '')
                         </div>
                     </div>
 
-                    -- Text Box Type Name --
+                    <!-- Text Box Type Name -->
                     <div class="report-field" data-reports="volunteer_hours_confirmation_letter">
                         <label for="program_manager_name">Program Manager Name</label>
                         <input
