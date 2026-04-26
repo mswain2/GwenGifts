@@ -229,12 +229,6 @@
                     <p>Learn more about Gwyneth's Gift Foundation, our mission, and how you can get involved.</p>
                     <a href="https://gwynethsgift.org/" target="_blank">Main Website</a>
                 </div>
-
-                <div class="contact-card" data-search="suggestion feedback idea improve">
-                    <h4>Submit a Suggestion</h4>
-                    <p>Have an idea to improve the volunteer experience? We'd love to hear from you.</p>
-                    <a href="createSuggestion.php">Make a Suggestion</a>
-                </div>
             </div>
         </div>
 
