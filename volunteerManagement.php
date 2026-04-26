@@ -66,13 +66,6 @@ require_once('header.php');
 	  <img class="button-icon h-10 w-10 left-5" src="images/clipboard-regular.svg" alt="Person Icon">
     </button>
 
-
-    <button onclick="window.location.href='deleteUserSearch.php';">
-        <div class="button-left-gray"></div>
-        <div>Delete User</div>
-        <img class="button-icon h-10 w-10 left-5" src="images/trash.svg" alt="Person Icon">
-    </button>
-
 	<!--<button onclick="window.location.href='selectVOTM.php';">
 	  <div class="button-left-gray"></div>
 	  <div>Volunteer of the Month</div>
