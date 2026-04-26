@@ -24,6 +24,8 @@ if (isset($_SESSION['access_level']) && $_SESSION['access_level'] >= 1) {
 // }
 
 require_once('include/input-validation.php');
+include_once(__DIR__ . '/email.php');
+require_once('include/time.php');
 $args = sanitize($_GET);
 $displayUpdateMessage = false;
 if (isset($args["id"])) {
@@ -80,6 +82,8 @@ $active = $user->get_status() == 'Active';
 
 ini_set("display_errors", 1);
 error_reporting(E_ALL);
+$env = loadEnv(__DIR__ . '/email/.env');
+$missingEnvKeys = validateSmtpEnv($env);
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $args = sanitize($_POST);
     $get = sanitize($_GET);
@@ -124,6 +128,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['withdraw-submit'])) {
         $account_name = $_SESSION['_id'];
         if (remove_user_from_event($id, $account_name)) {
+            //Remove the scheduled reminder email from the db
+            removeEmail($account_name, $event_info['id']);
             header('Location: event.php?id=' . urlencode($id) . '&withdrawSuccess');
         } else {
             header('Location: event.php?id=' . urlencode($id) . '&withdrawFail');
@@ -133,6 +139,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['signup-submit'])) {
         if (!$active) {
             echo 'forbidden';
+            die();
+        }
+        if (htmlspecialchars_decode($event_info['startDate']) < date('Y-m-d')) {
+            header('Location: event.php?id=' . urlencode($id));
+            die();
+        }
+        if ($event_num_signups['RowCount'] >= intval(htmlspecialchars_decode($event_info['capacity']))) {
+            header('Location: event.php?id=' . urlencode($id));
             die();
         }
         $account_name = $_SESSION['_id'];
@@ -165,6 +179,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 die();
             }
             send_system_message($account_name, "You are now signed up for $event_name!", "Thank you for signing up for $event_name!");
+            
+            $subject = "Gwyneth's Gift Sign-up Confirmation for " . $event_name;
+            $content = "You have signed up to attend  " . $event_name . 
+            " from " . time24hTo12h($event_info['startTime']) . " to " . time24hTo12h($event_info['endTime']) . " on " . 
+            (new DateTime($event_info['startDate']))->format('m-d-Y') . "!";
+            
+            // Collect recipient IDs
+            $recipientIDs = [$account_name];
+            $recipientsType = "specific";
+            $result = submitEmail($recipientIDs, 0, $subject, $content, true, '', $recipientsType);
+
+            $subject = "Gwyneth's Gift Event Reminder: " . $event_name;
+            $content = "This is a reminder to attend  " . $event_name . 
+            " from " . time24hTo12h($event_info['startTime']) . " to " . time24hTo12h($event_info['endTime']) . " today!";
+            
+            // Collect recipient IDs
+            $recipientIDs = [$account_name];
+            $recipientsType = "specific";
+            $today = date('l, F j, Y');
+            $today = new DateTime($today);
+            $event_date = date('l, F j, Y', strtotime($event_info['startDate']));
+            $date = new DateTime($event_date);
+
+            if ($date == $today){
+                $send_now = true;
+            } else {
+                $send_now = false;
+            }
+
+            $result = submitEmail($recipientIDs, $event_info["id"], $subject, $content, $send_now, $event_info['startDate'], $recipientsType);
+
+            /*if ($result['success']) {
+                var_dump('success');
+                die();
+            } else {
+                var_dump('error');
+                var_dump("Errors:<br>" . implode("<br>", $result['errors']));
+                die();
+            }*/
             header('Location: signupSuccess.php');
             die();
         }
@@ -377,7 +430,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         //$event_training_level = $event_info['affiliation'];
         $num_signups = $event_num_signups['RowCount'];
         $recurrence = $event_info['recurrence_interval_days'];
-        require_once('include/time.php');
         ?>
 
         <!-- Event Information Table -->
@@ -564,83 +616,86 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <!-- Action Buttons -->
         <div class="action-buttons">
 
-            <!--@@@ Check-In and Check-Out Buttons by Thomas -->
-            <?php if (isset($user) && can_check_in($user->get_id(), $event_info)) : ?>
-                <form method="POST" action="">
-                    <input type="hidden" name="checking_in" value="1">
-                    <input type="hidden" name="personID" value="<?php echo $user->get_id(); ?>">
-                    <input type="hidden" name="eventID" value="<?php echo $event_info['id']; ?>">
-                    <input type="hidden" name="timestamp" value="<?php echo date("Y-m-d H:i:s", time()); ?>">
-                    <input type="hidden" name="id" value="<?php echo $event_info['id']; ?>">
-                    <button type="submit" class="button success">Check-In</button>
-                </form>
-            <?php endif ?>
+            <!-- Row 1: Check-In/Out and Sign Up/Withdraw -->
+            <div style="display:flex; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.5rem;">
 
-            <?php if (isset($user) && can_check_out($user->get_id(), $event_info)) : ?>
-                <form method="POST" action="">
-                    <input type="hidden" name="checking_out" value="1">
-                    <input type="hidden" name="personID" value="<?php echo $user->get_id(); ?>">
-                    <input type="hidden" name="eventID" value="<?php echo $event_info['id']; ?>">
-                    <input type="hidden" name="timestamp" value="<?php echo date("Y-m-d H:i:s", time()); ?>">
-                    <input type="hidden" name="id" value="<?php echo $event_info['id']; ?>">
-                    <button type="submit" class="button danger">Check-Out</button>
-                </form>
-            <?php endif ?>
-
-            <!-- end of Thomas's work-->
-
-            <?php /*if ($access_level < 2) : ?>
-                <?php if ($event_info["completed"] == "no") : ?>
-                    <button onclick="showCancelConfirmation()" class="button danger">Cancel My Sign-Up</button>
-                <?php endif ?>
-            <?php endif*/ ?>
-
-            <?php if (!check_if_signed_up($id, $user->get_id())): ?>
-            <form action="event.php?id=<?php echo urlencode($id); ?>" method="post">
-                <input type="hidden" name="signup-submit" value="1">
-                <button type="submit" class="button primary">Sign Up!</button>
-            </form>
-            <?php else: ?>
-            <form action="event.php?id=<?php echo urlencode($id); ?>" method="post" onsubmit="return confirm('Are you sure you want to withdraw from this event?');">
-                <input type="hidden" name="withdraw-submit" value="1">
-                <button type="submit" class="button cancel">Withdraw</button>
-            </form>
-            <?php endif; ?>
-            <?php if ($isEventManager) : ?>
-                <a href="eventRoster.php?id=<?php echo urlencode($id); ?>" class="button signup">Generate Event Roster</a>
-                <a href="viewEventSignUps.php?id=<?php echo $id; ?>" class="button signup">View Event Signups</a>
-
-                <!-- Archive and Unarchive buttons by Thomas -->
-                <!--Remove archive stuff - Kenzie
-                <?php if (is_archived($event_info['id'])) : ?>
-                    <form method="POST" action="" onsubmit="return confirmAction('unarchive')">
-                        <input type="hidden" name="unarchiving" value="1">
+                <!--@@@ Check-In and Check-Out Buttons by Thomas -->
+                <?php if (isset($user) && can_check_in($user->get_id(), $event_info)) : ?>
+                    <form method="POST" action="">
+                        <input type="hidden" name="checking_in" value="1">
+                        <input type="hidden" name="personID" value="<?php echo $user->get_id(); ?>">
                         <input type="hidden" name="eventID" value="<?php echo $event_info['id']; ?>">
+                        <input type="hidden" name="timestamp" value="<?php echo date("Y-m-d H:i:s", time()); ?>">
                         <input type="hidden" name="id" value="<?php echo $event_info['id']; ?>">
-                        <button type="submit" class="button">Unarchive</button>
+                        <button type="submit" class="button primary no-span">Check-In</button>
                     </form>
+                <?php endif ?>
 
-                <?php else : ?>
-                    <form method="POST" action="" onsubmit="return confirmAction('archive')">
-                        <input type="hidden" name="archiving" value="1">
+                <?php if (isset($user) && can_check_out($user->get_id(), $event_info)) : ?>
+                    <form method="POST" action="">
+                        <input type="hidden" name="checking_out" value="1">
+                        <input type="hidden" name="personID" value="<?php echo $user->get_id(); ?>">
                         <input type="hidden" name="eventID" value="<?php echo $event_info['id']; ?>">
+                        <input type="hidden" name="timestamp" value="<?php echo date("Y-m-d H:i:s", time()); ?>">
                         <input type="hidden" name="id" value="<?php echo $event_info['id']; ?>">
-                        <button type="submit" class="button">Archive</button>
+                        <button type="submit" class="button cancel no-span">Check-Out</button>
                     </form>
+                <?php endif ?>
+                <!-- end of Thomas's work-->
+
+                <?php if (!check_if_signed_up($id, $user->get_id()) && !$event_in_past && $num_signups < $event_capacity): ?>
+                <form action="event.php?id=<?php echo urlencode($id); ?>" method="post">
+                    <input type="hidden" name="signup-submit" value="1">
+                    <button type="submit" class="button primary no-span">Sign Up!</button>
+                </form>
+                <?php elseif (check_if_signed_up($id, $user->get_id())): ?>
+                <form action="event.php?id=<?php echo urlencode($id); ?>" method="post" onsubmit="return confirm('Are you sure you want to withdraw from this event?');">
+                    <input type="hidden" name="withdraw-submit" value="1">
+                    <button type="submit" class="button cancel no-span">Withdraw</button>
+                </form>
+                <?php endif; ?>
+
+            </div>
+
+            <!-- Row 2: Admin/nav buttons -->
+            <div style="display:flex; flex-wrap:wrap; gap:0.5rem;">
+
+                <?php if ($isEventManager) : ?>
+                    <a href="eventRoster.php?id=<?php echo urlencode($id); ?>" class="button signup no-span">Generate Event Roster</a>
+                    <a href="viewEventSignUps.php?id=<?php echo $id; ?>" class="button signup no-span">View Event Signups</a>
+
+                    <!-- Archive and Unarchive buttons by Thomas -->
+                    <!--Remove archive stuff - Kenzie
+                    <?php if (is_archived($event_info['id'])) : ?>
+                        <form method="POST" action="" onsubmit="return confirmAction('unarchive')">
+                            <input type="hidden" name="unarchiving" value="1">
+                            <input type="hidden" name="eventID" value="<?php echo $event_info['id']; ?>">
+                            <input type="hidden" name="id" value="<?php echo $event_info['id']; ?>">
+                            <button type="submit" class="button">Unarchive</button>
+                        </form>
+
+                    <?php else : ?>
+                        <form method="POST" action="" onsubmit="return confirmAction('archive')">
+                            <input type="hidden" name="archiving" value="1">
+                            <input type="hidden" name="eventID" value="<?php echo $event_info['id']; ?>">
+                            <input type="hidden" name="id" value="<?php echo $event_info['id']; ?>">
+                            <button type="submit" class="button">Archive</button>
+                        </form>
+
+                    <?php endif ?>
+                    -->
+                    <!-- end of Thomas's work -->
+
+                    <a href="logAttendees.php?id=<?php echo urlencode($id); ?>" class="button signup no-span">Log Event Attendees</a>
+
+                    <!-- <a href="editEvent.php?id=<?= $id ?>" class="button cancel">Edit Event Details</a> -->
 
                 <?php endif ?>
-                -->
-                <!-- end of Thomas's work -->
 
-                <a href="logAttendees.php?id=<?php echo urlencode($id); ?>" class="button signup">Log Event Attendees</a>
+                <a href="calendar.php?month=<?= substr($event_info['startDate'], 0, 7) ?>" class="button cancel no-span">Return to Calendar</a>
 
+            </div>
 
-                <!-- <a href="editEvent.php?id=<?= $id ?>" class="button cancel">Edit Event Details</a> -->
-
-
-            <?php endif ?>
-
-            <a href="calendar.php?month=<?= substr($event_info['startDate'], 0, 7) ?>" class="button cancel">Return to Calendar</a>
         </div>
 
         <!-- Share Event on Facebook Button -->
