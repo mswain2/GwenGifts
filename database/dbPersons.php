@@ -1258,13 +1258,7 @@ function fetch_no_shows()
             mysqli_close($connection);
             return [];
         }
-        unset($row); // suggested for security
-        return $rows;
-    } else {
-        mysqli_close($connection);
-        return [];
     }
-}
 
 function get_event_from_id($eventID)
 {
