@@ -1180,6 +1180,7 @@ function get_dbtype($id)
     return $result;
 }
 date_default_timezone_set("America/New_York");
+/*
 // FIX
 function fetch_user_no_shows($personID)
 {
@@ -1187,9 +1188,9 @@ function fetch_user_no_shows($personID)
     $query =
         "SELECT dbeventpersons.userID, COUNT(*) AS NoShowCount
             FROM dbeventpersons, dbevents
-            WHERE dbeventpersons.userID='" . $personID . "'" . " 
+            WHERE dbeventpersons.userID='" . $personID . "'" . "
                 and dbeventpersons.eventID=dbevents.id
-                and dbevents.completed='Y' 
+                and dbevents.completed='Y'
                 and dbeventpersons.attended=0
             GROUP BY dbeventpersons.userID ORDER BY NoShowCount DESC;
             ";
@@ -1216,9 +1217,9 @@ function fetch_no_shows()
     $query =
         "SELECT dbeventpersons.userID, COUNT(*) AS NoShowCount
             FROM dbeventpersons, dbevents
-            WHERE 
+            WHERE
                 dbeventpersons.eventID = dbevents.id
-                and dbevents.completed='Y' 
+                and dbevents.completed='Y'
                 and dbeventpersons.attended=0
             GROUP BY dbeventpersons.userID ORDER BY NoShowCount DESC;
             ";
@@ -1236,6 +1237,7 @@ function fetch_no_shows()
     mysqli_close($connection);
     return $rows;
 }
+*/
 
     function get_events_attended_by($personID) {
         $today = date("Y-m-d");
