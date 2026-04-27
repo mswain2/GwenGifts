@@ -126,17 +126,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Gwyneth's Gift | Generate Email List</title>
-    <link href="css/normal_tw.css" rel="stylesheet">
     <script src="js/email-list-filters.js" defer></script>
-<?php
-$tailwind_mode = true;
-require_once('header.php');
-?>
+    <link href="css/sidebar.css" rel="stylesheet">
+    <link href="css/normal_tw.css" rel="stylesheet">
 </head>
 <body>
+<?php require_once('header.php'); ?>
 
-<h1 style="color:white;">Generate Email List</h1>
+<h1>Generate Email List</h1>
 
 <main>
     <div class="main-content-box w-[80%] p-8">
@@ -261,7 +261,9 @@ require_once('header.php');
         </form>
     </div>
 
-        <a href="index.php" class="btn btn-back">Return to Dashboard</a>
+    <div class="text-center mb-8">
+        <a href="index.php" class="return-button">Return to Dashboard</a>
+    </div>
 
 </main>
 

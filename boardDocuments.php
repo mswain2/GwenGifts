@@ -243,7 +243,7 @@ if ($is_admin) {
         .clearance-badge { display: inline-block; padding: 3px 10px; border-radius: 50px; font-size: 12px; font-weight: 700; }
         .clearance-badge.public       { background-color: #e8f5e9; color: #2e7d32; }
         .clearance-badge.volunteer    { background-color: #e3f2fd; color: #1565c0; }
-        .clearance-badge.manager      { background-color: #fff3e0; color: #e65100; }
+        .clearance-badge.event_manager { background-color: rgba(121, 85, 72, 0.22); color: #4e342e; }
         .clearance-badge.board_member { background-color: #f3e5f5; color: #6a1b9a; }
         .clearance-badge.admin        { background-color: #fce4ec; color: #880e4f; }
         .clearance-badge.superadmin   { background-color: #263238; color: #ffffff; }
