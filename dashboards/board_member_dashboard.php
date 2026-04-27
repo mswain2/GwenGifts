@@ -98,10 +98,6 @@ $volType             = ucfirst(str_replace('_', ' ', $person->get_type() ?: 'Boa
         <span class="vd-stat-lbl">Own Hours Volunteered</span>
     </div>
     <div class="vd-stat">
-        <span class="vd-stat-val"><?php echo $eventsAttendedCount; ?></span>
-        <span class="vd-stat-lbl">Events Attended By Self</span>
-    </div>
-    <div class="vd-stat">
         <span class="vd-stat-val"><?php echo count($upcomingEvents); ?></span>
         <span class="vd-stat-lbl">Upcoming Events</span>
     </div>
