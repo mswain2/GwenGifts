@@ -80,7 +80,6 @@ progress::-moz-progress-bar {
 }
 </style>
 <!-- Hero Section with Title -->
-<?php require_once('header.php') ?>
 <h1>Welcome Back — Complete Your Account</h1>
 
 <main>

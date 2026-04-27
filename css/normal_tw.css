@@ -1061,7 +1061,7 @@
     padding-block: calc(var(--spacing) * 2);
     --tw-font-weight: var(--font-weight-semibold);
     font-weight: var(--font-weight-semibold);
-    color: #1F1F21;         
+    color: white;         
     &:hover {
       @media (hover: hover) {
         background-color: var(--accent-color);
@@ -1468,7 +1468,8 @@ textarea {
 }
 .btn {
     display: inline-block;
-    margin-top: 20px;
+    margin-top: 10px;
+    margin-bottom: 20px;
     padding: 10px 20px;
     border-radius: 5px;
     font-weight: bold;

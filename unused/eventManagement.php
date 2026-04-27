@@ -27,20 +27,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Gwyneth's Gift | Event Management</title>
+  <link href="css/sidebar.css" rel="stylesheet">
   <link href="css/management_tw.css" rel="stylesheet">
-
-<?php
-$tailwind_mode = true;
-require_once('header.php');
-?>
-
+  <style>main { margin-top: 2rem !important; }</style>
 </head>
 
 <body>
-
-
-  <!-- Larger Hero Section -->
-  <header class="top-bar"></header>
+<?php require_once('header.php'); ?>
 
 
   <!-- Main Content -->

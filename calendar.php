@@ -80,7 +80,9 @@
             }
         }
     }
-    $currentFilter = isset($_GET['event_filter']) ? $_GET['event_filter'] : 'public';
+    $currentFilter = isset($_GET['event_filter']) ? $_GET['event_filter'] : 'all';
+    $calUserId = isset($_SESSION['_id']) ? $_SESSION['_id'] : '';
+    $calAccessLevel = isset($_SESSION['access_level']) ? (int)$_SESSION['access_level'] : 0;
 ?>
 <!-- ── HTML DOCUMENT START ── -->
 <!DOCTYPE html>
@@ -88,8 +90,7 @@
     <head>
         <!-- Load shared site-wide styles, meta tags, and configuration -->
         <?php require('universal.inc'); ?>
-        <!-- Load the site header (navigation bar, logo, etc.) -->
-        <?php require('header.php'); ?>
+        <link rel="stylesheet" href="css/sidebar.css">
         <!-- jQuery library for DOM manipulation and AJAX -->
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <!-- Custom JS that handles rendering the calendar grid dynamically -->
@@ -100,6 +101,13 @@
         <style>.happy-toast { margin: 0 1rem 1rem 1rem; }</style>
     </head>
     <body>
+        <?php
+        if (isset($_SESSION['logged_in'])) {
+            require('header.php');
+        } else {
+            require 'partials/nav_guest.php';
+        }
+        ?>
         <!-- ── MONTH JUMPER DIALOG ──
              A hidden popup form that lets users quickly jump to a specific month/year.
              Toggled visible via JavaScript when the user clicks the calendar heading. -->
@@ -197,7 +205,8 @@
                  Hamburger menu with icon buttons to switch between different calendar views:
                  List view, Monthly grid, Weekly view, and Daily view.
                  The checkbox acts as a CSS toggle to show/hide the menu. -->
-           <div style="position:relative; margin-top:8px;">
+            <div id="session-data" data-user-id="<?php echo htmlspecialchars($calUserId); ?>" data-access-level="<?php echo $calAccessLevel; ?>" style="display:none;"></div>
+            <div style="position:relative; margin-top:8px;">
                 <div class="filter-wrapper" style="position: absolute; left: 1rem; top: 0;">
                     <div class="filter-menu-wrapper">
                         <input type="checkbox" />
@@ -211,12 +220,12 @@
                 </div>
                 <?php if ($calUserType === 'board'): ?>
                 <div style="display:flex; justify-content:center; align-items:center; gap:8px; padding: 6px 0;">
-                <select id="event-filter-select" style="padding:6px 140px;border-radius:50px;border:1px solid #e0e0e0;font-family:inherit;font-size:14px;background:#f8f8f8;width:auto;">
+                <select id="event-filter-select" style="padding:6px 140px;border-radius:0.25rem;border:1px solid #e0e0e0;font-family:inherit;font-size:14px;background:#f8f8f8;width:auto;">
                     <option value="public"  <?php echo $currentFilter==='public' ?'selected':''; ?>>Public Events</option>
                     <option value="board"   <?php echo $currentFilter==='board'  ?'selected':''; ?>>Board Events</option>
                     <option value="all"     <?php echo $currentFilter==='all'    ?'selected':''; ?>>All Events</option>
                 </select>
-                    <button id="apply-filter-btn" style="padding:6px 18px;border-radius:50px;border:none;background:#6b8caf;color:white;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;width:auto;margin:0;height:36px;line-height:1;">Apply</button>      
+                    <button id="apply-filter-btn" style="padding:6px 18px;border-radius:0.25rem;border:none;background:var(--main-color);color:white;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;width:auto;margin:0;height:36px;line-height:1;">Apply</button>      
                 </div>
                 <?php endif; ?>
             </div>

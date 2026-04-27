@@ -252,25 +252,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    
     <title>Gwyneth's Gift | Register</title>
     <link href="css/base.css" rel="stylesheet">
-    <?php
-    $tailwind_mode = true;
-    require_once('header.php');
-    ?>
+    <link href="css/sidebar.css" rel="stylesheet">
 </head>
-<body class="relative">
+<body>
+
+<?php
+$tailwind_mode = true;
+if (isset($_SESSION['logged_in'])) {
+    require_once('header.php');
+} else {
+    require 'partials/nav_guest.php';
+}
+?>
 
 <?php if ($showPopup && !$errors): ?>
-<div id="popupMessage" class="absolute left-[40%] top-[20%] z-50 bg-red-800 p-4 text-white rounded-xl text-xl shadow-lg">
+<div id="popupMessage" style="position:fixed;top:5rem;left:50%;transform:translateX(-50%);z-index:9999;background:#7f1d1d;padding:1rem 2rem;color:#fff;border-radius:.75rem;font-size:1.1rem;box-shadow:0 4px 16px rgba(0,0,0,.3);">
     That username is already taken.
 </div>
 <?php endif; ?>
-
-<?php error_log("first_name in args: " . ($args['first_name'] ?? 'EMPTY')); ?>
 
 <?php require_once('registrationForm.php'); ?>
 
@@ -286,5 +289,7 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 });
 </script>
+
+<?php require 'partials/footer.php'; ?>
 </body>
 </html>

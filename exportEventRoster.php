@@ -80,6 +80,11 @@ add_log_entry($message);
 
 $filenameBase = 'event-roster-' . $id . '-' . date('Ymd-His');
 
+$attendanceLabel = ucfirst($filters['attendance']);
+$trainingLabel = ($filters['training'] === 'not_done') ? 'Not Done' : ucfirst($filters['training']);
+$exportedAt = date('m/d/Y g:i A');
+$totalResults = count($filtered_rows);
+
 if ($format === 'csv') {
 
     header('Content-Type: text/csv; charset=utf-8');

@@ -279,12 +279,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <head>
     <title>Gwyneth's Gift | Returning Volunteer</title>
     <link href="css/base.css" rel="stylesheet">
-    <?php
-    $tailwind_mode = true;
-    require_once('header.php');
-    ?>
+    <link href="css/sidebar.css" rel="stylesheet">
 </head>
-<body class="relative">
+<body>
+<?php
+$tailwind_mode = true;
+require 'partials/nav_guest.php';
+?>
 
 <?php if ($showPopup && !$errors): ?>
 <div id="popupMessage" class="absolute left-[40%] top-[20%] z-50 bg-red-800 p-4 text-white rounded-xl text-xl shadow-lg">

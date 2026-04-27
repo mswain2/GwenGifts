@@ -220,7 +220,6 @@ if (date("H:i:s") > "18:19:59") {
         $permission_array['processattendees.php'] = 2;
         $permission_array['viewdata.php'] = 2;
         $permission_array['deleteusersearch.php'] = 2;
-        $permission_array['noshows.php'] = 2;
         $permission_array["view_encrypted_gallery.php"] = 2;
         $permission_array['upload_encrypted_image.php'] = 1;
         $permission_array['eventsignup.php'] = 99;
@@ -288,8 +287,17 @@ if (date("H:i:s") > "18:19:59") {
         // Base URL for the project — works whether installed at domain root (SiteGround) or in a subdir (XAMPP).
         $_base_url = rtrim(str_replace('\\', '/', str_replace(rtrim($_SERVER['DOCUMENT_ROOT'], '/\\'), '', __DIR__)), '/') . '/';
 
-        // load nav bar
-        require 'partials/nav.php';
+        // load nav bar according to user role/type
+        $type = $_SESSION['type'];
+        if ($type === 'admin' || $type === 'superadmin') {
+            require 'partials/nav_admin.php';
+        } else if ($type === 'board_member') {
+            require 'partials/nav_admin.php';
+        } else if ($type === 'event_manager') {
+            require 'partials/nav_admin.php';
+        } else {
+            require 'partials/nav_volunteer.php';
+        }
     }
     ?>
     <script>
@@ -387,7 +395,7 @@ if (date("H:i:s") > "18:19:59") {
             <!-- Color scheme removed; keeping font controls only -->
 
             <div style="margin-top: 1rem; text-align: center;">
-                <a href="help.php" style="display:inline-block; padding:0.5rem 1.5rem; background:var(--main-color); color:#fff; border-radius:0.5rem; font-weight:600; text-decoration:none; transition:background 0.2s;">Help Center</a>
+                <a href="help.php" class="help-center">Help Center</a>
             </div>
 
             <div class="accessibility-actions">

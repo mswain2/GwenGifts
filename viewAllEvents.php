@@ -6,8 +6,6 @@
     $loggedIn = false;
     $accessLevel = 0;
     $userID = null;
-    $userType = 'guest';
-    $isBoardMember = false;
     if (isset($_SESSION['_id'])) {
         $loggedIn = true;
         $accessLevel = $_SESSION['access_level'];
@@ -17,19 +15,6 @@
     require_once('database/dbEvents.php');
     require_once('database/dbPersons.php');
     require_once('include/output.php');
-
-    if ($loggedIn && $userID !== 'guest') {
-        if ($userID === 'vmsroot') {
-            $userType = 'superadmin';
-            $isBoardMember = true;
-        } else {
-            $personObj = retrieve_person($userID);
-            if ($personObj) {
-                $userType = $personObj->get_type();
-                $isBoardMember = in_array($userType, ['board_member', 'admin', 'superadmin']);
-            }
-        }
-    }
 ?>
 <!DOCTYPE html>
 <html>
@@ -46,35 +31,23 @@
     <main class="browse-main">
     <?php
         $allEvents = get_all_events_sorted_by_date_not_archived();
-        $archivedEvents = get_all_events_sorted_by_date_and_archived();
 
         $today = new DateTime();
         $today->setTime(0, 0, 0);
 
-        $upcomingEvents = [];
-        $boardEvents    = [];
+        $upcomingEvents = $allEvents;
 
-        foreach ($allEvents as $event) {
-            $evtType = $event->getEventType();
-            if ($evtType === 'Board') {
-                $boardEvents[] = $event;
-            } else {
-                $upcomingEvents[] = $event;
-            }
-        }
         // Filter by specific date if provided (from calendar "click for more")
+        $filterDate = '';
         if (isset($_GET['date']) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $_GET['date'])) {
             $filterDate = $_GET['date'];
-            $upcomingEvents = array_filter($upcomingEvents, function($event) use ($filterDate) {
-                return $event->getStartDate() === $filterDate;
-            });
-            $boardEvents = array_filter($boardEvents, function($event) use ($filterDate) {
+            $upcomingEvents = array_filter($upcomingEvents, function ($event) use ($filterDate) {
                 return $event->getStartDate() === $filterDate;
             });
         }
         // Collect unique locations (case-insensitive)
         $locationMap = [];
-        foreach (array_merge($upcomingEvents, $boardEvents, $archivedEvents) as $evt) {
+        foreach ($upcomingEvents as $evt) {
             $loc = trim($evt->getLocation() ?? '');
             if ($loc !== '') {
                 $key = strtolower($loc);
@@ -152,15 +125,7 @@
         foreach ($upcomingEvents as $evt) {
             $upcomingData[] = prepareEventData($evt, $loggedIn, $userID, $allSignupCounts, $userSignups);
         }
-        $boardData = [];
-        foreach ($boardEvents as $evt) {
-            $boardData[] = prepareEventData($evt, $loggedIn, $userID, $allSignupCounts, $userSignups);
-        }
-        $archivedData = [];
-        foreach ($archivedEvents as $evt) {
-            $archivedData[] = prepareEventData($evt, $loggedIn, $userID, $allSignupCounts, $userSignups);
-        }
-        $totalCount = count($upcomingData) + count($boardData);
+        $totalCount = count($upcomingData);
 
         // Common data attributes for filtering
         function dataAttrs($d) {
@@ -474,15 +439,9 @@
             <div class="toolbar-filters">
                 <div class="filter-pills">
                     <select id="filter-tab" class="pill-select">
-                        <option value="upcoming">All Types</option>
-                        <option value="normal">Normal</option>
+                        <option value="all-types">All Events</option>
+                        <option value="upcoming">Upcoming</option>
                         <option value="past">Past</option>
-                        <?php if ($isBoardMember): ?>
-                            <option value="board">Board</option>
-                        <?php endif; ?>
-                        <?php if ($accessLevel >= 2): ?>
-                            <option value="archived">Archived</option>
-                        <?php endif; ?>
                     </select>
                     <select id="filter-location" class="pill-select">
                         <option value="">All Locations</option>
@@ -496,7 +455,9 @@
                         <option value="afternoon">Afternoon</option>
                         <option value="evening">Evening</option>
                     </select>
-                    <button type="button" id="more-filters-btn" class="pill-btn">&#9881; More Filters</button>
+                    <?php if (!$filterDate): ?>
+                        <button type="button" id="more-filters-btn" class="pill-btn">&#9881; More Filters</button>
+                    <?php endif; ?>
                 </div>
                 <div class="sort-wrap">
                     <select id="sort-by" class="pill-select sort-select">
@@ -526,6 +487,13 @@
             </div>
         </div>
 
+        <?php if ($filterDate): ?>
+            <div class="date-filter-notice" style="margin: 0.75rem 0; padding: 0.6rem 0.9rem; background: #eef5ff; border: 1px solid #c8dcfb; border-radius: 0.35rem; display: flex; justify-content: space-between; align-items: center; font-size: 14px;">
+                <span>Showing events for <strong><?php echo htmlspecialchars(date('F j, Y', strtotime($filterDate))); ?></strong> only.</span>
+                <a href="viewAllEvents.php" style="color: var(--main-color); text-decoration: underline;">Show all events</a>
+            </div>
+        <?php endif; ?>
+
         <!-- Results count -->
         <div class="results-bar">
             <span id="results-count">Showing <?php echo $totalCount; ?> events</span>
@@ -541,28 +509,6 @@
             <p class="no-results hidden" id="no-upcoming">No upcoming events match your filters.</p>
         </div>
 
-        <?php if ($isBoardMember): ?>
-        <div id="board-section" class="events-section hidden">
-            <?php if (count($boardData) > 0): ?>
-                <?php renderSection($boardData, $loggedIn, $userID, 'board'); ?>
-            <?php else: ?>
-                <p class="no-events-msg">No board events scheduled.</p>
-            <?php endif; ?>
-            <p class="no-results hidden" id="no-board">No board events match your filters.</p>
-        </div>
-        <?php endif; ?>
-
-        <?php if ($accessLevel >= 2): ?>
-        <div id="archived-section" class="events-section hidden">
-            <?php if (count($archivedData) > 0): ?>
-                <?php renderSection($archivedData, $loggedIn, $userID, 'archived'); ?>
-            <?php else: ?>
-                <p class="no-events-msg">No archived events to display.</p>
-            <?php endif; ?>
-            <p class="no-results hidden" id="no-archived">No archived events match your filters.</p>
-        </div>
-        <?php endif; ?>
-
         <!-- Pagination -->
         <div class="pagination-bar">
             <span id="page-info"></span>
@@ -576,6 +522,8 @@
                 <a class="button" href="addEvent.php">Create New Event</a>
             <?php endif; ?>
             <a class="button cancel" href="index.php">Return to Dashboard</a>
+            
+            
         </div>
 
         <?php if ($loggedIn && $userID !== 'guest'): ?>
