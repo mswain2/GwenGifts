@@ -100,7 +100,7 @@
             <img class="sb-icon" src="images/file-regular.svg" alt="">
             <span class="sb-label">View Drafts</span>
         </a>
-        <a class="sb-item <?= $sb_current==='personSearch.php' ? 'sb-current' : '' ?>" href="personSearch.php">
+        <a class="sb-item <?= $sb_current==='generateEmailList.php' ? 'sb-current' : '' ?>" href="generateEmailList.php">
             <img class="sb-icon" src="images/send.png" alt="">
             <span class="sb-label">Email List</span>
         </a>
