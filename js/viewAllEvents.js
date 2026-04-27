@@ -26,6 +26,17 @@ document.addEventListener('DOMContentLoaded', function () {
     var currentPage = 1;
     var itemsPerPage = 9;
 
+    // True when the page was opened via a calendar day click (?date=YYYY-MM-DD).
+    // In that mode the JS past-event hide rule is bypassed so past events on the
+    // chosen day still appear alongside today's and future events on that day.
+    var urlDateActive = false;
+    try {
+        var _urlDate = new URLSearchParams(window.location.search).get('date');
+        if (_urlDate && /^\d{4}-\d{2}-\d{2}$/.test(_urlDate)) {
+            urlDateActive = true;
+        }
+    } catch (e) {}
+
     // View suffixes for container IDs
     var viewSuffixes = { card: '-cards', grid: '-grid', list: '-list' };
 
@@ -94,21 +105,24 @@ document.addEventListener('DOMContentLoaded', function () {
                 show = false;
             }
 
-            // Past events filter
-            if (show) {
-                var today = new Date().toISOString().split('T')[0];
+            // Past / Upcoming filter. Time-aware so today's events split on
+            // start time relative to "now" — clicking a calendar day and then
+            // narrowing to Past or Upcoming works for today as well as for
+            // past/future days.
+            if (show && (activePastFilter || activeUpcomingFilter)) {
+                var _now = new Date();
+                var _pad = function (n) { return String(n).padStart(2, '0'); };
+                var todayStr = _now.getFullYear() + '-' + _pad(_now.getMonth() + 1) + '-' + _pad(_now.getDate());
+                var nowTime  = _pad(_now.getHours()) + ':' + _pad(_now.getMinutes()) + ':' + _pad(_now.getSeconds());
                 var eventDate = item.getAttribute('data-start-date') || '';
-                if (activePastFilter) {
-                    // Show only past events
-                    if (eventDate >= today) {
-                        show = false;
-                    }
-                } else {
-                    // Hide past events by default
-                    if (eventDate < today) {
-                        show = false;
-                    }
-                }
+                var eventTime = item.getAttribute('data-start-time') || '00:00:00';
+                var eventIsPast;
+                if (eventDate < todayStr)      eventIsPast = true;
+                else if (eventDate > todayStr) eventIsPast = false;
+                else                           eventIsPast = eventTime < nowTime;
+
+                if (activePastFilter && !eventIsPast)      show = false;
+                if (activeUpcomingFilter && eventIsPast)   show = false;
             }
 
             // Time of day
@@ -134,18 +148,11 @@ document.addEventListener('DOMContentLoaded', function () {
         currentPage = 1;
         applyPagination(visible);
 
-        // No-results messages
-        var tabIds = ['upcoming', 'board', 'archived'];
-        for (var n = 0; n < tabIds.length; n++) {
-            var noMsg = document.getElementById('no-' + tabIds[n]);
-            if (noMsg) {
-                if (tabIds[n] === activeTab) {
-                    var hasItems = section.querySelectorAll('.event-item').length > 0;
-                    noMsg.classList.toggle('hidden', !(hasItems && visible === 0));
-                } else {
-                    noMsg.classList.add('hidden');
-                }
-            }
+        // No-results message
+        var noMsg = document.getElementById('no-upcoming');
+        if (noMsg) {
+            var hasItems = section.querySelectorAll('.event-item').length > 0;
+            noMsg.classList.toggle('hidden', !(hasItems && visible === 0));
         }
     }
 
@@ -321,16 +328,13 @@ document.addEventListener('DOMContentLoaded', function () {
             viewBtns[v].classList.toggle('active', viewBtns[v].getAttribute('data-view') === view);
         }
 
-        // Show/hide containers for all sections
-        var sectionIds = ['upcoming', 'board', 'archived'];
-        for (var s = 0; s < sectionIds.length; s++) {
-            var cards = document.getElementById(sectionIds[s] + '-cards');
-            var grid  = document.getElementById(sectionIds[s] + '-grid');
-            var list  = document.getElementById(sectionIds[s] + '-list');
-            if (cards) cards.classList.toggle('hidden', view !== 'card');
-            if (grid)  grid.classList.toggle('hidden', view !== 'grid');
-            if (list)  list.classList.toggle('hidden', view !== 'list');
-        }
+        // Show/hide view containers for the upcoming section
+        var cards = document.getElementById('upcoming-cards');
+        var grid  = document.getElementById('upcoming-grid');
+        var list  = document.getElementById('upcoming-list');
+        if (cards) cards.classList.toggle('hidden', view !== 'card');
+        if (grid)  grid.classList.toggle('hidden', view !== 'grid');
+        if (list)  list.classList.toggle('hidden', view !== 'list');
 
         currentPage = 1;
         applySort();
@@ -348,19 +352,13 @@ document.addEventListener('DOMContentLoaded', function () {
     // ---- Tab / Section Switching ----
 
     var activePastFilter = false;
+    var activeUpcomingFilter = false;
 
     function switchTab(tab) {
-        activeTab = (tab === 'normal' || tab === 'past') ? 'upcoming' : tab;
-        activeTypeFilter = (tab === 'normal') ? 'Normal' : '';
+        activeTab = 'upcoming';
+        activeTypeFilter = '';
         activePastFilter = (tab === 'past');
-
-        var sectionIds = ['upcoming', 'board', 'archived'];
-        for (var s = 0; s < sectionIds.length; s++) {
-            var sec = document.getElementById(sectionIds[s] + '-section');
-            if (sec) {
-                sec.classList.toggle('hidden', sectionIds[s] !== activeTab);
-            }
-        }
+        activeUpcomingFilter = (tab === 'upcoming');
 
         currentPage = 1;
         applySort();
@@ -514,31 +512,26 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // SCRUM-133: Save filters to sessionStorage
+    // Persist sort only — tab/location/time/search reset on every page load
+    // so transient choices don't surprise the user later.
     function saveFilters() {
         try {
-            sessionStorage.setItem('vae_tab',      tabSelect      ? tabSelect.value      : 'upcoming');
-            sessionStorage.setItem('vae_location', locationSelect ? locationSelect.value : '');
-            sessionStorage.setItem('vae_time',     timeSelect     ? timeSelect.value     : '');
-            sessionStorage.setItem('vae_sort',     sortSelect     ? sortSelect.value     : 'date-asc');
-            sessionStorage.setItem('vae_search',   searchInput    ? searchInput.value    : '');
+            sessionStorage.setItem('vae_sort', sortSelect ? sortSelect.value : 'date-asc');
         } catch(e) {}
     }
 
-    // SCRUM-133: Restore saved filters from sessionStorage
     try {
-        var savedTab      = sessionStorage.getItem('vae_tab');
-        var savedLocation = sessionStorage.getItem('vae_location');
-        var savedTime     = sessionStorage.getItem('vae_time');
-        var savedSort     = sessionStorage.getItem('vae_sort');
-        var savedSearch   = sessionStorage.getItem('vae_search');
-
-        if (savedTab      && tabSelect)      tabSelect.value      = savedTab;
-        if (savedLocation && locationSelect) locationSelect.value = savedLocation;
-        if (savedTime     && timeSelect)     timeSelect.value     = savedTime;
-        if (savedSort     && sortSelect)     sortSelect.value     = savedSort;
-        if (savedSearch   && searchInput)    searchInput.value    = savedSearch;
+        var savedSort = sessionStorage.getItem('vae_sort');
+        if (savedSort && sortSelect) sortSelect.value = savedSort;
     } catch(e) {}
+
+    // Tab is not restored from sessionStorage — every visit lands on a known
+    // default so a stale "Past" choice doesn't follow the user around.
+    //   ?date present  → "All Events" (show everything for that day)
+    //   ?date absent   → "Upcoming"   (forward-looking default)
+    if (tabSelect) {
+        tabSelect.value = urlDateActive ? 'all-types' : 'upcoming';
+    }
 
     // SCRUM-133: Restore tab on load
     if (tabSelect && tabSelect.value) {
